@@ -14,8 +14,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
 from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
 
 @pytest.mark.integration
 def test_getCourseInformation():

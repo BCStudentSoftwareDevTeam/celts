@@ -20,11 +20,13 @@ def viewCceMinor(username):
         return abort(403)
 
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
+    summerTerm, summerExperience = getSummerExperience(username)
 
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = getSummerExperience(username),
+                            summerExperience = summerExperience if summerExperience else "",
+                            summerTerm = summerTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
                             summerTerms = getSummerTerms())
 
