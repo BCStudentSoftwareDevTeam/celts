@@ -78,7 +78,7 @@
             <div class="input-group">
               <select class="form-select" name='term' id='summerExperienceTerm' required>
                 {% for term in summerTerms %}
-                  <option value="{{summerTerm}}" {{"selected" if term.description == summerTerm}}>{{term.description}}</option>
+                  <option value="{{selectedSummerTerm}}" {{"selected" if term.description == selectedSummerTerm}}>{{term.description}}</option>
                 {% endfor %}
               </select>
               <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{summerExperience}}' type="text"/>
