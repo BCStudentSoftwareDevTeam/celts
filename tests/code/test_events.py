@@ -926,7 +926,56 @@ def test_getCountdownToEvent():
         assert countdown == "Already passed"
         transaction.rollback()
 
-
-
+        currentEvent = makeEventIn(minutes=-30)
+        countdown = getCountdownToEvent(currentEvent, currentDatetime=currentTime)
+        assert countdown == "Happening now"
         transaction.rollback()
 
+        futureEvent = makeEventIn(hours=3)
+        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
+        assert countdown == "3 hours remaining"
+        transaction.rollback()
+
+        futureEvent1 = makeEventIn(hours=2, minutes=30)
+        countdown = getCountdownToEvent(futureEvent1, currentDatetime=currentTime)
+        assert countdown == "2 hours and 30 minutes remaining"
+        transaction.rollback()
+
+        futureEvent3 = makeEventIn(minutes=45)
+        countdown = getCountdownToEvent(futureEvent3, currentDatetime=currentTime)
+        assert countdown == "45 minutes remaining"
+        transaction.rollback()
+
+        futureEvent4 = makeEventIn(minutes=0, seconds=30)
+        countdown = getCountdownToEvent(futureEvent4, currentDatetime=currentTime)
+        assert countdown == "Less than 1 minute remaining"
+        transaction.rollback()
+
+
+# Test case for when it's tomorrow before the current time today
+
+        futureEvent5 = makeEventIn(days=1, hours=2)
+        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
+        assert countdown == "Tomorrow"
+        transaction.rollback()
+
+# Test case for when it is more than 1 day before the current time today
+
+        futureEvent6 = makeEventIn(days=2, hours=3)
+        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
+        assert countdown == "2 days remaining"
+        transaction.rollback()
+
+# Test case for when it is more than a day after the current time today
+
+        futureEvent7 = makeEventIn(days=-2, hours=3)
+        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
+        assert countdown == "Already passed"
+        transaction.rollback()
+
+# Test case for when it is more than a day after the current time today w/o hours
+
+        futureEvent7 = makeEventIn(days=-2)
+        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
+        assert countdown == "Already passed"
+        transaction.rollback()
