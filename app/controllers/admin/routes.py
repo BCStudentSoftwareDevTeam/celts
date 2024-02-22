@@ -445,14 +445,12 @@ def alterImportedCourse(courseID):
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
+            
             targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
+            serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
             
             courseData = model_to_dict(targetCourse, recurse=False)
-            serviceHours = (list(CourseParticipant.select()
-                                                  .where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned)
-            
-            courseInstructors = [model_to_dict(instructor.user) for instructor in targetInstructors]
-            courseData['instructors'] = courseInstructors
+            courseData['instructors'] = [model_to_dict(instructor.user) for instructor in targetInstructors]
             courseData["hoursEarned"] = serviceHours
 
             return jsonify(courseData)

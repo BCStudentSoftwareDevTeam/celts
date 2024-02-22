@@ -76,20 +76,20 @@ def editImportedCourses(courseData):
         try:
             course = Course.get_by_id(courseData["courseId"])
             
-            (Course.update(courseName=courseData["courseName"])
-                   .where(Course.id == course.id).execute()) # Update the data (Course Name) of the course in the database
+            Course.update(courseName=courseData["courseName"]).where(Course.id == course.id).execute()
 
             (CourseParticipant.update(hoursEarned=courseData["hoursEarned"])
                               .where(CourseParticipant.course_id == course.id).execute())
             
             instructorList = []
             if 'instructor[]' in courseData:
-                instructorList = courseData.getlist('instructor[]') # Fetch the list of course instructors from CourseData
-                CourseInstructor.delete().where(CourseInstructor.course == course).execute() # Delete existing course instructors before rolling up updates 
+                instructorList = courseData.getlist('instructor[]') 
+                CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
                 
                 for instructor in instructorList: 
                     # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
-                    if instructor: CourseInstructor.create(course=course, user=instructor)
+                    if instructor: 
+                        CourseInstructor.create(course=course, user=instructor)
                         
 
             return Course.get_by_id(course.id)
