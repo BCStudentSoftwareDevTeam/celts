@@ -1,8 +1,6 @@
-from doctest import debug_script
+from collections import defaultdict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
-from collections import defaultdict
-import functools
 
 from app.models.user import User
 from app.models.term import Term
@@ -18,7 +16,9 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 
 def getEngagementTotal(engagementData):
-    """ Count the number of engagements (from all terms) that have matched with a requirement """
+    """ 
+        Count the number of engagements (from all terms) that have matched with a requirement 
+    """
 
     # map the flattened list of engagements to their matched values, and sum them
     return sum(map(lambda e: e['matched'], sum(engagementData.values(),[])))
@@ -26,9 +26,8 @@ def getEngagementTotal(engagementData):
 
 def getMinorInterest():
     """
-    Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
+        Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
     """
-
     interestedStudents = (User.select(User.firstName, User.lastName, User.username)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
                               .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
@@ -39,9 +38,9 @@ def getMinorInterest():
 
 def getMinorProgress():
     """
-    Get all the users who have an IndividualRequirement record under the CCE certification which 
-    and returns a list of dicts containing the student, how many engagements they have completed, 
-    and if they have completed the summer experience. 
+        Get all the users who have an IndividualRequirement record under the CCE certification which 
+        and returns a list of dicts containing the student, how many engagements they have completed, 
+        and if they have completed the summer experience. 
     """
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
@@ -64,7 +63,7 @@ def getMinorProgress():
    
 def toggleMinorInterest(username):
     """
-    Given a username, update their minor interest and minor status.
+        Given a username, update their minor interest and minor status.
     """
     user = User.get(username=username)
     user.minorInterest = not user.minorInterest
@@ -76,7 +75,6 @@ def getCourseInformation(id):
         Given a course ID, return an object containing the course information and 
         its instructors full names.
     """
-
     # retrieve the course and the course instructors
     course = model_to_dict(Course.get_by_id(id))
 
@@ -94,7 +92,6 @@ def getProgramEngagementHistory(program_id, username, term_id):
         Given a program_id, username, and term_id, return an object containing all events in the provided program 
         and in the given term along with the program name.
     """
-
     # execute a query that will retrieve all events in which the user has participated
     # that fall under the provided term and programs.
     eventsInProgramAndTerm = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
@@ -119,19 +116,18 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
 def setCommunityEngagementForUser(action, engagementData, currentUser):
     """
-    Either add or remove an IndividualRequirement record for a student's Sustained Community Engagement
+        Either add or remove an IndividualRequirement record for a student's Sustained Community Engagement
 
-    :param action: The behavior of the function. Can be 'add' or 'remove'
-    :param engagementData:
-        type: program or course
-        id: program or course id
-        username: the username of the student that is having a community engagement added or removed
-        term: The term the engagement is recorded in
-    :param currentuser: The user who is performing the add/remove action 
+        :param action: The behavior of the function. Can be 'add' or 'remove'
+        :param engagementData:
+            type: program or course
+            id: program or course id
+            username: the username of the student that is having a community engagement added or removed
+            term: The term the engagement is recorded in
+        :param currentuser: The user who is performing the add/remove action 
 
-    :raises DoesNotExist: if there are no available CertificationRequirement slots remaining for the engagement
+        :raises DoesNotExist: if there are no available CertificationRequirement slots remaining for the engagement
     """
-
     if engagementData['type'] not in ['program','course']:
         raise Exception("Invalid engagement type!")
 
@@ -166,7 +162,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
 
 def getCommunityEngagementByTerm(username):
     """
-    Given a username, return all of their community engagements (service learning courses and event participations.)
+        Given a username, return all of their community engagements (service learning courses and event participations.)
     """
     courseMatchCase = Case(None, [(IndividualRequirement.course.is_null(True) , 0)], 1)
 
@@ -203,33 +199,32 @@ def getCommunityEngagementByTerm(username):
     
     for event in events:
         communityEngagementByTermDict[(event.term.description, event.term.id)].append({"name":event.program.programName,
-                                                               "id":event.program.id,
-                                                               "type":"program",
-                                                               "matched": event.matchedReq,
-                                                               "term":event.term.id
-                                                              })
+                                                                                       "id":event.program.id,
+                                                                                       "type":"program",
+                                                                                       "matched": event.matchedReq,
+                                                                                       "term":event.term.id
+                                                                                      })
 
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
     """
-    Create a CommunityEngagementRequest entry based off of the form data
+        Create a CommunityEngagementRequest entry based off of the form data
     """
-    
     engagementRequest['status'] = "Pending"
     CommunityEngagementRequest.create(**engagementRequest)
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
-    :param username: username of the student that the summer experience is for
-    :param summerExperience: dict 
-        summerExperience: string of what the summer experience was (will be written as the 'description' in the IndividualRequirement table)
-        selectedSummerTerm: the term description that the summer experience took place in
-    :param currentUser: the username of the user who added the summer experience record
+        :param username: username of the student that the summer experience is for
+        :param summerExperience: dict 
+            summerExperience: string of what the summer experience was (will be written as the 'description' in the IndividualRequirement table)
+            selectedSummerTerm: the term description that the summer experience took place in
+        :param currentUser: the username of the user who added the summer experience record
 
-    Delete any existing IndividualRequirement entry for 'username' if it is for 'Summer Program' and create a new IndividualRequirement entry for 
-    'Summer Program' with the contents of summerExperience. 
+        Delete any existing IndividualRequirement entry for 'username' if it is for 'Summer Program' and create a new IndividualRequirement entry for 
+        'Summer Program' with the contents of summerExperience. 
     """
     requirementDeleteSubSelect = CertificationRequirement.select().where(CertificationRequirement.certification == Certification.CCE, CertificationRequirement.name << ['Summer Program'])
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.requirement == requirementDeleteSubSelect).execute()
@@ -253,7 +248,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
 
 def getSummerExperience(username):
     """
-    Get a students summer experience to populate text box if the student has one
+        Get a students summer experience to populate text box if the student has one
     """ 
     summerExperience = (IndividualRequirement.select()
                                              .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement)).switch()
@@ -268,7 +263,7 @@ def getSummerExperience(username):
 
 def removeSummerExperience(username): 
     """
-    Delete IndividualRequirement table entry for 'username'
+        Delete IndividualRequirement table entry for 'username'
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
@@ -276,7 +271,7 @@ def removeSummerExperience(username):
 
 def getSummerTerms():
     """
-    Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
+        Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
     """
     summerTerms = list(Term.select().where(Term.isSummer).order_by(Term.termOrder))
 
