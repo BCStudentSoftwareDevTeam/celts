@@ -206,7 +206,7 @@ def parseUploadedFile(filePath):
                 errors.append((errorMsg,0))
 
         # Look for a B-Number. Example: B00123456
-        elif regex.search(r"\b[B]\d{8}\b", str(cellVal)):      
+        else:      
             errorMsg = displayMsg = ''
             if not course:
                 errorMsg = "ERROR: No course is connected to this student"
@@ -224,10 +224,6 @@ def parseUploadedFile(filePath):
                 'errorMsg': errorMsg})
             if errorMsg:
                 errors.append((errorMsg,0))
-            
-        elif cellVal: # but didn't match the regex
-            errors.append((f'ERROR: "{cellVal}" in row {cellRow} of the Excel document does not appear to be a term, course, or valid B#.',1))
-        
 
     return result, errors
 

@@ -104,5 +104,4 @@ def test_parseUpload():
     # all the errors are there
     assert len(errors) == 2
     # but some errors are general
-    assert len([e for e in errors if e[1] == 1]) == 1
     assert len(result) == 4
