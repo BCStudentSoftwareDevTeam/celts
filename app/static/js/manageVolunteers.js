@@ -52,11 +52,12 @@ $(document).ready(function() {
       let selectedCheckboxes = getSelectedCheckboxes()
       let buttonContent = $("#addVolunteersButton").html()
       if (selectedCheckboxes.length > 1) {
-        // make the button text plural if there are multiple users selected
-        $("#addVolunteersButton").html(buttonContent + "s")
-
-        // check to see if the last character is an s to see if it already plural
+        if ($("#addVolunteersButton").html().charAt(buttonContent.length-1) != "s") {
+          // make the button text plural if there are multiple users selected
+          $("#addVolunteersButton").html(buttonContent + "s")
+        }
       } else if ($("#addVolunteersButton").html().charAt(buttonContent.length-1) == "s") {
+        // remove the s if it is plural and we have less than 2 volunteers
         $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
       // disable the submit button if there are no selectedCheckboxes
