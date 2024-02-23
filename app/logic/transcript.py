@@ -29,7 +29,6 @@ def getProgramTranscript(username):
 
     # Create a set of program IDs to remove from transcript
     programsToremoveFromTranscript = {bannedProgram.program_id for bannedProgram in BannedProgramsForParticipant if bannedProgram.removeFromTranscript}
-    print("---------------------------------------", programsToremoveFromTranscript)
     transcriptData = {}
 
     # Iterate through EventData and populate transcriptData

@@ -448,7 +448,7 @@ def serviceTranscript(username):
                             userData = user)
 
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
-def update_transcript(username, program_id):
+def updateTranscript(username, program_id):
     user = User.get_or_none(User.username == username)
     if user is None:
         abort(404)
@@ -465,7 +465,7 @@ def update_transcript(username, program_id):
         programBan.save()
         return jsonify({'status': 'success'})
     except ProgramBan.DoesNotExist:
-        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
+        return jsonify({'status': 'error'})
 
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
