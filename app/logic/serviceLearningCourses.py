@@ -3,7 +3,7 @@ from peewee import fn, JOIN, ModelSelect
 import re as regex
 from openpyxl import load_workbook
 from collections import defaultdict
-from typing import DefaultDict, List
+from typing import DefaultDict, List, Dict, Any
 
 from app.models import mainDB
 from app.models import DoesNotExist
@@ -21,9 +21,13 @@ from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
 
-def getServiceLearningCoursesData(user):
-    """Returns dictionary with data used to populate Service-Learning proposal table"""
-    courses = (Course.select(Course, Term, User, CourseStatus)
+def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
+    """
+    Given a user, returns a nested dictionary containing each course
+    associated with the user and its course data. Used to populate 
+    Service-Learning proposal table.
+    """
+    courses: List[Course] = list(Course.select(Course, Term, User, CourseStatus)
                      .join(CourseInstructor).switch()
                      .join(Term).switch()
                      .join(CourseStatus).switch()
@@ -31,10 +35,10 @@ def getServiceLearningCoursesData(user):
                      .where((CourseInstructor.user==user)|(Course.createdBy==user))
                      .order_by(Course.term.desc(), Course.status))
 
-    courseDict = {}
+    courseDict: Dict[int, Dict[str, Any]] = {}
     for course in courses:
-        courseInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
-        faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in courseInstructors]
+        courseInstructors: List[CourseInstructor] = list(CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
+        faculty: List[str] = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in courseInstructors]
 
 
         courseDict[course.id] = {"id":course.id,
@@ -45,16 +49,16 @@ def getServiceLearningCoursesData(user):
                                  "status": course.status.status}
     return courseDict
 
-def saveCourseParticipantsToDatabase(cpPreview):
-    for term,terminfo in cpPreview.items():
-        termObj = Term.get_or_none(description = term) or addPastTerm(term)
+def saveCourseParticipantsToDatabase(cpPreview) -> None:
+    for term, terminfo in cpPreview.items():
+        termObj: Term = Term.get_or_none(description = term) or addPastTerm(term)
         if not termObj:
             print(f"Unable to find or create term {term}")
             continue
 
-        for course, courseinfo in terminfo['courses'].items():
-            if 'errorMsg' in courseinfo and courseinfo['errorMsg']:
-                print(f"Unable to save course {course}. {courseinfo['errorMsg']}")
+        for course, courseInfo in terminfo['courses'].items():
+            if 'errorMsg' in courseInfo and courseInfo['errorMsg']:
+                print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
             courseObj = Course.get_or_create(
@@ -69,7 +73,7 @@ def saveCourseParticipantsToDatabase(cpPreview):
                              "serviceLearningDesignatedSections" : "",
                              "previouslyApprovedDescription" : "" })[0]
 
-            for userDict in courseinfo['students']:
+            for userDict in courseInfo['students']:
                 if userDict['errorMsg']:
                     print(f"Unable to save student. {userDict['errorMsg']}")
                     continue
@@ -77,12 +81,13 @@ def saveCourseParticipantsToDatabase(cpPreview):
                 CourseParticipant.get_or_create(user=userDict['user'], 
                                                 course=courseObj,
                                                 hoursEarned=20)
-def unapprovedCourses(termId):
-    '''
-    Queries the database to get all the neccessary information for submitted courses.
-    '''
+def unapprovedCourses(termId: int) -> List[Course]:
+    """
+    Queries the database to get all the neccessary information for
+    submitted/unapproved courses.
+    """
 
-    unapprovedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+    unapprovedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
                                .join(CourseInstructor, JOIN.LEFT_OUTER)
                                .join(User, JOIN.LEFT_OUTER).switch(Course)
                                .join(CourseStatus).switch(Course)
@@ -94,12 +99,12 @@ def unapprovedCourses(termId):
 
     return unapprovedCourses
 
-def approvedCourses(termId) -> List[Course]:
-    '''
+def approvedCourses(termId: int) -> List[Course]:
+    """
     Queries the database to get all the necessary information for
     approved courses.
-    '''
-    approvedCourses: List[Course] = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+    """
+    approvedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
                             .join(CourseInstructor, JOIN.LEFT_OUTER)
                             .join(User, JOIN.LEFT_OUTER).switch(Course)
                             .join(CourseStatus).switch(Course)
@@ -127,19 +132,19 @@ def getInstructorCourses() -> DefaultDict[User, str]:
 
 ########### Course Actions ###########
 
-def renewProposal(courseID, term):
+def renewProposal(courseID, term) -> Course:
     """
     Renews proposal of ID passed in for the selected term.
     Sets status to in progress.
     """
-    oldCourse = Course.get_by_id(courseID)
-    newCourse = Course.get_by_id(courseID)
+    oldCourse: Course = Course.get_by_id(courseID)
+    newCourse: Course = Course.get_by_id(courseID)
     newCourse.id = None
     newCourse.term = Term.get_by_id(term)
     newCourse.status = CourseStatus.IN_PROGRESS
     newCourse.isPreviouslyApproved = True
     newCourse.save()
-    questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
+    questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course==oldCourse))
     for question in questions:
         CourseQuestion.create(course=newCourse.id,
                               questionContent=question.questionContent,
@@ -152,10 +157,12 @@ def renewProposal(courseID, term):
 
     return newCourse
 
-def withdrawProposal(courseID):
-    """Withdraws proposal of ID passed in. Removes foreign keys first.
+def withdrawProposal(courseID) -> None:
+    """
+    Withdraws proposal of ID passed in. Removes foreign keys first.
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
-    CourseInstructor, Note"""
+    CourseInstructor, Note
+    """
 
     # delete syllabus
     try:
@@ -180,11 +187,13 @@ def withdrawProposal(courseID):
 
     createAdminLog(f"Withdrew SLC proposal: {courseName}")
 
-def createCourse(creator="No user provided"):
-    """ Create an empty, in progress course """
+def createCourse(creator:str="No user provided"):
+    """
+    Creates and returns an empty, in progress course.
+    """
     course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
-    for i in range(1, 7):
-        CourseQuestion.create( course=course, questionNumber=i)
+    for number in range(1, 7):
+        CourseQuestion.create(course=course, questionNumber=number)
 
     return course
 
