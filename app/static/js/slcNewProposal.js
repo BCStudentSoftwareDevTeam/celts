@@ -350,12 +350,10 @@ function createNewRow(selectedInstructor) {
 
   $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
-
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
   return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
-
 const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
