@@ -160,7 +160,7 @@ def addVolunteer(eventId):
     volunteers = ""
     if alreadyAddedList:
         volunteers = ", ".join(vol for vol in alreadyAddedList)
-        flash(f"{volunteers} already in table.", "warning")
+        flash(f"{volunteers} was already added to this event.", "warning")
 
     if addedSuccessfullyList:
         volunteers = ", ".join(vol for vol in addedSuccessfullyList)
