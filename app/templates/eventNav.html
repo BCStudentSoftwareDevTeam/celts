@@ -6,7 +6,7 @@
 
     <{{bigh}} class="mb-0" id="title">{{page_title}}</{{bigh}}>
     {% if not isNewEvent %}
-        {% set programName = "CELTS-Sponsored" if event.program == None else event.program.programName %}
+        {% set programName = event.program.programName %}
         {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
         <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
     {% endif %}

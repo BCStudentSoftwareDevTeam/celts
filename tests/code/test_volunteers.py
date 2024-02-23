@@ -4,11 +4,6 @@ from werkzeug.datastructures import ImmutableMultiDict
 from app import app
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
-from app.models.eventRsvp import EventRsvp
-from app.models.user import User
-from app.models.event import Event
-from app.models.program import Program
-from app.models.programManager import ProgramManager
 from app.models import mainDB
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
