@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for, jsonify
 from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 import datetime
@@ -449,24 +449,20 @@ def serviceTranscript(username):
 
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
 def update_transcript(username, program_id):
-    # Check user permissions
     user = User.get_or_none(User.username == username)
     if user is None:
         abort(404)
     if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
 
-    # Get the data sent from the client-side JavaScript
     data = request.json
-
-    # Retrieve removeFromTranscript value from the request data
     removeFromTranscript = data.get('removeFromTranscript')
 
     # Update the ProgramBan object matching the program_id and username
     try:
-        program_ban = ProgramBan.get(ProgramBan.program == program_id, ProgramBan.user == user)
-        program_ban.removeFromTranscript = removeFromTranscript
-        program_ban.save()
+        programBan = ProgramBan.get(ProgramBan.program == program_id, ProgramBan.user == user)
+        programBan.removeFromTranscript = removeFromTranscript
+        programBan.save()
         return jsonify({'status': 'success'})
     except ProgramBan.DoesNotExist:
         return jsonify({'status': 'error', 'message': 'ProgramBan not found'})

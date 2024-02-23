@@ -26,13 +26,17 @@ $(document).ready(function(){
     });
   });
 
-$('.removeFromTranscriptCheckbox').click(function updateShowOnTranscriptStatus() {
-    var removeFromTranscript = $(this).is(':checked'); 
-    console.log('Checkbox state:', removeFromTranscript);
-    var username = $(this).data('username');
-    console.log(username);
-    console.log(programID);
-    
+  var isChecked = localStorage.getItem("removeFromTranscriptChecked");
+  $(".removeFromTranscriptCheckbox").prop("checked", isChecked === "true"); 
+
+  // Add event listener to save checkbox state on change
+  $('.removeFromTranscriptCheckbox').click(function() {
+      var removeFromTranscript = $(this).is(':checked');
+      var username = $(this).data('username');
+
+      // Save checkbox state to local storage
+      localStorage.setItem("removeFromTranscriptChecked", removeFromTranscript);
+
 
     $.ajax({
         type: "POST",
@@ -41,17 +45,14 @@ $('.removeFromTranscriptCheckbox').click(function updateShowOnTranscriptStatus()
         data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
         success: function(response) {
             console.log(response);
-            // Handle success response if needed
+            // Handle success 
         },
         error: function(error) {
             console.error("An error occurred:", error);
-            // Handle error if needed
+            // Handle error 
         }
     });
 });
-
-
-
 
   function changeAction(e){
     let profileAction = $(this).val()
@@ -86,7 +87,7 @@ $('.removeFromTranscriptCheckbox').click(function updateShowOnTranscriptStatus()
     /*
      * Ban Functionality
      */
-  var programID; // Declare programID variable outside of the function scope
+  var programID; // Declare programID variable outside of the function scope to be used for removeFromTranscript checkbox
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -97,6 +98,7 @@ $('.removeFromTranscriptCheckbox').click(function updateShowOnTranscriptStatus()
 
     banButton.text($(this).val() + " Volunteer");
     programID = $(this).data("programid"); // Assign value to programID variable
+    banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $("#notifyInput").data("username"))
     banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
@@ -105,12 +107,14 @@ $('.removeFromTranscriptCheckbox').click(function updateShowOnTranscriptStatus()
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
+    $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
+      $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
 
