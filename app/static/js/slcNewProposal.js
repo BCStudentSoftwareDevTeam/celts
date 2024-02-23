@@ -356,14 +356,6 @@ function getCourseInstructors() {
   return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
 
-function disableSyllabusUploadFile() {
-  $("#fileUpload").prop("disabled", true);
-}
-
-function enableSyllabusUploadFile() {
-    $("#fileUpload").prop("disabled", false);
-}
-
 const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
