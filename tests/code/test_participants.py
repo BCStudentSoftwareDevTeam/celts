@@ -505,7 +505,7 @@ def test_sortParticipantsByStatus():
 
         # test a upcoming event
 
-        testingFutureEvent = Event.create(name = "Test Sorting Participant Event",
+        testFutureEvent = Event.create(name = "Test Sorting Participant Event",
                                             term = 2,
                                             description = "Test Sorting Participant Event.",
                                             timeStart = time(2, 2, 2),
@@ -517,15 +517,15 @@ def test_sortParticipantsByStatus():
                                             isRsvpRequired = True,
                                             rsvpLimit = 2)
 
-        EventRsvp.create(user = "agliullovak", event = testingFutureEvent)
-        EventRsvp.create(user = "mupotsal", event = testingFutureEvent)
-        EventRsvp.create(user = "ayisie", event = testingFutureEvent, rsvpWaitlist = True)
+        EventRsvp.create(user = "agliullovak", event = testFutureEvent)
+        EventRsvp.create(user = "mupotsal", event = testFutureEvent)
+        EventRsvp.create(user = "ayisie", event = testFutureEvent, rsvpWaitlist = True)
 
-        agliullovakRsvp = EventRsvp.get(user = "agliullovak", event = testingFutureEvent)
-        mupotsalRsvp = EventRsvp.get(user = "mupotsal", event = testingFutureEvent)
-        ayisieRsvp = EventRsvp.get(user = "ayisie", event = testingFutureEvent)
+        agliullovakRsvp = EventRsvp.get(user = "agliullovak", event = testFutureEvent)
+        mupotsalRsvp = EventRsvp.get(user = "mupotsal", event = testFutureEvent)
+        ayisieRsvp = EventRsvp.get(user = "ayisie", event = testFutureEvent)
 
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingFutureEvent)
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testFutureEvent)
         assert eventNonAttendedData == []
         assert eventWaitlistData == [ayisieRsvp]
         assert eventVolunteerData == [agliullovakRsvp, mupotsalRsvp]
