@@ -14,7 +14,7 @@ from app.logic.serviceLearningCourses import *
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
     '''tests for the successful implementation of populating the proposal table'''
-    courseDict = getServiceLearningCoursesData('ramsayb2')
+    courseDict = getSLProposalInfoForUser('ramsayb2')
     assert 2 in courseDict
     assert 'Brian Ramsay' in courseDict[2]['faculty']
     assert ['Brian Ramsay', 'Zach Neill'] == courseDict[2]['faculty']
@@ -22,7 +22,7 @@ def test_getServiceLearningCoursesData():
     assert 'Spring 2021' in courseDict[2]['term'].description
     assert "Scott Heggen"  == courseDict[2]['creator']
 
-    courseDict = getServiceLearningCoursesData('heggens')
+    courseDict = getSLProposalInfoForUser('heggens')
     assert 3 in courseDict
     assert 'Scott Heggen' in courseDict[3]['faculty']
     assert not ['Brian Ramsay', 'Zach Neill'] == courseDict[3]['faculty']
@@ -30,7 +30,7 @@ def test_getServiceLearningCoursesData():
     assert 'Summer 2021' in courseDict[3]['term'].description
     assert "Brian Ramsay"  == courseDict[3]['creator']
 
-    courseDict = getServiceLearningCoursesData('heggens')
+    courseDict = getSLProposalInfoForUser('heggens')
     assert 4 in courseDict
     assert 'Scott Heggen' not in courseDict[4]['faculty']
     assert ['Brian Ramsay', 'Ala Qasem'] == courseDict[4]['faculty']

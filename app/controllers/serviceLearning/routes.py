@@ -11,7 +11,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCourses import getServiceLearningCoursesData, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses
+from app.logic.serviceLearningCourses import getSLProposalInfoForUser, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses
 from app.logic.downloadFile import *
 from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
@@ -28,7 +28,7 @@ def serviceCourseManagement(username=None):
     isRequestingForSelf = g.current_user == user 
     if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
         setRedirectTarget(request.full_path)
-        courseDict = getServiceLearningCoursesData(user)
+        courseDict = getSLProposalInfoForUser(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagement.html',
             user=user,
