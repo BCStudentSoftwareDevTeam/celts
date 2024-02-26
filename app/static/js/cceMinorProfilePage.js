@@ -39,7 +39,7 @@ $(document).ready(function(){
         e.stopPropagation()
 
         engagementData = $(this).parents('.engagement-row').data('engagement-data');
-        toggleEngagementCredit($(this).is(':checked'), engagementData)
+        toggleEngagementCredit($(this).is(':checked'), engagementData, this)
     });
     
 })
@@ -104,7 +104,7 @@ function showEngagementInformation(engagementInfoDict) {
   });
 }
 
-function toggleEngagementCredit(isChecked, engagementData){
+function toggleEngagementCredit(isChecked, engagementData, checkbox){
     engagementData['username'] = $("#username").val();
 
     $.ajax({
@@ -117,7 +117,7 @@ function toggleEngagementCredit(isChecked, engagementData){
                 msgToast("Success!", header + " engagement for " + engagementData['name'])
               } else {
                 msgToast("Error saving changes!", response)
-                $("#" + engagementData['name']).prop('checked', false);
+                $(checkbox).prop('checked', false);
               }
             },
           error: function(request, status, error) {
