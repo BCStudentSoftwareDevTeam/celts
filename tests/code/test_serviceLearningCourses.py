@@ -207,7 +207,7 @@ def test_renewProposal():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_update_course():
+def test_updateCourse():
     with mainDB.atomic() as transaction:
         testUser = User.create( username="testuser",
                                 bnumber="B00000001",
