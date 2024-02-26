@@ -117,6 +117,7 @@ function toggleEngagementCredit(isChecked, engagementData){
                 msgToast("Success!", header + " engagement for " + engagementData['name'])
               } else {
                 msgToast("Error saving changes!", response)
+                $("#" + engagementData['name']).prop('checked', false);
               }
             },
           error: function(request, status, error) {
