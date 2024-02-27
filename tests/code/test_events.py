@@ -3,6 +3,7 @@ from flask import g
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
 
@@ -905,77 +906,58 @@ def test_getCountdownToEvent():
     """
     # Define a custom datetime representing the current time
     currentTime = datetime.strptime('1/1/2024 12:00 PM', '%m/%d/%Y %I:%M %p')
-    def makeEventIn(timeDifference=None, **kwargs):
+    def makeEventIn(*, timeDifference=None, **kwargs):
         """
         Takes in a datetime.relativedelta object or keyword argumentsand creates a 1 hour long event that starts
         at currentTime + deltatime
         """
         if kwargs:
-            timeDifference = timedelta(**kwargs)
+            timeDifference = relativedelta(**kwargs)
         eventStart = currentTime + timeDifference
-        eventEnd = eventStart + timedelta(hours=1)
+        eventEnd = eventStart + relativedelta(hours=1)
         irrelevantEventData = {'name': 'testing', 'term': 1, 'description': '', 'location': '', 'program': 1}
         return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), endDate=eventEnd.date(), **irrelevantEventData)
     
-    
-    
-    with mainDB.atomic() as transaction:
+    def testCountdown(expectedOutput, *, timeDifference=None, **kwargs):
+        nonlocal currentTime
+        with mainDB.atomic() as transaction:
+            event = makeEventIn(timeDifference=timeDifference, **kwargs)
+            countdown = getCountdownToEvent(event, currentDatetime=currentTime)
+            assert countdown == expectedOutput
+            transaction.rollback()
 
-        pastEvent = makeEventIn(days=-1)
-        countdown = getCountdownToEvent(pastEvent, currentDatetime=currentTime)
-        assert countdown == "Already passed"
-        transaction.rollback()
+    # Past event
+    testCountdown("Already passed", days=-1)
 
-        currentEvent = makeEventIn(minutes=-30)
-        countdown = getCountdownToEvent(currentEvent, currentDatetime=currentTime)
-        assert countdown == "Happening now"
-        transaction.rollback()
+    # Current event
+    testCountdown("Happening now", minutes=-30)
 
-        futureEvent = makeEventIn(hours=3)
-        countdown = getCountdownToEvent(futureEvent, currentDatetime=currentTime)
-        assert countdown == "3 hours"
-        transaction.rollback()
+    # Hours away
+    testCountdown("3 hours", hours=3)
 
-        futureEvent1 = makeEventIn(hours=2, minutes=30)
-        countdown = getCountdownToEvent(futureEvent1, currentDatetime=currentTime)
-        assert countdown == "2 hours and 30 minutes"
-        transaction.rollback()
+    # Hours and minutes away
+    testCountdown("2 hours and 30 minutes", hours=2, minutes=30)
 
-        futureEvent3 = makeEventIn(minutes=45)
-        countdown = getCountdownToEvent(futureEvent3, currentDatetime=currentTime)
-        assert countdown == "45 minutes"
-        transaction.rollback()
+    # Minutes away
+    testCountdown("45 minutes", minutes=45)
 
-        futureEvent4 = makeEventIn(minutes=0, seconds=30)
-        countdown = getCountdownToEvent(futureEvent4, currentDatetime=currentTime)
-        assert countdown == "<1 minute"
-        transaction.rollback()
+    # Less than a minute away
+    testCountdown("<1 minute", minutes=0, seconds=30)
 
+    # When an event happens tomorrow before the current time today
+    testCountdown("Tomorrow", hours=23, minutes=30)
 
-        # Test case for when it's tomorrow before the current time today
+    # When an event is more than 1 day away before the current time today
+    testCountdown("3 days", days=2, hours=22)
 
-        futureEvent5 = makeEventIn(hours=23, minutes=30)
-        countdown = getCountdownToEvent(futureEvent5, currentDatetime=currentTime)
-        assert countdown == "Tomorrow"
-        transaction.rollback()
+    # When an event is more than a day after the current time today
+    testCountdown("2 days and 3 hours", days=2, hours=3)
 
-        # Test case for when it is more than 1 day before the current time today
+    # When an event is more than a day after the current time today w/o hours
+    testCountdown("4 days", days=4)
 
-        futureEvent6 = makeEventIn(days=2, hours=22)
-        countdown = getCountdownToEvent(futureEvent6, currentDatetime=currentTime)
-        assert countdown == "3 days"
-        transaction.rollback()
+    # Years away
+    testCountdown("1 year", years=1)
 
-        # Test case for when it is more than a day after the current time today
+    # Beans: Continue adding test cases for years and months, months, as well as months and days
 
-        futureEvent7 = makeEventIn(days=2, hours=3)
-        countdown = getCountdownToEvent(futureEvent7, currentDatetime=currentTime)
-        assert countdown == "2 days and 3 hours"
-        transaction.rollback()
-
-        # Test case for when it is more than a day after the current time today w/o hours
-
-        futureEvent8 = makeEventIn(days=4)
-        countdown = getCountdownToEvent(futureEvent8, currentDatetime=currentTime)
-        assert countdown == "4 days"
-        transaction.rollback()

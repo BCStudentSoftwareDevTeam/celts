@@ -535,21 +535,29 @@ def getCountdownToEvent(event, *, currentDatetime=None):
         return "Happening now"
     
     timeUntilEvent = relativedelta(eventStart, currentDatetime)
-    calendarDaysUntilEvent = relativedelta(eventStart, currentMorning).days
+    calendarDelta = relativedelta(eventStart, currentMorning)
+    calendarYearsUntilEvent = calendarDelta.years
+    calendarMonthsUntilEvent = calendarDelta.months
+    calendarDaysUntilEvent = calendarDelta.days
 
-    
+    yearString = f"{calendarYearsUntilEvent} year{'s' if calendarYearsUntilEvent > 1 else ''}"
+    monthString = f"{calendarMonthsUntilEvent} month{'s' if calendarMonthsUntilEvent > 1 else ''}"
     dayString = f"{calendarDaysUntilEvent} day{'s' if calendarDaysUntilEvent > 1 else ''}"
     hourString = f"{timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''}"
     minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
-    if calendarDaysUntilEvent == 0:
-        if timeUntilEvent.hours:
-            if timeUntilEvent.minutes:
-                return f"{hourString} and {minuteString}"
-            return f"{hourString}"
-        elif timeUntilEvent.minutes:
-            return f"{minuteString}"
-        return "<1 minute"
-    else:
+    
+    # Years until
+    if calendarYearsUntilEvent: 
+        if calendarMonthsUntilEvent:
+            return f"{yearString} and {monthString}"
+        return f"{yearString}"
+    # Months until
+    if calendarMonthsUntilEvent:
+        if calendarDaysUntilEvent:
+            return f"{monthString} and {dayString}"
+        return f"{monthString}"
+    # Days until
+    if calendarDaysUntilEvent:
         if eventStart.time() < currentDatetime.time():
             if calendarDaysUntilEvent == 1:
                 return "Tomorrow"
@@ -557,4 +565,14 @@ def getCountdownToEvent(event, *, currentDatetime=None):
         if timeUntilEvent.hours:
             return f"{dayString} and {hourString}"
         return f"{dayString}"
+    # Hours until
+    if timeUntilEvent.hours:
+        if timeUntilEvent.minutes:
+            return f"{hourString} and {minuteString}"
+        return f"{hourString}"
+    # Minutes until
+    elif timeUntilEvent.minutes:
+        return f"{minuteString}"
+    # Seconds until
+    return "<1 minute"
     
