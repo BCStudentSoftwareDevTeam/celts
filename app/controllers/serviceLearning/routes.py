@@ -2,6 +2,8 @@ from flask import request, render_template, g, url_for, abort, redirect, flash, 
 from werkzeug.utils import safe_join
 import os
 from peewee import *
+from typing import Dict, Any, List
+
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -204,16 +206,16 @@ def withdrawCourse(courseID):
 
         
 @serviceLearning_bp.route('/proposalReview/', methods = ['GET', 'POST'])
-def reviewProposal():
+def reviewProposal() -> str:
     """
     this function gets the submitted course id and returns the its data to the review proposal modal
     """
-    courseID=request.form
-    course=Course.get_by_id(courseID["course_id"])
-    instructors_data=course.courseInstructors
-    return render_template('/main/reviewproposal.html',
+    courseID: Dict[str, Any] = request.form
+    course: Course = Course.get_by_id(courseID["course_id"])
+    instructorsData: List[CourseInstructor] = course.courseInstructors
+    return render_template('/serviceLearning/reviewProposal.html',
                             course=course,
-                            instructors_data=instructors_data)
+                            instructorsData=instructorsData)
 
 @serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
 def renewCourse(courseID, termID):

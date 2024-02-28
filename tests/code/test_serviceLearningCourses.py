@@ -9,6 +9,7 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
+
 from app.logic.serviceLearningCourses import *
 
 @pytest.mark.integration
@@ -105,45 +106,39 @@ def test_withdrawProposal():
 
         if 99 in Course.select(Course.id):
             withdrawProposal(99)
-        course = Course.create(
-                id= 99,
-                courseName= "Test",
-                term=2,
-                status= 1,
-                courseCredit= "",
-                createdBy= "ramsayb2",
-                isAllSectionsServiceLearning= True,
-                isPermanentlyDesignated= False,
-                )
-        question = CourseQuestion.create(
-            id = 99,
-            course=99,
-            questionContent="Why must I create so much for just one test?",
-            questionNumber=1
-        )
-        note = Note.create(
-            id = 99,
-            createdBy = "neillz",
-            createdOn = "2021-10-12 00:00:00",
-            noteContent = "This is a test note.",
-            isPrivate = False,
-            noteType = "question"
-        )
-        qnote = QuestionNote.create(
-        id = 99,
-        question = 99,
-        note = 99
-        )
-        instructor = CourseInstructor.create(
-            id= 99,
-            course= 99,
-            user= "ramsayb2"
-        )
-        participant = CourseParticipant.create(
-            course= 99,
-            user= "neillz",
-            hoursEarned= 2.0
-        )
+
+        Course.create(id=99,
+                      courseName="Test",
+                      term=2,
+                      status=1,
+                      courseCredit="",
+                      createdBy="ramsayb2",
+                      isAllSectionsServiceLearning=True,
+                      isPermanentlyDesignated=False)
+        
+        CourseQuestion.create(id=99,
+                              course=99,
+                              questionContent="Why must I create so much for just one test?",
+                              questionNumber=1)
+        
+        Note.create(id=99,
+                    createdBy="neillz",
+                    createdOn="2021-10-12 00:00:00",
+                    noteContent="This is a test note.",
+                    isPrivate=False,
+                    noteType="question")
+        
+        QuestionNote.create(id=99,
+                            question=99,
+                            note=99)
+
+        CourseInstructor.create(id=99,
+                                course=99,
+                                user="ramsayb2")
+        
+        CourseParticipant.create(course=99,
+                                 user="neillz",
+                                 hoursEarned=2.0)
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
@@ -158,50 +153,53 @@ def test_withdrawProposal():
 def test_renewProposal():
     with mainDB.atomic() as transaction:
         # create sample data
-        course = Course.create(
-                id=100,
-                courseName= "Test 2",
-                term=2,
-                status= 1,
-                courseCredit= "",
-                createdBy= "heggens",
-                isAllSectionsServiceLearning= True,
-                isPermanentlyDesignated= False)
-        question = CourseQuestion.create(
-            id = 100,
-            course=100,
-            questionContent="Why must I create so much for just one test?",
-            questionNumber=1)
-        instructor = CourseInstructor.create(
-            id= 100,
-            course= 100,
-            user= "ramsayb2"
-        )
+        course = Course.create(id=100,
+                               courseName="Test 2",
+                               term=2,
+                               status=1,
+                               courseCredit="",
+                               createdBy="heggens",
+                               isAllSectionsServiceLearning=True,
+                               isPermanentlyDesignated= False)
+        
+        question = CourseQuestion.create(id=100,
+                                         course=100,
+                                         questionContent="Why must I create so much for just one test?",
+                                         questionNumber=1)
+        
+        instructor = CourseInstructor.create(id=100,
+                                             course=100,
+                                             user="ramsayb2")
 
         renewProposal(course.id, 4)
 
         # test and make sure a new course with a different id was created
         duplicateCourse = list(Course.select().where(Course.courseName==course.courseName,
-                                Course.courseCredit==course.courseCredit,
-                                Course.createdBy==course.createdBy,
-                                Course.isAllSectionsServiceLearning==course.isAllSectionsServiceLearning,
-                                Course.isPermanentlyDesignated==course.isPermanentlyDesignated))
+                                                     Course.courseCredit==course.courseCredit,
+                                                     Course.createdBy==course.createdBy,
+                                                     Course.isAllSectionsServiceLearning==course.isAllSectionsServiceLearning,
+                                                     Course.isPermanentlyDesignated==course.isPermanentlyDesignated))
+        
         assert len(duplicateCourse) == 2
         assert duplicateCourse[1].id != 100
         assert duplicateCourse[1].term == Term.get_by_id(4)
+
         # test and make sure a new question with a different course was created
         duplicateQuestion = list(CourseQuestion.select()
-                              .join(Course)
-                              .where(CourseQuestion.questionContent==question.questionContent,
-                              CourseQuestion.questionNumber==question.questionNumber,
-                              Course.courseName==course.courseName))
+                                               .join(Course)
+                                               .where(CourseQuestion.questionContent==question.questionContent,
+                                                      CourseQuestion.questionNumber==question.questionNumber,
+                                                      Course.courseName==course.courseName))
+        
         assert len(duplicateQuestion) == 2
         assert duplicateQuestion[1].course != 100
+
         # test and make sure a new instructor with a different course was created
         duplicateInstructor = list(CourseInstructor.select()
-                              .join(Course)
-                              .where(CourseInstructor.user==instructor.user,
-                              Course.courseName==course.courseName))
+                                                   .join(Course)
+                                                   .where(CourseInstructor.user==instructor.user,
+                                                          Course.courseName==course.courseName))
+        
         assert len(duplicateInstructor) == 2
         assert duplicateInstructor[1].course != 100
         transaction.rollback()
@@ -209,33 +207,33 @@ def test_renewProposal():
 @pytest.mark.integration
 def test_updateCourse():
     with mainDB.atomic() as transaction:
-        testUser = User.create( username="testuser",
-                                bnumber="B00000001",
-                                email="test@test.edu",
-                                phoneNumber="555-555-5555",
-                                firstName="Test",
-                                lastName="User",
-                                isFaculty="1")
-        testingCourse = Course.create(
-                                        courseName = "Testing Course",
-                                        courseAbbreviation = "TC",
-                                        courseCredit = 1.5,
-                                        isRegularlyOccurring = 0,
-                                        term = 3,
-                                        status = CourseStatus.SUBMITTED,
-                                        createdBy = testUser,
-                                        isAllSectionsServiceLearning = 0,
-                                        serviceLearningDesignatedSections = "All",
-                                        sectionDesignation = "Section B",
-                                        isPermanentlyDesignated = 1,
-                                        isPreviouslyApproved = 1,
-                                        previouslyApprovedDescription = "Hehe",
-                                        hasSlcComponent = 1)
+        testUser = User.create(username="testuser",
+                               bnumber="B00000001",
+                               email="test@test.edu",
+                               phoneNumber="555-555-5555",
+                               firstName="Test",
+                               lastName="User",
+                               isFaculty="1")
+        
+        testingCourse = Course.create(courseName="Testing Course",
+                                      courseAbbreviation="TC",
+                                      courseCredit=1.5,
+                                      isRegularlyOccurring=0,
+                                      term=3,
+                                      status=CourseStatus.SUBMITTED,
+                                      createdBy=testUser,
+                                      isAllSectionsServiceLearning=0,
+                                      serviceLearningDesignatedSections="All",
+                                      sectionDesignation="Section B",
+                                      isPermanentlyDesignated=1,
+                                      isPreviouslyApproved=1,
+                                      previouslyApprovedDescription="Hehe",
+                                      hasSlcComponent=1)
 
         for i in range(1, 7):
-            CourseQuestion.create( course=Course.get(courseName="Testing Course"), questionNumber=i)
+            CourseQuestion.create(course=Course.get(courseName="Testing Course"), questionNumber=i)
 
-        testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
+        testingCourseInstructor = CourseInstructor.create(course=testingCourse, user="ramsayb2")
 
         courseDict = MultiDict({
                         "courseName": "Changed",
@@ -258,15 +256,17 @@ def test_updateCourse():
                         "5": "Question 5",
                         "6": "Question 6",
                         })
+        
         courseDict.update(MultiDict([
-                            ("instructor[]",testUser.username),
-                            ("instructor[]",testingCourseInstructor.user.username)]))
+                            ("instructor[]", testUser.username),
+                            ("instructor[]", testingCourseInstructor.user.username)]))
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
             updateCourse(courseDict)
 
         updatedCourse = Course.get_by_id(testingCourse.id)
+
         assert updatedCourse.courseName == "Changed"
         assert updatedCourse.courseAbbreviation == "Chan"
         assert updatedCourse.courseCredit == 2

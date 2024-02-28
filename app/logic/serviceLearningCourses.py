@@ -28,12 +28,12 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
     Service-Learning proposal table.
     """
     courses: List[Course] = list(Course.select(Course, Term, User, CourseStatus)
-                     .join(CourseInstructor).switch()
-                     .join(Term).switch()
-                     .join(CourseStatus).switch()
-                     .join(User)
-                     .where((CourseInstructor.user==user)|(Course.createdBy==user))
-                     .order_by(Course.term.desc(), Course.status))
+                                       .join(CourseInstructor).switch()
+                                       .join(Term).switch()
+                                       .join(CourseStatus).switch()
+                                       .join(User)
+                                       .where((CourseInstructor.user==user) | (Course.createdBy==user))
+                                       .order_by(Course.term.desc(), Course.status))
 
     courseDict: Dict[int, Dict[str, Any]] = {}
     for course in courses:
@@ -88,14 +88,14 @@ def unapprovedCourses(termId: int) -> List[Course]:
     """
 
     unapprovedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
-                               .join(CourseInstructor, JOIN.LEFT_OUTER)
-                               .join(User, JOIN.LEFT_OUTER).switch(Course)
-                               .join(CourseStatus).switch(Course)
-                               .join(Term)
-                               .where(Term.id == termId,
-                                      Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.IN_PROGRESS]))
-                               .group_by(Course, Term, CourseStatus)
-                               .order_by(Course.status))
+                                                 .join(CourseInstructor, JOIN.LEFT_OUTER)
+                                                 .join(User, JOIN.LEFT_OUTER).switch(Course)
+                                                 .join(CourseStatus).switch(Course)
+                                                 .join(Term)
+                                                 .where(Term.id == termId,
+                                                        Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.IN_PROGRESS]))
+                                                 .group_by(Course, Term, CourseStatus)
+                                                 .order_by(Course.status))
 
     return unapprovedCourses
 
@@ -105,12 +105,12 @@ def approvedCourses(termId: int) -> List[Course]:
     approved courses.
     """
     approvedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
-                            .join(CourseInstructor, JOIN.LEFT_OUTER)
-                            .join(User, JOIN.LEFT_OUTER).switch(Course)
-                            .join(CourseStatus).switch(Course)
-                            .join(Term)
-                            .where(Term.id == termId, Course.status == CourseStatus.APPROVED)
-                            .group_by(Course, Term, CourseStatus))
+                                               .join(CourseInstructor, JOIN.LEFT_OUTER)
+                                               .join(User, JOIN.LEFT_OUTER).switch(Course)
+                                               .join(CourseStatus).switch(Course)
+                                               .join(Term)
+                                               .where(Term.id == termId, Course.status == CourseStatus.APPROVED)
+                                               .group_by(Course, Term, CourseStatus))
 
     return approvedCourses
 
@@ -122,13 +122,13 @@ def getInstructorCourses() -> DefaultDict[User, str]:
     instructors: List[CourseInstructor] = list(CourseInstructor.select(CourseInstructor, User, Course)
                                                                .join(User).switch()
                                                                .join(Course))
-    result: DefaultDict[User, str] = defaultdict(list)
+    instructorToCoursesMap: DefaultDict[User, str] = defaultdict(list)
 
     for instructor in instructors:
-        if instructor.course.courseName not in result[instructor.user]:
-            result[instructor.user].append(instructor.course.courseName)
+        if instructor.course.courseName not in instructorToCoursesMap[instructor.user]:
+            instructorToCoursesMap[instructor.user].append(instructor.course.courseName)
 
-    return result
+    return instructorToCoursesMap
 
 ########### Course Actions ###########
 
