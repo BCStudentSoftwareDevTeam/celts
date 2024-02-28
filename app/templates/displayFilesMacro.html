@@ -1,10 +1,10 @@
-{% macro displayFiles(filepaths, titleName, deleteLink, databaseId, prefixToRemove="")  %}
+{% macro displayFiles(filePaths, titleName, deleteLink, databaseId, prefixToRemove="")  %}
 <table>
     <tr>
         <td class="py-2"><strong>Display</strong></td>
         <td class="py-2 px-3"><strong>{{ titleName }}</strong></td>
     </tr>
-    {% for key, value in filepaths.items() %}
+    {% for key, value in filePaths.items() %}
         <tr id="attachment_{{ value[1] }}" class="attachmentRow_{{ key }}" data-id="{{ key }}">
             <td class="py-2 px-3">
                 {% if value[-1].isDisplayed %}

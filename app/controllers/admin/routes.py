@@ -132,12 +132,12 @@ def createEvent(templateid, programid):
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
     return render_template(f"/admin/{template.templateFile}",
-            template = template,
-            eventData = eventData,
-            futureTerms = futureTerms,
-            requirements = requirements,
-            bonnerCohorts = bonnerCohorts,
-            isProgramManager = isProgramManager)
+                           template = template,
+                           eventData = eventData,
+                           futureTerms = futureTerms,
+                           requirements = requirements,
+                           bonnerCohorts = bonnerCohorts,
+                           isProgramManager = isProgramManager)
 
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])

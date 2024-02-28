@@ -73,12 +73,12 @@ def collapsePositions(positionList):
         Returned:{'Position Title': ['Term Name']}
 
     '''
-    positionDict = defaultdict(list)
+    laborPositionDict = defaultdict(list)
 
     for position in positionList:
-        positionDict[position['positionTitle']].append(position['termName'].replace("AY ", ""))
+        laborPositionDict[position['positionTitle']].append(position['termName'].replace("AY ", ""))
 
-    return positionDict
+    return laborPositionDict
 
 def refreshCeltsLaborRecords(laborDict):
     """

@@ -11,13 +11,25 @@ dt {
     padding: 5px; 
     padding-bottom:0px; 
 }
+
 dd { 
     font-size:.9em;
     padding: 5px; 
     padding-top:0px; 
 }
+
 #printButton{
     font-size: 15px;
+}
+
+.minorInfoBox {
+    position: absolute;
+    right: 0px;
+    width: 400px;
+    padding: 5px;
+    border: 1px solid #6666bb;
+    background-color: #e8f6ff; 
+    top: 10px;
 }
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 

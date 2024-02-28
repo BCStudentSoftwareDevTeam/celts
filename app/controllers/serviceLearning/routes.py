@@ -17,7 +17,7 @@ from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
 
-@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET']) # maybe we refactor to remove
+@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
     try:
@@ -60,22 +60,23 @@ def slcEditProposal(courseID):
         else:
             statusOfCourse = Course.select(Course.status)
             questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-            questionanswers = [question.questionContent for question in questionData]
+            questionAnswers = [question.questionContent for question in questionData]
             courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
             associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
 
-            filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
+            filePaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
 
             terms = selectSurroundingTerms(g.current_term, 0)
            
             return render_template('serviceLearning/slcNewProposal.html',
-                                        course = course,
-                                        questionanswers = questionanswers,
-                                        terms = terms,
-                                        statusOfCourse = statusOfCourse,
-                                        courseInstructor = courseInstructor,
-                                        filepaths = filepaths,
-                                        redirectTarget=getRedirectTarget())
+                                    course = course,
+                                    questionanswers = questionAnswers,
+                                    terms = terms,
+                                    statusOfCourse = statusOfCourse,
+                                    courseInstructor = courseInstructor,
+                                    filepaths = filePaths,
+                                    redirectTarget = getRedirectTarget())
+
     else:
         abort(403)
         

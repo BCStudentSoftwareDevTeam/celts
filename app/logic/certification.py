@@ -26,8 +26,8 @@ def getCertRequirements(certification=None, username=None):
         `username` is given, the requirement objects have a `completed` attribute.
     """
     reqList = (Certification.select(Certification, CertificationRequirement)
-                     .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
-                     .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
+                            .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
+                            .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
 
     if certification:
         if username:
@@ -80,8 +80,7 @@ def updateCertRequirements(certId, newRequirements):
     """
     # check for missing ids to remove
     saveIds = [requirementData['id'] for requirementData in newRequirements]
-    CertificationRequirement.delete().where(CertificationRequirement.id.not_in(saveIds)).execute()
-
+    CertificationRequirement.delete().where(CertificationRequirement.certification_id == certId, CertificationRequirement.id.not_in(saveIds)).execute()
 
     # update existing and add new requirements
     requirements = []
