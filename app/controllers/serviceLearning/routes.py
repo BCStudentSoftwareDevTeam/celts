@@ -76,7 +76,7 @@ def slcEditProposal(courseID):
                                     terms = terms,
                                     statusOfCourse = statusOfCourse,
                                     courseInstructor = courseInstructor,
-                                    filepaths = filePaths,
+                                    filePaths = filePaths,
                                     redirectTarget = getRedirectTarget())
 
     else:
