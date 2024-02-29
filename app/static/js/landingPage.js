@@ -2,7 +2,9 @@ $(document).ready(function(){
   $('#descriptionModal').on('show.bs.modal', function(event){
     $("#modalTitle").text('About '+ event.relatedTarget.getAttribute('data-bs-program'))
     $("#modalImage").attr("src", event.relatedTarget.getAttribute('data-bs-image'))
-    $("#modalLearnMore").attr("href", event.relatedTarget.getAttribute('data-bs-url'))
+    $("#modalLearnMoreInstagram").attr("href", event.relatedTarget.getAttribute('data-bs-instagram-url'))
+    $("#modalLearnMoreFacebook").attr("href", event.relatedTarget.getAttribute('data-bs-facebook-url'))
+    $("#modalLearnMoreWebLink").attr("href", event.relatedTarget.getAttribute('data-bs-website-url'))
     $('#modalDescription').text(event.relatedTarget.getAttribute('data-bs-description'))
     $('#modalProgram').data('program_id', event.relatedTarget.getAttribute('data-bs-id'))
 

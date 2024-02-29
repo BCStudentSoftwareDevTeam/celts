@@ -381,6 +381,3 @@ textareas.each(function(index, textarea){
   const initialWordCount = calculateCountWords($(textarea).val());
   $(slcQuestionWordCount[index]).html(initialWordCount);
 });
-
-
-

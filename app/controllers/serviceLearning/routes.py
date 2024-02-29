@@ -71,14 +71,14 @@ def slcEditProposal(courseID):
 
             terms = selectSurroundingTerms(g.current_term, 0)
             return render_template('serviceLearning/slcNewProposal.html',
-                                        course = course,
-                                        questionanswers = questionanswers,
-                                        terms = terms,
-                                        statusOfCourse = statusOfCourse,
-                                        courseStatus = courseStatus,
-                                        courseInstructor = courseInstructor,
-                                        filepaths = filepaths,
-                                        redirectTarget=getRedirectTarget())
+                                    course = course,
+                                    questionanswers = questionanswers,
+                                    terms = terms,
+                                    statusOfCourse = statusOfCourse,
+                                    courseStatus = courseStatus,
+                                    courseInstructor = courseInstructor,
+                                    filepaths = filepaths,
+                                    redirectTarget=getRedirectTarget())
     else:
         abort(403)
         
