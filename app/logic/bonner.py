@@ -58,7 +58,10 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
     """
     years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
+    # Beans:
+    # Latest visable start date 
     defaultStart = currentYear-4
+    # the earliest a user has ever been in a bonner cohort or the default start, whichever is earlier
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
 
     cohorts = { year: [] for year in range(firstYear, currentYear+1) }
