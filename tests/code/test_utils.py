@@ -6,33 +6,35 @@ from app.models.term import Term
 
 @pytest.mark.integration
 def test_getStartofCurrentAcademicYear():
-    # Case1: current term is Fall 2020
-    currentTerm = Term.get_by_id(1)
-    fallTerm = currentTerm.academicYearStartingTerm
-    assert fallTerm.year == 2020
-    assert fallTerm.description == "Fall 2020"
-    assert fallTerm.academicYear == "2020-2021"
+    with mainDB.atomic() as transaction:
+        # Case1: current term is Fall 2020
+        currentTerm = Term.get_by_id(1)
+        fallTerm = currentTerm.academicYearStartingTerm
+        assert fallTerm.year == 2020
+        assert fallTerm.description == "Fall 2020"
+        assert fallTerm.academicYear == "2020-2021"
 
-    # Case2: current term is Spring 2021
-    currentTerm = Term.get_by_id(2)
-    fallTerm = currentTerm.academicYearStartingTerm
-    assert fallTerm.year == 2020
-    assert fallTerm.description == "Fall 2020"
-    assert fallTerm.academicYear == "2020-2021"
+        # Case2: current term is Spring 2021
+        currentTerm = Term.get_by_id(2)
+        fallTerm = currentTerm.academicYearStartingTerm
+        assert fallTerm.year == 2020
+        assert fallTerm.description == "Fall 2020"
+        assert fallTerm.academicYear == "2020-2021"
 
-    # Case3: current term is Summer 2021
-    currentTerm = Term.get_by_id(4)
-    fallTerm = currentTerm.academicYearStartingTerm
-    assert fallTerm.year == 2021
-    assert fallTerm.description == "Fall 2021"
-    assert fallTerm.academicYear == "2021-2022"
-    
-    # Case4: current term has no earlier term, just return itself
-    newTerm = Term.create(description="Summer 2020", year=2020, academicYear="2019-2020",isSummer=1,isCurrentTerm=0)
-    testTerm = newTerm.academicYearStartingTerm
+        # Case3: current term is Summer 2021
+        currentTerm = Term.get_by_id(4)
+        fallTerm = currentTerm.academicYearStartingTerm
+        assert fallTerm.year == 2021
+        assert fallTerm.description == "Fall 2021"
+        assert fallTerm.academicYear == "2021-2022"
+        
+        # Case4: current term has no earlier term, just return itself
+        newTerm = Term.create(description="Summer 2020", year=2020, academicYear="2019-2020",isSummer=1,isCurrentTerm=0)
+        testTerm = newTerm.academicYearStartingTerm
 
-    assert testTerm == newTerm
-    newTerm.delete_instance()
+        assert testTerm == newTerm
+        newTerm.delete_instance()
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_isFutureTerm():

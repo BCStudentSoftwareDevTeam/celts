@@ -65,14 +65,16 @@
               Settings
             </a>
             {% if g.current_user.isCeltsAdmin %}
-
               <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
                 Course Management
               </a>
               <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
                 Bonner Management
               </a>
-              {% endif %}
+              <a href="/admin/cceMinor" class="nav-link text-white {{ 'active' if request.path =='/admin/cceMinor' }}">
+                Minor Management
+              </a>
+            {% endif %}
           </div>
         </div>
         {% endif %}
