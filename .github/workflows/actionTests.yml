@@ -42,7 +42,7 @@ jobs:
     - name: Run tests
       run: . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
     - name: Deploy code coverage report
-      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' # only run deploy on pull requests and python 3.11 
+      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' && github.event.pull_request.head.repo.full_name == github.repository # only run deploy on pull requests that are from the base repo and python 3.11 
       uses: peaceiris/actions-gh-pages@v3
       with:
         deploy_key: ${{ secrets.COVERAGE_DEPLOY_KEY }}
@@ -52,10 +52,10 @@ jobs:
         destination_dir: ${{ github.repository }}/${{ github.head_ref }}
         exclude_assets: ".gitignore"  # without exclude_assets, htmlcov/ was being removed and not pushed to the coverage repo
     - name: Coverage report URL 
-      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' # only run deploy on pull requests and python 3.11 
+      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' && github.event.pull_request.head.repo.full_name == github.repository # only run deploy on pull requests that are from the base repo and python 3.11 
       run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)' >> $GITHUB_STEP_SUMMARY
     - name: Put coverage link on PR
-      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' # only run deploy on pull requests and python 3.11 
+      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' && github.event.pull_request.head.repo.full_name == github.repository # only run deploy on pull requests that are from the base repo and python 3.11 
       uses: mshick/add-pr-comment@v2
       with:
         refresh-message-position: True

@@ -40,6 +40,11 @@
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
             <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
+        {% endif %}
+        {% if g.current_user.isAdmin %}
+          <option value="Manage CCE Minor"> Manage CCE Minor </option>
+        {% endif %}
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Print Travel Form"> Print Travel Form </option>
         {% endif %}
         <option value="View Service Transcript"> View Service Transcript </option>
@@ -199,46 +204,60 @@
   </div>
 <!-- ################# Program Table ################ -->
 
-<!-- ################# Program Manager Section ################ -->
-  {% if volunteer.isCeltsStudentStaff %}
+<!-- ################# CELTS Labor Section ################ -->
+  {% if participatedInLabor or volunteer.isCeltsStudentStaff%}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFour">
-        {% set focus = "open" if visibleAccordion == "manager" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Program Manager</button>
+        {% set focus = "open" if visibleAccordion == "celtsLabor" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">CELTS Labor</button>
       </h3>
-      {% set show = "show" if visibleAccordion == "manager" else "" %}
+      {% set show = "show" if visibleAccordion == "celtsLabor" else "" %}
       <div id="collapseFour" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFour" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
-          {% if g.current_user.isCeltsAdmin %}
-            <h5>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h5>
-          {% else %}
-            <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
-          {% endif %}
-          <ul class="list-unstyled">
-            {% for program in programs %}
-              {% set action = "add" %}
-              {% set checked = "" %}
-              {% if program.id in permissionPrograms %}
-                {% set action = "remove" %}
-                {% set checked = "checked" %}
-                {% if not g.current_user.isCeltsAdmin%}
-                  <li>{{program.programName}}</li>
-                {% endif %}
+          <div class="row">
+            {% if participatedInLabor %}
+            <div class="col-md-6">
+              <h5>CELTS Labor History:</h5>
+              {% for program, term in participatedInLabor.items() %}
+                <p>{{term}}: {{program}}</p> 
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if volunteer.isCeltsStudentStaff %}
+            <div class="col-md-6">
+              {% if g.current_user.isCeltsAdmin %}
+                <h5>Choose programs to manage:</h5>
+              {% else %}
+                <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
               {% endif %}
-              {% if g.current_user.isCeltsAdmin%}
-                <li>
-                  <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                  <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-                </li>
-              {% endif %}
-            {% endfor %}
-           </ul>
+              <ul class="list-unstyled">
+                {% for program in programs %}
+                  {% set action = "add" %}
+                  {% set checked = "" %}
+                  {% if program.id in permissionPrograms %}
+                    {% set action = "remove" %}
+                    {% set checked = "checked" %}
+                    {% if not g.current_user.isCeltsAdmin%}
+                      <li>{{program.programName}}</li>
+                    {% endif %}
+                  {% endif %}
+                  {% if g.current_user.isCeltsAdmin%}
+                    <li>
+                      <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                      <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
   {% endif %}
-<!-- ################# Program Manager Section ################ -->
+<!-- ################# CELTS Labor Section ################ -->
 
 <!-- ################# Background Check Section ################ -->
   {% if g.current_user.isCeltsAdmin %}

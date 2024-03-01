@@ -37,7 +37,9 @@ $(document).ready(function(){
       printDocument(`/profile/${username}/travelForm`)
     } else if (profileAction == "View Service Transcript"){
       window.location.href = `/profile/${username}/serviceTranscript`
-    } 
+    } else if (profileAction == "Manage CCE Minor") {
+      window.location.href = `/profile/${username}/cceMinor`
+    }
     $(this).val('')
   }
 

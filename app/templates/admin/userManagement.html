@@ -17,7 +17,7 @@
 
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
-  {% if g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentAdmin %}
+  {% if g.current_user.isCeltsAdmin%}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingOne">
         {% set focus = "open" if not visibleAccordion or visibleAccordion == "user" else "collapsed" %}
