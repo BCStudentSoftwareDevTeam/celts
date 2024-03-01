@@ -41,14 +41,15 @@ def manageUsers():
                 addCeltsStudentStaff(user)
                 flash(f"{user.fullName} has been added as a CELTS Student Staff.", 'success')
     elif method == "addCeltsStudentAdmin":
-        if not user.isStudent:
+        if user.isStudent: 
+            addCeltsStudentAdmin(user)
+            flash(f"{user.fullName} has been added as a CELTS Student Admin.", 'success')
+
+        elif user.isCeltsStudentAdmin:
+            flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
+        else: 
             flash(username + " cannot be added as CELTS Student Admin.", 'danger')
-        else:
-            if user.isCeltsStudentAdmin:
-                flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
-            else:
-                addCeltsStudentAdmin(user)
-                flash(f"{user.fullName} has been added as a CELTS Student Admin.", 'success')
+            
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(f"{user.fullName} is no longer a CELTS Admin.", 'success')
