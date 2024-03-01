@@ -206,4 +206,5 @@ def test_getStartYear():
         # Course Participant with no Event Participant
         CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
         assert getStartYear('namet') == 2022
+        transaction.rollback()
 
