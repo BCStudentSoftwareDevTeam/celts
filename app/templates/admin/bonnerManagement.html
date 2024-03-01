@@ -15,8 +15,7 @@
 {% block app_content %}
 
     {# Figure out if we are showing a particular tab inside of the accordion #}
-    {% set subtab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
-    {% set visible_tab = subtab if visibleAccordion and subtab == "first" or subtab|int != 0 else "none" %}
+    {% set subTab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
 
 <h1 class="text-center mb-5">Bonner Management</h1>
 
@@ -33,17 +32,17 @@
             <!---------------- Cohort management ---------------->
             <div class="d-flex justify-content-center">
                 <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                {% set subtab = cohorts.keys()|last if subtab == "newest" else subtab %}
+                {% set subTab = cohorts.keys()|last if subTab == "newest" else subTab %}
                 {% for year in cohorts.keys()|reverse %}
-                    {% set show = "active" if subtab|int == year else "" %}
-                    {% set aria = "true" if subtab|int == year else "false" %}
+                    {% set show = "active" if subTab|int == year else "" %}
+                    {% set aria = "true" if subTab|int == year else "false" %}
                     <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
                 {% endfor %}
                 </div>
                 <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
                     {% for year, users in cohorts.items() %}
                         {% set searchId = "search-" + year|string %}
-                        {% set show = "show active" if subtab|int == year else "" %}
+                        {% set show = "show active" if subTab|int == year else "" %}
                         <div class="tab-pane fade {{show}}" id="v-pills-{{year}}" role="tabpanel" aria-labelledby="v-pills-{{year}}-tab">
                             <div>
                                 <div class="input-group mb-3">

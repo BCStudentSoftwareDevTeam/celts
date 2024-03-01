@@ -1,28 +1,53 @@
 $(document).ready(function(){
-    $("#expressInterest").on("click", function() {
+    $("#summerExperienceSave").click(function(){
+      let data = {'summerExperience': $("#summerExperience").val(),
+                  'selectedSummerTerm': $("#summerExperienceTerm").find(":selected").text()}
       let username = $("#username").val()
-      let data = {"username":username}
       $.ajax({
-          url: "/cceMinor/"+username+"/indicateInterest",
-          type: "POST",
-          data: data,
-          success: function(s) {
-            console.log(s)
+        type: "POST", 
+        url: "/cceMinor/"+username+"/addSummerExperience",
+        data: data,
+        success: function(s){
+          msgToast("Success!", "Summer Experience successfully added!")
+        },
+        error: function(error){
+          msgToast("Error!", "Error adding Summer Experience!")
+        }
+      })
+    });
 
-            location.reload()
-          },
-          error: function(request, status, error) {
-            console.log(error)
-            msgFlash("Error saving changes!", "danger")
-          }
-      });
-    })
+    $("#removeSummerExperience").click(function(){
+      let username = $("#username").val()
+      $.ajax({
+        type: "POST", 
+        url: "/cceMinor/"+username+"/deleteSummerExperience",
+        success: function(s){
+          $("#summerExperience").val("")
+          msgToast("Success!", "Summer Experience successfully deleted!")
+        },
+        error: function(error){
+          msgToast("Error!", "Error deleting Summer Experience!")
+        }
+      })
+    });
 
+    $('.engagement-row').on("click", function() {
+        showEngagementInformation($(this).data('engagement-data'));
+    });
+
+    $('.engagement-row input').on("click", function(e) {
+        e.stopPropagation()
+
+        engagementData = $(this).parents('.engagement-row').data('engagement-data');
+        toggleEngagementCredit($(this).is(':checked'), engagementData, this)
+    });
     
 })
 
-function showEngagementInformation(type, id, term) {
-  // get the row object that was clicked on and parse it for the necessary values
+function showEngagementInformation(engagementInfoDict) {
+  let type = engagementInfoDict['type'],
+      id = engagementInfoDict['id'],
+      term= engagementInfoDict['term'];
   let username = $("#username").val()
 
   // based on how long the type is, get the remaining characters afterwards that represent the id
@@ -79,7 +104,25 @@ function showEngagementInformation(type, id, term) {
   });
 }
 
-function stopPropagation(event) {
-  // prevent the checkbox from displaying the course/program information
-  event.stopPropagation()
+function toggleEngagementCredit(isChecked, engagementData, checkbox){
+    engagementData['username'] = $("#username").val();
+
+    $.ajax({
+          url: `/cceMinor/${engagementData['username']}/modifyCommunityEngagement`,
+          type: isChecked ? "PUT" : "DELETE",
+          data: engagementData,
+          success: function(response) {
+              if (response == ""){ 
+                let header = isChecked ? 'Added' : 'Removed';
+                msgToast("Success!", header + " engagement for " + engagementData['name'])
+              } else {
+                msgToast("Error saving changes!", response)
+                $(checkbox).prop('checked', false);
+              }
+            },
+          error: function(request, status, error) {
+            console.log(error)
+            msgFlash("Error saving changes!", "danger")
+          }
+    });
 }
