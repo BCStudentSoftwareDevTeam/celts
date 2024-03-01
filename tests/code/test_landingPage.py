@@ -16,31 +16,31 @@ def test_activeEventTab():
     with mainDB.atomic() as transaction:
 
         studentLed = Program.create(programName = "SL",
-                                          isStudentLed = True,
-                                          isBonnerScholars = False,
-                                          contactEmail = "test@email",
-                                          contactName = "testName")
+                                    isStudentLed = True,
+                                    isBonnerScholars = False,
+                                    contactEmail = "test@email",
+                                    contactName = "testName")
         assert getActiveEventTab(studentLed.id) == "studentLedEvents"
 
         bonnerScholars1 = Program.create(programName = "BS1",
-                                           isStudentLed = False,
-                                           isBonnerScholars = True,
-                                           contactEmail = "test@email",
-                                           contactName = "testName")
+                                         isStudentLed = False,
+                                         isBonnerScholars = True,
+                                         contactEmail = "test@email",
+                                         contactName = "testName")
         assert getActiveEventTab(bonnerScholars1.id) == "bonnerScholarsEvents"
 
         bonnerScholars2 = Program.create(programName = "BS2",
-                                           isStudentLed = True,
-                                           isBonnerScholars = True,
-                                           contactEmail = "test@email",
-                                           contactName = "testName")
+                                         isStudentLed = True,
+                                         isBonnerScholars = True,
+                                         contactEmail = "test@email",
+                                         contactName = "testName")
         assert getActiveEventTab(bonnerScholars2.id) == "bonnerScholarsEvents"
 
         other = Program.create(programName = "OP",
-                                           isStudentLed = False,
-                                           isBonnerScholars = False,
-                                           contactEmail = "test@email",
-                                           contactName = "testName")
+                               isStudentLed = False,
+                               isBonnerScholars = False,
+                               contactEmail = "test@email",
+                               contactName = "testName")
         assert getActiveEventTab(other.id) == "otherEvents"
 
         transaction.rollback()
@@ -53,10 +53,10 @@ def test_managerProgramDict():
         assert os.path.join('static', 'images/landingPage/Hunger Initiatives.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
 
         noImageProgram = Program.create(programName = "Program with No Image",
-                                          isStudentLed = False,
-                                          isBonnerScholars = False,
-                                          contactEmail = "",
-                                          contactName = "")
+                                        isStudentLed = False,
+                                        isBonnerScholars = False,
+                                        contactEmail = "",
+                                        contactName = "")
 
         dict = getManagerProgramDict(user)
         assert noImageProgram in dict
