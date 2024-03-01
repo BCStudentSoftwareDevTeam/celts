@@ -86,11 +86,11 @@ $(document).ready(function() {
     $("#addVolunteersButton").click(function(){
         $("#addVolunteersButton").prop("disabled", true)
         let eventId = $("#eventID").val()
-        let selectedCheckboxes = getSelectedCheckboxes()
+        let selectedVolunteers = getSelectedCheckboxes()
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
-          data: {"volunteer": selectedCheckboxes, "ajax": true},
+          data: {"selectedVolunteers": selectedVolunteers, "ajax": true},
           success: function(s){
               location.reload()
           },
