@@ -26,6 +26,7 @@ $(document).ready(function(){
     });
   });
 
+<<<<<<< HEAD
   var isChecked = localStorage.getItem("removeFromTranscriptChecked");
   $(".removeFromTranscriptCheckbox").prop("checked", isChecked === "true"); 
 
@@ -53,6 +54,27 @@ $(document).ready(function(){
         }
     });
 });
+=======
+  $(".removeFromTranscriptCheckbox").click(function updateCheckbox(){
+    var programID = $(this).data("programid");
+    var username = $(this).data('username');
+
+    var removeCheckbox = $(this).is(':checked');
+    var routeUrl = removeCheckbox ? "removeBannedUserFromTranscript" : "removeBannedUserFromTranscript";
+    removeCheckboxUrl = "/" + username + "/" + routeUrl + "/" + programID ;
+    $.ajax({
+      method: "POST",
+      url: removeCheckboxUrl,
+      success: function(response) {
+          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
+      },
+      error: function(request, status, error) {
+        console.log(status,error);
+        location.reload();
+      }
+    });
+  });
+>>>>>>> 4b1d9eebae743660ba336e38015c241e4538d584
 
   function changeAction(e){
     let profileAction = $(this).val()
@@ -64,6 +86,7 @@ $(document).ready(function(){
     } else if(profileAction == "Print Travel Form"){
       printDocument(`/profile/${username}/travelForm`)
     } else if (profileAction == "View Service Transcript"){
+      handleCheckbox(username);
       window.location.href = `/profile/${username}/serviceTranscript`
     } else if (profileAction == "Manage CCE Minor") {
       window.location.href = `/profile/${username}/cceMinor`
@@ -339,4 +362,24 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   })
 }
 
+<<<<<<< HEAD
 
+=======
+function handleCheckbox() {
+  var removeFromTranscript = $('#removeFromTranscriptCheckbox').prop('checked'); // Using jQuery to get the checkbox state
+  var username = $(this).data('username');
+
+  $.ajax({
+    type: "POST",
+    url: "/update-transcript",
+    contentType: "application/json",
+    data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript }),
+    success: function(updatedTranscriptData) {
+      console.log(updatedTranscriptData);
+    },
+    error: function(xhr, status, error) {
+      console.error("An error occurred:", error);
+    }
+  });
+}
+>>>>>>> 4b1d9eebae743660ba336e38015c241e4538d584

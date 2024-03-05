@@ -5,6 +5,7 @@ from app.models.interest import Interest
 from app.models.note import Note
 from app.models.user import User
 from app.models.profileNote import ProfileNote
+from app.models.programBan import ProgramBan
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
@@ -49,6 +50,18 @@ def removeUserInterest(program_id, username):
     interestToDelete = Interest.get_or_none(Interest.program == program_id, Interest.user == username)
     if interestToDelete:
         interestToDelete.delete_instance()
+    return True
+
+def removeBannedUserFromTranscript(program_id, username):
+    """
+    This function is used to add an interest to .
+    Parameters:
+    program_id: id of the program the user is interested in
+    username: username of the user showing interest
+    """
+    removeBannedUser = ProgramBan.get_or_none(ProgramBan.user == username)
+    if removeBannedUser:
+        removeBannedUser.delete_instance()
     return True
 
 def getBannedUsers(program):
