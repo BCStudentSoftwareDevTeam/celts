@@ -151,16 +151,50 @@ function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
 
-    $('#alterModal form').on('submit', function(event) {
-      updateInstructorList(); // Fetch instructors from tr rows in Instructor Table before sending POST request
-      var termId = $('#alterTermId').val();
-      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
-      $(this).attr('action', dynamicRoute);
-    });
-
     $('#alterModal').modal('show');
   });
+
+  // $('#saveButton').on('click', function(event) {
+  //   event.preventDefault();
+  //   var instructorData = getCourseInstructors();
+  //   $('#alterModal form').remove();
+  //   $('#alterModal form input[name="instructor[]"]').remove(); // Clear existing hidden instructor inputs
+  //   console.log("The data is" + JSON.stringify(instructorData));
+
+  //   var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
+  //   var $form = $('#alterModal form');
+
+  //   $form.attr('action', dynamicRoute);
+
+  //   $form.submit();
+  // })
+
+
+  $('#saveButton').on('click', function(event) {
+    event.preventDefault();
+    var instructorData = getCourseInstructors();
+    // Assuming you need to clear specific instructor inputs for some reason before proceeding.
+    $('#alterModal form input[name="instructor[]"]').remove();
+
+    console.log("The data is" + JSON.stringify(instructorData));
+
+    var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
+
+    // Directly select and manipulate the form without removing it first.
+    var $form = $('#alterModal form');
+    $form.attr('action', dynamicRoute);
+
+    // Submit the form.
+    $form.submit();
+});
+
+
+
+
 }
+
+
+
 
 function getImportedCourseInfo(courseID, callback) { // This function populates the fields in the modal of a chosen course with preexisting data
   $.ajax({
@@ -238,10 +272,14 @@ function emptyInstructorTable() {
   $("#instructorTableBody").empty().html(saveRow);
 }
 
-function getCourseInstructors() { // this function gets usernames out of the table rows from editButton class and transform the object into an array
-  var instructorUsernames = $("#instructorTableBody tr").map(function() {
-      return $(this).find('.editButton').data('username');
-  }).get();
-  return instructorUsernames;
-}
+// function getCourseInstructors() { // this function gets usernames out of the table rows from editButton class and transform the object into an array
+//   var instructorUsernames = $("#instructorTableBody tr").map(function() {
+//       return $(this).find('.editButton').data('username');
+//   }).get();
+//   return instructorUsernames;
+// }
 
+function getCourseInstructors() {
+  // get usernames out of the table rows into an array
+  return $("#instructorTableNames input").map((i,el) => $(el).val())
+}
