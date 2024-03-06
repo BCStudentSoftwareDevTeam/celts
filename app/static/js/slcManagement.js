@@ -32,14 +32,19 @@ $(document).ready(function() {
     }
   });
 
-  $("#instructorTable").on("click", "#remove", function() {
+
+  $("#instructorTable").on("click", ".removeButton", function() {
     $(this).closest("tr").find(".editButton").each(function() {
       let username = $(this).data('username');
-
+      
+      console.log("hit first");
+  
+      // Remove input with matching username value
       $("#instructorTableNames input[value='" + username + "']").remove();
-
+  
       // Remove the closest tr
       $(this).closest("tr").remove();
+      console.log("hit last");
   });
   });
 
@@ -246,17 +251,24 @@ function updateInstructorList(instructorData) { // This function fetches instruc
 function updateInstructorsTable(instructors) { // This function creates row(s) for preexisting instructor(s) in the modal
   // Clear existing table contents except the template row
   $("#instructorTableBody").find("tr:not(:first)").remove();
-
+  $("#instructorTableNames").empty();
   // Add each instructor to the table
   instructors.forEach(function(instructor) {
     var newRow = createInstructorRow(instructor);
     $("#instructorTableBody").append(newRow);
+
+    $('<input>').attr({
+      type: 'hidden',
+      name: 'instructor[]',
+      value: instructor.username
+    }).appendTo('#instructorTableNames');
   });
-}
+};
+
 
 function createInstructorRow(instructor) {
   // Create a new row element based on the instructor data
-  var row = `<tr data-username="${instructor.firstName}">
+  var row = `<tr data-username="${instructor.username}">
                 <td>
                   <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
                   <input type="text" style="border: none" size="14" class="form-control-sm" 
