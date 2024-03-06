@@ -10,39 +10,12 @@ from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 
-from app.logic.users import isEligibleForProgram
-
-
-# def getProgramTranscript(username):
-#     """
-#     Returns a Program query object containing all the programs for
-#     current user.
-#     """
-#     # Add up hours earned in a term for each program they've participated in
-
-#     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-#                       .join(EventParticipant)
-#                       .where(EventParticipant.user == username)
-#                       .group_by(Event.program, Event.term)
-#                       .order_by(Event.term)
-#                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
-#     transcriptData = {}
-#     for event in EventData:
-#         if event.program in transcriptData:
-#             transcriptData[event.program].append([event.term.description, event.hoursEarned])
-#         else:
-#             transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
-#     return transcriptData
-
-def getProgramTranscript(username, removeFromTranscript=False):
+def getProgramTranscript(username):
     """
     Returns a Program query object containing all the programs for
     the current user.
     """
     # Add up hours earned in a term for each program they've participated in
-
-    # current user. Optionally removes programs based on the checkbox status.
-    # """
 
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
@@ -56,28 +29,16 @@ def getProgramTranscript(username, removeFromTranscript=False):
 
     # Create a set of program IDs to remove from transcript
     programsToremoveFromTranscript = {bannedProgram.program_id for bannedProgram in BannedProgramsForParticipant if bannedProgram.removeFromTranscript}
-
     transcriptData = {}
 
     # Iterate through EventData and populate transcriptData
     for event in EventData:
-        # if event.program.id not in programsToremoveFromTranscript:  # Check if program is not in programs to be removed from transcript
-        #     if event.program in transcriptData:
-        #         transcriptData[event.program].append([event.term.description, event.hoursEarned])
-        #     else:
-        #         transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+        if event.program.id not in programsToremoveFromTranscript:  # Check if program is not in programs to be removed from transcript
+            if event.program in transcriptData:
+                transcriptData[event.program].append([event.term.description, event.hoursEarned])
+            else:
+                transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
 
-
-        if event.program in transcriptData:
-            transcriptData[event.program].append([event.term.description, event.hoursEarned])
-        else:
-            transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
-
-    if removeFromTranscript:
-        for program in list(transcriptData.keys()):
-            if not isEligibleForProgram(program, username):
-                transcriptData.pop(program)
-    
     return transcriptData
 
 def getSlCourseTranscript(username):
