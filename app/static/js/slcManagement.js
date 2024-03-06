@@ -1,3 +1,5 @@
+import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
+import searchUser from './searchUser.js';
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
   $('.modal').on('hidden.bs.modal', function () {
@@ -29,6 +31,34 @@ $(document).ready(function() {
       }
     }
   });
+
+  $("#instructorTable").on("click", "#remove", function() {
+    $(this).closest("tr").find(".editButton").each(function() {
+      let username = $(this).data('username');
+
+      $("#instructorTableNames input[value='" + username + "']").remove();
+
+      // Remove the closest tr
+      $(this).closest("tr").remove();
+  });
+  });
+
+  $("#courseInstructor").on('input', function() {
+      searchUser("courseInstructor", createNewRow, true, null, "instructor");
+      setTimeout(function() {
+        $(".ui-autocomplete").css("z-index", 9999);
+    }, 500);
+  });
+
+  // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+  $('#instructorTable tr').each(function(){
+    var username = getRowUsername(this)
+    var edit = "#editButton-" + username
+    var input = "#inputPhoneNumber-" + username
+    if (username){
+      setupPhoneNumber(edit, input)
+    }
+  })
 });
 
 function resetAllSelections(){
@@ -44,8 +74,8 @@ function updateRenewModal(courseID){
 }
 
 function changeAction(action){
-  courseID = action.id;
-  courseAction = action.value
+  let courseID = action.id;
+  let courseAction = action.value
   // decides what to do based on selection
   if (courseAction == "Renew"){
     $('#courseID').val(courseID);
@@ -154,46 +184,23 @@ function showAlterModalWithCourse(courseID) {
     $('#alterModal').modal('show');
   });
 
-  // $('#saveButton').on('click', function(event) {
-  //   event.preventDefault();
-  //   var instructorData = getCourseInstructors();
-  //   $('#alterModal form').remove();
-  //   $('#alterModal form input[name="instructor[]"]').remove(); // Clear existing hidden instructor inputs
-  //   console.log("The data is" + JSON.stringify(instructorData));
-
-  //   var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
-  //   var $form = $('#alterModal form');
-
-  //   $form.attr('action', dynamicRoute);
-
-  //   $form.submit();
-  // })
-
-
   $('#saveButton').on('click', function(event) {
     event.preventDefault();
     var instructorData = getCourseInstructors();
     // Assuming you need to clear specific instructor inputs for some reason before proceeding.
     $('#alterModal form input[name="instructor[]"]').remove();
+    updateInstructorList(instructorData)
 
     console.log("The data is" + JSON.stringify(instructorData));
 
     var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
 
-    // Directly select and manipulate the form without removing it first.
     var $form = $('#alterModal form');
     $form.attr('action', dynamicRoute);
 
-    // Submit the form.
     $form.submit();
 });
-
-
-
-
 }
-
-
 
 
 function getImportedCourseInfo(courseID, callback) { // This function populates the fields in the modal of a chosen course with preexisting data
@@ -206,7 +213,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
 
-        modalTitle = courseDict['courseName'] ? courseDict['courseName'] : courseDict['courseAbbreviation'] 
+        let modalTitle = courseDict['courseName'] ? courseDict['courseName'] : courseDict['courseAbbreviation'] 
         
         // Find the element with class "modal-header" and "fw-bold" using jQuery
         $("#importedModalTitle").text("Edit " + modalTitle);
@@ -223,19 +230,17 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
 
 // Instructor manipulation functions
 
-function updateInstructorList() { // This function fetches instructor usernames and attached the list of usernames to the form submission
-  
-  $('#alterModal form input[name="instructor[]"]').remove(); // Clear existing hidden instructor inputs
-  var instructorData = getCourseInstructors(); // Get current instructors from the table
+function updateInstructorList(instructorData) { // This function fetches instructor usernames and attached the list of usernames to the form submission
+  $('#alterModal form input[name="instructor[]"]').remove();
 
   // Append new hidden inputs for each instructor
-  instructorData.forEach(function(instructor) {
+  for (let i=0; i < instructorData.length; i++) {
       $('<input>').attr({
           type: 'hidden',
           name: 'instructor[]',
-          value: instructor
+          value: instructorData[i]
       }).appendTo('#alterModal form');
-  });
+  };
 }
 
 function updateInstructorsTable(instructors) { // This function creates row(s) for preexisting instructor(s) in the modal
@@ -251,7 +256,7 @@ function updateInstructorsTable(instructors) { // This function creates row(s) f
 
 function createInstructorRow(instructor) {
   // Create a new row element based on the instructor data
-  var row = `<tr data-username="${instructor.username}">
+  var row = `<tr data-username="${instructor.firstName}">
                 <td>
                   <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
                   <input type="text" style="border: none" size="14" class="form-control-sm" 
@@ -268,18 +273,9 @@ function createInstructorRow(instructor) {
 }
 
 function emptyInstructorTable() {
-  saveRow = $("#instructorTableBody tr")[0];
+  let saveRow = $("#instructorTableBody tr")[0];
   $("#instructorTableBody").empty().html(saveRow);
 }
 
-// function getCourseInstructors() { // this function gets usernames out of the table rows from editButton class and transform the object into an array
-//   var instructorUsernames = $("#instructorTableBody tr").map(function() {
-//       return $(this).find('.editButton').data('username');
-//   }).get();
-//   return instructorUsernames;
-// }
-
-function getCourseInstructors() {
-  // get usernames out of the table rows into an array
-  return $("#instructorTableNames input").map((i,el) => $(el).val())
-}
+window.formSubmit = formSubmit;
+window.changeAction = changeAction;

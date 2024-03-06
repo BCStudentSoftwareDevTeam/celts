@@ -6,8 +6,8 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
-  <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
-  <script src="/static/js/slcManagement.js"></script>
+  <!-- <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script> -->
+  <script type="module" src="/static/js/slcManagement.js"></script>
 
   {% if cpPreview %}
     <script>
@@ -239,7 +239,7 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
                               </td>
                               <td class="align-middle">
-                                  <button type="button" class="btn btn-danger removeButton">Remove</button>
+                                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
                           </tr>
   
@@ -251,7 +251,7 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
                             </td>
                             <td class="align-middle">
-                                <button type="button" class="btn btn-danger removeButton">Remove</button>
+                                <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                             </td>
                           </tr>
                           {% endfor %}

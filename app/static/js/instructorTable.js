@@ -1,11 +1,11 @@
 // Instructor manipulation functions
 // -------------------------------------
 
-function getRowUsername(element) {
+export function getRowUsername(element) {
     return $(element).closest("tr").data("username")
 }
 
-function createNewRow(selectedInstructor) {
+export function createNewRow(selectedInstructor) {
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
@@ -45,7 +45,7 @@ function createNewRow(selectedInstructor) {
   $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
 
-function getCourseInstructors() {
+export function getCourseInstructors() {
   // get usernames out of the table rows into an array
   return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
