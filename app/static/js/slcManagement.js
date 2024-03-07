@@ -36,15 +36,12 @@ $(document).ready(function() {
   $("#instructorTable").on("click", ".removeButton", function() {
     $(this).closest("tr").find(".editButton").each(function() {
       let username = $(this).data('username');
-      
-      console.log("hit first");
   
       // Remove input with matching username value
       $("#instructorTableNames input[value='" + username + "']").remove();
   
       // Remove the closest tr
       $(this).closest("tr").remove();
-      console.log("hit last");
   });
   });
 
@@ -56,14 +53,18 @@ $(document).ready(function() {
   });
 
   // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-  $('#instructorTable tr').each(function(){
-    var username = getRowUsername(this)
-    var edit = "#editButton-" + username
-    var input = "#inputPhoneNumber-" + username
-    if (username){
-      setupPhoneNumber(edit, input)
-    }
-  })
+  $('#alterModal').on('shown.bs.modal', function () {
+    // Now that the modal is shown, iterate over the rows
+    $('#instructorTableBody tr').each(function(){
+        var username = getRowUsername(this);
+        var edit = "#editButton-" + username;
+        var input = "#inputPhoneNumber-" + username;
+
+        if (username){
+            setupPhoneNumber(edit, input);
+        }
+    });
+});
 });
 
 function resetAllSelections(){
@@ -194,15 +195,11 @@ function showAlterModalWithCourse(courseID) {
     var instructorData = getCourseInstructors();
     // Assuming you need to clear specific instructor inputs for some reason before proceeding.
     $('#alterModal form input[name="instructor[]"]').remove();
-    updateInstructorList(instructorData)
-
-    console.log("The data is" + JSON.stringify(instructorData));
+    updateInstructorList(instructorData);
 
     var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
-
     var $form = $('#alterModal form');
     $form.attr('action', dynamicRoute);
-
     $form.submit();
 });
 }
@@ -272,13 +269,14 @@ function createInstructorRow(instructor) {
                 <td>
                   <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
                   <input type="text" style="border: none" size="14" class="form-control-sm" 
-                        name="courseInstructorPhone" aria-label="Instructor Phone" 
-                        value="${instructor.phoneNumber}" placeholder="Phone Number" />
+                        id="inputPhoneNumber-${instructor.username}" name="courseInstructorPhone" 
+                        aria-label="Instructor Phone" value="${instructor.phoneNumber}" 
+                        placeholder="Phone Number" />
                   <a class="text-decoration-none primary editButton" tabindex="0" 
-                    data-username="${instructor.username}" type="button">Edit</a>
+                    data-username="${instructor.username}" id="editButton-${instructor.username}" type="button">Edit</a>
                 </td>
                 <td class="align-middle">
-                  <button type="button" class="btn btn-danger removeButton">Remove</button>
+                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                 </td>
               </tr>`;
   return row;
