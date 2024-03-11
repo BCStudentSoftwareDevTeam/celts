@@ -23,30 +23,27 @@ def manageUsers():
         return ("danger", 500)
 
     if method == "addCeltsAdmin":
-        if user.isStudent and not user.isCeltsStudentStaff: 
+        if user.isCeltsAdmin:
+            flash(f"{user.fullName} is already a CELTS-Link Admin.", 'danger')
+        elif user.isStudent and not user.isCeltsStudentStaff: 
             flash(f"{user.fullName} cannot be added as a CELTS-Link Admin.", 'danger')
-        else:
-            if user.isCeltsAdmin:
-                flash(f"{user.fullName} is already a CELTS-Link Admin.", 'danger')
-            else: 
-                addCeltsAdmin(user)
-                flash(f"{user.fullName} has been added as a CELTS-Link Admin.", 'success')
+        else: 
+            addCeltsAdmin(user)
+            flash(f"{user.fullName} has been added as a CELTS-Link Admin.", 'success')
     elif method == "addCeltsStudentStaff":
-        if not user.isStudent:
-            flash(username + " cannot be added as CELTS Student Staff.", 'danger')
+        if user.isCeltsStudentStaff:
+            flash(f"{user.fullName} is already a CELTS Student Staff.", 'danger')
+        elif user.isStudent:
+            addCeltsStudentStaff(user)
+            flash(f"{user.fullName} has been added as a CELTS Student Staff.", 'success')
         else:
-            if user.isCeltsStudentStaff:
-                flash(f"{user.fullName} is already a CELTS Student Staff.", 'danger')
-            else:
-                addCeltsStudentStaff(user)
-                flash(f"{user.fullName} has been added as a CELTS Student Staff.", 'success')
+            flash(username + " cannot be added as CELTS Student Staff.", 'danger')
     elif method == "addCeltsStudentAdmin":
-        if user.isStudent: 
+        if user.isCeltsStudentAdmin:
+            flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
+        elif user.isStudent: 
             addCeltsStudentAdmin(user)
             flash(f"{user.fullName} has been added as a CELTS Student Admin.", 'success')
-
-        elif user.isCeltsStudentAdmin:
-            flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
         else: 
             flash(username + " cannot be added as CELTS Student Admin.", 'danger')
             

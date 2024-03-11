@@ -239,6 +239,7 @@ users = [
         "phoneNumber": "(123)456-7890",
         "isCeltsAdmin": False,
         "isFaculty": False,
+        "isStudent": True,
         "isCeltsStudentStaff": False,
         "isCeltsStudentAdmin": True,
         "isStaff": False,

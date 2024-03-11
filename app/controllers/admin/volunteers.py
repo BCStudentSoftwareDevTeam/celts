@@ -7,6 +7,8 @@ from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
+
+from app.logic.userManagement import getAllowedPrograms
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
@@ -101,8 +103,8 @@ def volunteerDetailsPage(eventID):
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
-
-    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or g.current_user.isProgramManagerForEvent(event)):
+    canAccessProgram = event.program in getAllowedPrograms(g.current_user)
+    if not (canAccessProgram):
         abort(403)
 
     eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
