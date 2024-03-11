@@ -42,7 +42,7 @@ $(document).ready(function(){
       }
     });
   });
-  
+
   $(".removeFromTranscriptCheckbox").each(function() {
     var programID = $(this).data('programId'); // Make sure you have this data attribute
     var isChecked = $(this).data('isChecked');
@@ -119,15 +119,16 @@ $(document).ready(function(){
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
+    $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
+      $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
-
   });
 
 
