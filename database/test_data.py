@@ -94,7 +94,6 @@ users = [
         "isFaculty": False,
         "isCeltsStudentStaff": True,
         "isCeltsStudentAdmin": False,
-        "isStaff": True,
         "major": None,
         "classLevel": None,
     },
@@ -242,7 +241,7 @@ users = [
         "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isCeltsStudentAdmin": True,
-        "isStaff": True,
+        "isStaff": False,
         "minorInterest": 0,
     },
 ]
