@@ -55,7 +55,7 @@ def setup():
                                   endDate =  "2021-12-13",
                                   recurringId = None,
                                   program= 5)
-    
+
     EventParticipant.create(user = testUser,
                             event = newBonnerEvent,
                             attended = True,
@@ -116,7 +116,7 @@ def setup():
                                       endDate =  "2021-12-13",
                                       recurringId = None,
                                       program = 9)
-    
+
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,
@@ -180,6 +180,15 @@ def testingProgram():
     assert checkingProgram in [t for t in programDict]
 
 @pytest.mark.integration
+def testingProgramTranscriptBannedPrograms():
+
+    username = "ramsayb2"
+    transcriptData = getProgramTranscript(username)
+    bannedProgram = Program.get_by_id(2)
+
+    assert bannedProgram not in transcriptData
+
+@pytest.mark.integration
 def testingTotalHours():
 
     totalHours = getTotalHours("namet")
@@ -206,4 +215,3 @@ def test_getStartYear():
         # Course Participant with no Event Participant
         CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
         assert getStartYear('namet') == 2022
-

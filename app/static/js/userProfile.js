@@ -27,15 +27,16 @@ $(document).ready(function(){
   });
 
   $(".removeFromTranscriptCheckbox").each(function() {
-      var isChecked = $(this).data('isChecked'); // Assuming you pass this data attribute from the backend
-      $(this).prop("checked", isChecked);
+    var programID = $(this).data('programId'); // Make sure you have this data attribute
+    var isChecked = $(this).data('isChecked');
+    $("#removeFromTranscriptCheckbox_" + programID).prop("checked", isChecked);
   });
 
   // Add event listener to save checkbox state on change
   $('.removeFromTranscriptCheckbox').click(function() {
       var removeFromTranscript = $(this).is(':checked');
       var username = $(this).data('username');
-
+      var programID = $(this).data('programId');
 
     $.ajax({
         type: "POST",

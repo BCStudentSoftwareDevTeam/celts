@@ -449,8 +449,8 @@
               {% if bonnerNotes|length %}
               <dl class="bonnerNotes">
                 {% for row in profileNotes|selectattr("isBonnerNote") %}
-                    <dt>{{row.note.noteContent}}</dd>
-                    <dd class='text-muted'>{{row.note.createdBy.fullName}} <span class="float-end">{{row.note.createdOn.strftime('%m/%d/%Y')}}</span></dt>
+                    <dt>{{row.note.noteContent}}</dt>
+                    <dd class='text-muted'>{{row.note.createdBy.fullName}} <span class="float-end">{{row.note.createdOn.strftime('%m/%d/%Y')}}</span></dd>
                 {% endfor %}
               </dl>
               {% else %}
@@ -560,9 +560,11 @@
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
           </div>
+          {% for program in transcriptData %}
           <div class="form-check" id="removeFromTranscriptDiv">
-              <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscript" id="removeFromTranscriptCheckbox" type="checkbox"  data-username="{{volunteer.username}}"/>
+              <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscript" id="removeFromTranscriptCheckbox" type="checkbox"  data-username="{{volunteer.username}}" data-programId="{{ program.program.id }}"/>
               <label class="form-check-label" for="removeFromTranscriptCheckbox">Remove from Transcript</label>
+          {% endfor %}
           </div>
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget col-xs-10">
