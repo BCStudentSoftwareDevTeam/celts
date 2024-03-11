@@ -83,18 +83,34 @@ def test_modifyCeltsStudentAdmin():
     with mainDB.atomic() as transaction:
         user = "makindeo"
         userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsStudentAdmin == False
+        assert userInTest.isCeltsStudentStaff == False
         with app.app_context():
             g.current_user = "qasema"
             addCeltsStudentStaff(userInTest)
         userInTest = User.get(User.username == user)
         assert userInTest.isCeltsStudentStaff == True
 
+        assert userInTest.isCeltsStudentAdmin == False
         with app.app_context():
             g.current_user = "qasema"
             removeCeltsStudentAdmin(userInTest)
         userInTest = User.get_by_id(user)
         assert userInTest.isCeltsStudentAdmin == False
+
+        testNonStudent = User.create(username = "testNonStudent",
+                                  bnumber = "B00775209",
+                                  email = "testNonStudent@berea.edu",
+                                  phoneNumber = "(859)876-5309",
+                                  firstName = "Test",
+                                  lastName = "NonStudent",
+                                  isStudent = False,
+                                  isFaculty = True,
+                                  isStaff = False,
+                                  isCeltsAdmin = False,
+                                  isCeltsStudentStaff = True)
+        
+        with pytest.raises(DoesNotExist):
+            pass
 
         transaction.rollback()
 

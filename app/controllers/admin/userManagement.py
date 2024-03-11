@@ -25,39 +25,26 @@ def manageUsers() -> str:
         return ("danger", 500)
 
     if method == "addCeltsAdmin":
-        if user.isCeltsAdmin:
-            flash(f"{user.fullName} is already a CELTS-Link Admin.", 'danger')
-        elif user.isStudent and not user.isCeltsStudentStaff: 
-            flash(f"{user.fullName} cannot be added as a CELTS-Link Admin.", 'danger')
-        else: 
-            addCeltsAdmin(user)
-            flash(f"{user.fullName} has been added as a CELTS-Link Admin.", 'success')
+        addCeltsAdmin(user)
+        
     elif method == "addCeltsStudentStaff":
-        if user.isCeltsStudentStaff:
-            flash(f"{user.fullName} is already a CELTS Student Staff.", 'danger')
-        elif user.isStudent:
-            addCeltsStudentStaff(user)
-            flash(f"{user.fullName} has been added as a CELTS Student Staff.", 'success')
-        else:
-            flash(username + " cannot be added as CELTS Student Staff.", 'danger')
+        addCeltsStudentStaff(user)
+
     elif method == "addCeltsStudentAdmin":
-        if user.isCeltsStudentAdmin:
-            flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
-        elif user.isStudent: 
-            addCeltsStudentAdmin(user)
-            flash(f"{user.fullName} has been added as a CELTS Student Admin.", 'success')
-        else: 
-            flash(username + " cannot be added as CELTS Student Admin.", 'danger')
+        addCeltsStudentAdmin(user)
             
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(f"{user.fullName} is no longer a CELTS Admin.", 'success')
+
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
         flash(f"{user.fullName} is no longer a CELTS Student Staff.", 'success')
+
     elif method == "removeCeltsStudentAdmin":
         removeCeltsStudentAdmin(user)
         flash(f"{user.fullName} is no longer a CELTS Student Admin.", 'success')
+        
     return ("success")
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
