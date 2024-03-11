@@ -1,4 +1,21 @@
 $(document).ready(function(){
+  $("#expressInterest").on("click", function() {
+    let username = $(this).data('username')
+    let data = {"username":username}
+    $.ajax({
+        url: "/profile/"+username+"/indicateInterest",
+        type: "POST",
+        data: data,
+        success: function(s) {
+
+        },
+        error: function(request, status, error) {
+          console.log(error)
+          msgToast("Error!", "Failed to save changes!")
+        }
+    });
+  })    
+
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
         printDocument(`/profile/${username}/travelForm`)
@@ -8,7 +25,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-
+  
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -25,7 +42,7 @@ $(document).ready(function(){
       }
     });
   });
-
+  
   $(".removeFromTranscriptCheckbox").each(function() {
     var programID = $(this).data('programId'); // Make sure you have this data attribute
     var isChecked = $(this).data('isChecked');
@@ -53,7 +70,6 @@ $(document).ready(function(){
         }
     });
 });
-
   function changeAction(e){
     let profileAction = $(this).val()
     let username = $(this).data('username')
@@ -71,8 +87,6 @@ $(document).ready(function(){
     $(this).val('')
   }
 
-
-
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -87,7 +101,6 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
-  var programID; // Declare programID variable outside of the function scope to be used for removeFromTranscript checkbox
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -97,7 +110,6 @@ $(document).ready(function(){
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
-    programID = $(this).data("programid"); // Assign value to programID variable
     banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $("#notifyInput").data("username"))
     banButton.data("banOrUnban", $(this).val());
@@ -107,14 +119,12 @@ $(document).ready(function(){
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
-    $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
 
@@ -165,9 +175,9 @@ $(document).ready(function(){
         $("#noteModal").modal("toggle")
     });
 
-    $("#addVisibility").click(function() {
+    $("#addVisibility").click(function() { 
         var bonnerChecked = $("input[name='bonner']:checked").val()
-
+    
         if (bonnerChecked == 'on') {
             bonnerNoteOn()
         } else {
@@ -196,7 +206,6 @@ $(document).ready(function(){
         reloadWithAccordion(target)
       }
     });
-
 });
 
   $(".deleteNoteButton").click(function() {
@@ -216,7 +225,7 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () {
+    $(".savebtn").click(function () { 
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
@@ -338,3 +347,4 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
+

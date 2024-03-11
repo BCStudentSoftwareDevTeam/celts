@@ -1,42 +1,43 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for, jsonify
-from peewee import JOIN
-from playhouse.shortcuts import model_to_dict
-import datetime
 import json
+import datetime
+from peewee import JOIN
 from http import cookies
-
-from app import app
-from app.models.program import Program
-from app.models.event import Event
-from app.models.backgroundCheck import BackgroundCheck
-from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.user import User
-from app.models.eventParticipant import EventParticipant
-from app.models.interest import Interest
-from app.models.programBan import ProgramBan
-from app.models.term import Term
-from app.models.eventRsvp import EventRsvp
-from app.models.note import Note
-from app.models.profileNote import ProfileNote
-from app.models.programManager import ProgramManager
-from app.models.courseInstructor import CourseInstructor
-from app.models.certification import Certification
-from app.models.emergencyContact import EmergencyContact
-from app.models.insuranceInfo import InsuranceInfo
-from app.models.celtsLabor import CeltsLabor
+from playhouse.shortcuts import model_to_dict
+from flask import request, render_template, g, abort, flash, redirect, url_for
 
 from app.controllers.main import main_bp
-from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app import app
+from app.models.term import Term
+from app.models.user import User
+from app.models.note import Note
+from app.models.event import Event
+from app.models.program import Program
+from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
+from app.models.celtsLabor import CeltsLabor
+from app.models.programBan import ProgramBan
+from app.models.profileNote import ProfileNote
+from app.models.insuranceInfo import InsuranceInfo
+from app.models.certification import Certification
+from app.models.programManager import ProgramManager
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.emergencyContact import EmergencyContact
+from app.models.eventParticipant import EventParticipant
+from app.models.courseInstructor import CourseInstructor
+from app.models.backgroundCheckType import BackgroundCheckType
+
 from app.logic.events import *
-from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
-from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
+from app.logic.loginManager import logout
+from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
-from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.createLogs import createRsvpLog, createAdminLog
 from app.logic.celtsLabor import getCeltsLaborHistory
+from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
+from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -54,7 +55,7 @@ def landingPage():
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
 
-    return render_template("/main/landingPage.html",
+    return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList=programsWithEventsList)
@@ -72,20 +73,20 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
-
+    
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
-
+    term = Term.get_by_id(currentTerm) 
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-
+    
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
@@ -145,7 +146,7 @@ def viewUsersProfile(username):
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try:
+            try: 
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -161,7 +162,7 @@ def viewUsersProfile(username):
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-        participatedInLabor = getCeltsLaborHistory(volunteer)
+        totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         return render_template ("/main/userProfile.html",
                                 programs = programs,
@@ -178,7 +179,8 @@ def viewUsersProfile(username):
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
-                                participatedInLabor = participatedInLabor,
+                                participatedInLabor = getCeltsLaborHistory(volunteer),
+                                totalSustainedEngagements = totalSustainedEngagements,
                             )
     abort(403)
 
@@ -199,7 +201,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-
+    
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -208,8 +210,8 @@ def emergencyContactInfo(username):
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Emergency contact information saved successfully!', 'success')
-
+        flash('Emergency contact information saved successfully!', 'success') 
+        
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
@@ -241,7 +243,7 @@ def insuranceInfo(username):
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Insurance information saved successfully!', 'success')
+        flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
@@ -252,7 +254,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-
+   
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -505,14 +507,20 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user)
+        userInfo = User.get(User.username == user) 
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
             createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
 
     return " "
+
+@main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
+def indicateMinorInterest(username):
+    toggleMinorInterest(username)
+    
+    return ""

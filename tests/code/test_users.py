@@ -418,4 +418,4 @@ def test_updateDietInfo():
         newContent = [list.dietRestriction for list in newDiet]
         assert newContent == ["Beef"]
 
-    transaction.rollback()
+        transaction.rollback()
