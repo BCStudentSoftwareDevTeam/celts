@@ -10,41 +10,38 @@ from typing import List
 
 def addCeltsAdmin(user: str) -> None:
     if user.isCeltsAdmin:
-        flash(f"{user.fullName} is already a CELTS-Link Admin.", 'danger')
+        raise Exception(f"{user.fullName} is already a CELTS Admin.")
     elif user.isStudent and not user.isCeltsStudentStaff: 
-        flash(f"{user.fullName} cannot be added as a CELTS-Link Admin.", 'danger')
+        raise Exception(f"{user.fullName} cannot be added as CELTS Admin.")
     else: 
         user: User = User.get_by_id(user)
         user.isCeltsAdmin = True
         user.save()
         createAdminLog(f'Made f"{user.fullName} a CELTS admin member.')        
-        flash(f"{user.fullName} has been added as a CELTS-Link Admin.", 'success')
 
 def addCeltsStudentStaff(user: str) -> None:
     if user.isCeltsStudentStaff:
-        flash(f"{user.fullName} is already a CELTS Student Staff.", 'danger')
+        raise Exception(f"{user.fullName} is already a CELTS Student Staff.")
     elif user.isStudent:
         user: User = User.get_by_id(user)
         user.isCeltsStudentStaff = True
         user.save()
-        createAdminLog(f'Made f"{user.fullName} a CELTS student staff member.')
-        flash(f"{user.fullName} has been added as a CELTS Student Staff.", 'success')
+        createAdminLog(f'Made f"{user.fullName} a CELTS Student Staff.')
     else: 
-        flash(f"{user.fullName} cannot be added as CELTS Student Staff.", 'danger')
+        raise Exception(f"{user.fullName} cannot be added as CELTS Student Staff.")
     
 
 def addCeltsStudentAdmin(user: str) -> None:
     if user.isCeltsStudentAdmin:
-        flash(f"{user.fullName} is already a CELTS Student Admin.", 'danger')
+        raise Exception(f"{user.fullName} is already a CELTS Student Admin.")
     elif user.isStudent: 
         user: User = User.get_by_id(user)
         user.isCeltsStudentAdmin = True
         user.save()
-        createAdminLog(f'Made {user.fullName} a CELTS student admin member.')
-        flash(f"{user.fullName} has been added as a CELTS Student Admin.", 'success')
+        createAdminLog(f'Made {user.fullName} a CELTS Student Admin.')
     else: 
-        flash(f"{user.fullName} cannot be added as CELTS Student Admin.", 'danger')
-    
+        raise Exception(f"{user.fullName} cannot be added as CELTS Student Admin.")
+        
 
 def removeCeltsAdmin(user: str) -> None:
     user: User = User.get_by_id(user)

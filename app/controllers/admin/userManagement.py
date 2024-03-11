@@ -25,13 +25,25 @@ def manageUsers() -> str:
         return ("danger", 500)
 
     if method == "addCeltsAdmin":
-        addCeltsAdmin(user)
+        try:
+            addCeltsAdmin(user)
+            flash(f"{user.fullName} has been added as CELTS Admin.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), 'danger')
         
     elif method == "addCeltsStudentStaff":
-        addCeltsStudentStaff(user)
+        try:
+            addCeltsStudentStaff(user)
+            flash(f"{user.fullName} has been added as CELTS Student Staff.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), "danger")
 
     elif method == "addCeltsStudentAdmin":
-        addCeltsStudentAdmin(user)
+        try:
+            addCeltsStudentAdmin(user)
+            flash(f"{user.fullName} has been added as CELTS Student Admin.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), "danger")
             
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
@@ -44,7 +56,7 @@ def manageUsers() -> str:
     elif method == "removeCeltsStudentAdmin":
         removeCeltsStudentAdmin(user)
         flash(f"{user.fullName} is no longer a CELTS Student Admin.", 'success')
-        
+
     return ("success")
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
