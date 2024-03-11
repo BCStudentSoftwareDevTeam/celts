@@ -143,7 +143,7 @@ def createEvent(templateid, programid):
 
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
-def rsvpLogDisplay(eventId) -> str:
+def rsvpLogDisplay(eventId: int) -> str:
     event: Event = Event.get_by_id(eventId)
 
     canAccessProgram: bool = event.program in getAllowedPrograms(g.current_user)

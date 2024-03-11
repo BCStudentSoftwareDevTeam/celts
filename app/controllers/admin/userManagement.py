@@ -1,22 +1,24 @@
 from flask import render_template,request, flash, g, abort, redirect, url_for
 import re
+from typing import Dict, Any, List
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
+from app.models.term import Term
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,addCeltsStudentAdmin ,removeCeltsAdmin,removeCeltsStudentStaff, removeCeltsStudentAdmin
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
-def manageUsers():
-    eventData = request.form
-    user = eventData['user']
-    method = eventData['method']
-    username = re.sub("[()]","", (user.split())[-1])
+def manageUsers() -> str:
+    eventData: Dict[str, str] = request.form
+    user: str = eventData['user']
+    method: str = eventData['method']
+    username: str = re.sub("[()]","", (user.split())[-1])
 
     try:
-        user = User.get_by_id(username)
+        user: User = User.get_by_id(username)
     except Exception as e:
         print(e)
         flash(username + " is an invalid user.", "danger")
@@ -59,9 +61,9 @@ def manageUsers():
     return ("success")
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
-def updateProgramInfo(programID):
+def updateProgramInfo(programID: int) -> Any:
     """Grabs info and then outputs it to logic function"""
-    programInfo = request.form # grabs user inputs
+    programInfo: Dict[str, str] = request.form # grabs user inputs
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         try:
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
@@ -79,16 +81,16 @@ def updateProgramInfo(programID):
     abort(403)
 
 @admin_bp.route('/admin', methods = ['GET'])
-def userManagement():
-    terms = selectSurroundingTerms(g.current_term)
-    current_programs = Program.select()
-    currentAdmins = list(User.select().where(User.isCeltsAdmin))
-    currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    currentStudentAdmin = list(User.select().where(User.isCeltsStudentAdmin))
+def userManagement() -> str:
+    terms: List[Term] = selectSurroundingTerms(g.current_term)
+    currentPrograms: List[Program] = list(Program.select())
+    currentAdmins: List[User] = list(User.select().where(User.isCeltsAdmin))
+    currentStudentStaff: List[User] = list(User.select().where(User.isCeltsStudentStaff))
+    currentStudentAdmin: List[User] = list(User.select().where(User.isCeltsStudentAdmin))
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,
-                                programs = list(current_programs),
+                                programs = currentPrograms,
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
                                 currentStudentAdmin = currentStudentAdmin,
