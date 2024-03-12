@@ -62,11 +62,24 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
     # Latest visable start date 
     defaultStart = currentYear-4
     # the earliest a user has ever been in a bonner cohort or the default start, whichever is earlier
-    firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
-
     cohorts = { year: [] for year in range(firstYear, currentYear+1) }
+    
+    years = list(BonnerCohort.select(BonnerCohort, User)
+                .join(User)
+                .order_by(BonnerCohort.year)
+                .execute())
+    
+    
     for cohort in years:
-        cohorts[cohort.year].append(cohort.user)
+        # Calculate intended graduation year based on the assumption of four-year graduation
+        graduation_year = cohort.year + 4
+
+        # Ensure the graduation year is within the range of the default start year to the current year
+        graduation_year = min(graduation_year, currentYear)
+
+        # Add Bonner user to the respective graduation year cohort
+        cohorts[graduation_year].append(cohort.user)
+
 
     # slice off the last n elements
     if limit:
