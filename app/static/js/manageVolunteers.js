@@ -49,19 +49,19 @@ $(document).ready(function() {
     });
 
     function updateSelectVolunteer(){
-      let selectedCheckboxes = getSelectedCheckboxes()
+      let selectedCheckboxes = getCheckedVolunteers()
       let buttonContent = $("#addVolunteersButton").html()
       if (selectedCheckboxes.length > 1) {
-        if ($("#addVolunteersButton").html().charAt(buttonContent.length-1) != "s") {
+        if (buttonContent.charAt(buttonContent.length-1) != "s") {
           // make the button text plural if there are multiple users selected
           $("#addVolunteersButton").html(buttonContent + "s")
         }
-      } else if ($("#addVolunteersButton").html().charAt(buttonContent.length-1) == "s") {
+      } else if (buttonContent.charAt(buttonContent.length-1) == "s") {
         // remove the s if it is plural and we have less than 2 volunteers
         $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
       // disable the submit button if there are no selectedCheckboxes
-      if (selectedCheckboxes.length <= 0) {
+      if (selectedCheckboxes.length == 0) {
         $("#addVolunteersButton").prop("disabled", true)
       } else {
         $("#addVolunteersButton").prop("disabled", false)
@@ -69,7 +69,7 @@ $(document).ready(function() {
 
     }
     
-    function getSelectedCheckboxes() {
+    function getCheckedVolunteers() {
       // get all the checkboxes and return a list of users who's
       // checkboxes are selected
       let checkboxesDisplayedInModal = $("#addVolunteerModal input[type=checkbox]")
@@ -86,7 +86,7 @@ $(document).ready(function() {
     $("#addVolunteersButton").click(function(){
         $("#addVolunteersButton").prop("disabled", true)
         let eventId = $("#eventID").val()
-        let selectedVolunteers = getSelectedCheckboxes()
+        let selectedVolunteers = getCheckedVolunteers()
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
