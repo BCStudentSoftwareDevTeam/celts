@@ -12,6 +12,7 @@ from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCoursePa
 def test_pushDataToDatabase():
     
     with mainDB.atomic() as transaction:
+        CourseParticipant.delete().execute()
         cpPreview = {'Fall 2019' : {'courses': {'CSC 226' : {'students': [
                         {"user":"ayisie","displayMsg":"Ebenezer Ayisi","errorMsg":""},
                         {"user":"bledsoef","displayMsg":"Finn Bledsoe","errorMsg":""}
@@ -30,13 +31,13 @@ def test_pushDataToDatabase():
         assert Course.get_or_none(Course.courseAbbreviation == "HIS 236") == None 
         assert Course.get_or_none(Course.courseAbbreviation == "CSC 450") == None 
 
-        assert len(list(CourseParticipant.select())) == 5
+        assert len(list(CourseParticipant.select())) == 0
 
         with app.app_context():
             g.current_user="ramsayb2" 
             saveCourseParticipantsToDatabase(cpPreview)
 
-        assert len(list(CourseParticipant.select())) == 9
+        assert len(list(CourseParticipant.select())) == 4   
 
         getTestCourseParticipant = CourseParticipant.get_or_none(user_id = 'ayisie')
         getTestTerm = Term.get_or_none(description = 'Fall 2019')

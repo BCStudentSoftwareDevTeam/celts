@@ -1,6 +1,7 @@
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
