@@ -10,6 +10,5 @@ admin_bp = Blueprint(
 from app.controllers.admin import routes
 from app.controllers.admin import userManagement 
 from app.controllers.admin import volunteers
-from app.controllers.admin import stats
 from app.controllers.admin import minor
 
