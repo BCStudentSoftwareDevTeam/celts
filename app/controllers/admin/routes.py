@@ -386,8 +386,8 @@ def manageServiceLearningCourses(term=None):
 
     return render_template('/admin/manageServiceLearningFaculty.html',
                             courseInstructors = getInstructorCourses(),
-                            unapprovedCourses = unapprovedCourses(term),
-                            approvedCourses = approvedCourses(term),
+                            unapprovedCourses = unapprovedCourses(manageTerm),
+                            approvedCourses = approvedCourses(manageTerm),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
