@@ -121,7 +121,6 @@ def volunteerDetailsPage(eventID):
 def addVolunteer(eventId):
     event = Event.get_by_id(eventId)
     successfullyAddedVolunteer = False
-    eventParticipants = getEventParticipants(eventId)
     usernameList = request.form.getlist("selectedVolunteers[]")
     successfullyAddedVolunteer = False
     alreadyAddedList = []
