@@ -8,7 +8,7 @@ from app.models.attachmentUpload import AttachmentUpload
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience, getMinorInterest
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -41,6 +41,16 @@ def getEngagementInformation(username, type, id, term):
         information = getCourseInformation(id)
 
     return information
+
+@minor_bp.route('/cceMinor/getInterestedStudents', methods=['GET'])
+def getInterestedStudents():
+    """
+    Get the count of students interested in the CCE minor to display in the 
+    admin sidebar. It must be returned as a string to be passed recieved by the
+    ajax request.
+    """
+    interestedStudentsCount = len(getMinorInterest())
+    return str(interestedStudentsCount)
 
 @minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
 def modifyCommunityEngagement(username):

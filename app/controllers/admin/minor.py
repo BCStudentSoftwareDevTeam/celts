@@ -1,4 +1,6 @@
 from flask import render_template, g, abort
+import json
+
 from app.controllers.admin import admin_bp
 
 from app.logic.minor import getMinorInterest, getMinorProgress
@@ -8,7 +10,6 @@ from app.logic.minor import getMinorInterest, getMinorProgress
 def manageMinor():
     if not g.current_user.isAdmin:
         abort(403)
-
     interestedStudents = getMinorInterest()
     sustainedEngagement = getMinorProgress()
 
@@ -16,11 +17,3 @@ def manageMinor():
                             interestedStudentsList = interestedStudents, 
                             sustainedEngagement = sustainedEngagement )
 
-@admin_bp.route('/admin/getInterestedStudents', methods=['GET'])
-def getInterestedStudents():
-    if not g.current_user.isAdmin:
-        abort(403)
-
-    interestedStudentsCount = len(getMinorInterest())
-
-    return interestedStudentsCount

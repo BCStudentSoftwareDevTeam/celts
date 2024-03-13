@@ -1,11 +1,12 @@
 $(document).ready(function() {
+    console.log("yo")
     $.ajax({
-        url: "admin/getInterestedStudents/",
+        url: "/cceMinor/getInterestedStudents",
         type: "GET",
-        contentType: "application/json",
-        dataType: "json",
+        data: "",
         success: function(count) {
-          if (Number(count) > 0) {
+          console.log(interestedStudentsCount)
+          if (Number(interestedStudentsCount) > 0) {
             let minorManagement = $("#minorManagement").html()
             $("#minorManagement").html(`${minorManagement} (${count})`)
           } 
@@ -14,4 +15,4 @@ $(document).ready(function() {
           console.log(status,error);
         }
       })
-}
+});
