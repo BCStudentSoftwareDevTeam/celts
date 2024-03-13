@@ -395,8 +395,13 @@ def manageServiceLearningCourses(term=None):
                            )
 
 @admin_bp.route('/admin/getUnapprovedCoursesCount', methods=['GET', 'POST'])
-def getUnapprovedCoursesCount():
-    unapprovedCoursesCount = len(unapprovedCourses(g.current_term))
+def getUnapprovedCoursesCount() -> str:
+    """
+    Get the count of unapproved courses for the current term to display in the 
+    admin sidebar. It must be returned as a string to be received by the
+    ajax request.
+    """
+    unapprovedCoursesCount: int = len(unapprovedCourses(g.current_term))
     return str(unapprovedCoursesCount)
 
 
