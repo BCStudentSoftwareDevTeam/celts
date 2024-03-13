@@ -1,7 +1,7 @@
 from flask import render_template, g, abort
-import json
 
 from app.controllers.admin import admin_bp
+
 from app.logic.courseManagement import unapprovedCourses
 from app.logic.minor import getMinorInterest, getMinorProgress
 
