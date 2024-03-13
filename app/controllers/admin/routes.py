@@ -394,6 +394,12 @@ def manageServiceLearningCourses(term=None):
                             cpPreviewErrors = session.get('cpErrors',[])
                            )
 
+@admin_bp.route('/admin/getUnapprovedCoursesCount', methods=['GET', 'POST'])
+def getUnapprovedCoursesCount():
+    unapprovedCoursesCount = len(unapprovedCourses(g.current_term))
+    return str(unapprovedCoursesCount)
+
+
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():
     try:

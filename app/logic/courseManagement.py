@@ -27,7 +27,6 @@ def unapprovedCourses(termId):
                                       Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.IN_PROGRESS]))
                                .group_by(Course, Term, CourseStatus)
                                .order_by(Course.status))
-
     return unapprovedCourses
 def approvedCourses(termId):
     '''

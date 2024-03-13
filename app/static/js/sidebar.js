@@ -1,18 +1,29 @@
 $(document).ready(function() {
-    console.log("yo")
     $.ajax({
-        url: "/cceMinor/getInterestedStudents",
+        url: "/admin/getInterestedStudentsCount",
         type: "GET",
         data: "",
-        success: function(count) {
-          console.log(interestedStudentsCount)
+        success: function(interestedStudentsCount) {
           if (Number(interestedStudentsCount) > 0) {
-            let minorManagement = $("#minorManagement").html()
-            $("#minorManagement").html(`${minorManagement} (${count})`)
+            $("#minorManagement").html(`Minor Management (${interestedStudentsCount})`)
           } 
       },
         error: function(request, status, error) {
           console.log(status,error);
         }
       })
+      $.ajax({
+        url: "/admin/getUnapprovedCoursesCount",
+        type: "GET",
+        data: "",
+        success: function(unapprovedCoursesCount) {
+          if (Number(unapprovedCoursesCount) > 0) {
+            $("#courseManagement").html(`Course Management (${unapprovedCoursesCount})`)
+          } 
+      },
+        error: function(request, status, error) {
+          console.log(status,error);
+        }
+      })
+
 });
