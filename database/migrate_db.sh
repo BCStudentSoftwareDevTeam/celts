@@ -67,6 +67,10 @@ pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
 pem add app.models.eventRsvpLog.EventRsvpLog
+pem add app.models.celtsLabor.CeltsLabor
+pem add app.models.communityEngagementRequest.CommunityEngagementRequest
+pem add app.models.individualRequirement.IndividualRequirement
+
 
 pem watch
 pem migrate

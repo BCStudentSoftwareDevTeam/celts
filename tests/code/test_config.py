@@ -1,8 +1,6 @@
 import pytest
 import os
 
-from flask.helpers import get_env
-
 from app.logic.config import load_config_files, update_config_from_yaml, deep_update
 from app.__init__ import app
 
@@ -91,7 +89,7 @@ def test_update_config_from_yaml():
     assert(app.config["MAIL_ENABLED"] == True)
     # test the value set by default yaml
 
-    update_config_from_yaml(app, f"{get_env()}.yml")
+    update_config_from_yaml(app, f"{app.env}.yml")
     # test that something that is in default and in testing is updated after the override
     assert(app.config["test_entry"] == "Testing")
     # test that something that is in default but not in testing is still there after the override

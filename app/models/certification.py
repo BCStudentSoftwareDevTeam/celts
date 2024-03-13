@@ -6,4 +6,4 @@ class Certification(baseModel):
     isArchived = BooleanField(default=False)
 
     BONNER = 1
-    CESC = 2
+    CCE = 2

@@ -68,7 +68,9 @@ class FileHandler:
                     if not isFileInCourse:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         saveFileToFilesystem = file.filename
-                
+                else: 
+                    saveFileToFilesystem = file.filename
+
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
@@ -94,3 +96,9 @@ class FileHandler:
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
+    
+    def changeDisplay(self, fileId):
+        file = AttachmentUpload.get_by_id(fileId)
+        AttachmentUpload.update(isDisplayed=False).where(AttachmentUpload.event == file.event, AttachmentUpload.isDisplayed==True).execute()
+        AttachmentUpload.update(isDisplayed=True).where(AttachmentUpload.id == fileId).execute()
+        return "" 

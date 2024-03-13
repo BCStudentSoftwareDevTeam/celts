@@ -134,25 +134,21 @@ def createEvent(templateid, programid):
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
     return render_template(f"/admin/{template.templateFile}",
-            template = template,
-            eventData = eventData,
-            futureTerms = futureTerms,
-            requirements = requirements,
-            bonnerCohorts = bonnerCohorts,
-            isProgramManager = isProgramManager)
+                           template = template,
+                           eventData = eventData,
+                           futureTerms = futureTerms,
+                           requirements = requirements,
+                           bonnerCohorts = bonnerCohorts,
+                           isProgramManager = isProgramManager)
 
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
-    eventData = model_to_dict(event, recurse=False)
-    eventData['program'] = event.program
-    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
-                                eventData = eventData,
                                 allLogs = allLogs)
     else:
         abort(403)
@@ -185,7 +181,7 @@ def eventDisplay(eventId):
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
-            if (attachment.fileName.endswith(extension)):
+            if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
                 image = filepaths[attachment.fileName][0]
         if image:
             break
@@ -430,12 +426,17 @@ def updatecohort(year, method, username):
     if method == "add":
         try:
             BonnerCohort.create(year=year, user=user)
+            flash(f"Successfully added {user.fullName} to {year} Bonner Cohort.", "success")
         except IntegrityError as e:
             # if they already exist, ignore the error
+            flash(f'Error: {user.fullName} already added.', "danger")
             pass
+        
     elif method == "remove":
         BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
+        flash(f"Successfully removed {user.fullName} from {year} Bonner Cohort.", "success")
     else:
+        flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
 
     return ""
@@ -456,3 +457,11 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([requirement.id for requirement in newRequirements])
+
+
+@admin_bp.route("/displayEventFile", methods=["POST"])
+def displayEventFile():
+    fileData= request.form
+    eventfile=FileHandler(eventId=fileData["id"])
+    eventfile.changeDisplay(fileData['id'])
+    return ""
