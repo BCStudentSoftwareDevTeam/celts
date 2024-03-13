@@ -51,37 +51,93 @@ def test_termParticipation():
 @pytest.mark.integration
 def test_getRetentionRate():
     with mainDB.atomic() as transaction:
-        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '0.0%'), ('CELTS-Sponsored Event', '0.0%')]
-        
+        User.create(username = 'solijonovam',
+            bnumber = 'B00769465',
+            email = 'solijonovam@berea.edu',
+            phoneNumber = '732-384-3469',
+            firstName = 'Madinabonu',
+            lastName  = 'Solijonova',
+            isStudent = True,
+            major = 'Agriculture',
+            classLevel = 'Sophomore')
+        testProgram = Program.create(programName = "Test Program",
+                                     programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
-                                 term=2,
-                                 program=3) #Adopt a grandparent program
-        EventParticipant.create(user = 'khatts', #Adding khatts to Spring term since they have participated in an ebent in the same program in the Fall term
-                                event = testEvent,
-                                hoursEarned = 1)
-        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '100.0%'), ('CELTS-Sponsored Event', '0.0%')]
+                                 term=1, #Fall 2020
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent,
+                                hoursEarned=1)
+        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '0.0%'), ('CELTS-Sponsored Event', '0.0%'), ('Test Program', '0.0%')]
+        
+        testEvent2 = Event.create(name="Test Event2",
+                                 term=2, #Fall 2021
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent2,
+                                hoursEarned=1)
+        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '0.0%'), ('CELTS-Sponsored Event', '0.0%'), ('Test Program', '100.0%')]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_repeatVolunteers():
     with mainDB.atomic() as transaction:
-
+        User.create(username = 'solijonovam',
+            bnumber = 'B00769465',
+            email = 'solijonovam@berea.edu',
+            phoneNumber = '732-384-3469',
+            firstName = 'Madinabonu',
+            lastName  = 'Solijonova',
+            isStudent = True,
+            major = 'Agriculture',
+            classLevel = 'Sophomore')
+        testProgram = Program.create(programName = "Test Program",
+                                     programDescription = "A good program")
+        testEvent = Event.create(name="Test Event",
+                                 term=1, #Fall 2020
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent,
+                                hoursEarned=1)
         assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2)]
-        EventParticipant.create(user = 'partont', #Has participated in an event in the Fall term, so we add them to the spring term
-                                event = 2,
-                                hoursEarned = 1)
-        assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2), ('Tyler Parton', 2)]
+        testEvent2 = Event.create(name="Test Event2",
+                                 term=2, #Fall 2021
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent2,
+                                hoursEarned=1)
+        assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2), ('Madinabonu Solijonova', 2)]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_repeatVolunteersPerProgram():
     with mainDB.atomic() as transaction:
+        User.create(username = 'solijonovam',
+            bnumber = 'B00769465',
+            email = 'solijonovam@berea.edu',
+            phoneNumber = '732-384-3469',
+            firstName = 'Madinabonu',
+            lastName  = 'Solijonova',
+            isStudent = True,
+            major = 'Agriculture',
+            classLevel = 'Sophomore')
+        testProgram = Program.create(programName = "Test Program",
+                                     programDescription = "A good program")
+        testEvent = Event.create(name="Test Event",
+                                 term=1, #Fall 2020
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent,
+                                hoursEarned=1)
         assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
-        EventParticipant.create(user = 'partont', #Has participated in an event in the Fall term, so we add them to the spring term to an event in the hunger initiatives program
-                                event = 2,
-                                hoursEarned = 1)
-        assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Tyler Parton', 'Hunger Initiatives', 2),
-                                                                ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
+        testEvent2 = Event.create(name="Test Event2",
+                                 term=2, #Fall 2021
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent2,
+                                hoursEarned=1)
+        assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
+                                                                 ('Madinabonu Solijonova', 'Test Program', 2)]
 
         transaction.rollback()
 
