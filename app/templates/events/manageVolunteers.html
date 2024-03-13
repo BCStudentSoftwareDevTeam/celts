@@ -27,7 +27,7 @@
 
 {% from 'trainingsHoverMacro.html' import trainingsHover %}
 
-{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
+{% set rsvpNeeded = (event.isRsvpRequired) and (not event.isPast) %}
 {% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
 {% set modalTitle = "Waitlist Volunteers" if rsvpFull else("RSVP Volunteers" if rsvpNeeded else "Add Volunteers") %}
 

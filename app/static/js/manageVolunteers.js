@@ -49,9 +49,9 @@ $(document).ready(function() {
     });
 
     function updateSelectVolunteer(){
-      let selectedCheckboxes = getCheckedVolunteers()
+      let selectedVolunteers = getSelectedVolunteers()
       let buttonContent = $("#addVolunteersButton").html()
-      if (selectedCheckboxes.length > 1) {
+      if (selectedVolunteers.length > 1) {
         if (buttonContent.charAt(buttonContent.length-1) != "s") {
           // make the button text plural if there are multiple users selected
           $("#addVolunteersButton").html(buttonContent + "s")
@@ -61,7 +61,7 @@ $(document).ready(function() {
         $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
       // disable the submit button if there are no selectedCheckboxes
-      if (selectedCheckboxes.length == 0) {
+      if (selectedVolunteers.length == 0) {
         $("#addVolunteersButton").prop("disabled", true)
       } else {
         $("#addVolunteersButton").prop("disabled", false)
@@ -69,24 +69,24 @@ $(document).ready(function() {
 
     }
     
-    function getCheckedVolunteers() {
+    function getSelectedVolunteers() {
       // get all the checkboxes and return a list of users who's
       // checkboxes are selected
       let checkboxesDisplayedInModal = $("#addVolunteerModal input[type=checkbox]")
-      let selectedCheckboxes = []
-      $.each(checkboxesDisplayedInModal, function(index, checkbox){
+      let selectedVolunteers = []
+      checkboxesDisplayedInModal.each(function(index, checkbox){
         if(checkbox["checked"]){
-          selectedCheckboxes.push(checkbox["value"])
+          selectedVolunteers.push(checkbox["value"])
         }
       })
-      return selectedCheckboxes
+      return selectedVolunteers
     }
 
   // Adding the new volunteer to the user database table
     $("#addVolunteersButton").click(function(){
         $("#addVolunteersButton").prop("disabled", true)
         let eventId = $("#eventID").val()
-        let selectedVolunteers = getCheckedVolunteers()
+        let selectedVolunteers = getSelectedVolunteers()
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
