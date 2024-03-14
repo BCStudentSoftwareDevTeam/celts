@@ -11,13 +11,15 @@
   {% else %}
     {% set page_title = 'Create ' + template.name + ' Event' %}
   {% endif %}
+{% extends "base.html" %}
 {% else %}
   {% set page_title = eventData.name %}
+  {% extends "eventNav.html"%}
 {% endif %}
 
 {% set eventPast = event.isPast if not isNewEvent else False %}
 {% set tabName = 'edit' %}
-{% extends "eventNav.html"%}
+
 
 {% block scripts %}
   {{super()}}
@@ -32,13 +34,18 @@
 {% endblock %}
 
 {% block app_content %}
-    {% block content_pageHeading %}
-      {{super()}}
-    {% endblock %}
+   
 
     {% block navbar %}
       {% if not isNewEvent %}
+        {% block content_pageHeading %}
+          {{super()}}
+        {% endblock %}
         {{super()}}
+      {% else %}
+        <div class= "text-center">
+          <h1>{{page_title}}</h1>
+        </div>
       {% endif %}
     {% endblock %}
 
