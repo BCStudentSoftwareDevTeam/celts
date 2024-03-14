@@ -3,7 +3,7 @@ from peewee import fn, JOIN, ModelSelect
 import re as regex
 from openpyxl import load_workbook
 from collections import defaultdict
-from typing import DefaultDict, List, Dict, Any
+from typing import DefaultDict, List, Dict, Any, Union
 
 from app.models import mainDB
 from app.models import DoesNotExist
@@ -49,7 +49,7 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
                                  "status": course.status.status}
     return courseDict
 
-def saveCourseParticipantsToDatabase(cpPreview) -> None:
+def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():
         termObj: Term = Term.get_or_none(description = term) or addPastTerm(term)
         if not termObj:
@@ -61,7 +61,7 @@ def saveCourseParticipantsToDatabase(cpPreview) -> None:
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
-            courseObj = Course.get_or_create(
+            courseObj: Course = Course.get_or_create(
                  courseAbbreviation = course,
                  term = termObj, 
                  defaults = {"CourseName" : "",
@@ -81,6 +81,7 @@ def saveCourseParticipantsToDatabase(cpPreview) -> None:
                 CourseParticipant.get_or_create(user=userDict['user'], 
                                                 course=courseObj,
                                                 hoursEarned=20)
+                
 def unapprovedCourses(termId: int) -> List[Course]:
     """
     Queries the database to get all the neccessary information for
@@ -114,7 +115,7 @@ def approvedCourses(termId: int) -> List[Course]:
 
     return approvedCourses
 
-def getInstructorCourses() -> DefaultDict[User, str]:
+def getInstructorCourses() -> Dict[User, str]:
     """
     This function queries all of the course instructors and their classes and maps
     each instructor to its respective courses.
@@ -128,7 +129,7 @@ def getInstructorCourses() -> DefaultDict[User, str]:
         if instructor.course.courseName not in instructorToCoursesMap[instructor.user]:
             instructorToCoursesMap[instructor.user].append(instructor.course.courseName)
 
-    return instructorToCoursesMap
+    return dict(instructorToCoursesMap)
 
 ########### Course Actions ###########
 
@@ -166,7 +167,7 @@ def withdrawProposal(courseID) -> None:
 
     # delete syllabus
     try:
-        syllabi = AttachmentUpload.select().where(AttachmentUpload.course==courseID)
+        syllabi: List[AttachmentUpload] = list(AttachmentUpload.select().where(AttachmentUpload.course==courseID))
         for syllabus in syllabi:
             FileHandler(courseId = courseID).deleteFile(syllabus.id)
 
@@ -174,10 +175,10 @@ def withdrawProposal(courseID) -> None:
         print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
     # delete course object
-    course = Course.get(Course.id == courseID)
-    courseName = course.courseName
-    questions = CourseQuestion.select().where(CourseQuestion.course == course)
-    notes = list(Note.select(Note.id)
+    course: Course = Course.get(Course.id == courseID)
+    courseName: str = course.courseName
+    questions: List[CourseQuestion] = CourseQuestion.select().where(CourseQuestion.course == course)
+    notes: List[Note] = list(Note.select(Note.id)
                      .join(QuestionNote)
                      .where(QuestionNote.question.in_(questions))
                      .distinct())
@@ -187,24 +188,24 @@ def withdrawProposal(courseID) -> None:
 
     createAdminLog(f"Withdrew SLC proposal: {courseName}")
 
-def createCourse(creator:str="No user provided"):
+def createCourse(creator: str="No user provided") -> Course:
     """
     Creates and returns an empty, in progress course.
     """
-    course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
+    course: Course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
     for number in range(1, 7):
         CourseQuestion.create(course=course, questionNumber=number)
 
     return course
 
-def updateCourse(courseData, attachments=None):
+def updateCourse(courseData, attachments=None) -> Union[Course, False]:
     """
-        This function will take in courseData for the SLC proposal page and a dictionary
-        of instuctors assigned to the course and update the information in the db.
+    This function will take in courseData for the SLC proposal page and a dictionary
+    of instuctors assigned to the course and update the information in the db.
     """
     with mainDB.atomic() as transaction:
         try:
-            course = Course.get_by_id(courseData['courseID'])
+            course: Course = Course.get_by_id(courseData['courseID'])
             for toggler in ["slSectionsToggle", "permanentDesignation"]:
                 courseData.setdefault(toggler, "off")
             (Course.update(courseName=courseData["courseName"],
@@ -233,7 +234,7 @@ def updateCourse(courseData, attachments=None):
                 CourseInstructor.create(course=course, user=instructor)
             createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
             if attachments:
-                addFile= FileHandler(attachments, courseId=course.id)
+                addFile = FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
             return Course.get_by_id(course.id)
         except Exception as e:
@@ -242,7 +243,6 @@ def updateCourse(courseData, attachments=None):
             return False
         
 ########### Course Actions ###########
-
 
 def parseUploadedFile(filePath):
     """
@@ -295,7 +295,7 @@ def parseUploadedFile(filePath):
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
 
-    result= {}
+    result = {}
     errors = []
     term = ''
     course = ''

@@ -373,7 +373,7 @@ def manageServiceLearningCourses(term=None):
     if not g.current_user.isCeltsAdmin:
         abort(403) 
 
-    if request.method =='POST' and "submitParticipant" in request.form:
+    if request.method == 'POST' and "submitParticipant" in request.form:
         saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
         flash('Courses and participants saved successfully!', 'success')
         return redirect(url_for('admin.manageServiceLearningCourses'))

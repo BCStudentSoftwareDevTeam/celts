@@ -275,7 +275,7 @@ def uploadCourseFile():
     try:
         attachment = getFilesFromRequest(request)
         courseID = request.form["courseID"]
-        addFile= FileHandler(attachment, courseId=courseID)
+        addFile = FileHandler(attachment, courseId=courseID)
         addFile.saveFiles()
     except:
         flash("No file selected.", "warning")
