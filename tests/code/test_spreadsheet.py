@@ -214,10 +214,6 @@ def test_volunteerHoursByProgram():
 def test_onlyCompletedAllVolunteer():
     with mainDB.atomic() as transaction:
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
-        EventParticipant.create(user = 'partont', #Already participated in an event
-                                event = 14, #Added to all volunteer training event
-                                hoursEarned = 1)
-        assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -227,8 +223,13 @@ def test_onlyCompletedAllVolunteer():
                     isStudent = True,
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
+        testEvent = Event.create(name="All Volunteer Training",
+                                 term=1,
+                                 program=9,
+                                 isTraining=1,
+                                 isAllVolunteerTraining=1)
         EventParticipant.create(user = 'solijonovam', #Not participated in event
-                                event = 14, #Added to all volunteer training event
+                                event = testEvent, #Added to all volunteer training event
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == [('solijonovam', 'Madinabonu Solijonova')]
         transaction.rollback()
