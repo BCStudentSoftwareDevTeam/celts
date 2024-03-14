@@ -206,7 +206,6 @@ def test_volunteerHoursByProgram():
                                 event=testEvent3,
                                 hoursEarned=5
                                 )
-        print(list(volunteerHoursByProgram().execute()))
         assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 0.0), ('Hunger Initiatives', 11.0), ('Test Program', 10.0)]
         transaction.rollback()
 
@@ -324,10 +323,34 @@ def test_getVolunteerProgramEventByTerm():
 
 @pytest.mark.integration
 def test_getUniqueVolunteers():
-    assert list(getUniqueVolunteers("2021-2022").execute()) == ([('bryanta', 'Alex Bryant', 'B00708826'),
-                                                                 ('khatts', 'Sreynit Khatt', 'B00759107')])
- 
-    assert list(getUniqueVolunteers("2020-2021").execute()) == ([('ayisie', 'Ebenezer Ayisi', 'B00739736'),
-                                                                 ('khatts', 'Sreynit Khatt', 'B00759107'),
-                                                                 ('neillz', 'Zach Neill', 'B00751864'),
-                                                                 ('partont', 'Tyler Parton', 'B00751360')])
+    with mainDB.atomic() as transaction:
+        assert list(getUniqueVolunteers("2021-2022").execute()) == ([('bryanta', 'Alex Bryant', 'B00708826'),
+                                                                    ('khatts', 'Sreynit Khatt', 'B00759107')])
+    
+        assert list(getUniqueVolunteers("2020-2021").execute()) == ([('ayisie', 'Ebenezer Ayisi', 'B00739736'),
+                                                                    ('khatts', 'Sreynit Khatt', 'B00759107'),
+                                                                    ('neillz', 'Zach Neill', 'B00751864'),
+                                                                    ('partont', 'Tyler Parton', 'B00751360')])
+        
+        User.create(username = 'solijonovam',
+                        bnumber = 'B00769465',
+                        email = 'solijonovam@berea.edu',
+                        phoneNumber = '732-384-3469',
+                        firstName = 'Madinabonu',
+                        lastName  = 'Solijonova',
+                        isStudent = True,
+                        major = 'Agriculture',
+                        classLevel = 'Sophomore')
+        testEvent = Event.create(name="Test Event",
+                                 term=1,
+                                 program=1)
+        EventParticipant.create(user = 'solijonovam',
+                                event = testEvent,
+                                hoursEarned = 1)
+        
+        assert list(getUniqueVolunteers("2020-2021").execute()) == [('ayisie', 'Ebenezer Ayisi', 'B00739736'), 
+                                                                    ('khatts', 'Sreynit Khatt', 'B00759107'), 
+                                                                    ('neillz', 'Zach Neill', 'B00751864'), 
+                                                                    ('partont', 'Tyler Parton', 'B00751360'), 
+                                                                    ('solijonovam', 'Madinabonu Solijonova', 'B00769465')]
+        transaction.rollback()
