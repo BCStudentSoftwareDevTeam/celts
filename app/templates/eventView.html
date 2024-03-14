@@ -68,7 +68,7 @@
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
-                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit is not none) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit is not none) and (currentEventRsvpAmount >= eventData.rsvpLimit) else "RSVP" %}
                                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
                                 {% endif %}
                             {% endif %}
@@ -86,12 +86,12 @@
                         <p>This event does not earn service hours.</p>
                     {% endif %}
                     {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
-                      {% if currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit %}
+                      {% if currentEventRsvpAmount >= eventData.rsvpLimit %}
                         <p>All RSVP spots are full. Feel free to join the waitlist in case more space is made available or someone is unable to attend. </p>
-                      {% elif eventData.rsvpLimit - currentEventRsvpAmount[eventData.id] == 1 %}
-                        <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
+                      {% elif eventData.rsvpLimit - currentEventRsvpAmount == 1 %}
+                        <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
                       {% else %}
-                        <p>This event requires RSVP. There are {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spots remaining out of {{eventData.rsvpLimit}}.</p>
+                        <p>This event requires RSVP. There are {{eventData.rsvpLimit - currentEventRsvpAmount}} open spots remaining out of {{eventData.rsvpLimit}}.</p>
                       {% endif %}
                     {% elif eventData.isRsvpRequired %}
                       <p>This event requires RSVP.</p>
