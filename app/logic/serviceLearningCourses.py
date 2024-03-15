@@ -198,7 +198,7 @@ def createCourse(creator: str="No user provided") -> Course:
 
     return course
 
-def updateCourse(courseData, attachments=None) -> Union[Course, False]:
+def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
     """
     This function will take in courseData for the SLC proposal page and a dictionary
     of instuctors assigned to the course and update the information in the db.
@@ -206,8 +206,10 @@ def updateCourse(courseData, attachments=None) -> Union[Course, False]:
     with mainDB.atomic() as transaction:
         try:
             course: Course = Course.get_by_id(courseData['courseID'])
+
             for toggler in ["slSectionsToggle", "permanentDesignation"]:
                 courseData.setdefault(toggler, "off")
+
             (Course.update(courseName=courseData["courseName"],
                            courseAbbreviation=courseData["courseAbbreviation"],
                            sectionDesignation=courseData["sectionDesignation"],
@@ -222,21 +224,28 @@ def updateCourse(courseData, attachments=None) -> Union[Course, False]:
                            isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
                            hasSlcComponent = int(courseData["hasSlcComponent"]))
                    .where(Course.id == course.id).execute())
-            for i in range(1, 7):
-                (CourseQuestion.update(questionContent=courseData[f"{i}"])
-                               .where((CourseQuestion.questionNumber == i) &
+            
+            # update the existing entry with the new question responses
+            for questionIndex in range(1, 7):
+                (CourseQuestion.update(questionContent=courseData[f"{questionIndex}"])
+                               .where((CourseQuestion.questionNumber == questionIndex) &
                                       (CourseQuestion.course==course)).execute())
-            instructorList = []
-            if 'instructor[]' in courseData:
-                instructorList = courseData.getlist('instructor[]')
+                
+            # delete all course instructors and create entries for the updated instructors 
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+            instructorList: List[str] = courseData.getlist('instructor[]')
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)
-            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+
+            # save attachments to course if applicable
             if attachments:
-                addFile = FileHandler(attachments, courseId=course.id)
+                addFile: FileHandler = FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
+
+            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+
             return Course.get_by_id(course.id)
+        
         except Exception as e:
             print(e)
             transaction.rollback()
