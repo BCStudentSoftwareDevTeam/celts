@@ -7,7 +7,6 @@
 {% block scripts %}
     {{super()}}
     <script src="/static/js/event_list.js"></script>
-    <script type="module" src="/static/js/displayFilesMacro.js"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -151,7 +150,8 @@
                         <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
                         <table>
                             {% for key, value in filepaths.items() %}
-                                {% set filename = key.removeprefix(eventData.id|string + "/") %}
+                                {% set idx = key.index("/") %}
+                                {% set filename = key[idx+1:] %}
                                 <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                                     <td class="pr-5">
                                         <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{filename}}</a>

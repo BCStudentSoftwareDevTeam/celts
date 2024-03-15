@@ -252,7 +252,7 @@
           <div class="form-group mb-5">
             {% from 'displayFilesMacro.html' import displayFiles %}
             <!-- {{eventData.id}} -->
-            {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id, (eventData.id|string) + "/") }}  
+            {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}  
           </div>
             {% endif %}
           </div>
