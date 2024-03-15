@@ -61,7 +61,15 @@ $(document).ready(function() {
         var input = "#inputPhoneNumber-" + username;
 
         if (username){
+          $(input).on('focus', function() {
             setupPhoneNumber(edit, input);
+          })
+
+          $(input).on('blur', function() {
+            setupPhoneNumber(edit, input);
+          })
+          
+          setupPhoneNumber(edit, input);
         }
     });
 });
@@ -271,6 +279,7 @@ function createInstructorRow(instructor) {
                   <input type="text" style="border: none" size="14" class="form-control-sm" 
                         id="inputPhoneNumber-${instructor.username}" name="courseInstructorPhone" 
                         aria-label="Instructor Phone" value="${instructor.phoneNumber}" 
+                        data-value="${instructor.phoneNumber}" 
                         placeholder="Phone Number" />
                   <a class="text-decoration-none primary editButton" tabindex="0" 
                     data-username="${instructor.username}" id="editButton-${instructor.username}" type="button">Edit</a>
