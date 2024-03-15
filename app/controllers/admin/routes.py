@@ -28,8 +28,8 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
-from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount
+from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
@@ -253,7 +253,7 @@ def eventDisplay(eventId):
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+        currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
