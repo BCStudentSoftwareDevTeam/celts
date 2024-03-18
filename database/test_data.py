@@ -249,7 +249,7 @@ BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 certs = [
         { "id": 1, "name": "Bonner" },
-        { "id": 2, "name": "CESC Minor" },
+        { "id": 2, "name": "CCE Minor" },
         { "id": 3, "name": "CPR" },
         { "id": 4, "name": "Confidentiality" },
         { "id": 5, "name": "I9" },

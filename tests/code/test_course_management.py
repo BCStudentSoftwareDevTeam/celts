@@ -1,7 +1,7 @@
 import pytest
 
 from app.models import mainDB
-from app.logic.courseManagement import *
+from app.logic.courseManagement import unapprovedCourses, approvedCourses, createCourse, updateCourse
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
 
