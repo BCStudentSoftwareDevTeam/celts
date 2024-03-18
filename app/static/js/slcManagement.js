@@ -59,16 +59,10 @@ $(document).ready(function() {
         var username = getRowUsername(this);
         var edit = "#editButton-" + username;
         var input = "#inputPhoneNumber-" + username;
+        // format the incoming instructor phone number
+        $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
 
         if (username){
-          $(input).on('focus', function() {
-            setupPhoneNumber(edit, input);
-          })
-
-          $(input).on('blur', function() {
-            setupPhoneNumber(edit, input);
-          })
-          
           setupPhoneNumber(edit, input);
         }
     });
