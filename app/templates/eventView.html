@@ -151,10 +151,10 @@
                         <table>
                             {% for key, value in filepaths.items() %}
                                 {% set idx = key.index("/") %}
-                                {% set filename = key[idx+1:] %}
+                                {% set fileName = key[idx+1:] %}
                                 <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                                     <td class="pr-5">
-                                        <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{filename}}</a>
+                                        <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{fileName}}</a>
                                     </td>
                                 </tr>
                             {% endfor %}
