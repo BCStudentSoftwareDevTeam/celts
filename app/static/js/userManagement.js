@@ -6,6 +6,9 @@ function callbackAdmin(selected){
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
+function callbackStudentAdmin(selected){
+  submitRequest("addCeltsStudentAdmin", selected.username)
+}
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -13,6 +16,10 @@ $(document).ready(function(){
   });
   $("#searchCeltsStudentStaffInput").on("input", function(){
       searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+  });
+
+  $("#searchCeltsStudentAdminInput").on("input", function(){
+    searchUser("searchCeltsStudentAdminInput", callbackStudentAdmin, false, null, "student")
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
@@ -22,6 +29,9 @@ $(document).ready(function(){
   });
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
+  });
+  $(".removeStudentAdmin").on("click",function(){
+    submitRequest("removeCeltsStudentAdmin", $(this).data("username"));
   });
   $('#searchCeltsAdminInput').keydown(function(e){
       if (e.key === "Enter"){
@@ -33,7 +43,11 @@ $(document).ready(function(){
           submitRequest("addCeltsStudentStaff", $(this).val())
       }
   });
-
+  $('#searchCeltsStudentAdminInput').keydown(function(e){
+    if (e.key === "Enter"){
+        submitRequest("addCeltsStudentAdmin", $(this).val())
+    }
+});
   for (var i = 1; i <= $('#currentTermList .term-btn').length; i++){
     $("#termFormID_" + i).on("click", function(){
       $(".term-btn").removeClass("active");

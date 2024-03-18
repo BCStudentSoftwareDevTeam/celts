@@ -1,6 +1,8 @@
 from flask import g
 from peewee import fn, JOIN
 from datetime import date
+from typing import List
+
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
@@ -12,7 +14,7 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 
-def trainedParticipants(programID, targetTerm):
+def trainedParticipants(programID: int, targetTerm: Term) -> List[User]:
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
@@ -20,14 +22,14 @@ def trainedParticipants(programID, targetTerm):
     """
 
     # Reset program eligibility each term for all other trainings
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
-    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
-    allTrainings = (Event.select()
+    isRelevantAllVolunteer: bool = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
+    isRelevantProgramTraining: bool = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
+    allTrainings: List[Event] = (Event.select()
                          .join(Term)
                          .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
                                 Event.isCanceled == False))
 
-    fullyTrainedUsers = (User.select()
+    fullyTrainedUsers: List[User] = (User.select()
                              .join(EventParticipant)
                              .where(EventParticipant.event.in_(allTrainings))
                              .group_by(EventParticipant.user)

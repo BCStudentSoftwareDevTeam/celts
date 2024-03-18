@@ -1,78 +1,69 @@
 from flask import render_template,request, flash, g, abort, redirect, url_for
 import re
+from typing import Dict, Any, List
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.models.term import Term
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,addCeltsStudentAdmin ,removeCeltsAdmin,removeCeltsStudentStaff, removeCeltsStudentAdmin
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
-def manageUsers():
-    eventData = request.form
-    user = eventData['user']
-    method = eventData['method']
-    username = re.sub("[()]","", (user.split())[-1])
+def manageUsers() -> str:
+    eventData: Dict[str, str] = request.form
+    user: str = eventData['user']
+    method: str = eventData['method']
+    username: str = re.sub("[()]","", (user.split())[-1])
 
     try:
-        user = User.get_by_id(username)
+        user: User = User.get_by_id(username)
     except Exception as e:
         print(e)
         flash(username + " is an invalid user.", "danger")
         return ("danger", 500)
 
     if method == "addCeltsAdmin":
-        if user.isStudent and not user.isCeltsStudentStaff: 
-            flash(user.firstName + " " + user.lastName + " cannot be added as a CELTS-Link admin", 'danger')
-        else:
-            if user.isCeltsAdmin:
-                flash(user.firstName + " " + user.lastName + " is already a CELTS-Link Admin", 'danger')
-            else: 
-                addCeltsAdmin(user)
-                flash(user.firstName + " " + user.lastName + " has been added as a CELTS-Link Admin", 'success')
+        try:
+            addCeltsAdmin(user)
+            flash(f"{user.fullName} has been added as CELTS Admin.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), 'danger')
+        
     elif method == "addCeltsStudentStaff":
-        if not user.isStudent:
-            flash(username + " cannot be added as CELTS Student Staff", 'danger')
-        else:
-            if user.isCeltsStudentStaff:
-                flash(user.firstName + " " + user.lastName + " is already a CELTS Student Staff", 'danger')
-            else:
-                addCeltsStudentStaff(user)
-                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
+        try:
+            addCeltsStudentStaff(user)
+            flash(f"{user.fullName} has been added as CELTS Student Staff.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), "danger")
+
+    elif method == "addCeltsStudentAdmin":
+        try:
+            addCeltsStudentAdmin(user)
+            flash(f"{user.fullName} has been added as CELTS Student Admin.", 'success')
+        except Exception as errorMessage:
+            flash(str(errorMessage), "danger")
+            
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
-        flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
+        flash(f"{user.fullName} is no longer a CELTS Admin.", 'success')
+
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
-        flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
+        flash(f"{user.fullName} is no longer a CELTS Student Staff.", 'success')
+
+    elif method == "removeCeltsStudentAdmin":
+        removeCeltsStudentAdmin(user)
+        flash(f"{user.fullName} is no longer a CELTS Student Admin.", 'success')
+
     return ("success")
 
-@admin_bp.route('/addProgramManagers', methods=['POST'])
-def addProgramManagers():
-    eventData = request.form
-    try:
-        return addProgramManager(eventData['username'],int(eventData['programID']))
-    except Exception as e:
-        print(e)
-        flash('Error while trying to add a manager.','warning')
-        abort(500,"'Error while trying to add a manager.'")
-
-@admin_bp.route('/removeProgramManagers', methods=['POST'])
-def removeProgramManagers():
-    eventData = request.form
-    try:
-        return removeProgramManager(eventData['username'],int(eventData['programID']))
-    except Exception as e:
-        print(e)
-        flash('Error while removing a manager.','warning')
-        abort(500,"Error while trying to remove a manager.")
-
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
-def updateProgramInfo(programID):
+def updateProgramInfo(programID: int) -> Any:
     """Grabs info and then outputs it to logic function"""
-    programInfo = request.form # grabs user inputs
-    if g.current_user.isCeltsAdmin:
+    programInfo: Dict[str, str] = request.form # grabs user inputs
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         try:
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
                               programInfo["contactEmail"],
@@ -89,17 +80,19 @@ def updateProgramInfo(programID):
     abort(403)
 
 @admin_bp.route('/admin', methods = ['GET'])
-def userManagement():
-    terms = selectSurroundingTerms(g.current_term)
-    current_programs = Program.select()
-    currentAdmins = list(User.select().where(User.isCeltsAdmin))
-    currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    if g.current_user.isCeltsAdmin:
+def userManagement() -> str:
+    terms: List[Term] = selectSurroundingTerms(g.current_term)
+    currentPrograms: List[Program] = list(Program.select())
+    currentAdmins: List[User] = list(User.select().where(User.isCeltsAdmin))
+    currentStudentStaff: List[User] = list(User.select().where(User.isCeltsStudentStaff))
+    currentStudentAdmin: List[User] = list(User.select().where(User.isCeltsStudentAdmin))
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,
-                                programs = list(current_programs),
+                                programs = currentPrograms,
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
+                                currentStudentAdmin = currentStudentAdmin,
                                 )
     abort(403)
 

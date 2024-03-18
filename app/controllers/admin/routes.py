@@ -5,6 +5,7 @@ from playhouse.shortcuts import model_to_dict
 import json
 from datetime import datetime
 import os
+from typing import List
 
 from app import app
 from app.models.program import Program
@@ -42,17 +43,16 @@ def switchUser():
 
     print(f"Switching user from {g.current_user} to",request.form['newuser'])
     session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
-
     return redirect(request.referrer)
 
 
 @admin_bp.route('/eventTemplates')
-def templateSelect():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        allprograms = getAllowedPrograms(g.current_user)
-        visibleTemplates = getAllowedTemplates(g.current_user)
+def templateSelect() -> str:
+    if g.current_user.isAdmin:
+        allowedPrograms: List[Program] = getAllowedPrograms(g.current_user)
+        visibleTemplates: List[EventTemplate] = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
-                                programs=allprograms,
+                                programs=allowedPrograms,
                                 celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
     else:
@@ -141,16 +141,17 @@ def createEvent(templateid, programid):
 
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
-def rsvpLogDisplay(eventId):
-    event = Event.get_by_id(eventId)
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
-        return render_template("/events/rsvpLog.html",
-                                event = event,
-                                allLogs = allLogs)
-    else:
+def rsvpLogDisplay(eventId: int) -> str:
+    event: Event = Event.get_by_id(eventId)
+
+    canAccessProgram: bool = event.program in getAllowedPrograms(g.current_user)
+    if not canAccessProgram:
         abort(403)
 
+    allLogs: List[(EventRsvpLog, User)] = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+    return render_template("/events/rsvpLog.html",
+                                event = event,
+                                allLogs = allLogs)
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
@@ -166,8 +167,7 @@ def eventDisplay(eventId):
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
-
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    notPermitted = not (event.program in getAllowedPrograms(g.current_user) or (g.current_user.isCeltsStudentAdmin and event.programName != "Bonner Scholars"))
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 

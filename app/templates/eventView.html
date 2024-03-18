@@ -132,7 +132,7 @@
                             <h3>Program Trainings:</h3>
                             {% for training, events in programTrainings.items() %}
                                 {% for eventObj, attended in events %}
-                                    {% if g.current_user.isCeltsAdmin %}
+                                    {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin %}
                                         <p>{{eventObj.name}}</p>
                                     {% elif attended %}
                                         <p><b>{{eventObj.name}}</b>: Attended</p>

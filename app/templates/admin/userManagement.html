@@ -17,64 +17,86 @@
 
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if not visibleAccordion or visibleAccordion == "user" else "collapsed" %}
-      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        User Management
-      </button>
-    </h3>
-    {% set show = "show" if not visibleAccordion or visibleAccordion == "user" %}
-    <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
-      <div class="accordion-body">
-        <div class="container-fluid col-10">
-          <div class="row d-flex justify-content-center mb-3">
-            <div class="col-md-6 mb-3">
-              <div>
-                {{createInputsButtons("searchCeltsAdminInput", "Add Celts Admin")}}<br>
-              </div>
-              <table class="table mb-3">
-                <thead>
-                  <tr>
-                    <th scope="col">Current Admin</th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for admin in currentAdmins %}
-                     <tr>
-                       <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
-                       <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
-                     </tr>
-                  {% endfor %}
-                </tbody>
-                </table>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div>
-                {{createInputsButtons("searchCeltsStudentStaffInput", "Add Celts Student Staff")}}<br>
-              </div>
-              <table class="table mb-3">
-                <thead>
-                  <tr>
-                    <th colspan="2" scope="col">Current Student Staff</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for studentStaff in currentStudentStaff %}
+  {% if g.current_user.isCeltsAdmin%}
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingOne">
+        {% set focus = "open" if not visibleAccordion or visibleAccordion == "user" else "collapsed" %}
+        <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          User Management
+        </button>
+      </h3>
+      {% set show = "show" if not visibleAccordion or visibleAccordion == "user" %}
+      <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
+        <div class="accordion-body">
+          <div class="container-fluid col-10">
+            <div class="row d-flex mb-3">
+              <div class="col-md-6 mb-3">
+                <div>
+                  {{createInputsButtons("searchCeltsAdminInput", "Add Celts Admin")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
                     <tr>
-                      <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
-                      <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
-                     </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+                      <th scope="col">Current Admin</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for admin in currentAdmins %}
+                      <tr>
+                        <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
+                        <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                  </table>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div>
+                  {{createInputsButtons("searchCeltsStudentStaffInput", "Add Celts Student Staff")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
+                    <tr>
+                      <th colspan="2" scope="col">Current Student Staff</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for studentStaff in currentStudentStaff %}
+                      <tr>
+                        <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
+                        <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div>
+                  {{createInputsButtons("searchCeltsStudentAdminInput", "Add Celts Student Admin")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
+                    <tr>
+                      <th colspan="2" scope="col">Current Student Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for studentAdmin in currentStudentAdmin %}
+                      <tr>
+                        <td id="{{studentAdmin.username}}">{{studentAdmin.firstName}} {{studentAdmin.lastName}}</td>
+                        <td><button data-username="{{studentAdmin.username}}" type="button" class="btn btn-danger view removeStudentAdmin">Remove</button></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  {% endif %}
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       {% set focus = "open" if visibleAccordion == "term" else "collapsed" %}
