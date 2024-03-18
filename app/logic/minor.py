@@ -45,9 +45,10 @@ def getMinorProgress():
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), fn.SUM(summerCase).alias('hasSummer'))
+        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), fn.SUM(summerCase).alias('hasSummer'),(CommunityEngagementRequest.status).alias('requestedEngagement'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
+            .join(CommunityEngagementRequest, on= (User.username == CommunityEngagementRequest.user))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
@@ -57,6 +58,7 @@ def getMinorProgress():
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
+                            'requestedCommunityEngagement': student.requestedEngagement,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
 
     return engagedStudentsList
@@ -214,6 +216,7 @@ def saveOtherEngagementRequest(engagementRequest):
     """
     engagementRequest['status'] = "Pending"
     CommunityEngagementRequest.create(**engagementRequest)
+    
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """

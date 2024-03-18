@@ -9,9 +9,12 @@ def manageMinor():
     if not g.current_user.isAdmin:
         abort(403)
 
+    
     interestedStudents = getMinorInterest()
     sustainedEngagement = getMinorProgress()
+    
 
     return render_template('/admin/cceMinor.html',
                             interestedStudentsList = interestedStudents, 
-                            sustainedEngagement = sustainedEngagement )
+                            sustainedEngagement = sustainedEngagement,
+                            )
