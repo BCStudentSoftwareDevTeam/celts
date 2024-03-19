@@ -224,11 +224,30 @@ def test_updateCeltsLaborFromLsf():
 
 @pytest.mark.integration
 def test_getCeltsLaborHistory():
-    testDataAyisieHistory = {"Bonner Manager": "Summer 2021"}
-    getAyisieHistory = getCeltsLaborHistory(User.get_by_id("ayisie"))
+    with mainDB.atomic() as transaction: 
+        CeltsLabor.delete().execute()
 
-    testDataMupotsalHistory = {"Habitat For Humanity Cord.": "2020-2021"}
-    getMupotsalHistory = getCeltsLaborHistory(User.get_by_id("mupotsal"))
+        mupotsal = User.get_by_id('mupotsal')
+        ayisie = User.get_by_id('ayisie')
 
-    assert getAyisieHistory == testDataAyisieHistory
-    assert getMupotsalHistory == testDataMupotsalHistory
+        CeltsLabor.create(user = ayisie, 
+                          positionTitle = "Bonner Manager", 
+                          term = Term.get_by_id(3), 
+                          isAcademicYear = False)
+        
+        CeltsLabor.create(user = mupotsal, 
+                          positionTitle = "Habitat For Humanity Cord.", 
+                          term = Term.get_by_id(2), 
+                          isAcademicYear = True)
+
+
+        testDataAyisieHistory = {"Bonner Manager": "Summer 2021"}
+        getAyisieHistory = getCeltsLaborHistory(ayisie)
+
+        testDataMupotsalHistory = {"Habitat For Humanity Cord.": "2020-2021"}
+        getMupotsalHistory = getCeltsLaborHistory(mupotsal)
+
+        assert getAyisieHistory == testDataAyisieHistory
+        assert getMupotsalHistory == testDataMupotsalHistory
+
+        transaction.rollback()
