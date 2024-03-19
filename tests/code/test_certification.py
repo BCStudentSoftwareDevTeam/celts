@@ -20,7 +20,6 @@ def test_getCertRequirements():
     cpr = allRequirements[3]['requirements']
     assert ["Volunteer Training", "CPR Training"] == [r.name for r in cpr]
 
-    cce = getCertRequirements(certification=Certification.CCE)
     bonner = getCertRequirements(certification=Certification.BONNER)
     assert len(bonner) == 9
 
