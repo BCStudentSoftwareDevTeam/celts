@@ -1,5 +1,6 @@
 import searchUser from './searchUser.js'
 
+
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
@@ -8,14 +9,13 @@ function updateDate(obj) {
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();
-  if(obj.id == "startDatePicker") {
-    $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
-    $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
+  if(obj.className.includes("startDatePicker")) {
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker({minDate: new Date(newYear, newMonth, newDay)});
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker("option", "minDate", new Date(newYear, newMonth, newDay));
   }
-
-  if (obj.id == "endDatePicker") {
-    $("#startDatePicker").datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
-    $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
+  if (obj.className.includes("endDatePicker")) {
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(newYear, newMonth, newDay)});
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
 }
 
@@ -38,8 +38,8 @@ function format24to12HourTime(timeStr){
   function calculateRecurringEventFrequency(){
       var eventDatesAndName = {name:$("#inputEventName").val(),
                                isRecurring: true,
-                               startDate:$("#startDatePicker").val(),
-                               endDate:$("#endDatePicker").val()}
+                               startDate:$(".startDatePicker")[0].value,
+                               endDate:$(".endDatePicker")[0].value}
       $.ajax({
         type:"POST",
         url: "/makeRecurringEvents",
@@ -65,7 +65,7 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-  if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
+  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
 
@@ -79,7 +79,6 @@ $(document).ready(function() {
         $("#limitGroup").hide();
       }
     })
-
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
     $(this).find("input[type=submit]").prop("disabled", true);
@@ -88,11 +87,11 @@ $(document).ready(function() {
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
-      $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
-      $("#endDatePicker").prop('required', true);
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
+      $(".endDatePicker").prop('required', true);
     } else {
-      $("#endDateStyle, #recurringTableDiv").addClass('d-none')
-      $("#endDatePicker").prop('required', false);
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+      $(".endDatePicker").prop('required', false);
     }
   });
 
@@ -124,10 +123,10 @@ $(document).ready(function() {
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 
-    var formattedStartTime = format24to12HourTime($("#startTime").prop("defaultValue"));
-    var formattedEndTime = format24to12HourTime($("#endTime").prop("defaultValue"));
-    $("#startTime").val(formattedStartTime);
-    $("#endTime").val(formattedEndTime);
+    var formattedStartTime = format24to12HourTime($(".startTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
+    $(".startTime"[0]).val(formattedStartTime);
+    $(".endTime"[0]).val(formattedEndTime);
   }
   else {
     $(".timepicker").prop("type", "time");
@@ -135,7 +134,7 @@ $(document).ready(function() {
   }
 
   if ($(".datePicker").is("readonly")) {
-    $( ".datePicker" ).datepicker( "option", "disabled", true )
+    $(".datePicker" ).datepicker( "option", "disabled", true )
   };
 
   //makes the input fields act like readonly (readonly doesn't work with required)
@@ -149,17 +148,17 @@ $(document).ready(function() {
     dateFormat:'mm-dd-yy'
   });
 
-  $("#startDate").click(function() {
-    $("#startDatePicker").datepicker().datepicker("show");
+  $(".startDate").click(function() {
+    $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
-  $("#endDate").click(function() {
-    $("#endDatePicker").datepicker().datepicker("show");
+  $(".endDate").click(function() {
+    $("#endDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
 
-  $("#startDatePicker, #endDatePicker").change(function(){
-    if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
+  $(".startDatePicker, .endDatePicker").change(function(){
+    if ( $(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()){
       calculateRecurringEventFrequency();
     }
   });
@@ -174,7 +173,6 @@ $(document).ready(function() {
   });
 
 
-
   var facilitatorArray = []
   function callback(selectedFacilitator) {
     // JSON.parse is required to de-stringify the search results into a dictionary.
@@ -186,7 +184,7 @@ $(document).ready(function() {
         let lastRow = tableBody.find("tr:last");
         let newRow = lastRow.clone();
         newRow.find("td:eq(0) p").text(facilitator);
-        newRow.find("td:eq(0) div button").attr("data-id", username);
+        newRow.find("td:eq(0) div button").data("id", username);
         newRow.find("td:eq(0) div input").attr("id", username);
         newRow.attr("id", username);
         newRow.prop("hidden", false);
@@ -207,11 +205,12 @@ $(document).ready(function() {
      $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
      $(this).closest("tr").remove();
   });
-  $("#endDatePicker").change(function(){
+
+  $(".endDatePicker").change(function(){
      updateDate(this)
   });
 
-  $("#startDatePicker").change(function(){
+  $(".startDatePicker").change(function(){
      updateDate(this)
   });
 

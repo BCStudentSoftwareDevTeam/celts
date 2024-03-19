@@ -2,6 +2,7 @@ import pytest
 from flask import g
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
+from playhouse.shortcuts import model_to_dict
 from datetime import datetime, date, timedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
@@ -23,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRsvpToNewEvent
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -896,3 +897,48 @@ def test_getEventRsvpCount():
             assert rsvpd_user_count == (index + 1)
 
         transaction.rollback()
+
+
+@pytest.mark.integration
+def test_copyRsvpToNewEvent():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+
+
+            priorEvent = Event.create(name = "Req and Limit",
+                                    term = 2,
+                                    description = "Event that requries RSVP and has an RSVP limit set.",
+                                    timeStart = "6:00 pm",
+                                    timeEnd = "9:00 pm",
+                                    location = "The Moon",
+                                    isRsvpRequired = 1,
+                                    startDate = "2022-12-19",
+                                    endDate = "2022-12-19",
+                                    program = 9)
+            
+            priorEvent.save()
+            EventRsvp.create(user = "neillz",
+                             event = priorEvent).save()
+            EventRsvp.create(user = "partont",
+                             event = priorEvent).save()
+            
+            newEvent = Event.create(name = "Req and Limit",
+                                     term = 2,
+                                     description = "Event that requries RSVP and has an RSVP limit set.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "The Moon",
+                                     isRsvpRequired = 1,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     program = 9)
+
+            newEvent.save()
+            assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 0
+            
+            copyRsvpToNewEvent(model_to_dict(priorEvent), newEvent) 
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
+
+            transaction.rollback()

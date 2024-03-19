@@ -9,6 +9,8 @@ import os
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
@@ -25,8 +27,9 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount
-from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent
+from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
+
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
@@ -150,6 +153,54 @@ def rsvpLogDisplay(eventId):
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route('/event/<eventId>/renew', methods=['POST'])
+def renewEvent(eventId):
+    try: 
+        formData = request.form
+        try:
+            assert formData['timeStart'] < formData['timeEnd']
+        except AssertionError:
+            flash("End time must be after start time", 'warning')
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+        
+        try:
+            if formData.get('dateEnd'):
+                assert formData['dateStart'] < formData['dateEnd']
+        except AssertionError:
+            flash("End date must be after start date", 'warning')
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+
+
+        priorEvent = model_to_dict(Event.get_by_id(eventId))
+        newEventDict = priorEvent.copy()
+        newEventDict.pop('id')
+        newEventDict.update({
+                    'program': int(priorEvent['program']['id']),
+                    'term': int(priorEvent['term']['id']),
+                    'timeStart': formData['timeStart'],
+                    'timeEnd': formData['timeEnd'],
+                    'location': formData['location'],
+                    'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
+                    'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
+                    'isRecurring': bool(priorEvent['recurringId'])
+                    })
+        newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
+        if message:
+            flash(message, "danger")
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+
+        copyRsvpToNewEvent(priorEvent, newEvent[0])
+        createAdminLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        flash("Event successfully renewed.", "success")
+        return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
+
+
+    except Exception as e:
+        print("Error while trying to renew event:", e)
+        flash("There was an error renewing the event. Please try again or contact Systems Support.", 'danger')
+        return redirect(url_for('admin.eventDisplay', eventId = eventId))
+            
 
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
