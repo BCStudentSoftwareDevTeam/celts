@@ -571,7 +571,7 @@ def getCountdownToEvent(event, *, currentDatetime=None):
             return f"{hourString} and {minuteString}"
         return f"{hourString}"
     # Minutes until
-    elif timeUntilEvent.minutes:
+    elif timeUntilEvent.minutes > 1:
         return f"{minuteString}"
     # Seconds until
     return "<1 minute"
