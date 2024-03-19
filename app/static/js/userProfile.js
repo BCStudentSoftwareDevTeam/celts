@@ -55,8 +55,11 @@ $(document).ready(function(){
       var username = $(this).data('username');
       var programID = $(this).data('programId');
 
-      $("#removeFromTranscriptCheckbox").data("removedFromTranscript", removeFromTranscript);
-      console.log(removeFromTranscript);
+      var editButton = $(".ban").filter(function(editButton){
+        return $(editButton).data("programid") == programID;
+      })
+
+      editButton.data("removedFromTranscript", removeFromTranscript);
 
     $.ajax({
         type: "POST",
@@ -106,6 +109,7 @@ $(document).ready(function(){
      */
   var programID;
   $(".ban").click(function() {
+    $("#banModal #programid").val($(this).data("programid"));
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
@@ -132,7 +136,6 @@ $(document).ready(function(){
       banNoteDiv.show()
       var isRemovedFromTranscript = $(this).data("removedFromTranscript");
       console.log(isRemovedFromTranscript);
-      console.log(banButton);
       $("#removeFromTranscriptCheckbox").prop("checked", isRemovedFromTranscript);
       $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
