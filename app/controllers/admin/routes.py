@@ -30,9 +30,7 @@ from app.logic.participants import getEventParticipants, getParticipationStatusF
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
-from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getInstructorCourses
 
 
 
@@ -375,7 +373,7 @@ def manageServiceLearningCourses(term=None):
     if not g.current_user.isCeltsAdmin:
         abort(403) 
 
-    if request.method =='POST' and "submitParticipant" in request.form:
+    if request.method == 'POST' and "submitParticipant" in request.form:
         saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
         flash('Courses and participants saved successfully!', 'success')
         return redirect(url_for('admin.manageServiceLearningCourses'))
