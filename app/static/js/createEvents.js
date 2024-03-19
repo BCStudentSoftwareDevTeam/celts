@@ -10,14 +10,12 @@ function updateDate(obj) {
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();
   if(obj.className.includes("startDatePicker")) {
-    
-    $("#endDatePicker-"+$(obj).data("page-location")).datepicker({minDate: new Date(  newYear, newMonth, newDay)});
-    $("#endDatePicker-"+$(obj).data("page-location")).datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker({minDate: new Date(newYear, newMonth, newDay)});
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker("option", "minDate", new Date(newYear, newMonth, newDay));
   }
-
   if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(newYear, newMonth, newDay)});
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
 }
 
