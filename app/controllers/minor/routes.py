@@ -71,7 +71,7 @@ def requestOtherEngagement(username):
         filename = None
         attachment = request.files.get("attachmentObject")
         if attachment:
-                addFile= FileHandler(getFilesFromRequest(request))
+                addFile = FileHandler(getFilesFromRequest(request))
                 addFile.saveFiles()
                 filename = attachment.filename
         formData = request.form.copy()

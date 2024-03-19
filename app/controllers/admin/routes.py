@@ -25,14 +25,12 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, getCountdownToEvent
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, getCountdownToEvent
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
-from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getInstructorCourses
 
 
 
@@ -145,14 +143,10 @@ def createEvent(templateid, programid):
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
-    eventData = model_to_dict(event, recurse=False)
-    eventData['program'] = event.program
-    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
-                                eventData = eventData,
                                 allLogs = allLogs)
     else:
         abort(403)
@@ -256,7 +250,7 @@ def eventDisplay(eventId):
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+        currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
@@ -383,7 +377,7 @@ def manageServiceLearningCourses(term=None):
     if not g.current_user.isCeltsAdmin:
         abort(403) 
 
-    if request.method =='POST' and "submitParticipant" in request.form:
+    if request.method == 'POST' and "submitParticipant" in request.form:
         saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
         flash('Courses and participants saved successfully!', 'success')
         return redirect(url_for('admin.manageServiceLearningCourses'))
@@ -394,8 +388,8 @@ def manageServiceLearningCourses(term=None):
 
     return render_template('/admin/manageServiceLearningFaculty.html',
                             courseInstructors = getInstructorCourses(),
-                            unapprovedCourses = unapprovedCourses(term),
-                            approvedCourses = approvedCourses(term),
+                            unapprovedCourses = unapprovedCourses(manageTerm),
+                            approvedCourses = approvedCourses(manageTerm),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
