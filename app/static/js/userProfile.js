@@ -14,7 +14,7 @@ $(document).ready(function(){
           msgToast("Error!", "Failed to save changes!")
         }
     });
-  })    
+  })
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -25,7 +25,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-  
+
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -54,6 +54,9 @@ $(document).ready(function(){
       var removeFromTranscript = $(this).is(':checked');
       var username = $(this).data('username');
       var programID = $(this).data('programId');
+
+      $("#removeFromTranscriptCheckbox").data("removedFromTranscript", removeFromTranscript);
+      console.log(removeFromTranscript);
 
     $.ajax({
         type: "POST",
@@ -101,6 +104,7 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
+  var programID;
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -126,6 +130,10 @@ $(document).ready(function(){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
+      var isRemovedFromTranscript = $(this).data("removedFromTranscript");
+      console.log(isRemovedFromTranscript);
+      console.log(banButton);
+      $("#removeFromTranscriptCheckbox").prop("checked", isRemovedFromTranscript);
       $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
@@ -176,9 +184,9 @@ $(document).ready(function(){
         $("#noteModal").modal("toggle")
     });
 
-    $("#addVisibility").click(function() { 
+    $("#addVisibility").click(function() {
         var bonnerChecked = $("input[name='bonner']:checked").val()
-    
+
         if (bonnerChecked == 'on') {
             bonnerNoteOn()
         } else {
@@ -226,7 +234,7 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () { 
+    $(".savebtn").click(function () {
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
@@ -348,4 +356,3 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
-
