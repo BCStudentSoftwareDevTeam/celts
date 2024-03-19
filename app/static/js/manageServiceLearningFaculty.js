@@ -62,7 +62,7 @@ $(document).ready( function () {
     })
   });
 
-  /******** Course Participant Stuff **************/
+  /************** Course Participant Logic **************/
     $("#modalCourseParticipant").on("click", function () {
       $("#modalSubmit").modal("toggle");
     });
