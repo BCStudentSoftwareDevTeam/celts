@@ -118,7 +118,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
         events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
             for event in events:
-                addFile= FileHandler(attachmentFiles, eventId=event.id)
+                addFile = FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
         return events, ""
     except Exception as e:
