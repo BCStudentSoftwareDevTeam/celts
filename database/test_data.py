@@ -61,7 +61,7 @@ users = [
         "lastName" : "Khatt",
         "isStudent": True,
         "isFaculty": False,
-        "isCeltsAdmin": True,
+        "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "classLevel": "Senior",
@@ -91,11 +91,11 @@ users = [
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Computer and Information Science",
+        "classLevel": "Junior",
         "minorInterest": 0,
     },
     {
@@ -223,7 +223,7 @@ users = [
         "lastName": "Bledsoe",
         "phoneNumber": "(123)456-7890",
         "isCeltsAdmin": False,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "minorInterest": 0,
@@ -1500,6 +1500,12 @@ celtsLabor = [
         "positionTitle": "Bonner Manager",
         "term": 3,
         "isAcademicYear": False
+    },
+    {
+        "user": "ayisie",
+        "positionTitle": "AGP Team Memeber",
+        "term": 2,
+        "isAcademicYear": True
     }
 ]
 CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
