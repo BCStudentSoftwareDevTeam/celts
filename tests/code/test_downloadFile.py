@@ -2,7 +2,7 @@ import pytest
 
 
 from app import app
-from app.logic.courseManagement import approvedCourses
+from app.logic.serviceLearningCourses import approvedCourses
 from app.logic.downloadFile import fileMaker
 from app.models.course import Course
 from app.models import mainDB

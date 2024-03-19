@@ -49,6 +49,82 @@
       {% endif %}
     {% endblock %}
 
+    {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
+
+    <div class="form-group mb-4">
+      <label class="form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
+      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required
+        {% if eventData.location %}
+          value="{{eventData.location}}"
+        {% endif %}
+      />
+    </div>
+    <!-- Start and End Datepickers -->
+    <div class="row col-md-12">
+      <div class="form-group col-md-6">
+          <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
+          <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
+                value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
+                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+              <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
+                  <span><i class="bi bi-calendar-plus-fill"></i></span>
+              </div>
+          </div>
+      </div>
+
+      <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
+      <!--datePicker for End date-->
+              <span><i class="bi bi-calendar-plus-fill"></i></span>
+          <label class="form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
+          <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+            <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
+              value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
+              name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
+            <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}">
+              <span><i class="bi bi-calendar-plus-fill"></i></span>
+            </div>
+          </div>
+      </div>
+    
+    </div>
+    <br>
+    <!-- Start and End Time -->
+    <div class="mb-4">
+      <div class="row col-md-12" >
+        <div class="form-group col-md-6">
+          <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
+          <div class="input-group">
+            {% if eventData.timeStart %}
+              {% set startTime = eventData.timeStart %}
+            {% else %}
+              {% set startTime = "12:00" %}
+            {% endif %}
+            <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+              aria-describedby="timeIcon1" placeholder="Pick a start time"  
+              id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+            <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
+          </div>
+        </div>
+        <div class='form-group col-md-6'>
+          <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+          <div class="input-group">
+            {% if eventData.timeEnd %}
+              {% set endTime = eventData.timeEnd %}
+            {%else%}
+              {% set endTime = "13:00" %}
+            {% endif %}
+              <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+                aria-describedby="timeIcon2" placeholder="Pick an end time" 
+                id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+              <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {% endmacro %}
+
 <form enctype="multipart/form-data" id="saveEvent" data-toggle="validator" role="form" action="{{request.path}}" method="POST">
     <div class="row p-2">
         <div class="col-md-6">
@@ -67,14 +143,7 @@
               {% endfor %}
             </select>
         </div>
-        <div class="form-group mb-4">
-          <label class="form-label" for='inputEventLocation'><strong>Location</strong></label>
-          <input class="form-control" id='inputEventLocation'  placeholder="Enter location" name="location" required
-            {% if eventData.location %}
-              value="{{eventData.location}}"
-            {% endif %}
-          />
-        </div>
+
         {% if isNewEvent %}
         <div class="row col-md-12">
           <div class="form-group col-md-6">
@@ -93,66 +162,14 @@
           </div>
         </div>
         {% endif %}
-        <!-- Start and End Datepickers -->
-        <div class="row col-md-12">
-            <div class="form-group col-md-6">
-                <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
-                <div class='input-group date' id="startDate">
-                    <input autocomplete="off" type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" id=startDatePicker required>
-                    <div class="input-group-text" id="calendarIconStart">
-                        <span><i class="bi bi-calendar-plus-fill"></i></span>
-                    </div>
-                </div>
-            </div>
 
-            {% if eventData.isRecurring == True and isNewEvent %}
-              {% set hideDate = "" %}
-            {% else %}
-              {% set hideDate = "d-none" %}
-            {% endif %}
+        {% if eventData.isRecurring == True and isNewEvent %}
+          {% set hideDate = "" %}
+        {% else %}
+          {% set hideDate = "d-none" %}
+        {% endif %}
 
-            <div class="form-group col-md-6 {{hideDate}}" id ="endDateStyle" >
-            <!--datePicker for End date-->
-                <label class="form-label me-2" for="endDatePicker"><strong>End Date</strong></label>
-                <div class='input-group date' id="endDate">
-                  <input autocomplete="off" type='text' class="form-control datePicker" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date">
-                  <div class="input-group-text" id="calendarIconEnd">
-                    <span><i class="bi bi-calendar-plus-fill"></i></span>
-                  </div>
-                </div>
-            </div>
-
-        </div>
-        <br>
-        <!-- Start and End Time -->
-        <div class="mb-4">
-          <div class="row col-md-12" >
-            <div class="form-group col-md-6">
-              <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
-              <div class="input-group">
-                {% if eventData.timeStart %}
-                  {% set start_time = eventData.timeStart %}
-                {% else %}
-                  {% set start_time = "12:00" %}
-                {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
-                <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
-              </div>
-            </div>
-            <div class='form-group col-md-6'>
-              <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
-              <div class="input-group">
-                {% if eventData.timeEnd %}
-                  {% set end_time = eventData.timeEnd %}
-                {%else%}
-                  {% set end_time = "13:00" %}
-                {% endif %}
-                  <input autocomplete="off" type="time" class="form-control timepicker" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
-                  <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
-              </div>
-            </div>
-          </div>
-        </div>
+        {{locationTimeMacro(eventData, hideDate, 'main')}}
 
         <div class="{{hideDate}}" id="recurringTableDiv">
           <table class="table" id="recurringEventsTable">
@@ -252,7 +269,7 @@
           <div class="form-group mb-5">
             {% from 'displayFilesMacro.html' import displayFiles %}
             <!-- {{eventData.id}} -->
-            {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id, (eventData.id|string) + "/") }}  
+            {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}  
           </div>
             {% endif %}
           </div>
@@ -263,6 +280,8 @@
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
+              {% elif event and (event.isCanceled) %}
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew Event</button>
               {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
             </div>
@@ -340,4 +359,37 @@
       </div>
     </div>
   </div>
+<!-- Modal for Renew Event -->
+  <form action="/event/{{eventData.id}}/renew" method='post'>
+
+  <div class="modal fade" id="renewWarning" tabindex="-1" aria-labelledby="renewModel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="renewModel">Renew Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p> Are you sure you want to renew this event?</p>
+          <p> A renewed event will use the current event's RSVP and location information to create a new event.</p>
+          <div class="form-group">
+                {{ locationTimeMacro(eventData, hideDate, 'modal') }}
+          </div>
+        
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Renew Event</button>
+          </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</form>
+
+
+
+
+
+
+
 {% endblock %}
