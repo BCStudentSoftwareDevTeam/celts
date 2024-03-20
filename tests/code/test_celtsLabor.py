@@ -65,7 +65,8 @@ def test_refreshCeltsLaborRecords():
                           term = Term.get_by_id(3), 
                           isAcademicYear = False)
 
-        celtsLaborRecords= [row.user for row in CeltsLabor.select()]
+        celtsLaborSelect = CeltsLabor.select()
+        celtsLaborRecords = [row.user for row in celtsLaborSelect]
 
         summer2021 = Term.get_by_id(3)
         assert ayisie in celtsLaborRecords
@@ -85,8 +86,8 @@ def test_refreshCeltsLaborRecords():
                            }
 
         refreshCeltsLaborRecords(updatedLaborDict)
-
-        celtsLaborTest = [row.user for row in CeltsLabor.select()]
+        celtsLaborSelect = CeltsLabor.select()
+        celtsLaborTest = [row.user for row in celtsLaborSelect]
         assert ayisie  in celtsLaborTest 
         assert neillz in celtsLaborTest
 
@@ -186,8 +187,9 @@ def test_updateCeltsLaborFromLsf():
                           positionTitle = "Habitat For Humanity Cord.", 
                           term = Term.get_by_id(2), 
                           isAcademicYear = True)
-
-        celtsLaborRecords = [row.user for row in CeltsLabor.select()]
+        
+        celtsLaborSelect = CeltsLabor.select()
+        celtsLaborRecords = [row.user for row in celtsLaborSelect]
 
         assert ayisie in celtsLaborRecords 
         assert mupotsal in celtsLaborRecords 
@@ -198,7 +200,9 @@ def test_updateCeltsLaborFromLsf():
         updateCeltsLaborFromLsf()    
         Fall2020 = Term.get_by_id(1)
         Fall2024 = Term.get_by_id(4)
-        celtsLaborTest = [row.user for row in CeltsLabor.select()]
+
+        celtsLaborSelect = CeltsLabor.select()
+        celtsLaborTest = [row.user for row in celtsLaborSelect]
         
         assert agliullovak in celtsLaborTest
         assert partont in celtsLaborTest
@@ -207,7 +211,6 @@ def test_updateCeltsLaborFromLsf():
         assert mupotsal in celtsLaborTest
 
         newZachPositions = list(CeltsLabor.select().where(CeltsLabor.user == "neillz"))
-        print(newZachPositions)
         
         assert newZachPositions[0].positionTitle == "Fake Position"
         assert newZachPositions[0].term == Fall2020
