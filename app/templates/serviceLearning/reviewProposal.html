@@ -16,7 +16,7 @@
               <tr>
                 <td class="fw-bold"> Instructor(s)</td>
                 <td>
-                  {% for instructor in instructors_data %}
+                  {% for instructor in instructorsData %}
                   <table>{{instructor.user.firstName}} {{instructor.user.lastName}}</table>
                   {% endfor%}
                 </td>
@@ -55,7 +55,7 @@
           {% if course.status.status == "Approved" %}
             <button type="button" class="btn btn-warning" data-id="{{course.id}}" id="unapproveButton" onclick="unapproveProposal(this)">Unapprove</button>
           {% else %}
-            <a type="button" href="/serviceLearning/editProposal/{{course.id}}"  class="btn btn-primary">Edit</a>
+            <a type="button" href="/serviceLearning/editProposal/{{course.id }}"  class="btn btn-primary">Edit</a>
             <button type="button" class="btn btn-success" data-id="{{course.id}}" id="approveButton" onclick="approveProposal(this)">Approve</button>
           {% endif %}
         </div>

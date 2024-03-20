@@ -17,7 +17,7 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -92,7 +92,7 @@ def deleteAllRecurringEvents(eventId):
                 aRecurringEvent.delete_instance(recursive = True)
 
 
-def attemptSaveEvent(eventData, attachmentFiles = None):
+def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
     Tries to save an event to the database:
     Checks that the event data is valid and if it is it continus to saves the new
@@ -108,41 +108,44 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
     newEventData = preprocessEventData(eventData)
+    
     isValid, validationErrorMessage = validateNewEventData(newEventData)
-
+    
     if not isValid:
         return False, validationErrorMessage
 
     try:
-        events = saveEventToDb(newEventData)
+        events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
             for event in events:
-                addFile= FileHandler(attachmentFiles, eventId=event.id)
+                addFile = FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
-
-        return events, " "
+        return events, ""
     except Exception as e:
-        print(f'Failed attemptSaveEvent() with Exception:{e}')
+        print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
 
-def saveEventToDb(newEventData):
-    if not newEventData.get('valid', False):
+def saveEventToDb(newEventData, renewedEvent = False):
+    
+    if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
-
+    
+    
     isNewEvent = ('id' not in newEventData)
 
-
+    
     eventsToCreate = []
     recurringSeriesId = None
-    if isNewEvent and newEventData['isRecurring']:
+    if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
+        if renewedEvent:
+            recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
-
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -179,7 +182,6 @@ def saveEventToDb(newEventData):
                 updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
             eventRecords.append(eventRecord)
-
     return eventRecords
 
 def getStudentLedEvents(term):
@@ -350,24 +352,28 @@ def validateNewEventData(data):
 
     if data['timeEnd'] <= data['timeStart']:
         return (False, "Event end time must be after start time.")
-
+    
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        event = (Event.select()
-                      .where((Event.name == data['name']) &
-                             (Event.location == data['location']) &
-                             (Event.startDate == data['startDate']) &
-                             (Event.timeStart == data['timeStart'])))
+        sameEventList = list((Event.select().where((Event.name == data['name']) &
+                                                   (Event.location == data['location']) &
+                                                   (Event.startDate == data['startDate']) &
+                                                   (Event.timeStart == data['timeStart'])).execute()))
+        
+        sameEventListCopy = sameEventList.copy()
+
+        for event in sameEventListCopy:
+            if event.isCanceled or event.recurringId:   
+                sameEventList.remove(event)
 
         try:
             Term.get_by_id(data['term'])
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
-
-        if event.exists():
+        if sameEventList:
             return (False, "This event already exists")
-
+        
     data['valid'] = True
     return (True, "All inputs are valid.")
 
@@ -438,18 +444,18 @@ def preprocessEventData(eventData):
             eventData[date] = parser.parse(eventData[date])
         elif not isinstance(eventData[date], datetime.date):
             eventData[date] = ''
-
+    
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
-
+    
     # Process terms
     if 'term' in eventData:
         try:
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
-
+    
     # Process requirement
     if 'certRequirement' in eventData:
         try:
@@ -461,7 +467,6 @@ def preprocessEventData(eventData):
         match = RequirementMatch.get_or_none(event=eventData['id'])
         if match:
             eventData['certRequirement'] = match.requirement
-
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
@@ -501,3 +506,20 @@ def getEventRsvpCount(eventId):
         Returns the number of RSVP'd participants for a given eventId.
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
+
+def copyRsvpToNewEvent(priorEvent, newEvent):
+    """
+        Copies rvsps from priorEvent to newEvent
+    """
+    rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent['id']).execute())
+    
+    for student in rsvpInfo:
+        newRsvp = EventRsvp(
+                user = student.user,
+                event = newEvent,
+                rsvpWaitlist = student.rsvpWaitlist
+            )
+        newRsvp.save()
+    numRsvps = len(rsvpInfo)
+    if numRsvps:
+        createRsvpLog(newEvent, f"Copied {numRsvps} Rsvps from {priorEvent['name']} to {newEvent.name}")
