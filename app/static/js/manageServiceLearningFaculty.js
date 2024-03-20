@@ -64,7 +64,7 @@ $(document).ready( function () {
     })
   });
 
-  /************** Course Participant Stuff **************/
+  /************** Course Participant Logic **************/
     $("#modalCourseParticipant").on("click", function () {
       $("#submitImportedCourses").modal("toggle");
     });
@@ -106,5 +106,4 @@ $(document).ready( function () {
         }
     });
 });
-
 

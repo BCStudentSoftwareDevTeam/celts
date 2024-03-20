@@ -115,6 +115,21 @@ def approvedCourses(termId: int) -> List[Course]:
 
     return approvedCourses
 
+def importedCourses(termId: int) -> List[Course]:
+    """
+    Queries the database to get all the necessary information for
+    imported courses.
+    """
+    importedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+                                               .join(CourseInstructor, JOIN.LEFT_OUTER)
+                                               .join(User, JOIN.LEFT_OUTER).switch(Course)
+                                               .join(CourseStatus).switch(Course)
+                                               .join(Term)
+                                               .where(Term.id == termId, Course.status == CourseStatus.IMPORTED)
+                                               .group_by(Course, Term, CourseStatus))
+
+    return importedCourses
+
 def getInstructorCourses() -> Dict[User, str]:
     """
     This function queries all of the course instructors and their classes and maps
@@ -251,6 +266,40 @@ def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
             transaction.rollback()
             return False
         
+def editImportedCourses(courseData):
+    """
+        This function will take in courseData for the SLC proposal page and a dictionary
+        of instructors assigned to the imported course after that one is edited 
+        and update the information in the db.
+    """
+
+    with mainDB.atomic() as transaction:
+        try:
+            course = Course.get_by_id(courseData["courseId"])
+            
+            Course.update(courseName=courseData["courseName"]).where(Course.id == course.id).execute()
+
+            (CourseParticipant.update(hoursEarned=courseData["hoursEarned"])
+                              .where(CourseParticipant.course_id == course.id).execute())
+            
+            instructorList = []
+            if 'instructor[]' in courseData:
+                instructorList = courseData.getlist('instructor[]') 
+                CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
+                
+                for instructor in instructorList: 
+                    # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
+                    if instructor: 
+                        CourseInstructor.create(course=course, user=instructor)
+                        
+
+            return Course.get_by_id(course.id)
+
+        except Exception as e:
+            print(e)
+            transaction.rollback()
+            return False
+        
 ########### Course Actions ###########
 
 def parseUploadedFile(filePath):
@@ -365,7 +414,7 @@ def parseUploadedFile(filePath):
                 errors.append((errorMsg,0))
 
         # Look for a B-Number. Example: B00123456
-        else:      
+        elif regex.search(r"\b[B]\d{8}\b", str(cellVal)):      
             errorMsg = displayMsg = ''
             if not course:
                 errorMsg = "ERROR: No course is connected to this student"
@@ -383,5 +432,9 @@ def parseUploadedFile(filePath):
                 'errorMsg': errorMsg})
             if errorMsg:
                 errors.append((errorMsg,0))
+            
+        elif cellVal: # but didn't match the regex
+            errors.append((f'ERROR: "{cellVal}" in row {cellRow} of the Excel document does not appear to be a term, course, or valid B#.',1))
+        
 
     return result, errors
