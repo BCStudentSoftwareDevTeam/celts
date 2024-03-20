@@ -68,7 +68,7 @@ def test_refreshCeltsLaborRecords():
         celtsLaborRecords= [row.user for row in CeltsLabor.select()]
 
         summer2021 = Term.get_by_id(3)
-        assert ayisie  in celtsLaborRecords
+        assert ayisie in celtsLaborRecords
         assert neillz not in celtsLaborRecords
         
         ayisieOriginalPosition = list(CeltsLabor.select().where(CeltsLabor.user == "ayisie"))
@@ -189,7 +189,7 @@ def test_updateCeltsLaborFromLsf():
 
         celtsLaborRecords = [row.user for row in CeltsLabor.select()]
 
-        assert ayisie  in celtsLaborRecords 
+        assert ayisie in celtsLaborRecords 
         assert mupotsal in celtsLaborRecords 
         assert neillz not in celtsLaborRecords
         assert agliullovak not in celtsLaborRecords
@@ -203,7 +203,7 @@ def test_updateCeltsLaborFromLsf():
         assert agliullovak in celtsLaborTest
         assert partont in celtsLaborTest
         assert neillz in celtsLaborTest
-        assert ayisie  in celtsLaborTest 
+        assert ayisie in celtsLaborTest 
         assert mupotsal in celtsLaborTest
 
         newZachPositions = list(CeltsLabor.select().where(CeltsLabor.user == "neillz"))
