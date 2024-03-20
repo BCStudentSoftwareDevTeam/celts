@@ -9,57 +9,63 @@ from app.logic.spreadsheet import *
 
 
 @pytest.mark.integration
-def test_create_spreadsheet():
-    create_spreadsheet("2020-2021")
+def test_createSpreadsheet():
+    createSpreadsheet("2020-2021")
 
 @pytest.mark.integration
 def test_calculateRetentionRate():
-    fall_dict=({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
-    spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
-    assert calculateRetentionRate(fall_dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
+    fallDict = ({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
+    springDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    assert calculateRetentionRate(fallDict, springDict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
 
-    fall_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
-    assert calculateRetentionRate(fall_dict,spring_dict) == {'Hunger Initiatives': 1.0}
+    fallDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 1.0}
 
-    fall_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
-    spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie']})
-    assert calculateRetentionRate(fall_dict,spring_dict) == {'Hunger Initiatives': 0.75}
+    fallDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    springDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie']})
+    assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 0.75}
 
 @pytest.mark.integration
 def test_removeNullParticipants():
-    test_input_list = ['khatts']
-    assert removeNullParticipants(test_input_list) == ['khatts']
-    test_input_list = ['khatts', '', 'ayisie']
-    assert removeNullParticipants(test_input_list) == ['khatts', 'ayisie']
+    testInputList = ['khatts']
+    assert removeNullParticipants(testInputList) == ['khatts']
+    testInputList = ['khatts', '', 'ayisie']
+    assert removeNullParticipants(testInputList) == ['khatts', 'ayisie']
 
 @pytest.mark.integration
 def test_termParticipation():
     with mainDB.atomic() as transaction:    
-        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
+        assert termParticipation('Fall 2020') == {'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
 
         EventParticipant.create(user = 'partont',
                                 event = 10,
                                 hoursEarned = 1)
-        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': [None]}
+        termParticipationResult = termParticipation('Fall 2020')
+        for program in termParticipationResult:
+            termParticipationResult[program].sort()
+        assert termParticipationResult == {'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': [None]}
 
         EventParticipant.create(user = 'ayisie',
                                 event = 14,
                                 hoursEarned = 1)
-        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': ['ayisie']}
+        termParticipationResult = termParticipation('Fall 2020')
+        for program in termParticipationResult:
+            termParticipationResult[program].sort()
+        assert termParticipationResult == {'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': ['ayisie']}
         transaction.rollback()
 
 @pytest.mark.integration
 def test_getRetentionRate():
     with mainDB.atomic() as transaction:
         User.create(username = 'solijonovam',
-            bnumber = 'B00769465',
-            email = 'solijonovam@berea.edu',
-            phoneNumber = '732-384-3469',
-            firstName = 'Madinabonu',
-            lastName  = 'Solijonova',
-            isStudent = True,
-            major = 'Agriculture',
-            classLevel = 'Sophomore')
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
@@ -73,8 +79,8 @@ def test_getRetentionRate():
                                                  ('Test Program', '0.0%')]
         
         testEvent2 = Event.create(name="Test Event2",
-                                 term=2, #Fall 2021
-                                 program=testProgram)
+                                  term=2, #Fall 2021
+                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
@@ -87,14 +93,14 @@ def test_getRetentionRate():
 def test_repeatVolunteers():
     with mainDB.atomic() as transaction:
         User.create(username = 'solijonovam',
-            bnumber = 'B00769465',
-            email = 'solijonovam@berea.edu',
-            phoneNumber = '732-384-3469',
-            firstName = 'Madinabonu',
-            lastName  = 'Solijonova',
-            isStudent = True,
-            major = 'Agriculture',
-            classLevel = 'Sophomore')
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
@@ -117,14 +123,14 @@ def test_repeatVolunteers():
 def test_repeatVolunteersPerProgram():
     with mainDB.atomic() as transaction:
         User.create(username = 'solijonovam',
-            bnumber = 'B00769465',
-            email = 'solijonovam@berea.edu',
-            phoneNumber = '732-384-3469',
-            firstName = 'Madinabonu',
-            lastName  = 'Solijonova',
-            isStudent = True,
-            major = 'Agriculture',
-            classLevel = 'Sophomore')
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
@@ -184,24 +190,24 @@ def test_volunteerHoursByProgram():
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
-                                        programDescription = "A good program")
+                                     programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
-                                    term=3,
-                                    program=testProgram)
+                                 term=3,
+                                 program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent,
                                 hoursEarned=2
                                 )
         testEvent2 = Event.create(name="Test Event",
-                                    term=2,
-                                    program=testProgram)
+                                  term=2,
+                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=3
                                 )
         testEvent3 = Event.create(name="Test Event",
-                                    term=4,
-                                    program=testProgram)
+                                  term=4,
+                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent3,
                                 hoursEarned=5
@@ -231,6 +237,13 @@ def test_onlyCompletedAllVolunteer():
                                 event = testEvent, #Added to all volunteer training event
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == [('solijonovam', 'Madinabonu Solijonova')]
+        testEvent2 = Event.create(name="Test Event",
+                                  program=1,
+                                  term=1)
+        EventParticipant.create(user = 'solijonovam', #Not participated in event
+                                event = testEvent2, #Added to all volunteer training event
+                                hoursEarned = 1)
+        assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
         transaction.rollback()
 
 @pytest.mark.integration
@@ -279,34 +292,31 @@ def test_getVolunteerProgramEventByTerm():
                                                                                      ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
         
         User.create(username = 'solijonovam',
-                bnumber = 'B00769465',
-                email = 'solijonovam@berea.edu',
-                phoneNumber = '732-384-3469',
-                firstName = 'Madinabonu',
-                lastName  = 'Solijonova',
-                isStudent = True,
-                major = 'Agriculture',
-                classLevel = 'Sophomore')
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
-                                        programDescription = "A good program")
+                                     programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
-                                    term=3,
-                                    program=testProgram)
+                                 term=3,
+                                 program=testProgram)
         EventParticipant.create(user='solijonovam',
-                                event=testEvent,
-                                )
+                                event=testEvent)
         testEvent2 = Event.create(name="Test Event",
-                                    term=2,
-                                    program=testProgram)
+                                  term=2,
+                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
-                                event=testEvent2,
-                                )
+                                event=testEvent2)
         testEvent3 = Event.create(name="Test Event",
-                                    term=4,
-                                    program=testProgram)
+                                  term=4,
+                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
-                                event=testEvent3,
-                                )
+                                event=testEvent3)
         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3)).execute()) == [('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event')]
         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(2)).execute()) == [('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
                                                                                      ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
@@ -333,14 +343,14 @@ def test_getUniqueVolunteers():
                                                                     ('partont', 'Tyler Parton', 'B00751360')])
         
         User.create(username = 'solijonovam',
-                        bnumber = 'B00769465',
-                        email = 'solijonovam@berea.edu',
-                        phoneNumber = '732-384-3469',
-                        firstName = 'Madinabonu',
-                        lastName  = 'Solijonova',
-                        isStudent = True,
-                        major = 'Agriculture',
-                        classLevel = 'Sophomore')
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
         testEvent = Event.create(name="Test Event",
                                  term=1,
                                  program=1)

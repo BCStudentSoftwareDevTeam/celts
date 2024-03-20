@@ -26,14 +26,14 @@ def getUniqueVolunteers(academicYear):
 def getVolunteerProgramEventByTerm(term):
 # Volunteers by term for each event the participated in for wich program. user: program, event, term
 
-    bloo = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
+    volunteersByTerm = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
                             .join(User).switch(EventParticipant)
                             .join(Event)
                             .join(Program)
                             .where(Event.term_id == term)
                             .order_by(EventParticipant.user_id))
-    
-    return bloo.tuples()
+
+    return volunteersByTerm.tuples()
 
 def totalVolunteerHours(): 
     
@@ -119,16 +119,16 @@ def repeatVolunteers():
 
 def getRetentionRate(academicYear):
     retentionDict = []
-    (fall, spring) = academicYear.split("-")
+    fall, spring = academicYear.split("-")
     fallParticipationDict = termParticipation(f"Fall {fall}")
     springParticipationDict = termParticipation(f"Spring {spring}")  
 
     # calculate the retention rate using the defined function
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
-    for program, retention_rate in retentionRateDict.items():
-         retentionDict.append((program, str(round(retention_rate * 100, 2)) + "%"))
+    for program, retentionRate in retentionRateDict.items():
+         retentionDict.append((program, str(round(retentionRate * 100, 2)) + "%"))
 
-    return  retentionDict
+    return retentionDict
 
 def termParticipation(termDescription):
     participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
@@ -143,16 +143,16 @@ def termParticipation(termDescription):
         participant = result['participant']
         programParticipationDict[progName].append(participant)
 
-    return programParticipationDict
+    return dict(programParticipationDict)
 
 def removeNullParticipants(participantList):
     # loop through the list and remove all entries that do not have a participant
-    return list(filter(lambda participant: bool(participant), participantList))
+    return list(filter(lambda participant: participant, participantList))
     
 # function to calculate the retention rate for each program
 def calculateRetentionRate(fallDict, springDict):
     retentionDict = {}
-    for program in fallDict.keys():
+    for program in fallDict:
         fallParticipants = set(removeNullParticipants(fallDict[program]))
         springParticipants = set(removeNullParticipants(springDict.get(program, [])))
         retentionRate = 0.0
@@ -265,7 +265,7 @@ def makeDataXls(getData, columnTitles, sheetName, workbook):
         setColumnWidth = max(len(str(x)) for x in columnData)
         worksheet.set_column(column, column, setColumnWidth + 3)
 
-def create_spreadsheet(academicYear): 
+def createSpreadsheet(academicYear): 
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
@@ -278,7 +278,7 @@ def create_spreadsheet(academicYear):
     uniqueVolunteersColumns = ["Username", "Full Name", "B-Number"]
     totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
-    onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
+    onlyCompletedAllVolunteerColumns = ["Username", "Full Name"]
     volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
 
   
@@ -292,7 +292,7 @@ def create_spreadsheet(academicYear):
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
     makeDataXls(onlyCompletedAllVolunteer(academicYear), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
-    makeDataXls(getVolunteerProgramEventByTerm(Term.get_or_none(f"Fall {academicYear.split('-')[0]}")), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
+    makeDataXls(getVolunteerProgramEventByTerm(Term.get_or_none(Term.description == f"Fall {academicYear.split('-')[0]}")), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
     
     workbook.close()
 
