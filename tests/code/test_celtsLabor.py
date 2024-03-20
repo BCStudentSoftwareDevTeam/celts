@@ -78,11 +78,11 @@ def test_refreshCeltsLaborRecords():
         assert ayisieOriginalPosition[0].isAcademicYear == False
 
         updatedLaborDict = {"neillz": {'Fake Position': ['2020-2021', '2021-2022'], 
-                                'Fake Position But a Leader': ['2022-2023'], 
-                                'Fake Position In The Summer': ['2021-2022']
-                               },
-                    "ayisie": {'Not Bonner Manager': ['2020-2021']}
-                    }
+                                       'Fake Position But a Leader': ['2022-2023'], 
+                                       'Fake Position In The Summer': ['2021-2022']
+                                      },
+                            "ayisie": {'Not Bonner Manager': ['2020-2021']}
+                           }
 
         refreshCeltsLaborRecords(updatedLaborDict)
 
@@ -105,49 +105,49 @@ def demoLsfData():
     '''
     Mock up of the JSON resonse data that is returend from the LSF endpoint.
     '''
-    fakeLsfData = {"B00751864":[{"positionTitle": "Fake Position",
+    fakeLsfData = {"B00751864":[{"positionTitle": "Fake Position", #neilz
                                  "termCode": "202000",
                                  "laborStart": 12-13-2020,
                                  "laborEnd": 12-13-2021,
                                  "jobType": "Primary", 
                                  "wls": "1", 
                                  "termName": "AY 2020-2021"},
-                                 {"positionTitle": "Fake Position",
-                                  "termCode": "202000",
-                                  "laborStart": 12-13-2021,
-                                  "laborEnd": 12-13-2022,
-                                  "jobType": "Primary", 
-                                  "wls": "1", 
-                                  "termName": "AY 2021-2022"},
-                                 {"positionTitle": "Fake Position But a Leader",
-                                  "termCode": "202000",
-                                  "laborStart": 12-13-2022,
-                                  "laborEnd": 12-13-2023,
-                                  "jobType": "Primary", 
-                                  "wls": "1", 
-                                  "termName": "AY 2022-2023"},
-                                 {"positionTitle": "Fake Position In The Summer",
-                                  "termCode": "202013",
-                                  "laborStart": 12-13-2021,
-                                  "laborEnd": 12-13-2022,
-                                  "jobType": "Primary", 
-                                  "wls": "1", 
-                                  "termName": "AY 2021-2022"},
-                                 {"positionTitle": "Fake Position Not In AY or Summer",
-                                  "termCode": "202004",
-                                  "laborStart": 12-13-2021,
-                                  "laborEnd": 12-13-2022,
-                                  "jobType": "Primary", 
-                                  "wls": "1", 
-                                  "termName": "AY 2021-2022"}],
-                   "B00751360":[{"positionTitle": "Fake Position Tyler",
+                                {"positionTitle": "Fake Position",
+                                 "termCode": "202000",
+                                 "laborStart": 12-13-2021,
+                                 "laborEnd": 12-13-2022,
+                                 "jobType": "Primary", 
+                                 "wls": "1", 
+                                 "termName": "AY 2021-2022"},
+                                {"positionTitle": "Fake Position But a Leader",
+                                 "termCode": "202000",
+                                 "laborStart": 12-13-2022,
+                                 "laborEnd": 12-13-2023,
+                                 "jobType": "Primary", 
+                                 "wls": "1", 
+                                 "termName": "AY 2022-2023"},
+                                {"positionTitle": "Fake Position In The Summer",
+                                 "termCode": "202013",
+                                 "laborStart": 12-13-2021,
+                                 "laborEnd": 12-13-2022,
+                                 "jobType": "Primary", 
+                                 "wls": "1", 
+                                 "termName": "AY 2021-2022"},
+                                {"positionTitle": "Fake Position Not In AY or Summer",
+                                 "termCode": "202004",
+                                 "laborStart": 12-13-2021,
+                                 "laborEnd": 12-13-2022,
+                                 "jobType": "Primary", 
+                                 "wls": "1", 
+                                 "termName": "AY 2021-2022"}],
+                   "B00751360":[{"positionTitle": "Fake Position Tyler", # partont
                                  "termCode": "202000",
                                  "laborStart": 12-13-2020,
                                  "laborEnd": 12-13-2021,
                                  "jobType": "Primary", 
                                  "wls": "1", 
                                  "termName": "AY 2020-2021"}],
-                   "B00759117":[{"positionTitle": "Fake Position Karina",
+                   "B00759117":[{"positionTitle": "Fake Position Karina", # agliullovak
                                  "termCode": "202000",
                                  "laborStart": 12-13-2020,
                                  "laborEnd": 12-13-2021,
@@ -188,7 +188,6 @@ def test_updateCeltsLaborFromLsf():
                           isAcademicYear = True)
 
         celtsLaborRecords = [row.user for row in CeltsLabor.select()]
-        
 
         assert ayisie  in celtsLaborRecords 
         assert mupotsal in celtsLaborRecords 
@@ -208,6 +207,7 @@ def test_updateCeltsLaborFromLsf():
         assert mupotsal in celtsLaborTest
 
         newZachPositions = list(CeltsLabor.select().where(CeltsLabor.user == "neillz"))
+        print(newZachPositions)
         
         assert newZachPositions[0].positionTitle == "Fake Position"
         assert newZachPositions[0].term == Fall2020
