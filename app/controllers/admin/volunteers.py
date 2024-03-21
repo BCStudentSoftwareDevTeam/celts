@@ -121,9 +121,7 @@ def volunteerDetailsPage(eventID):
 def addVolunteer(eventId):
     event = Event.get_by_id(eventId)
     successfullyAddedVolunteer = False
-    usernameList = []
-    usernameList = request.form.getlist("volunteer[]")
-
+    usernameList = request.form.getlist("selectedVolunteers[]")
     successfullyAddedVolunteer = False
     alreadyAddedList = []
     addedSuccessfullyList = []
@@ -143,7 +141,7 @@ def addVolunteer(eventId):
     volunteers = ""
     if alreadyAddedList:
         volunteers = ", ".join(vol for vol in alreadyAddedList)
-        flash(f"{volunteers} already in table.", "warning")
+        flash(f"{volunteers} was already added to this event.", "warning")
 
     if addedSuccessfullyList:
         volunteers = ", ".join(vol for vol in addedSuccessfullyList)

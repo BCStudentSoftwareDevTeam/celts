@@ -55,7 +55,7 @@ def landingPage():
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
 
-    return render_template("/main/landingPage.html",
+    return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList=programsWithEventsList)
@@ -73,20 +73,20 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
-
+    
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
-
+    term = Term.get_by_id(currentTerm) 
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-
+    
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
@@ -146,7 +146,7 @@ def viewUsersProfile(username):
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try:
+            try: 
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -201,7 +201,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-
+    
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -210,8 +210,8 @@ def emergencyContactInfo(username):
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Emergency contact information saved successfully!', 'success')
-
+        flash('Emergency contact information saved successfully!', 'success') 
+        
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
@@ -243,7 +243,7 @@ def insuranceInfo(username):
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Insurance information saved successfully!', 'success')
+        flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
@@ -254,7 +254,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-
+   
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -468,8 +468,7 @@ def updateTranscript(username, program_id):
         return jsonify({'status': 'success'})
     except ProgramBan.DoesNotExist:
         return jsonify({'status': 'error'})
-
-
+    
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
@@ -490,29 +489,17 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
-@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
-def reviewProposal():
-    """
-    this function gets the submitted course id and returns the its data to the review proposal modal
-    """
-    courseID=request.form
-    course=Course.get_by_id(courseID["course_id"])
-    instructors_data=course.courseInstructors
-    return render_template('/main/reviewproposal.html',
-                            course=course,
-                            instructors_data=instructors_data)
-
 @main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
 def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user)
+        userInfo = User.get(User.username == user) 
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
             createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
@@ -522,5 +509,5 @@ def getDietInfo():
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     toggleMinorInterest(username)
-
+    
     return ""
