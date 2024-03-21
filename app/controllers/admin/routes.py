@@ -36,7 +36,6 @@ from app.controllers.admin import admin_bp
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getInstructorCourses
 
 
-
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
     if app.env == "production":
