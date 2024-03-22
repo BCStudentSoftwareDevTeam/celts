@@ -1,3 +1,5 @@
+import logging
+import sys
 import pyodbc
 from ldap3 import Server, Connection, ALL
 import peewee
@@ -6,23 +8,32 @@ from app import app
 from app.models.user import User
 from app.logic.utils import getUsernameFromEmail
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("import_users_log.txt")
+    ]
+)
+
 def main():
     """
     This function runs the updateRecords function once the script is run.
     """
-    print("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
+    logging.info("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
 
-    print("\nGetting Updated Names, Majors, and Class Levels\n--------------------------------------------------\n")
+    logging.info("\nGetting Updated Names, Majors, and Class Levels\n--------------------------------------------------\n")
 
     addToDb(getStudentData())
-    print("done.")
+    logging.info("done.")
     addToDb(getFacultyStaffData())
-    print("done.")
+    logging.info("done.")
 
-    print("\n\nGetting Preferred Names\n--------------------------\n")
+    logging.info("\n\nGetting Preferred Names\n--------------------------\n")
 
     ldap = getLdapConn()
-    print("LDAP Connected.")
+    logging.info("LDAP Connected.")
 
     people = fetchLdapList(ldap, alphaRange('a','d'))
     people += fetchLdapList(ldap, alphaRange('e','j'))
@@ -30,7 +41,7 @@ def main():
     people += fetchLdapList(ldap, alphaRange('q','z'))
 
     updateFromLdap(people)
-    print("Update Complete.")
+    logging.info("Update Complete.")
 
 def alphaRange(start,end):
     return [chr(i) for i in range(ord(start), ord(end)+1)]
@@ -39,7 +50,7 @@ def getLdapConn():
     server = Server ('berea.edu', port=389, use_ssl=False, get_info='ALL')
     conn   = Connection (server, user=app.config['ldap']['user'], password=app.config['ldap']['password'])
     if not conn.bind():
-        print(conn.result)
+        logging.error(conn.result)
         raise Exception("BindError")
 
     return conn
@@ -50,7 +61,7 @@ def fetchLdapList(conn, startletters):
       f"(|" + "".join(map(lambda s: f"(givenname={s}*)", startletters)) + ")",
       attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
       )
-    print(f"Found {len(conn.entries)} {startletters[0]}-{startletters[-1]} in AD");
+    logging.info(f"Found {len(conn.entries)} {startletters[0]}-{startletters[-1]} in AD");
     return conn.entries
 
 def updateFromLdap(people):
@@ -61,7 +72,7 @@ def updateFromLdap(people):
         if preferred:
             count = User.update(firstName=preferred).where(User.bnumber == bnumber).execute()
             if count:
-                print(f"Updating {bnumber} name to {preferred}")
+                logging.info(f"Updating {bnumber} name to {preferred}")
 
 # Return the value for a key or None
 # Can't use .get() because it's a ldap3.abstract.entry.Entry instead of a Dict
@@ -93,16 +104,16 @@ def addToDb(userList):
                 (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'])
                      .where(user['bnumber'] == User.bnumber)).execute()
             else:
-                print(f"No username for {user['bnumber']}!", user)
+                logging.warning(f"No username for {user['bnumber']}!", user)
 
         except Exception as e:
-            print(e)
+            logging.error(e)
 
 def getFacultyStaffData():
     """
     This function pulls all the faculty and staff data from Tracy and formats for our table
     """
-    print("Retrieving Faculty data from Tracy...",end="")
+    logging.info("Retrieving Faculty data from Tracy...",end="")
     c = getMssqlCursor()
     return [
           { "username": getUsernameFromEmail(row[4].strip()),
@@ -124,7 +135,7 @@ def getStudentData():
     """
     This function pulls all the student data from Tracy and formats for our table
     """
-    print("Retrieving Student data from Tracy...",end="")
+    logging.info("Retrieving Student data from Tracy...",end="")
     c = getMssqlCursor()
     return [
           { "username": getUsernameFromEmail(row[9].strip()),
