@@ -1,0 +1,14 @@
+{
+    "name": "Python Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+    // Use the `remoteUser` property to set the user inside the container to match your local user.
+    "remoteUser": "vscode",
+
+    // Add any forwardPorts settings if needed
+    "forwardPorts": [],
+
+    "postCreateCommand": "pip install -r requirements.txt"
+}
