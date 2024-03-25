@@ -45,7 +45,9 @@ def getMinorProgress():
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), fn.SUM(summerCase).alias('hasSummer'),(CommunityEngagementRequest.status).alias('requestedEngagement'))
+        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
+                                                                    fn.SUM(summerCase).alias('hasSummer'),
+                                                                    (CommunityEngagementRequest.id).alias('requestedEngagement'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .join(CommunityEngagementRequest, on= (User.username == CommunityEngagementRequest.user))
@@ -53,6 +55,8 @@ def getMinorProgress():
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
+    print(list(engagedStudentsWithCount.execute()))
+
     
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,
@@ -62,6 +66,7 @@ def getMinorProgress():
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
 
     return engagedStudentsList
+
    
 def toggleMinorInterest(username):
     """
