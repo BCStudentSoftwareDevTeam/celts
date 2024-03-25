@@ -28,6 +28,10 @@ $(document).ready(function() {
 
       } else if ($(this).attr('data-content') == "In Progress") {
         return "This proposal has not been submitted for review."
+
+      } else if ($(this).attr('data-content') == "Imported") {
+        return "This proposal has been submitted and is waiting for review."
+
       }
     }
   });
@@ -227,6 +231,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
           updateInstructorsTable(courseDict['instructors']);
         }
       }
+      
       if (callback) callback();
     } 
   });

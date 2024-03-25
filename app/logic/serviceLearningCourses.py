@@ -283,15 +283,15 @@ def editImportedCourses(courseData):
                               .where(CourseParticipant.course_id == course.id).execute())
             
             instructorList = []
+            CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
+            
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]') 
-                CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
                 
                 for instructor in instructorList: 
                     # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
                     if instructor: 
-                        CourseInstructor.create(course=course, user=instructor)
-                        
+                        CourseInstructor.create(course=course, user=instructor)         
 
             return Course.get_by_id(course.id)
 
