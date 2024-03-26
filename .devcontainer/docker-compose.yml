@@ -23,8 +23,8 @@ services:
     restart: always
     environment: 
       MYSQL_DATABASE: 'celts-db'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'BullShit1!'
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - '3307:3307'
