@@ -11,7 +11,7 @@ $(document).ready(function() {
     }
   });
   $("#withdrawBtn").on("click", withdraw);
-  $("#importedmodal").on("hide.bs.modal", emptyInstructorTable);
+  $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
   $("#renewBtn").on("click", renew);
 
   var statusKey = $(".status-key");
@@ -57,7 +57,7 @@ $(document).ready(function() {
   });
 
   // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-  $('#importedmodal').on('shown.bs.modal', function () {
+  $('#alterModal').on('shown.bs.modal', function () {
     // Now that the modal is shown, iterate over the rows
     $('#instructorTableBody tr').each(function(){
         var username = getRowUsername(this);
@@ -101,7 +101,7 @@ function changeAction(action){
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if (courseAction == "Modify"){ 
-    showimportedmodalWithCourse(courseID);
+    showAlterModalWithCourse(courseID);
   } else if(courseAction == "Print"){
     printDocument(`/serviceLearning/print/${courseID}`)
   } else if (courseAction == "Review"){
@@ -189,22 +189,22 @@ function unapproveProposal(el){
 }
 
 /************** Imported Courses Modal Functions **************/
-function showimportedmodalWithCourse(courseID) {
+function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
-    $('#importedmodal #alterCourseId').val(courseID);
+    $('#alterModal #alterCourseId').val(courseID);
 
-    $('#importedmodal').modal('show');
+    $('#alterModal').modal('show');
   });
 
   $('#saveButton').on('click', function(event) {
     event.preventDefault();
     var instructorData = getCourseInstructors();
     // Assuming you need to clear specific instructor inputs for some reason before proceeding.
-    $('#importedmodal form input[name="instructor[]"]').remove();
+    $('#alterModal form input[name="instructor[]"]').remove();
     updateInstructorList(instructorData);
 
     var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
-    var $form = $('#importedmodal form');
+    var $form = $('#alterModal form');
     $form.attr('action', dynamicRoute);
     $form.submit();
 });
@@ -224,7 +224,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         let modalTitle = courseDict['courseName'] ? courseDict['courseName'] : courseDict['courseAbbreviation'] 
         
         // Find the element with class "modal-header" and "fw-bold" using jQuery
-        $("#importedModalTitle").text("Edit " + modalTitle);
+        $("#alterModalTitle").text("Edit " + modalTitle);
 
         $('#hoursEarned').val(courseDict['hoursEarned']);
         if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
@@ -239,16 +239,16 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
 
 // Instructor manipulation functions
 
-function updateInstructorList(instructorData) { // This function attaches the instructors' usernames to the form submission
-  $('#importedmodal form input[name="instructor[]"]').remove();
+function updateInstructorList(instructorData) { // This function attaches the list of usernames to the form submission
+  $('#alterModal form input[name="instructor[]"]').remove();
 
   // Append new hidden inputs for each instructor
-  for (let i = 0; i < instructorData.length; i++) {
+  for (let i=0; i < instructorData.length; i++) {
       $('<input>').attr({
           type: 'hidden',
           name: 'instructor[]',
           value: instructorData[i]
-      }).appendTo('#importedmodal form');
+      }).appendTo('#alterModal form');
   };
 }
 

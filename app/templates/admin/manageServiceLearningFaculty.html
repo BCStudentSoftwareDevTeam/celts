@@ -198,10 +198,10 @@
   {% set downloadAndSend = "disabled" if approvedCourses | length == 0 else "" %} 
 
     <!-- Modal for editing imported courses -->
-    <div class="modal fade" id="importedModal">
+    <div class="modal fade" id="alterModal">
       <div class="modal-dialog">
         <div class="modal-content">
-          <h5 class="modal-header fw-bold" id="importedModalTitle"></h5>
+          <h5 class="modal-header fw-bold" id="alterModalTitle"></h5>
           <form enctype="multipart/form-data" role="form" method="POST">
             <input type="hidden" id="alterCourseId" name="courseId">
             <input type="hidden" id="alterTermId" name="termId" value="{{term}}">
