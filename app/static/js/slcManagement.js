@@ -241,14 +241,10 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
 
 function updateInstructorList(instructorData) { // This function attaches the list of usernames to the form submission
   $('#alterModal form input[name="instructor[]"]').remove();
-
+  
   // Append new hidden inputs for each instructor
   for (let i=0; i < instructorData.length; i++) {
-      $('<input>').attr({
-          type: 'hidden',
-          name: 'instructor[]',
-          value: instructorData[i]
-      }).appendTo('#alterModal form');
+      attachInstructorsInfo('#alterModal form', instructorData[i]);
   };
 }
 
@@ -260,15 +256,17 @@ function updateInstructorsTable(instructors) { // This function creates row(s) f
   instructors.forEach(function(instructor) {
     var newRow = createInstructorRow(instructor);
     $("#instructorTableBody").append(newRow);
-
-    $('<input>').attr({
-      type: 'hidden',
-      name: 'instructor[]',
-      value: instructor.username
-    }).appendTo('#instructorTableNames');
+    attachInstructorsInfo('#instructorTableNames', instructor.username);
   });
 };
 
+function attachInstructorsInfo(location, value) { // This function regulates attachments of instructors to specific locations in the code (table, form submit, ...)
+    $('<input>').attr({
+      type: 'hidden',
+      name: 'instructor[]',
+      value: value
+  }).appendTo(location);
+}
 
 function createInstructorRow(instructor) {
   // Create a new row element based on the instructor data
