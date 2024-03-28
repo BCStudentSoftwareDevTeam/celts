@@ -1,6 +1,8 @@
+
+
 $(document).ready( function () {
 
-  /******** Faculty Table Management **************/
+  /************** Faculty Table Management **************/
   var table = $('#SLCFacultyTable').DataTable({
    "fnDrawCallback": function(oSettings) {
       $('.dataTables_length').hide();
@@ -37,12 +39,12 @@ $(document).ready( function () {
   });
   
 
-  /******** Preview Events **************/
-  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
-    $('#modalPreview').removeClass('show d-block');
+  /************** Preview Events **************/
+  $('#previewImportedCourses button[data-bs-dismiss="modal"]').click(function () {
+    $('#previewImportedCourses').removeClass('show d-block');
   });
 
-  $('#modalSubmit').on('hidden.bs.modal', function () {
+  $('#submitImportedCourses').on('hidden.bs.modal', function () {
     $('#addCourseParticipant').val('');
   })
 
@@ -64,7 +66,7 @@ $(document).ready( function () {
 
   /************** Course Participant Logic **************/
     $("#modalCourseParticipant").on("click", function () {
-      $("#modalSubmit").modal("toggle");
+      $("#submitImportedCourses").modal("toggle");
     });
 
     $('#closeAddCourseParticipants').on('click', function () {
