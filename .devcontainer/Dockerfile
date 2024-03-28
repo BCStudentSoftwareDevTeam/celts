@@ -8,7 +8,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
      && apt-get -y install --no-install-recommends 
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends 
+     && apt-get -y install --no-install-recommends mysql-community-client
      
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
 RUN pip3 --disable-pip-version-check --no-cache-dir 
