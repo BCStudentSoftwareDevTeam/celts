@@ -64,7 +64,7 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
     # the earliest a user has ever been in a bonner cohort or the default start, whichever is earlier
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
 
-    cohorts = { year: [] for year in range(firstYear, currentYear+1) }
+    cohorts = {year: [] for year in range(firstYear, currentYear+1)}
     for cohort in years:
         cohorts[cohort.year].append(cohort.user)
 
