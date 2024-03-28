@@ -11,4 +11,4 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
      && apt-get -y install --no-install-recommends default-mysql-client
      
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
-RUN pip3 --disable-pip-version-check --no-cache-dir 
+# RUN pip3 --disable-pip-version-check --no-cache-dir 
