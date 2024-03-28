@@ -4,6 +4,7 @@ from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
 from playhouse.shortcuts import model_to_dict
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
 
@@ -24,7 +25,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRsvpToNewEvent
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -898,6 +899,86 @@ def test_getEventRsvpCount():
 
         transaction.rollback()
 
+@pytest.mark.integration
+def test_getCountdownToEvent():
+    """
+    This functions creates events that are different times away from the current time and tests
+    the output of the getCountdown
+    """
+    # Define a custom datetime representing the current time
+    currentTime = datetime.strptime('1/1/2024 12:00 PM', '%m/%d/%Y %I:%M %p')
+    def makeEventIn(*, timeDifference=None, **kwargs):
+        """
+        Takes in a datetime.relativedelta object or keyword argumentsand creates a 1 hour long event that starts
+        at currentTime + deltatime
+        """
+        nonlocal currentTime
+        if kwargs:
+            timeDifference = relativedelta(**kwargs)
+        eventStart = currentTime + timeDifference
+        eventEnd = eventStart + relativedelta(hours=1)
+        irrelevantEventData = {'name': 'testing', 'term': 1, 'description': '', 'location': '', 'program': 1}
+        return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), endDate=eventEnd.date(), **irrelevantEventData)
+    
+    def testCountdown(expectedOutput, *, timeDifference=None, **kwargs):
+        """
+        This function creates an event in the future (using either a relativeDelta object or kwargs)
+        and the makeEventIn() function to assert that the countdown until that event is equal to
+        the expectedOutput parameter.
+        
+        Rolls back the DB changes after the function exits
+        """
+        nonlocal currentTime
+        with mainDB.atomic() as transaction:
+            event = makeEventIn(timeDifference=timeDifference, **kwargs)
+            countdown = getCountdownToEvent(event, currentDatetime=currentTime)
+            assert countdown == expectedOutput
+            transaction.rollback()
+
+    # Years and months away
+    testCountdown("2 years and 5 months", years=2, months=5, days=1)
+
+    # Years away
+    testCountdown("1 year", years=1)
+
+    # Months and days away
+    testCountdown("1 month and 7 days", months=1, days=7)
+
+    # Months away
+    testCountdown("3 months", months=3)
+
+    # Days away
+    # When an event is more than a day after the current time today w/o hours
+    testCountdown("4 days", days=4)
+
+    # Days and hours away pt. 1
+    # When an event is more than 1 day away before the current time today
+    testCountdown("3 days", days=2, hours=22)
+
+    # Days and hours away pt. 2
+    # When an event is more than a day after the current time today
+    testCountdown("2 days and 3 hours", days=2, hours=3)
+
+    # 1 day before the current time today
+    testCountdown("Tomorrow", hours=23, minutes=30)
+
+    # Hours and minutes away
+    testCountdown("2 hours and 30 minutes", hours=2, minutes=30)
+
+    # Hours away
+    testCountdown("3 hours", hours=3)
+
+    # Minutes away
+    testCountdown("45 minutes", minutes=45)
+
+    # Less than a minute away
+    testCountdown("<1 minute", minutes=0, seconds=30)
+
+    # Current event
+    testCountdown("Happening now", minutes=-30)
+    
+    # Past event
+    testCountdown("Already passed", days=-1)
 
 @pytest.mark.integration
 def test_copyRsvpToNewEvent():

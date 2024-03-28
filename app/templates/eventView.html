@@ -40,7 +40,9 @@
                         {% set event_date = eventData.startDate %}
                         <div>
                             <h5 id="date" style="margin: 0;"> Date:</h5>
-                            <p style="margin: 0;">{{event_date}}</p>
+                            <p style="margin: 0;">
+                            {{ event_date }} ({{ eventCountdown }})
+                            </p>                            
                         </div>    
                     </div>
                     <br>
