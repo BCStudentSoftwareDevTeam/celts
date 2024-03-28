@@ -8,7 +8,7 @@
     "remoteUser": "vscode",
 
     // Add any forwardPorts settings if needed
-    "forwardPorts": [],
+    "forwardPorts": []
 
-    "postCreateCommand": "pip install -r requirements.txt"
+ 
 }
