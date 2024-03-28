@@ -1,9 +1,8 @@
 from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from dateutil.relativedelta import relativedelta
-import datetime
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
@@ -33,7 +32,7 @@ def cancelEvent(eventId):
         event.save()
 
     program = event.program
-    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 
 def deleteEvent(eventId):
@@ -62,9 +61,9 @@ def deleteEvent(eventId):
         program = event.program
 
         if program:
-            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
-            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
@@ -272,7 +271,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
+def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in as long
         as they are not banned from the program that the event is a part of.
@@ -407,13 +406,13 @@ def calculateRecurringEventFrequency(event):
 
         Return a list of events to create from the event data.
     """
-    if not isinstance(event['endDate'], datetime.date) or not isinstance(event['startDate'], datetime.date):
+    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              'date': event['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
@@ -438,13 +437,13 @@ def preprocessEventData(eventData):
 
     ## Process dates
     eventDates = ['startDate', 'endDate']
-    for date in eventDates:
-        if date not in eventData:
-            eventData[date] = ''
-        elif type(eventData[date]) is str and eventData[date]:
-            eventData[date] = parser.parse(eventData[date])
-        elif not isinstance(eventData[date], datetime.date):
-            eventData[date] = ''
+    for eventDate in eventDates:
+        if eventDate not in eventData:
+            eventData[eventDate] = ''
+        elif type(eventData[eventDate]) is str and eventData[eventDate]:
+            eventData[eventDate] = parser.parse(eventData[eventDate])
+        elif not isinstance(eventData[eventDate], date):
+            eventData[eventDate] = ''
     
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
@@ -528,11 +527,11 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     """
 
     if currentDatetime is None:
-        currentDatetime = datetime.datetime.now().replace(second=0, microsecond=0)  
+        currentDatetime = datetime.now().replace(second=0, microsecond=0)  
     currentMorning = currentDatetime.replace(hour=0, minute=0)
 
-    eventStart = datetime.datetime.combine(event.startDate, event.timeStart)
-    eventEnd = datetime.datetime.combine(event.endDate, event.timeEnd)
+    eventStart = datetime.combine(event.startDate, event.timeStart)
+    eventEnd = datetime.combine(event.endDate, event.timeEnd)
     
     if eventEnd < currentDatetime:
         return "Already passed"
