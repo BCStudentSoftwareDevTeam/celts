@@ -443,6 +443,17 @@ def manageServiceLearningCourses(term=None):
                             cpPreviewErrors = session.get('cpErrors',[])
                            )
 
+@admin_bp.route('/admin/getUnapprovedCoursesCount', methods=['GET', 'POST'])
+def getUnapprovedCoursesCount() -> str:
+    """
+    Get the count of unapproved courses for the current term to display in the 
+    admin sidebar. It must be returned as a string to be received by the
+    ajax request.
+    """
+    unapprovedCoursesCount: int = len(unapprovedCourses(g.current_term))
+    return str(unapprovedCoursesCount)
+
+
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():
     try:
