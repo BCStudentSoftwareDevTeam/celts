@@ -513,13 +513,13 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     until the start of the event.
 
     Note about dates:
-    The way dates are communicated is unintuitive. There are two major rules that govern how we discuss dates.
+    Natural language is unintuitive. There are two major rules that govern how we discuss dates.
     - If an event happens tomorrow but less than 24 hours away from us we still say that it happens 
     tomorrow with no mention of the hour. 
     - If an event happens tomorrow but more than 24 hours away from us, we'll count the number of days 
     and hours in actual time.
 
-    E.x. if the current time of day is greater than the event start's time of day, we give a number of days 
+    E.g. if the current time of day is greater than the event start's time of day, we give a number of days 
     relative to this morning and exclude all hours and minutes
 
     On the other hand, if the current time of day is less or equal to the event's start of day we can produce 
