@@ -460,7 +460,7 @@ def manageBonner():
     return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term),
-                           requirements = getCertRequirements(certification=Certification.BONNER))
+                           requirements=getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):
