@@ -61,7 +61,14 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
     defaultStart = currentYear-4
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
 
-    cohorts = { year: [] for year in range(firstYear, currentYear+1) }
+    defaultEnd = currentYear
+    print(f"{defaultEnd}") # beans
+    print('*'*1000)
+    lastYear = years[-1].year if len(years) and years[-1].year > defaultEnd else defaultEnd
+    print(f"{lastYear}") # beans
+    print('*'*1000)
+
+    cohorts = { year: [] for year in range(firstYear, lastYear + 1) }
     for cohort in years:
         cohorts[cohort.year].append(cohort.user)
 
