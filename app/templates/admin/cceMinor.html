@@ -21,7 +21,7 @@
             <th>Name</th>
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
-            <th>Requested Engagements</th>
+            <th>Requested Other Engagement</th>
         </tr>
     </thead>
     <tbody>
@@ -32,7 +32,7 @@
             </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
-            <td>{{ student.requestedEngagement }}</td>
+            <td>{{"Yes" if student.requestedCommunityEngagement == 1 else "No" }}</td>
 
         </tr>
         {% endfor %}

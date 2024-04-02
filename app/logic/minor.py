@@ -45,26 +45,25 @@ def getMinorProgress():
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
+        User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
                                                                     fn.SUM(summerCase).alias('hasSummer'),
-                                                                    (CommunityEngagementRequest.id).alias('requestedEngagement'))
+                                                                    fn.IF(fn.COUNT(CommunityEngagementRequest.id) > 0, True, False).alias('hasCommunityEngagementRequest'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
-            .join(CommunityEngagementRequest, on= (User.username == CommunityEngagementRequest.user))
+            .switch(User).join(CommunityEngagementRequest, JOIN.LEFT_OUTER, on= (User.username == CommunityEngagementRequest.user,))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
-    print(list(engagedStudentsWithCount.execute()))
 
-    
+    print([model_to_dict(i) for i in engagedStudentsWithCount])
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
-                            'requestedCommunityEngagement': student.requestedEngagement,
+                            'requestedCommunityEngagement': student.hasCommunityEngagementRequest,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
-
+    print(engagedStudentsList)
     return engagedStudentsList
 
    
