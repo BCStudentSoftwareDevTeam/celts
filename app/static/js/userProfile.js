@@ -43,39 +43,28 @@ $(document).ready(function(){
     });
   });
 
-  $(".removeFromTranscriptCheckbox").each(function() {
-    var programID = $(this).data('programId'); // Make sure you have this data attribute
-    var isChecked = $(this).data('isChecked');
-    $("#removeFromTranscriptCheckbox_" + programID).prop("checked", isChecked);
-  });
-
-  // Add event listener to save checkbox state on change
   $('.removeFromTranscriptCheckbox').click(function() {
-      var removeFromTranscript = $(this).is(':checked');
-      var username = $(this).data('username');
-      var programID = $(this).data('programId');
+    var removeFromTranscript = $(this).is(':checked');
+    var username = $(this).data('username');
 
-      var editButton = $(".ban").filter(function(editButton){
-        return $(editButton).data("programid") == programID;
-      })
-
-      editButton.data("removedFromTranscript", removeFromTranscript);
 
     $.ajax({
         type: "POST",
-        url: `/profile/${username}/updateTranscript/${programID}`,
+        url: `/profile/${username}/updateTranscript/${programID}`,  
         contentType: "application/json",
         data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
         success: function(response) {
             console.log(response);
-            // Handle success
+            // Handle success response if needed
         },
         error: function(error) {
             console.error("An error occurred:", error);
-            // Handle error
+            // Handle error if needed
         }
     });
-});
+  });
+
+
   function changeAction(e){
     let profileAction = $(this).val()
     let username = $(this).data('username')
@@ -118,6 +107,7 @@ $(document).ready(function(){
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
+    programID = $(this).data("programid"); // Assign value to programID variable
     banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $("#notifyInput").data("username"))
     banButton.data("banOrUnban", $(this).val());
@@ -134,9 +124,6 @@ $(document).ready(function(){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      var isRemovedFromTranscript = $(this).data("removedFromTranscript");
-      console.log(isRemovedFromTranscript);
-      $("#removeFromTranscriptCheckbox").prop("checked", isRemovedFromTranscript);
       $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
