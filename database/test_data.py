@@ -29,6 +29,7 @@ from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.individualRequirement import IndividualRequirement
 from app.models.celtsLabor import CeltsLabor
 
 print("Inserting data for demo and testing purposes.")
@@ -48,6 +49,7 @@ users = [
         "dietRestriction": "Diary",
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
 
     },
     {
@@ -59,10 +61,11 @@ users = [
         "lastName" : "Khatt",
         "isStudent": True,
         "isFaculty": False,
-        "isCeltsAdmin": True,
+        "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "classLevel": "Senior",
+        "minorInterest": 1,
     },
     {
         "username": "neillz",
@@ -77,6 +80,7 @@ users = [
         "isCeltsStudentStaff": True,
         "major": "Psychology",
         "classLevel": "Sophomore",
+        "minorInterest": 0,
     },
 
     {
@@ -87,11 +91,12 @@ users = [
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Computer and Information Science",
+        "classLevel": "Junior",
+        "minorInterest": 0,
     },
     {
         "username" : "ayisie",
@@ -106,6 +111,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Chemistry",
         "classLevel": "Junior",
+        "minorInterest": 1,
 
     },
     {
@@ -121,6 +127,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+        "minorInterest": 1,
     },
     {
         "username": "bryanta",
@@ -132,6 +139,8 @@ users = [
         "isStudent": True,
         "major": "Biology",
         "classLevel": "Senior",
+        "minorInterest": 1,
+
     },
     {
         "username": "partont",
@@ -143,6 +152,8 @@ users = [
         "phoneNumber": "(859)433-1559",
         "major": "Computer Science",
         "classLevel": "Senior",
+        "minorInterest": 1,
+
     },
     {
         "username": "mupotsal",
@@ -155,6 +166,8 @@ users = [
         "isCeltsStudentStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 1,
+
     },
     {
         "username": "heggens",
@@ -169,6 +182,7 @@ users = [
         "isStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
      {
         "username": "qasema",
@@ -183,6 +197,7 @@ users = [
         "isStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
     {
         "username": "stettnera2",
@@ -198,6 +213,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
     {
         "username": "bledsoef",
@@ -207,9 +223,10 @@ users = [
         "lastName": "Bledsoe",
         "phoneNumber": "(123)456-7890",
         "isCeltsAdmin": False,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
+        "minorInterest": 0,
     },
 ]
 
@@ -232,7 +249,7 @@ BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 certs = [
         { "id": 1, "name": "Bonner" },
-        { "id": 2, "name": "CESC Minor" },
+        { "id": 2, "name": "CCE Minor" },
         { "id": 3, "name": "CPR" },
         { "id": 4, "name": "Confidentiality" },
         { "id": 5, "name": "I9" },
@@ -314,6 +331,41 @@ reqs = [
           "frequency": "once",
           "isRequired": True,
           "order": 1,
+        },
+        { "id": 12,
+          "certification": 2,
+          "name": "Community Engagement 1",
+          "frequency": "once",
+          "isRequired": True,
+    
+        },
+        { "id": 13,
+          "certification": 2,
+          "name": "Community Engagement 2",
+          "frequency": "once",
+          "isRequired": True,
+          
+        },
+        { "id": 14,
+          "certification": 2,
+          "name": "Community Engagement 3",
+          "frequency": "once",
+          "isRequired": True,
+          
+        },
+        { "id": 15,
+          "certification": 2,
+          "name": "Community Engagement 4",
+          "frequency": "once",
+          "isRequired": True,
+           
+        },
+        { "id": 16,
+          "certification": 2,
+          "name": "Summer Program",
+          "frequency": "once",
+          "isRequired": True,
+          
         },
 ]
 CertificationRequirement.insert_many(reqs).on_conflict_replace().execute()
@@ -857,6 +909,76 @@ courses = [
 ]
 Course.insert_many(courses).on_conflict_replace().execute()
 
+individualReqs = [
+        {
+          "username": "ayisie",
+          "program": None,
+          "course": 1,
+          "description": None,
+          "term": 3,
+          "requirement": 12,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+            {
+          "username": "ayisie",
+          "program": 1,
+          "course": None,
+          "description": None,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+
+        { 
+          "username": "khatts",
+          "program": 3,
+          "course": None,
+          "description": None,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+        },
+                    {
+          "username": "bledsoef",
+          "program": None,
+          "course": 1,
+          "description": None,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+
+        { 
+          "username": "khatts",
+          "program": None,
+          "course": 1,
+          "description": None,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+        },
+        
+        { 
+          "username": "khatts",
+          "program": None,
+          "course": None,
+          "description": "Name of Summer activity",
+          "term": 3,
+          "requirement": 16,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+        }
+
+]
+
+IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
+
+
 courseInstructorRecords = [
     {
         "id": 1,
@@ -922,6 +1044,16 @@ courseHoursEarned = [
     {
         "course": 1,
         "user": "khatts",
+        "hoursEarned": 1.0
+    },
+    {
+        "course": 1,
+        "user": "bledsoef",
+        "hoursEarned": 1.0
+    },
+    {
+        "course": 1,
+        "user": "ayisie",
         "hoursEarned": 1.0
     },
 
@@ -1368,6 +1500,12 @@ celtsLabor = [
         "positionTitle": "Bonner Manager",
         "term": 3,
         "isAcademicYear": False
+    },
+    {
+        "user": "ayisie",
+        "positionTitle": "AGP Team Memeber",
+        "term": 2,
+        "isAcademicYear": True
     }
 ]
 CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()

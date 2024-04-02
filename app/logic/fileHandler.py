@@ -68,7 +68,9 @@ class FileHandler:
                     if not isFileInCourse:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         saveFileToFilesystem = file.filename
-                
+                else: 
+                    saveFileToFilesystem = file.filename
+
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        

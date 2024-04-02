@@ -2,6 +2,8 @@ from flask import request, render_template, g, url_for, abort, redirect, flash, 
 from werkzeug.utils import safe_join
 import os
 from peewee import *
+from typing import Dict, Any, List
+
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -11,10 +13,8 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
-from app.logic.courseManagement import updateCourse, createCourse
+from app.logic.serviceLearningCourses import getSLProposalInfoForUser, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses
 from app.logic.downloadFile import *
-from app.logic.courseManagement import approvedCourses
 from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -30,7 +30,7 @@ def serviceCourseManagement(username=None):
     isRequestingForSelf = g.current_user == user 
     if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
         setRedirectTarget(request.full_path)
-        courseDict = getServiceLearningCoursesData(user)
+        courseDict = getSLProposalInfoForUser(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagement.html',
             user=user,
@@ -38,7 +38,6 @@ def serviceCourseManagement(username=None):
             termList=termList)
     else:
         abort(403)
-        
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
@@ -63,22 +62,23 @@ def slcEditProposal(courseID):
         else:
             statusOfCourse = Course.select(Course.status)
             questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-            questionanswers = [question.questionContent for question in questionData]
+            questionAnswers = [question.questionContent for question in questionData]
             courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
             associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
 
-            filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
+            filePaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
 
             terms = selectSurroundingTerms(g.current_term, 0)
+           
             return render_template('serviceLearning/slcNewProposal.html',
-                                        course = course,
-                                        questionanswers = questionanswers,
-                                        terms = terms,
-                                        statusOfCourse = statusOfCourse,
-                                        courseStatus = courseStatus,
-                                        courseInstructor = courseInstructor,
-                                        filepaths = filepaths,
-                                        redirectTarget=getRedirectTarget())
+                                    course = course,
+                                    questionanswers = questionAnswers,
+                                    terms = terms,
+                                    statusOfCourse = statusOfCourse,
+                                    courseInstructor = courseInstructor,
+                                    filePaths = filePaths,
+                                    redirectTarget = getRedirectTarget())
+
     else:
         abort(403)
         
@@ -130,10 +130,9 @@ def slcCreateOrEdit():
             return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
-    courseData = None
     return render_template('serviceLearning/slcNewProposal.html',
                 terms = terms,
-                courseData = courseData,
+                courseData = None,
                 redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse', methods=['POST'])
@@ -205,6 +204,19 @@ def withdrawCourse(courseID):
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
 
+        
+@serviceLearning_bp.route('/proposalReview/', methods = ['GET', 'POST'])
+def reviewProposal() -> str:
+    """
+    this function gets the submitted course id and returns the its data to the review proposal modal
+    """
+    courseID: Dict[str, Any] = request.form
+    course: Course = Course.get_by_id(courseID["course_id"])
+    instructorsData: List[CourseInstructor] = course.courseInstructors
+    return render_template('/serviceLearning/reviewProposal.html',
+                            course=course,
+                            instructorsData=instructorsData)
+
 @serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
 def renewCourse(courseID, termID):
     """
@@ -263,7 +275,7 @@ def uploadCourseFile():
     try:
         attachment = getFilesFromRequest(request)
         courseID = request.form["courseID"]
-        addFile= FileHandler(attachment, courseId=courseID)
+        addFile = FileHandler(attachment, courseId=courseID)
         addFile.saveFiles()
     except:
         flash("No file selected.", "warning")

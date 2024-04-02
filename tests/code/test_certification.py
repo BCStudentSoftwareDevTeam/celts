@@ -15,13 +15,11 @@ from app.logic.certification import getCertRequirementsWithCompletion
 def test_getCertRequirements():
     allRequirements = getCertRequirements()
 
-    certNames =  ["Bonner", "CESC Minor", "CPR", "Confidentiality", "I9"]
+    certNames =  ["Bonner", "CCE Minor", "CPR", "Confidentiality", "I9"]
     assert certNames == [cert["data"].name for (id, cert) in allRequirements.items()]
-
     cpr = allRequirements[3]['requirements']
     assert ["Volunteer Training", "CPR Training"] == [r.name for r in cpr]
 
-    cesc = getCertRequirements(certification=Certification.CESC)
     bonner = getCertRequirements(certification=Certification.BONNER)
     assert len(bonner) == 9
 
@@ -57,7 +55,7 @@ def test_updateCertRequirements():
         # Removal of missing items
         returnedIds = updateCertRequirements(cprId, [])
         selectedIds = getCertRequirements(certification=cprId)
-        
+
         assert returnedIds == []
         assert selectedIds == []
 
