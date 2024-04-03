@@ -55,18 +55,14 @@ def getMinorProgress():
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
-
-    print([model_to_dict(i) for i in engagedStudentsWithCount])
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
                             'requestedCommunityEngagement': student.hasCommunityEngagementRequest,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
-    print(engagedStudentsList)
     return engagedStudentsList
 
-   
 def toggleMinorInterest(username):
     """
         Given a username, update their minor interest and minor status.
