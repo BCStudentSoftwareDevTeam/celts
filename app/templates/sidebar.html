@@ -52,7 +52,7 @@
         {% if g.current_user.isCeltsAdmin %}
         <nav class="navbar navbar-dark bg-dark">
           <div class="container-fluid">
-            <button class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
+            <button id="admin" class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
               aria-label="Toggle navigation">
               Admin
             </button>
@@ -66,13 +66,13 @@
             <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
               Settings
             </a>
-            <a href="/manageServiceLearning" id="courseManagement" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+            <a href="/manageServiceLearning" id="courseManagement" class="courseManagement nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
               Course Management
             </a>
             <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
               Bonner Management
             </a>
-            <a href="/admin/cceMinor" id="minorManagement" class="nav-link text-white {{ 'active' if request.path =='/admin/cceMinor' }}">
+            <a href="/admin/cceMinor" id="minorManagement" class="minorManagement nav-link text-white {{ 'active' if request.path =='/admin/cceMinor' }}">
               Minor Management
             </a>
           </div>

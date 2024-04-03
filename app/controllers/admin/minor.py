@@ -16,14 +16,5 @@ def manageMinor():
                             interestedStudentsList = interestedStudents, 
                             sustainedEngagement = sustainedEngagement )
 
-@admin_bp.route('/admin/getInterestedStudentsCount', methods=['GET'])
-def getInterestedStudentsCount() -> str:
-    """
-    Get the count of students interested in the CCE minor to display in the 
-    admin sidebar. It must be returned as a string to be received by the
-    ajax request.
-    """
-    interestedStudentsCount: int = len(getMinorInterest())
-    return str(interestedStudentsCount)
 
 
