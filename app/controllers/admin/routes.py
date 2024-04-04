@@ -443,7 +443,7 @@ def manageServiceLearningCourses(term=None):
                            )
 
 @admin_bp.route('/admin/getSidebarInformation', methods=['GET', 'POST'])
-def getUnapprovedCoursesCount() -> str:
+def getSidebarInformation() -> str:
     """
     Get the count of unapproved courses and students interested in the minor for the current term 
     to display in the admin sidebar. It must be returned as a string to be received by the
