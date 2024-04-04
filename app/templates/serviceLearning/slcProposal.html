@@ -98,10 +98,10 @@
         </div>
 
       
-        {% if filepaths %}
+        {% if filePaths %}
         <div class="form-group mb-5">
           {% from 'displayFilesMacro.html' import displayFiles %}
-          {{ displayFiles(filepaths, 'Course Attachments', '/deleteCourseFile', course.id) }}
+          {{ displayFiles(filePaths, 'Course Attachments', '/deleteCourseFile', course.id) }}
         </div>
         {% endif %}
 

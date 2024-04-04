@@ -124,7 +124,7 @@
               <td>
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
-              {% elif (not event.isPast) and (event.isRsvpRequired) %}
+              {% elif (not event.isPast) and (event.isRsvpRequired) and (not event.isCanceled) %}
                   {% set buttonName = "Join Waitlist" if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) else "RSVP" %}
                     <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">{{buttonName}}</button>
               {% endif %}
