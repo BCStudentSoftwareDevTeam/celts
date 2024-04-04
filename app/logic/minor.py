@@ -59,7 +59,7 @@ def getMinorProgress():
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
-                            'requestedCommunityEngagement': student.hasCommunityEngagementRequest,
+                            'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 

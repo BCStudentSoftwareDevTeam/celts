@@ -353,6 +353,8 @@ def test_getMinorProgress():
         
         assert minorProgress[0]['engagementCount'] == 1
         assert minorProgress[0]['hasSummer'] == "Incomplete"
+        assert minorProgress[0]['hasCommunityEngagementRequest'] == 0
+
 
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
@@ -361,15 +363,27 @@ def test_getMinorProgress():
                                   "term": 3,
                                   "requirement": 16,
                                   "addedBy": "ramsayb2",
-                                  "addedOn": ""
+                                  "addedOn": "",
                                  }
-        
-        IndividualRequirement.create(**khattsSummerEngagement)
-        minorProgressWithSummer = getMinorProgress()
+        khattsRequestedEngagement = {"user": "khatts",
+                                    "experienceName ": "Voluteering",
+                                    "company" : "Berea Celts",
+                                    "term": 3,
+                                    "description": "Summer engagement",
+                                    "weeklyHours": 3,
+                                    "weeks": 4,
+                                    "filename": None,
+                                    "status" : "Pending",
 
-        assert minorProgressWithSummer[0]['engagementCount']== 1
-        assert minorProgressWithSummer[0]['hasSummer'] == "Completed"
-        
+                                    }
+    
+        CommunityEngagementRequest.create(**khattsRequestedEngagement)
+        IndividualRequirement.create(**khattsSummerEngagement)
+        minorProgressWithSummerAndRequestOther = getMinorProgress()
+
+        assert minorProgressWithSummerAndRequestOther[0]['engagementCount']== 1
+        assert minorProgressWithSummerAndRequestOther[0]['hasSummer'] == "Completed"
+        assert minorProgressWithSummerAndRequestOther[0]['hasCommunityEngagementRequest'] == 1
 
         transaction.rollback()
 
