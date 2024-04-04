@@ -442,7 +442,7 @@ def manageServiceLearningCourses(term=None):
                             cpPreviewErrors = session.get('cpErrors',[])
                            )
 
-@admin_bp.route('/admin/getSidebarInformation', methods=['GET', 'POST'])
+@admin_bp.route('/admin/getSidebarInformation', methods=['GET'])
 def getSidebarInformation() -> str:
     """
     Get the count of unapproved courses and students interested in the minor for the current term 
