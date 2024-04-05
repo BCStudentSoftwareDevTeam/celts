@@ -8,10 +8,10 @@ show_queries: True
 test_entry: "Default"
 
 db:
-    name: "celts"
+    name: "celts-db"
     host: "db"
-    username: "celts_user"
-    password: "password"
+    username: "root"
+    password: "root"
 
 tracy:
     name: "UTE"
