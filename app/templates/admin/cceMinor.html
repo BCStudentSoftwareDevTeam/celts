@@ -32,7 +32,13 @@
             </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
-            <td>{{"Yes" if student.hasCommunityEngagementRequest == 1 else "No" }}</td>
+            <td>
+            {% if student.hasCommunityEngagementRequest == 1 %}
+                <a href="#">Yes</a>
+            {% else %}
+                No
+            {% endif %}
+            </td>
 
         </tr>
         {% endfor %}
