@@ -189,7 +189,7 @@
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                   <td>
                     {% set hasCompletedAllTrainings = row.completedTraining %}
-                    <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
+                    <i class="bi bi-{{'check' if hasCompletedAllTrainings or not trainingList else 'x'}}-lg"></i> &nbsp&nbsp
                     <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
