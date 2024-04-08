@@ -133,11 +133,11 @@
                             {% for training, events in programTrainings.items() %}
                                 {% for eventObj, attended in events %}
                                     {% if g.current_user.isCeltsAdmin %}
-                                        <p>{{eventObj.name}}</p>
+                                        <p>{{eventObj}}</p>
                                     {% elif attended %}
-                                        <p><b>{{eventObj.name}}</b>: Attended</p>
+                                        <p><b>{{eventObj}}</b>: Attended</p>
                                     {% else %}
-                                        <p><b>{{eventObj.name}}</b>: Not attended</p>
+                                        <p><b>{{eventObj}}</b>: Not attended</p>
                                     {% endif%}
                                 {% endfor %}
                             {% endfor %}

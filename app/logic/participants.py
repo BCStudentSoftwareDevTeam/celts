@@ -149,17 +149,26 @@ def getParticipationStatusForTrainings(program, userList, term):
     for training in programTrainings:
         try:
             if training.isPast:
-                trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
+                trainingData[training.name] = trainingData.get(training.name, []) + [[training.eventparticipant.user_id, training]]
             else:  # The training has yet to happen
-                trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
+                trainingData[training.name] = trainingData.get(training.name, []) + [[training.eventrsvp.user_id, training]]
         except AttributeError:
-            trainingData[training] = trainingData.get(training, [])
+            trainingData[training.name] = trainingData.get(training.name, [])
+    
     # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
     userParticipationStatus = {}
     for user in userList:
         for training, attendeeList in trainingData.items():
-            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
-
+            attendeeTrained = False
+            attendeeTrainingObject = None
+            for attendeeInformation in attendeeList:
+                trainingObject = attendeeInformation[1]
+                attendee = attendeeInformation[0]
+                if user.username == attendee:
+                    attendeeTrained = True
+                    attendeeTrainingObject = trainingObject
+            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(attendeeTrainingObject, attendeeTrained)]
+    print(userParticipationStatus)
     return userParticipationStatus
 
 def sortParticipantsByStatus(event):
