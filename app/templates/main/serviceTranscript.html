@@ -48,7 +48,7 @@
       </tr>
       {% for slcourse in slCourses %}
         <tr>
-        <td> {{ slcourse.courseName }}</td>
+        <td> {{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
         <td> {{ slcourse.term.description }}</td>
         <td class="w-25">{{ slcourse.hoursEarned }}</td>
         </tr>
