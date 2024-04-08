@@ -338,6 +338,7 @@ def test_getMinorProgress():
 
         assert noMinorProgress == []
         
+        # create a sustained engagement for Sreynit
         khattsSustainedEngagement = {"username": "khatts",
                                      "program": 2,
                                      "course": None,
@@ -355,6 +356,7 @@ def test_getMinorProgress():
         assert sreynitProgress['hasSummer'] == "Incomplete"
         assert sreynitProgress['hasCommunityEngagementRequest'] == 0
 
+        # add a summer engagement and requested engagement to Sreynit's progress
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
                                   "course": None, 
@@ -375,6 +377,7 @@ def test_getMinorProgress():
                                      "status" : "Pending",
                                     }
     
+        # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
         CommunityEngagementRequest.create(**khattsRequestedEngagement)
         IndividualRequirement.create(**khattsSummerEngagement)
         minorProgressWithSummerAndRequestOther = getMinorProgress()
