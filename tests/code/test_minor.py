@@ -379,7 +379,7 @@ def test_getMinorProgress():
         IndividualRequirement.create(**khattsSummerEngagement)
         minorProgressWithSummerAndRequestOther = getMinorProgress()
         sreynitProgress = minorProgressWithSummerAndRequestOther[0]
-        assert sreynitProgress['engagementCount']== 1
+        assert sreynitProgress['engagementCount'] == 1
         assert sreynitProgress['hasSummer'] == "Completed"
         assert sreynitProgress['hasCommunityEngagementRequest'] == 1
 
