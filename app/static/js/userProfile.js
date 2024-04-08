@@ -97,7 +97,18 @@ $(document).ready(function(){
      * Ban Functionality
      */
   var programID;
-  $(".ban").click(function() {
+  $(".ban").click(async function() {
+      await $.ajax({
+        url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
+        type: "GET",
+        success: function(placeholderInfo) {
+          placeholderList = placeholderInfo;
+        },
+        error: function(error, status){
+            console.log(error, status);
+        }
+      });
+
     $("#banModal #programid").val($(this).data("programid"));
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal

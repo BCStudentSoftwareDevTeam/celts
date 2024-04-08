@@ -449,6 +449,18 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
+@main_bp.route('/profile/<username>/removeFromTranscript/<program_id>', methods=['GET'])
+def checkRemoved(username, program_id):
+    # is not banned
+    # return False
+    # is banned
+    # check the database to see if it is checked
+    # return true if checked
+    # false otherwise
+    return "" # placeholder
+
+
+
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
 def update_transcript(username, program_id):
     # Check user permissions
