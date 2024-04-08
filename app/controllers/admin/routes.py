@@ -32,13 +32,12 @@ from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
-
+from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
-from app.controllers.admin import admin_bp
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, importedCourses, getInstructorCourses, editImportedCourses
 
-
+from app.controllers.admin import admin_bp
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -467,6 +466,18 @@ def manageServiceLearningCourses(term=None):
                             cpPreview= session.get('cpPreview',{}),
                             cpPreviewErrors = session.get('cpErrors',[])
                         )
+
+@admin_bp.route('/admin/getSidebarInformation', methods=['GET'])
+def getSidebarInformation() -> str:
+    """
+    Get the count of unapproved courses and students interested in the minor for the current term 
+    to display in the admin sidebar. It must be returned as a string to be received by the
+    ajax request.
+    """
+    unapprovedCoursesCount: int = len(unapprovedCourses(g.current_term))
+    interestedStudentsCount: int = len(getMinorInterest())
+    return {"unapprovedCoursesCount": unapprovedCoursesCount,
+            "interestedStudentsCount": interestedStudentsCount}
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():

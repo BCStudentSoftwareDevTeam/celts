@@ -140,7 +140,7 @@
                       <td style="text-align:center">
                         {% set isTrained = participant.user in trainedParticipantsForProgramAndTerm %}
                         {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
-                        <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                        <span class="bi bi-{{'check' if isTrained or not participationStatusForTrainings[participant.user.username] else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
                         <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(participationStatusForTrainings[participant.user.username])}}">View</a>
                       </td>
                     {% endif %}
@@ -220,7 +220,7 @@
                   <td style="text-align:center">
                     {% set isTrained = participant.user in trainedParticipantsForProgramAndTerm %}
                     {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
-                    <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                    <span class="bi bi-{{'check' if isTrained or not participationStatusForTrainings[participant.user.username] else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
                     <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(participationStatusForTrainings[participant.user.username])}}">View</a>
                   </td>
                   <td style="text-align:center">
