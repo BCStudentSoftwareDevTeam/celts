@@ -355,7 +355,6 @@ def test_getMinorProgress():
         assert sreynitProgress['hasSummer'] == "Incomplete"
         assert sreynitProgress['hasCommunityEngagementRequest'] == 0
 
-
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
                                   "course": None, 
@@ -366,15 +365,14 @@ def test_getMinorProgress():
                                   "addedOn": "",
                                  }
         khattsRequestedEngagement = {"user": "khatts",
-                                    "experienceName ": "Voluteering",
-                                    "company" : "Berea Celts",
-                                    "term": 3,
-                                    "description": "Summer engagement",
-                                    "weeklyHours": 3,
-                                    "weeks": 4,
-                                    "filename": None,
-                                    "status" : "Pending",
-
+                                     "experienceName ": "Voluteering",
+                                     "company" : "Berea Celts",
+                                     "term": 3,
+                                     "description": "Summer engagement",
+                                     "weeklyHours": 3,
+                                     "weeks": 4,
+                                     "filename": None,
+                                     "status" : "Pending",
                                     }
     
         CommunityEngagementRequest.create(**khattsRequestedEngagement)

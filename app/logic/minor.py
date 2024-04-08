@@ -161,7 +161,6 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
     else:
         raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
-
 def getCommunityEngagementByTerm(username):
     """
         Given a username, return all of their community engagements (service learning courses and event participations.)
