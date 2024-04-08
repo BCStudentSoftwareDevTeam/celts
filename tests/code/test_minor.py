@@ -350,10 +350,10 @@ def test_getMinorProgress():
 
         IndividualRequirement.create(**khattsSustainedEngagement)
         minorProgress = getMinorProgress()
-        
-        assert minorProgress[0]['engagementCount'] == 1
-        assert minorProgress[0]['hasSummer'] == "Incomplete"
-        assert minorProgress[0]['hasCommunityEngagementRequest'] == 0
+        sreynitProgress = minorProgress[0]
+        assert sreynitProgress['engagementCount'] == 1
+        assert sreynitProgress['hasSummer'] == "Incomplete"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 0
 
 
         khattsSummerEngagement = {"username": "khatts",
@@ -380,10 +380,10 @@ def test_getMinorProgress():
         CommunityEngagementRequest.create(**khattsRequestedEngagement)
         IndividualRequirement.create(**khattsSummerEngagement)
         minorProgressWithSummerAndRequestOther = getMinorProgress()
-
-        assert minorProgressWithSummerAndRequestOther[0]['engagementCount']== 1
-        assert minorProgressWithSummerAndRequestOther[0]['hasSummer'] == "Completed"
-        assert minorProgressWithSummerAndRequestOther[0]['hasCommunityEngagementRequest'] == 1
+        sreynitProgress = minorProgressWithSummerAndRequestOther[0]
+        assert sreynitProgress['engagementCount']== 1
+        assert sreynitProgress['hasSummer'] == "Completed"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 1
 
         transaction.rollback()
 
