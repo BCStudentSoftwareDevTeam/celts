@@ -3,12 +3,12 @@ from peewee import fn
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
+from app.models.programBan import ProgramBan
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
-from app.models.programBan import ProgramBan
 
 def getProgramTranscript(username):
     """
