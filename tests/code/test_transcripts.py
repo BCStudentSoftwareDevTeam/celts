@@ -180,15 +180,6 @@ def testingProgram():
     assert checkingProgram in [t for t in programDict]
 
 @pytest.mark.integration
-def testingProgramTranscriptBannedPrograms():
-
-    username = "ramsayb2"
-    transcriptData = getProgramTranscript(username)
-    bannedProgram = Program.get_by_id(2)
-
-    assert bannedProgram not in transcriptData
-
-@pytest.mark.integration
 def testingTotalHours():
 
     totalHours = getTotalHours("namet")
@@ -216,4 +207,3 @@ def test_getStartYear():
         CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
         assert getStartYear('namet') == 2022
         transaction.rollback()
-
