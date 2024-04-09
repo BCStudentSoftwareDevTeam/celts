@@ -9,6 +9,11 @@
 
     // Add any forwardPorts settings if needed
     "forwardPorts": [5000,3307],
-
+    
+    "remoteEnv": {
+        "FLASK_DEBUG": "1",
+        "APP_ENV": "development"
+    },
     "postCreateCommand": "pip install -r requirements.txt"
+
 }
