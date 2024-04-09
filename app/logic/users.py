@@ -52,18 +52,6 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
-def removeBannedUserFromTranscript(program_id, username):
-    """
-    This function is used to add an interest to .
-    Parameters:
-    program_id: id of the program the user is interested in
-    username: username of the user showing interest
-    """
-    removeBannedUser = ProgramBan.get_or_none(ProgramBan.user == username)
-    if removeBannedUser:
-        removeBannedUser.delete_instance()
-    return True
-
 def getBannedUsers(program):
     """
     This function returns users banned from a program.
