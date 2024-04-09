@@ -451,15 +451,20 @@ def serviceTranscript(username):
 
 @main_bp.route('/profile/<username>/removeFromTranscript/<program_id>', methods=['GET'])
 def checkRemoved(username, program_id):
-    # is not banned
-    # return False
-    # is banned
-    # check the database to see if it is checked
-    # return true if checked
-    # false otherwise
-    return "" # placeholder
+    # Check if the user is banned from the program
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
 
-
+    try:
+        program_ban = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        # If the user is banned, check if it's marked for removal from transcript
+        if program_ban.removeFromTranscript:
+            return jsonify({'removedFromTranscript': True})
+        else:
+            return jsonify({'removedFromTranscript': False})
+    except ProgramBan.DoesNotExist:
+        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
 
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
 def update_transcript(username, program_id):

@@ -96,20 +96,28 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
-  var programID;
-  $(".ban").click(async function() {
-      await $.ajax({
-        url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
-        type: "GET",
-        success: function(placeholderInfo) {
-          placeholderList = placeholderInfo;
-        },
-        error: function(error, status){
-            console.log(error, status);
-        }
-      });
 
-    $("#banModal #programid").val($(this).data("programid"));
+
+  var programID;
+  $(".ban").click(function() {
+    $.ajax({
+      url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
+      type: "GET",
+      success: function(response) {
+          // Check if the program is marked for removal from transcript
+          if (response.removedFromTranscript) {
+              // Handle the case where program is marked for removal
+              $('.removeFromTranscriptCheckbox').prop('checked', true);
+          } else {
+              // Handle the case where program is not marked for removal
+              $('.removeFromTranscriptCheckbox').prop('checked', false);
+          }
+      },
+      error: function(error, status) {
+          console.log(error, status);
+      }
+    });
+  
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
