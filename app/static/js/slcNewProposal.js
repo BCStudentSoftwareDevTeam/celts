@@ -261,13 +261,13 @@ function showTab(currentTab) {
 
 function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
+    var formData = $("form").serialize()
+    var instructorData = $.param(getCourseInstructors())
 
-    var formdata = $("form").serialize()
-    var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: url,
         type: "POST",
-        data: formdata + "&" + instructordata,
+        data: formData + "&" + instructorData,
         success: successCallback,
         error: function(request, status, error) {
          msgFlash("Error saving changes!", "danger")
