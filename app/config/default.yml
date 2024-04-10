@@ -10,8 +10,8 @@ test_entry: "Default"
 db:
     name: "celts"
     host: "db"
-    username: "root"
-    password: "root"
+    username: "celts_user"
+    password: "password"
 
 tracy:
     name: "UTE"
