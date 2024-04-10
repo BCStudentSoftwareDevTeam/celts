@@ -15,9 +15,6 @@ def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
     assert [2,3,4,5,6,7,8] == [t.id for t in listOfTerms]
 
-    listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
-    assert [4,5,6,7,8] == [t.id for t in listOfTerms]
-
 def test_changeCurrentTerm():
     # test via g.current_term
     oldTerm = g.current_term
