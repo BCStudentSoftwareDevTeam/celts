@@ -451,8 +451,8 @@ def manageServiceLearningCourses(term=None):
                                 importedCourses = importedCourses(manageTerm),
                                 terms = selectSurroundingTerms(g.current_term),
                                 term = manageTerm,
-                                cpPreview= session.get('cpPreview',{}),
-                                cpPreviewErrors = session.get('cpErrors',[]),
+                                cpPreview = session.get('cpPreview', {}),
+                                cpPreviewErrors = session.get('cpErrors', []),
                                 courseID = courseID
                             )
     
@@ -489,7 +489,6 @@ def removeFromSession():
     return ""
 
 @admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
-@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST'])
 def alterImportedCourse(courseID):
     """
     This route handles a GET and a POST request for the purpose of imported courses. 
@@ -501,13 +500,16 @@ def alterImportedCourse(courseID):
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
-            
             targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
-            serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
             
+            try:
+                serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
+            except IndexError:  # If a course has no participant, IndexError will be raised
+                serviceHours = 0
+                
             courseData = model_to_dict(targetCourse, recurse=False)
             courseData['instructors'] = [model_to_dict(instructor.user) for instructor in targetInstructors]
-            courseData["hoursEarned"] = serviceHours
+            courseData['hoursEarned'] = serviceHours
 
             return jsonify(courseData)
         

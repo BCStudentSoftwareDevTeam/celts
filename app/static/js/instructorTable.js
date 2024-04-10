@@ -46,6 +46,6 @@ export function createNewRow(selectedInstructor) {
 }
 
 export function getCourseInstructors() {
-  // get usernames out of the table rows into an array
+  // get usernames out of the table rows 
   return $("#instructorTableNames input").map((i,el) => $(el).val())
 }

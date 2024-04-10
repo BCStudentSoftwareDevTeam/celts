@@ -201,7 +201,7 @@ function showAlterModalWithCourse(courseID) {
     var instructorData = getCourseInstructors();
     // Assuming you need to clear specific instructor inputs for some reason before proceeding.
     $('#alterModal form input[name="instructor[]"]').remove();
-    updateInstructorList(instructorData);
+    setInstructorList(instructorData);
 
     var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
     var $form = $('#alterModal form');
@@ -239,7 +239,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
 
 // Instructor manipulation functions
 
-function updateInstructorList(instructorData) { // This function attaches the list of usernames to the form submission
+function setInstructorList(instructorData) { // This function attaches the list of usernames to the form submission
   $('#alterModal form input[name="instructor[]"]').remove();
   
   // Append new hidden inputs for each instructor
