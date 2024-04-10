@@ -1,16 +1,6 @@
 import searchUser from './searchUser.js'
 
 $(document).ready(function() {
-    $("#instructorTable").on("click", ".removeButton", function() {
-        let closestRow =  $(this).closest("tr");
-        let username = closestRow.data('username');
-
-        $("#instructorTableNames input[value='" + username + "']").remove();
-        closestRow.remove();
-    });
-
-
-
     $("#courseInstructor").on('input', function() {
         searchUser("courseInstructor", createNewRow, true, null, "instructor");
         //sets autocomplete dropdown to top of screen stack
