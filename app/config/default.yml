@@ -8,7 +8,7 @@ show_queries: True
 test_entry: "Default"
 
 db:
-    name: "celts-db"
+    name: "celts"
     host: "db"
     username: "root"
     password: "root"

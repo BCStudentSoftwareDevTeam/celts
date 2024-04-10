@@ -15,6 +15,6 @@
         "APP_ENV": "development"
     },
     
-    "postCreateCommand": "pip install -r requirements.txt"
+    "postCreateCommand": "pip install -r requirements.txt && sudo apt-get -y install ack"
 
 }
