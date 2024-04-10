@@ -7,12 +7,12 @@
     // Use the `remoteUser` property to set the user inside the container to match your local user.
     "remoteUser": "vscode",
 
-    // Add any forwardPorts settings if needed
     "forwardPorts": [5000,3307],
     
     "remoteEnv": {
         "FLASK_DEBUG": "1",
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "USING_CONTAINER": "True"
     },
     
     "postCreateCommand": "pip install -r requirements.txt && sudo apt-get -y install ack"
