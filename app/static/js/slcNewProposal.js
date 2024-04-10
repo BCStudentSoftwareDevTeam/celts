@@ -267,13 +267,13 @@ function showTab(currentTab) {
 
 function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
+    var formData = $("form").serialize()
+    var instructorData = $.param(getCourseInstructors())
 
-    var formdata = $("form").serialize()
-    var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: url,
         type: "POST",
-        data: formdata + "&" + instructordata,
+        data: formData + "&" + instructorData,
         success: successCallback,
         error: function(request, status, error) {
          msgFlash("Error saving changes!", "danger")
@@ -364,20 +364,10 @@ function createNewRow(selectedInstructor) {
 
   $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
-
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
-  return $("#instructorTableNames input").map((i,el) => $(el).val())
+  return $("#instructorTableNames input").map((i, instructorRow) => $(instructorRow).val())
 }
-
-function disableSyllabusUploadFile() {
-  $("#fileUpload").prop("disabled", true);
-}
-
-function enableSyllabusUploadFile() {
-    $("#fileUpload").prop("disabled", false);
-}
-
 const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
