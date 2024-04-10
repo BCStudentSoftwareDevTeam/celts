@@ -44,17 +44,17 @@ def test_invalidTermInputs():
 @pytest.mark.integration
 def test_addNextTerm():
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True, isCurrentTerm=True, termOrder = Term.convertDescriptionToTermOrder("Summer 2022"))
+        testTerm = Term.create(description="Summer 2032",year=2032, academicYear= "2031-2032", isSummer=True, isCurrentTerm=True, termOrder = Term.convertDescriptionToTermOrder("Summer 2032"))
         testTerm.save()
 
         addNextTerm()
 
         terms = list(Term.select().order_by(Term.id))
         newTerm = terms[-1]
-        assert newTerm.description == "Summer 2023"
-        assert newTerm.year == 2023
-        assert newTerm.academicYear == "2022-2023"
-        assert newTerm.isSummer
+        assert newTerm.description == "Fall 2032"
+        assert newTerm.year == 2032
+        assert newTerm.academicYear == "2032-2033"
+        assert not newTerm.isSummer
         assert not newTerm.isCurrentTerm
 
         transaction.rollback()
