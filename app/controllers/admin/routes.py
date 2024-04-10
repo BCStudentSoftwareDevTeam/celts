@@ -505,7 +505,7 @@ def alterImportedCourse(courseID):
             try:
                 serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
             except IndexError:  # If a course has no participant, IndexError will be raised
-                serviceHours = 0
+                serviceHours = 20
                 
             courseData = model_to_dict(targetCourse, recurse=False)
             courseData['instructors'] = [model_to_dict(instructor.user) for instructor in targetInstructors]
