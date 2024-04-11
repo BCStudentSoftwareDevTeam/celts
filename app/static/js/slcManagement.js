@@ -61,13 +61,13 @@ $(document).ready(function() {
     // Now that the modal is shown, iterate over the rows
     $('#instructorTableBody tr').each(function(){
         var username = getRowUsername(this);
-        var edit = "#editButton-" + username;
-        var input = "#inputPhoneNumber-" + username;
+        var editSelector = "#editButton-" + username;
+        var inputSelector = "#inputPhoneNumber-" + username;
         // format the incoming instructor phone number
         $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
 
         if (username){
-          setupPhoneNumber(edit, input);
+          setupPhoneNumber(editSelector, inputSelector);
         }
     });
 });
