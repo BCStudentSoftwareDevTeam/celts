@@ -198,8 +198,6 @@ function showAlterModalWithCourse(courseID) {
   $('#saveButton').on('click', function(event) {
     event.preventDefault();
     var instructorData = getCourseInstructors();
-    // Assuming you need to clear specific instructor inputs for some reason before proceeding.
-    $('#alterModal form input[name="instructor[]"]').remove();
     setInstructorList(instructorData);
 
     var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
