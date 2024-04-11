@@ -335,35 +335,42 @@ function createNewRow(selectedInstructor) {
     msgFlash("Instructor is already added.", "danger");
     return;
   }
+
   // Create new table row and update necessary attributes
-  let lastRow = tableBody.find("tr:last");
-  let newRow = lastRow.clone();
+  let newRow = $("<tr></tr>");
 
-  let instructorName = newRow.find("td:eq(0) p")
-  instructorName.text(instructor);
+  newRow.attr("data-username", username);
 
-  let phoneInput = newRow.find("td:eq(0) input")
+  let instructorCell = $("<td></td>");
+  let instructorName = $("<p class='mb-0'>" + instructor + "</p>");
+  let phoneInput = $("<input type='text' style='border: none' size='14' class='form-control-sm' aria-label='Instructor Phone' placeholder='Phone Number' />");
+  phoneInput.attr("id", "inputPhoneNumber-" + username);
+  phoneInput.attr("name", "courseInstructorPhone");
   phoneInput.val(phone);
-  phoneInput.attr("id", "inputPhoneNumber-" +username);
-  $(phoneInput).inputmask('(999)-999-9999');
+  phoneInput.inputmask('(999)-999-9999');
 
-  let removeButton = newRow.find("td:eq(1) button")
-  let editLink = newRow.find("td:eq(0) a")
-  editLink.attr("id", "editButton-" + username);
+  let editLink = $("<a class='text-decoration-none primary editButton' tabindex='0' type='button'>Edit</a>");
+  editLink.attr("data-username", username);
 
-  editLink.attr("data-username", username)
-  newRow.prop("hidden", false);
-  lastRow.after(newRow);
+  let removeButton = $("<button class='btn btn-danger removeButton'>Remove</button>");
 
-  phoneInput.attr("data-value", phone)
-  var edit = "#editButton-" + username
-  var input = "#inputPhoneNumber-" + username
-  if (username){
-    setupPhoneNumber(edit, input)
-  }
+  instructorCell.append(instructorName);
+  instructorCell.append(phoneInput);
+  instructorCell.append(editLink);
 
-  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
+  newRow.append(instructorCell);
+  newRow.append("<td class='align-middle'></td>");
+  newRow.find("td.align-middle").append(removeButton);
+
+  tableBody.append(newRow);
+
+  // Add the username to the hidden input for form submission
+  $("#instructorTableNames").append('<input type="hidden" name="instructor[]" value="' + username + '"/>');
+
+  // Setup phone number input
+  setupPhoneNumber(editLink, phoneInput);
 }
+
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
   return $("#instructorTableNames input").map((i, instructorRow) => $(instructorRow).val())
