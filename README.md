@@ -16,6 +16,8 @@
  * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```
  * default python is Python 3
 
+## Developing CELTS in a devcontainer
+
 ## Developing on CELTS
 1. Pull down the repo in your home directory: ```git clone <URL>```
 2. Run ```source setup.sh```
