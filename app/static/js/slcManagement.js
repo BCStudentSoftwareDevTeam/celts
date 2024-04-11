@@ -46,14 +46,14 @@ $(document).ready(function() {
   
       // Remove the closest tr
       $(this).closest("tr").remove();
-  });
+    });
   });
 
   $("#courseInstructor").on('input', function() {
       searchUser("courseInstructor", createNewRow, true, null, "instructor");
       setTimeout(function() {
         $(".ui-autocomplete").css("z-index", 9999);
-    }, 500);
+      }, 500);
   });
 
   // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
@@ -87,7 +87,7 @@ function updateRenewModal(courseID){
 
 function changeAction(action){
   let courseID = action.id;
-  let courseAction = action.value
+  let courseAction = action.value;
   // decides what to do based on selection
   if (courseAction == "Renew"){
     $('#courseID').val(courseID);
@@ -192,7 +192,6 @@ function unapproveProposal(el){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-
     $('#alterModal').modal('show');
   });
 
@@ -224,7 +223,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         let modalTitle = courseDict['courseName'] ? courseDict['courseName'] : courseDict['courseAbbreviation'] 
         
         // Find the element with class "modal-header" and "fw-bold" using jQuery
-        $("#alterModalTitle").text("Edit " + modalTitle);
+        $("#alterModalTitle").text(`Edit ${modalTitle}`);
 
         $('#hoursEarned').val(courseDict['hoursEarned']);
         if (courseDict['instructors'] && courseDict['instructors'].length > 0) {

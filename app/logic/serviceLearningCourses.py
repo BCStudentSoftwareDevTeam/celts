@@ -115,7 +115,7 @@ def approvedCourses(termId: int) -> List[Course]:
 
     return approvedCourses
 
-def importedCourses(termId: int) -> List[Course]:
+def getImportedCourses(termId: int) -> List[Course]:
     """
     Queries the database to get all the necessary information for
     imported courses.

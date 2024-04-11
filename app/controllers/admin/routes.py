@@ -35,7 +35,7 @@ from app.logic.participants import getParticipationStatusForTrainings, checkUser
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
-from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, importedCourses, getInstructorCourses, editImportedCourses
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
 
@@ -448,7 +448,7 @@ def manageServiceLearningCourses(term=None):
                                 courseInstructors = getInstructorCourses(),
                                 unapprovedCourses = unapprovedCourses(manageTerm),
                                 approvedCourses = approvedCourses(manageTerm),
-                                importedCourses = importedCourses(manageTerm),
+                                importedCourses = getImportedCourses(manageTerm),
                                 terms = selectSurroundingTerms(g.current_term),
                                 term = manageTerm,
                                 cpPreview = session.get('cpPreview', {}),
@@ -460,7 +460,7 @@ def manageServiceLearningCourses(term=None):
                             courseInstructors = getInstructorCourses(),
                             unapprovedCourses = unapprovedCourses(manageTerm),
                             approvedCourses = approvedCourses(manageTerm),
-                            importedCourses = importedCourses(manageTerm),
+                            importedCourses = getImportedCourses(manageTerm),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),

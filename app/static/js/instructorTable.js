@@ -6,7 +6,7 @@ export function getRowUsername(element) {
 }
 
 export function createNewRow(selectedInstructor) {
-  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
+  let instructor = `${selectedInstructor["firstName"]} ${selectedInstructor["lastName"]} (${selectedInstructor["email"]})`;
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
@@ -35,14 +35,14 @@ export function createNewRow(selectedInstructor) {
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 
-  phoneInput.attr("data-value", phone)
-  var edit = "#editButton-" + username
-  var input = "#inputPhoneNumber-" + username
+  phoneInput.data("value", phone)
+  var editSelector = "#editButton-" + username
+  var inputSelector = "#inputPhoneNumber-" + username
   if (username){
-    setupPhoneNumber(edit, input)
+    setupPhoneNumber(editSelector, inputSelector)
   }
 
-  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
+  $("#instructorTableNames").append(`<input hidden name="instructor[]" value="${username}"/>`)
 }
 
 export function getCourseInstructors() {
