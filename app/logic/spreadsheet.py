@@ -98,13 +98,13 @@ def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
     repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'), 
                                                      Program.programName.alias("programName"), 
-                                                     fn.Count(EventParticipant.event_id).alias('event_count'))
-                                             .join(Event, on=(EventParticipant.event_id ==Event.id))
+                                                     fn.COUNT(EventParticipant.event_id).alias('event_count'))
+                                             .join(Event, on=(EventParticipant.event_id == Event.id))
                                              .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName, Event.program)
-                                             .having(fn.Count(EventParticipant.event_id) > 1)
-                                             .order_by(Event.program, User.lastName ))
+                                             .having(fn.COUNT(EventParticipant.event_id) > 1)
+                                             .order_by(Event.program, User.lastName))
         
     return repeatPerProgramQuery.tuples()
 
