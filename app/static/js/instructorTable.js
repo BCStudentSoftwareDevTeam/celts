@@ -24,20 +24,20 @@ export function createNewRow(selectedInstructor) {
 
   let phoneInput = newRow.find("td:eq(0) input")
   phoneInput.val(phone);
-  phoneInput.attr("id", "inputPhoneNumber-" +username);
+  phoneInput.attr("id", `inputPhoneNumber-${username}`);
   $(phoneInput).inputmask('(999)-999-9999');
 
   let removeButton = newRow.find("td:eq(1) button")
   let editLink = newRow.find("td:eq(0) a")
-  editLink.attr("id", "editButton-" + username);
+  editLink.attr("id", `editButton-${username}`);
 
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 
   phoneInput.data("value", phone)
-  var editSelector = "#editButton-" + username
-  var inputSelector = "#inputPhoneNumber-" + username
+  var editSelector = `#editButton-${username}`
+  var inputSelector = `#inputPhoneNumber-${username}`
   if (username){
     setupPhoneNumber(editSelector, inputSelector)
   }
