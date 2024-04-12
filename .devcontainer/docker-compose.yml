@@ -3,11 +3,11 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
 
     volumes:
-      - ../..:/workspaces:cached
+      - ..:/home/vscode/celts
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -28,7 +28,7 @@ services:
     expose:
       - '3307'
     volumes:
-      - celts:/var/lib/mysql
+      - celts_data:/var/lib/mysql
     
 volumes:
-  celts:
+  celts_data:
