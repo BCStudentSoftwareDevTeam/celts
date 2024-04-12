@@ -1,0 +1,19 @@
+{
+    "name": "Python Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+    "remoteUser": "vscode",
+
+    "forwardPorts": [5000,3307],
+    
+    "remoteEnv": {
+        "FLASK_DEBUG": "1",
+        "APP_ENV": "development",
+        "USING_CONTAINER": "1 "
+    },
+    
+    "postCreateCommand": "pip install -r requirements.txt"
+
+}
