@@ -17,6 +17,10 @@
  * default python is Python 3
 
 ## Developing CELTS in a devcontainer
+1. Download Docker and vscode 
+2. Open vscode and pull down the repo: ```git clone <URL>```
+3. Make sure you have your GitHub SSH key setup and an SSH Agent running: ```https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent```
+4. Make sure Docker is running and open celts in devcontainer
 
 ## Developing on CELTS
 1. Pull down the repo in your home directory: ```git clone <URL>```
