@@ -96,15 +96,15 @@ def volunteerMajorAndClass(column, reorderClassLevel=False):
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
-    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName), 
+    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'), 
                                                      Program.programName.alias("programName"), 
-                                                     fn.Count(EventParticipant.event_id).alias('event_count'))
-                                             .join(Event, on=(EventParticipant.event_id ==Event.id))
+                                                     fn.COUNT(EventParticipant.event_id).alias('event_count'))
+                                             .join(Event, on=(EventParticipant.event_id == Event.id))
                                              .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName, Event.program)
-                                             .having(fn.Count(EventParticipant.event_id) > 1)
-                                             .order_by(Event.program, User.lastName ))
+                                             .having(fn.COUNT(EventParticipant.event_id) > 1)
+                                             .order_by(Event.program, User.lastName))
         
     return repeatPerProgramQuery.tuples()
 
@@ -131,17 +131,17 @@ def getRetentionRate(academicYear):
     return retentionDict
 
 def termParticipation(termDescription):
-    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
+    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
                                       .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
                                       .join(Program, on=(Program.id == Event.program))
-                                      .join(Term, on=(Event.term_id == Term.id) )
-                                      .where(Term.description == termDescription ))
+                                      .join(Term, on=(Event.term_id == Term.id))
+                                      .where(Term.description == termDescription))
 
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
-        progName = result['progName']
+        programName = result['programName']
         participant = result['participant']
-        programParticipationDict[progName].append(participant)
+        programParticipationDict[programName].append(participant)
 
     return dict(programParticipationDict)
 
