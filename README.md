@@ -17,13 +17,13 @@
  * default python is Python 3
 
 ## Getting Started With CELTS in a devcontainer
-1. Download Docker and vscode 
-2. Open vscode and pull down the repo: ```git clone <URL>```
+1. Download Docker and Visual Studio Code (NOT Visual Studio) 
 3. Make sure you have your GitHub SSH key setup and an SSH Agent running. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-4. Make sure Docker is running and open celts in devcontainer
+4. Open repository directory in VSCode (either clone with vs code or install git and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```
+5. Follow prompts to install Dev Container extension and open project in dev container
 
 ## Getting Started With CELTS Manually (Linux or Mac OS) 
-1. Pull down the repo in your home directory: ```git clone <URL>```
+1. Pull down the repo in your home directory: ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```
 2. Run ```source setup.sh```
 3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` or ```/etc/init.d/mysql start``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
 4. If you have non-default root and application database credentials, match your MySQL configuration to the application config. You can either:
