@@ -74,6 +74,8 @@
         <div name="Community-Engaged Summer Experience" class="pt-4">
           <h3 class="col-md-auto {% if summerExperience %}bi bi-check2 {% endif %}">Community-Engaged Summer Experience</h3>
           <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
+          <p class="pt-2">The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills. 
+            Please fill out the following form and return to your CCE Minor Advisor for approval.  </p
           <div class="row-auto col-md-6">
             <div class="input-group">
               <select class="form-select" name='term' id='summerExperienceTerm' required>
@@ -85,6 +87,29 @@
               <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
               <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>
             </div>
+            <br> 
+            <div>
+              <form action="{{ url_for("main.landingPage")}}" method="post">
+                <label for="firstname">Student Name:</label>
+                <input type="text" id="fullname" name="fname" placeholder="fullname">
+                <label for="lastname">Student Email:</label>
+                <input type="text" id="lastname" name="lname" placeholder="email">
+            </div>
+            <br>
+            <div class="row col-md-6">
+              <div class="form-group col-md-6">
+                  <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Today's Date</strong></label>
+                  <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+                      <input autocomplete="off" type='text' class="form-control startDatePicker readonly" />
+                      <div class="input-group-text calendar-icon" id="calendarIconStart-{{pageLocation}}">
+                          <span><i class="bi bi-calendar-plus-fill"></i></span>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <br>
+            <label for="company-name">Name of Organization  you will work with for summer experience:</label>
+            <input type="text" id="Organization_name" name="company-name" placeholder="fullname">
           </div>
         </div>
     </div>
