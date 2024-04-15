@@ -25,10 +25,10 @@ def getProgramTranscript(username):
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
 
     # Fetch all ProgramBan objects for the user
-    BannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
+    bannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
 
     # Create a set of program IDs to remove from transcript
-    programsToRemoveFromTranscript = {bannedProgram.program_id for bannedProgram in BannedProgramsForParticipant if bannedProgram.removeFromTranscript}
+    programsToRemoveFromTranscript = {bannedProgram.program_id for bannedProgram in bannedProgramsForParticipant if bannedProgram.removeFromTranscript}
     transcriptData = {}
 
     # Iterate through EventData and populate transcriptData
