@@ -41,14 +41,10 @@ def getLoginUser():
     try:
         user = User.get_by_id(username)
     except DoesNotExist as e:
-        # Create the user from Shibboleth
-        # FIXME We need to identify the proper shibboleth attributes to insert into user
-        user = User.create(
-            username=username,
-            firstName="Not",
-            lastName="Yet",
-            email=f"{username}@berea.edu",
-            bnumber="B00055555")
+        # Find the user by email
+        user = User.get(email=f"{username}@berea.edu")
+
+        # or fail
 
     if 'username' not in session:
         print("Logging in as", user.username)
