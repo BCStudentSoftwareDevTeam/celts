@@ -482,9 +482,9 @@ def updateTranscript(username, program_id):
 
     # Update the ProgramBan object matching the program_id and username
     try:
-        program_ban = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
-        program_ban.removeFromTranscript = removeFromTranscript
-        program_ban.save()
+        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        bannedProgramsForUser.removeFromTranscript = removeFromTranscript
+        bannedProgramsForUser.save()
         return jsonify({'status': 'success'})
     except ProgramBan.DoesNotExist:
         return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
