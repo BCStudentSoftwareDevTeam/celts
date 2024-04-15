@@ -450,16 +450,15 @@ def serviceTranscript(username):
                             userData = user)
 
 @main_bp.route('/profile/<username>/removeFromTranscript/<program_id>', methods=['GET'])
-def checkRemoved(username, program_id):
-    # Check if the user is banned from the program
+def isRemovedFromTranscript(username, program_id):
     user = User.get_or_none(User.username == username)
     if user is None:
         abort(404)
 
     try:
-        program_ban = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
         # If the user is banned, check if it's marked for removal from transcript
-        if program_ban.removeFromTranscript:
+        if bannedProgramsForUser.removeFromTranscript:
             return jsonify({'removedFromTranscript': True})
         else:
             return jsonify({'removedFromTranscript': False})
@@ -467,7 +466,7 @@ def checkRemoved(username, program_id):
         return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
 
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
-def update_transcript(username, program_id):
+def updateTranscript(username, program_id):
     # Check user permissions
     user = User.get_or_none(User.username == username)
     if user is None:
