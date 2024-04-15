@@ -28,12 +28,12 @@ def getProgramTranscript(username):
     BannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
 
     # Create a set of program IDs to remove from transcript
-    programsToremoveFromTranscript = {bannedProgram.program_id for bannedProgram in BannedProgramsForParticipant if bannedProgram.removeFromTranscript}
+    programsToRemoveFromTranscript = {bannedProgram.program_id for bannedProgram in BannedProgramsForParticipant if bannedProgram.removeFromTranscript}
     transcriptData = {}
 
     # Iterate through EventData and populate transcriptData
     for event in EventData:
-        if event.program.id not in programsToremoveFromTranscript:  # Check if program is not in programs to be removed from transcript
+        if event.program.id not in programsToRemoveFromTranscript:  # Check if program is not in programs to be removed from transcript
             if event.program in transcriptData:
                 transcriptData[event.program].append([event.term.description, event.hoursEarned])
             else:
