@@ -1,0 +1,21 @@
+{
+    "name": "Python3, Flask, and MySQL Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+
+    "workspaceFolder": "/home/vscode/${localWorkspaceFolderBasename}",
+    "remoteUser": "vscode",
+
+    "forwardPorts": [5000,3307],
+    
+    "remoteEnv": {
+        "FLASK_DEBUG": "1",
+        "APP_ENV": "development",
+        "USING_CONTAINER": "1",
+        "MYSQL_HOST": "db",
+        "MYSQL_PWD": "password"
+    },
+    
+    "postCreateCommand": "mysql -u celts_user -e \"SELECT * from celts.user\" > /dev/null 2>&1  || database/reset_database.sh test"
+
+}

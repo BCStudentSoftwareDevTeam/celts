@@ -14,9 +14,22 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
 
     To get only the current and future terms, pass prevTerms=0.
     """
-    startTerm = max(1, currentTerm.id - prevTerms)
+
+    # Find the starting term
+    startOrder = currentTerm.termOrder
+    while(prevTerms > 0):
+        orderPieces = startOrder.split('-')
+        if(orderPieces[1] == "1"):
+            orderPieces[0] = int(orderPieces[0]) - 1
+            orderPieces[1] = 3
+        else:
+            orderPieces[1] = int(orderPieces[1]) - 1
+        startOrder = f"{orderPieces[0]}-{orderPieces[1]}"
+
+        prevTerms -= 1
+
     surroundingTerms = (Term.select()
-                            .where(Term.id >= startTerm)
+                            .where(Term.termOrder >= startOrder)
                             .where((Term.year <= currentTerm.year + 2))
                             .order_by(Term.termOrder))
 
