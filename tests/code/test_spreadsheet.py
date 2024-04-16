@@ -68,7 +68,7 @@ def test_getRetentionRate():
                     classLevel = 'Sophomore')
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
-        testEvent = Event.create(name="Test Event",
+        testEvent = Event.create(name="Fall2020Event",
                                  term=1, #Fall 2020
                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
@@ -78,8 +78,8 @@ def test_getRetentionRate():
                                                          ('CELTS-Sponsored Event', '0.0%'), 
                                                          ('Test Program', '0.0%')]
         
-        testEvent2 = Event.create(name="Test Event2",
-                                  term=2, #Fall 2021
+        testEvent2 = Event.create(name="Spring2021Event",
+                                  term=2, #Spring 2021
                                   program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
@@ -134,22 +134,22 @@ def test_repeatVolunteersPerProgram():
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
         testEvent = Event.create(name="Test Event",
-                                 term=1, #Fall 2020
+                                 term=1, 
                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent,
                                 hoursEarned=1)
         assert sorted(list(repeatVolunteersPerProgram())) == [('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
-                                                                        ('Zach Neill', 'Hunger Initiatives', 2)]
+                                                              ('Zach Neill', 'Hunger Initiatives', 2)]
         testEvent2 = Event.create(name="Test Event2",
-                                 term=2, #Fall 2021
+                                 term=1, 
                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
         assert sorted(list(repeatVolunteersPerProgram())) == [('Madinabonu Solijonova', 'Test Program', 2),
-                                                                        ('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
-                                                                        ('Zach Neill', 'Hunger Initiatives', 2)]
+                                                              ('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
+                                                              ('Zach Neill', 'Hunger Initiatives', 2)]
 
         transaction.rollback()
 
@@ -277,14 +277,14 @@ def test_getVolunteerProgramEventByTerm():
     with mainDB.atomic() as transaction:
         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3))) == ([])
         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(2)))) == ([('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-                                                                                             ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-                                                                                             ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'),
-                                                                                             ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-                                                                                             ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')])
+                                                                                    ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
+                                                                                    ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'),
+                                                                                    ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
+                                                                                    ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')])
 
         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(4)))) == [('Alex Bryant', 'bryanta', 'Berea Buddies', 'Tutoring'),
-                                                                                             ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'),
-                                                                                             ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
+                                                                                   ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'),
+                                                                                   ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -313,28 +313,28 @@ def test_getVolunteerProgramEventByTerm():
                                 event=testEvent3)
         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3))) == [('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event')]
         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(2)))) == [('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-                                                                                             ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
-                                                                                             ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-                                                                                             ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'), 
-                                                                                             ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-                                                                                             ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')]
+                                                                                   ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
+                                                                                   ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
+                                                                                   ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'), 
+                                                                                   ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
+                                                                                   ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')]
 
         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(4)))) == [('Alex Bryant', 'bryanta', 'Berea Buddies', 'Tutoring'), 
-                                                                                             ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
-                                                                                             ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'), 
-                                                                                             ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
+                                                                                   ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
+                                                                                   ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'), 
+                                                                                   ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_getUniqueVolunteers():
     with mainDB.atomic() as transaction:
         assert sorted(list(getUniqueVolunteers("2021-2022"))) == ([('bryanta', 'Alex Bryant', 'B00708826'),
-                                                                             ('khatts', 'Sreynit Khatt', 'B00759107')])
+                                                                   ('khatts', 'Sreynit Khatt', 'B00759107')])
     
         assert sorted(list(getUniqueVolunteers("2020-2021"))) == ([('ayisie', 'Ebenezer Ayisi', 'B00739736'),
-                                                                             ('khatts', 'Sreynit Khatt', 'B00759107'),
-                                                                             ('neillz', 'Zach Neill', 'B00751864'),
-                                                                             ('partont', 'Tyler Parton', 'B00751360')])
+                                                                   ('khatts', 'Sreynit Khatt', 'B00759107'),
+                                                                   ('neillz', 'Zach Neill', 'B00751864'),
+                                                                   ('partont', 'Tyler Parton', 'B00751360')])
         
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
@@ -353,8 +353,8 @@ def test_getUniqueVolunteers():
                                 hoursEarned = 1)
         
         assert sorted(list(getUniqueVolunteers("2020-2021"))) == [('ayisie', 'Ebenezer Ayisi', 'B00739736'), 
-                                                                            ('khatts', 'Sreynit Khatt', 'B00759107'), 
-                                                                            ('neillz', 'Zach Neill', 'B00751864'), 
-                                                                            ('partont', 'Tyler Parton', 'B00751360'), 
-                                                                            ('solijonovam', 'Madinabonu Solijonova', 'B00769465')]
+                                                                  ('khatts', 'Sreynit Khatt', 'B00759107'), 
+                                                                  ('neillz', 'Zach Neill', 'B00751864'), 
+                                                                  ('partont', 'Tyler Parton', 'B00751360'), 
+                                                                  ('solijonovam', 'Madinabonu Solijonova', 'B00769465')]
         transaction.rollback()
