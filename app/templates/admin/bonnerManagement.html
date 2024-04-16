@@ -32,7 +32,7 @@
             <!---------------- Cohort management ---------------->
             <div class="d-flex justify-content-center">
                 <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <button class="btn-success py-2 mb-2 rounded boarder-0" id="addCohort">Add New Cohort</button>
+                    <button class="btn btn-success py-2 mb-2" id="addCohort">Add New Cohort</button>
                     {% set subTab = cohorts.keys()|sort|last if subTab == "newest" else subTab %}
                     {% for year in cohorts.keys()|sort|reverse %}
                         {% set show = "active" if subTab|int == year else "" %}
