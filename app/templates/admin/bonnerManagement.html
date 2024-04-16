@@ -15,7 +15,7 @@
 {% block app_content %}
 
     {# Figure out if we are showing a particular tab inside of the accordion #}
-    {% set subTab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion and visibleAccordion[7:]|int <= cohorts.keys()|sort|last else "newest" %}
+    {% set subTab = visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion and visibleAccordion[7:]|int <= cohorts.keys()|sort|last else "newest" %}
 
 <h1 class="text-center mb-5">Bonner Management</h1>
 
