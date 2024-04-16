@@ -118,7 +118,8 @@ def repeatVolunteers():
     return repeatAllProgramQuery.tuples()
 
 def getRetentionRate(academicYear):
-    retentionDict = []
+    # Returns a list of tuples of program retention information in the format ('program name', 'percent people retained')
+    retentionList = []
     fall, spring = academicYear.split("-")
     fallParticipationDict = termParticipation(f"Fall {fall}")
     springParticipationDict = termParticipation(f"Spring {spring}")  
@@ -126,9 +127,9 @@ def getRetentionRate(academicYear):
     # calculate the retention rate using the defined function
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retentionRate in retentionRateDict.items():
-         retentionDict.append((program, str(round(retentionRate * 100, 2)) + "%"))
+         retentionList.append((program, str(round(retentionRate * 100, 2)) + "%"))
 
-    return retentionDict
+    return retentionList
 
 def termParticipation(termDescription):
     participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))

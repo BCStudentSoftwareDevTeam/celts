@@ -92,6 +92,7 @@ def test_getRetentionRate():
 @pytest.mark.integration
 def test_repeatVolunteers():
     with mainDB.atomic() as transaction:
+        EventParticipant.delete().execute()
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -109,19 +110,20 @@ def test_repeatVolunteers():
         EventParticipant.create(user='solijonovam',
                                 event=testEvent,
                                 hoursEarned=1)
-        assert sorted(list(repeatVolunteers())) == [('Sreynit Khatt', 4), ('Zach Neill', 2)]
+        assert sorted(list(repeatVolunteers())) == []
         testEvent2 = Event.create(name="Spring2021Event",
                                  term=2, #Spring 2021
                                  program=testProgram)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
-        assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2), ('Sreynit Khatt', 4), ('Zach Neill', 2)]
+        assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2)]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_repeatVolunteersPerProgram():
     with mainDB.atomic() as transaction:
+        EventParticipant.delete().execute()
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -139,17 +141,23 @@ def test_repeatVolunteersPerProgram():
         EventParticipant.create(user='solijonovam',
                                 event=testEvent,
                                 hoursEarned=1)
-        assert sorted(list(repeatVolunteersPerProgram())) == [('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
-                                                              ('Zach Neill', 'Hunger Initiatives', 2)]
+        assert sorted(list(repeatVolunteersPerProgram())) == []
+        testProgram2 = Program.create(programName = "Test Program 2",
+                                     programDescription = "A good program")
         testEvent2 = Event.create(name="Test Event2",
                                  term=1, 
-                                 program=testProgram)
+                                 program=testProgram2)
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
-        assert sorted(list(repeatVolunteersPerProgram())) == [('Madinabonu Solijonova', 'Test Program', 2),
-                                                              ('Sreynit Khatt', 'Adopt-a-Grandparent', 3),
-                                                              ('Zach Neill', 'Hunger Initiatives', 2)]
+        assert sorted(list(repeatVolunteersPerProgram())) == []
+        testEvent3 = Event.create(name="Test Event3",
+                                 term=1, 
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent3,
+                                hoursEarned=1)
+        assert sorted(list(repeatVolunteersPerProgram())) == [('Madinabonu Solijonova', 'Test Program', 2)]
 
         transaction.rollback()
 
@@ -229,20 +237,20 @@ def test_onlyCompletedAllVolunteer():
                     isStudent = True,
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
-        testEvent = Event.create(name="All Volunteer Training",
+        allVolunteerEvent = Event.create(name="All Volunteer Training",
                                  term=1,
                                  program=9,
                                  isTraining=1,
                                  isAllVolunteerTraining=1)
-        EventParticipant.create(user = 'solijonovam', #Not participated in event
-                                event = testEvent, #Added to all volunteer training event
+        EventParticipant.create(user = 'solijonovam', # Not participated in event
+                                event = allVolunteerEvent, # Added to all volunteer training event
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021")) == [('solijonovam', 'Madinabonu Solijonova')]
-        testEvent2 = Event.create(name="Test Event",
+        testEvent = Event.create(name="Test Event",
                                   program=1,
                                   term=1)
-        EventParticipant.create(user = 'solijonovam', #Not participated in event
-                                event = testEvent2, #Added to all volunteer training event
+        EventParticipant.create(user = 'solijonovam', # Only participated in all volunteer event
+                                event = testEvent,
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021")) == []
         transaction.rollback()
@@ -255,7 +263,7 @@ def test_volunteerProgramHours():
         EventParticipant.create(user = 'qasema',
                                 event = 2,
                                 hoursEarned = 1)
-        assert sorted(list(volunteerProgramHours())) == ([('Hunger Initiatives', 'qasema', 1.0)])
+        assert sorted(list(volunteerProgramHours())) == [('Hunger Initiatives', 'qasema', 1.0)]
         transaction.rollback()
 
 @pytest.mark.integration
@@ -270,6 +278,10 @@ def test_totalVolunteerHours():
                                 hoursEarned = 1)
         # Checking that the total volunteer hours has increased by 1
         assert list(totalVolunteerHours()) == [(1.0,)]
+        EventParticipant.create(user = 'ayisie',
+                                event = 3,
+                                hoursEarned = 6)
+        assert list(totalVolunteerHours()) == [(7.0,)]
         transaction.rollback()
 
 @pytest.mark.integration
