@@ -105,3 +105,7 @@ If you want to test with actual emails, use an email other than outlook to test 
 This is SSDT Documentation that contains details, references, workflow, system administration, etc. You are welcome to contribute to it and/or review it:
 
 http://ssdt-documentation.berea.edu/
+
+This is a permissions matrix that lists all possible roles a user could have in the application and what permissions they are allowed. If you are adding a new role or feature please update this document:
+
+https://docs.google.com/spreadsheets/d/1RQao6WqHZFZo0rYBPnuwnhvVI856ysqTaY0a5m3IR1Q/edit?usp=sharing
