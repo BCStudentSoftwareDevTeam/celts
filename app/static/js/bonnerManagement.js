@@ -14,8 +14,7 @@ function cohortRequest(year, method, username){
   })
 }
 
-function addSearchCapabilities(inputElement){
-    inputElement = $(inputElement);
+function addSearchCapabilities.on(inputElement){
     inputElement.on("input", function(){
         let year = $(this).data('year');
         searchUser(this.id, s => cohortRequest(year, "add", s.username), false, null, "student");
@@ -25,12 +24,12 @@ function addSearchCapabilities(inputElement){
 
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
-    $("#addCohort").on('click', addCohort);
-    $("input[type=search]").each((i, e) => addSearchCapabilities(e));
+    $("#addCohort").on('click', addCohort)
+    $("input[type=search]").each((i, e) => addSearchCapabilities(e))
     $(".removeBonner").on("click",function(){
-        let year = $(this).data('year');
-        cohortRequest(year, "remove", $(this).data("username"));
-    });
+        let year = $(this).data('year')
+        cohortRequest(year, "remove", $(this).data("username"))
+    })
 
     // Add requirements sorting
     // https://github.com/SortableJS/Sortable

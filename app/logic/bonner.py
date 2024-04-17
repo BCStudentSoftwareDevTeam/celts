@@ -58,13 +58,9 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
     """
     bonnorCohorts = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
-    firstYear = currentYear-4
-    if bonnorCohorts:
-        firstYear = min(firstYear, bonnorCohorts[0].year)
+    firstYear = currentYear - 4 if not bonnorCohorts else min(currentYear - 4, bonnorCohorts[0].year)
+    lastYear = currentYear if not bonnorCohorts else max(currentYear, bonnorCohorts[-1].year)
 
-    lastYear = currentYear
-    if bonnorCohorts:
-        lastYear = max(lastYear, bonnorCohorts[-1].year)
 
     cohorts = { year: [] for year in range(firstYear, lastYear + 1) }
     for cohort in bonnorCohorts:
