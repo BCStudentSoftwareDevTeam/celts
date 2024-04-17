@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+
+    volumes:
+      - ..:/home/vscode/celts
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:db
+
+  db:
+    image: mysql
+    restart: always
+    environment: 
+      MYSQL_DATABASE: 'celts'
+      MYSQL_USER: 'celts_user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3307:3307'
+    expose:
+      - '3307'
+    volumes:
+      - celts_data:/var/lib/mysql
+    
+volumes:
+  celts_data:
