@@ -77,6 +77,14 @@ def test_courseManagement():
                                         createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
+        
+        importedCourse = Course.create(courseName = "Testing Approved",
+                                        term = 3,
+                                        status = CourseStatus.IMPORTED,
+                                        courseCredit = "4",
+                                        createdBy = "ramsayb2",
+                                        isAllSectionsServiceLearning = 0,
+                                        isPermanentlyDesignated = 0)
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
@@ -84,6 +92,8 @@ def test_courseManagement():
                                                     user = 'neillz')
         CourseInstructor.create(course = approvedCourse.id,
                                                     user = 'ramsayb2')
+        CourseInstructor.create(course = importedCourse.id,
+                                                    user = "ramsayb2")
 
         termId = 3
 
@@ -93,6 +103,7 @@ def test_courseManagement():
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
+        assert importedCourse in getImportedCourses(termId)
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
 
 
@@ -289,9 +300,50 @@ def test_updateCourse():
 
         transaction.rollback()
 
+
+@pytest.mark.integration
+def test_editImportedCourses():
+    with mainDB.atomic() as transaction:
+        
+        importedCourse = Course.create(courseName = "Testing Imported Course",
+                                        term = 4,
+                                        status = CourseStatus.IMPORTED,
+                                        courseCredit = "4",
+                                        createdBy = "ramsayb2",
+                                        isAllSectionsServiceLearning = 0,
+                                        isPermanentlyDesignated = 0)
+        
+        # CourseInstructor.create(course = importedCourse.id,
+        #                                             user = "ramsayb2")
+        testInstructor = User.create(username="testInstructor",
+                               bnumber="B00000011",
+                               email="testInstructor@test.edu",
+                               phoneNumber="555-555-5555",
+                               firstName="TestInstructor",
+                               lastName="User",
+                               isFaculty="1")
+        
+        CourseInstructor.create(course = importedCourse.id,
+                                                    user = testInstructor)
+        
+        
+        courseData = {
+            "courseId": importedCourse.id,
+            "courseName": importedCourse.courseName,
+            "courseAbbreviation": importedCourse.courseAbbreviation,
+            "instructors": [testInstructor],
+            "hoursEarned": 34
+        }
+        
+        print(courseData)
+    
+        
+        # assert Course.get_or_none(Course.status == "IMPORTED")
+        transaction.rollback()
+
+
 @pytest.mark.integration
 def test_pushDataToDatabase():
-    
     with mainDB.atomic() as transaction:
         CourseParticipant.delete().execute()
         cpPreview = {'Fall 2019' : {'courses': {'CSC 226' : {'students': [
