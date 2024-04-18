@@ -15,7 +15,7 @@ def addNextTerm():
     
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear   
-    if prevSemester == "Summer ": # we only change academic year when the latest term in the table is Summer
+    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
 

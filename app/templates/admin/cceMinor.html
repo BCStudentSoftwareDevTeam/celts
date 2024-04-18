@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/minorRequirements.js"></script>
+  <script type="module" src="/static/js/minorAdminPage.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
   {% block styles %}
@@ -21,6 +21,7 @@
             <th>Name</th>
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
+            <th>Requested Other Engagement</th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,14 @@
             </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
+            <td>
+            {% if student.hasCommunityEngagementRequest %}
+                {# Placeholder for request other engagement #}
+                <a href="#">Yes</a>
+            {% else %}
+                No
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -53,5 +62,4 @@
         {% endfor %}
     </tbody>
 </table>
-
 {% endblock %}

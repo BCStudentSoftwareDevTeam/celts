@@ -338,6 +338,7 @@ def test_getMinorProgress():
 
         assert noMinorProgress == []
         
+        # create a sustained engagement for Sreynit
         khattsSustainedEngagement = {"username": "khatts",
                                      "program": 2,
                                      "course": None,
@@ -350,10 +351,12 @@ def test_getMinorProgress():
 
         IndividualRequirement.create(**khattsSustainedEngagement)
         minorProgress = getMinorProgress()
-        
-        assert minorProgress[0]['engagementCount'] == 1
-        assert minorProgress[0]['hasSummer'] == "Incomplete"
+        sreynitProgress = minorProgress[0]
+        assert sreynitProgress['engagementCount'] == 1
+        assert sreynitProgress['hasSummer'] == "Incomplete"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 0
 
+        # add a summer engagement and requested engagement to Sreynit's progress
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
                                   "course": None, 
@@ -361,15 +364,27 @@ def test_getMinorProgress():
                                   "term": 3,
                                   "requirement": 16,
                                   "addedBy": "ramsayb2",
-                                  "addedOn": ""
+                                  "addedOn": "",
                                  }
-        
+        khattsRequestedEngagement = {"user": "khatts",
+                                     "experienceName ": "Voluteering",
+                                     "company" : "Berea Celts",
+                                     "term": 3,
+                                     "description": "Summer engagement",
+                                     "weeklyHours": 3,
+                                     "weeks": 4,
+                                     "filename": None,
+                                     "status" : "Pending",
+                                    }
+    
+        # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
+        CommunityEngagementRequest.create(**khattsRequestedEngagement)
         IndividualRequirement.create(**khattsSummerEngagement)
-        minorProgressWithSummer = getMinorProgress()
-
-        assert minorProgressWithSummer[0]['engagementCount']== 1
-        assert minorProgressWithSummer[0]['hasSummer'] == "Completed"
-        
+        minorProgressWithSummerAndRequestOther = getMinorProgress()
+        sreynitProgress = minorProgressWithSummerAndRequestOther[0]
+        assert sreynitProgress['engagementCount'] == 1
+        assert sreynitProgress['hasSummer'] == "Completed"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 1
 
         transaction.rollback()
 
