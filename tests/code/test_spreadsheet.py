@@ -136,6 +136,7 @@ def test_repeatVolunteers():
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
+        assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2)]
         transaction.rollback()
 
 @pytest.mark.integration
