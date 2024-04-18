@@ -56,14 +56,14 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
         Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for
         intermediate years, or the last 5 years if there are no older records.
     """
-    bonnorCohorts = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
+    bonnerCohorts = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
-    firstYear = currentYear - 4 if not bonnorCohorts else min(currentYear - 4, bonnorCohorts[0].year)
-    lastYear = currentYear if not bonnorCohorts else max(currentYear, bonnorCohorts[-1].year)
+    firstYear = currentYear - 4 if not bonnerCohorts else min(currentYear - 4, bonnerCohorts[0].year)
+    lastYear = currentYear if not bonnerCohorts else max(currentYear, bonnerCohorts[-1].year)
 
 
     cohorts = { year: [] for year in range(firstYear, lastYear + 1) }
-    for cohort in bonnorCohorts:
+    for cohort in bonnerCohorts:
         cohorts[cohort.year].append(cohort.user)
 
     # slice off cohorts that go over our limit starting with the earliest
