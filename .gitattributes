@@ -1,17 +1,17 @@
 # always convert to Unix line endings
 * text eol=lf
 
-# let office documents match the os
-*.doc text=auto
-*.docx text=auto
-*.xls text=auto
-*.xlsx text=auto
-*.ppt text=auto
-*.pptx text=auto
-
 # except for binary files
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.webp binary
 *.ico binary
+
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
