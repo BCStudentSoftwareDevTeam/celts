@@ -14,22 +14,22 @@ function cohortRequest(year, method, username){
   })
 }
 
-function addSearchCapabilities.on(inputElement){
-    inputElement.on("input", function(){
+function addSearchCapabilities(inputElement){
+    $(inputElement).on("input", function(){
         let year = $(this).data('year');
-        searchUser(this.id, s => cohortRequest(year, "add", s.username), false, null, "student");
+        searchUser(this.id, student => cohortRequest(year, "add", student.username), false, null, "student");
     });
 }
 
 
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
-    $("#addCohort").on('click', addCohort)
-    $("input[type=search]").each((i, e) => addSearchCapabilities(e))
-    $(".removeBonner").on("click",function(){
-        let year = $(this).data('year')
-        cohortRequest(year, "remove", $(this).data("username"))
-    })
+    $("#addCohort").on('click', addCohort);
+    $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
+    $(".removeBonner").on("click", function(){
+        let year = $(this).data('year');
+        cohortRequest(year, "remove", $(this).data("username"));
+    });
 
     // Add requirements sorting
     // https://github.com/SortableJS/Sortable
