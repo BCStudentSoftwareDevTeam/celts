@@ -300,45 +300,56 @@ def test_updateCourse():
 
         transaction.rollback()
 
-
 @pytest.mark.integration
 def test_editImportedCourses():
     with mainDB.atomic() as transaction:
         
-        importedCourse = Course.create(courseName = "Testing Imported Course",
+        testImportedCourse = Course.create(courseName = "Testing Imported Course",
                                         term = 4,
                                         status = CourseStatus.IMPORTED,
                                         courseCredit = "4",
                                         createdBy = "ramsayb2",
                                         isAllSectionsServiceLearning = 0,
-                                        isPermanentlyDesignated = 0)
+                                        isPermanentlyDesignated = 0
+                                        )
         
-        # CourseInstructor.create(course = importedCourse.id,
-        #                                             user = "ramsayb2")
         testInstructor = User.create(username="testInstructor",
-                               bnumber="B00000011",
-                               email="testInstructor@test.edu",
-                               phoneNumber="555-555-5555",
-                               firstName="TestInstructor",
-                               lastName="User",
-                               isFaculty="1")
+                                bnumber="B00000011",
+                                email="testInstructor@test.edu",
+                                phoneNumber="555-555-5425",
+                                firstName="TestInstructor",
+                                lastName="User1",
+                                isFaculty="1"
+                                )
         
-        CourseInstructor.create(course = importedCourse.id,
-                                                    user = testInstructor)
+        testUser = User.create(
+                                username="testParticipant",
+                                bnumber="B00000111",
+                                email="testParticipant@test.edu",
+                                phoneNumber="555-555-3455",
+                                firstName="TestParticipant",
+                                lastName="User2",
+                                isFaculty="0"
+                                )
         
+        testParticipant = CourseParticipant.create(user_id=testUser,
+                                                course_id=testImportedCourse,
+                                                hoursEarned=1
+                                                )
         
         courseData = {
-            "courseId": importedCourse.id,
-            "courseName": importedCourse.courseName,
-            "courseAbbreviation": importedCourse.courseAbbreviation,
+            "courseId": testImportedCourse.id,
+            "courseName": testImportedCourse.courseName,
+            "courseAbbreviation": testImportedCourse.courseAbbreviation,
             "instructors": [testInstructor],
             "hoursEarned": 34
         }
         
-        print(courseData)
-    
+        CourseInstructor.create(course = testImportedCourse.id,
+                                user = testInstructor)
         
-        # assert Course.get_or_none(Course.status == "IMPORTED")
+        editImportedCourses(courseData)
+     
         transaction.rollback()
 
 
