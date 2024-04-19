@@ -27,7 +27,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -284,10 +284,12 @@ def eventDisplay(eventId):
                                 filepaths = filepaths)
     # Event View
     else:
-        # get text representations of dates
+        # get text representations of dates for html
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
-        eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
+        eventCountdown = getCountdownToEvent(event)
+
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -303,15 +305,17 @@ def eventDisplay(eventId):
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
         return render_template("eventView.html",
-                                eventData = eventData,
-                                event = event,
-                                userHasRSVPed = userHasRSVPed,
-                                programTrainings = userParticipatedTrainingEvents,
-                                currentEventRsvpAmount = currentEventRsvpAmount,
-                                isProgramManager = isProgramManager,
-                                filepaths = filepaths,
-                                image = image,
-                                pageViewsCount= pageViewsCount)
+                                eventData=eventData,
+                                event=event,
+                                userHasRSVPed=userHasRSVPed,
+                                programTrainings=userParticipatedTrainingEvents,
+                                currentEventRsvpAmount=currentEventRsvpAmount,
+                                isProgramManager=isProgramManager,
+                                filepaths=filepaths,
+                                image=image,
+                                pageViewsCount=pageViewsCount,
+                                eventCountdown=eventCountdown)
+                                
 
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
@@ -471,7 +475,7 @@ def manageBonner():
     return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term),
-                           requirements = getCertRequirements(certification=Certification.BONNER))
+                           requirements=getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):

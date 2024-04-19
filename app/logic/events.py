@@ -1,8 +1,8 @@
 from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
-from datetime import timedelta, date
-import datetime
+from datetime import timedelta, date, datetime
+from dateutil.relativedelta import relativedelta
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
@@ -32,7 +32,7 @@ def cancelEvent(eventId):
         event.save()
 
     program = event.program
-    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 
 def deleteEvent(eventId):
@@ -61,9 +61,9 @@ def deleteEvent(eventId):
         program = event.program
 
         if program:
-            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
-            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
@@ -271,7 +271,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
+def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in as long
         as they are not banned from the program that the event is a part of.
@@ -406,13 +406,13 @@ def calculateRecurringEventFrequency(event):
 
         Return a list of events to create from the event data.
     """
-    if not isinstance(event['endDate'], datetime.date) or not isinstance(event['startDate'], datetime.date):
+    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              'date': event['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
@@ -437,13 +437,13 @@ def preprocessEventData(eventData):
 
     ## Process dates
     eventDates = ['startDate', 'endDate']
-    for date in eventDates:
-        if date not in eventData:
-            eventData[date] = ''
-        elif type(eventData[date]) is str and eventData[date]:
-            eventData[date] = parser.parse(eventData[date])
-        elif not isinstance(eventData[date], datetime.date):
-            eventData[date] = ''
+    for eventDate in eventDates:
+        if eventDate not in eventData:
+            eventData[eventDate] = ''
+        elif type(eventData[eventDate]) is str and eventData[eventDate]:
+            eventData[eventDate] = parser.parse(eventData[eventDate])
+        elif not isinstance(eventData[eventDate], date):
+            eventData[eventDate] = ''
     
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
@@ -507,6 +507,79 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
+def getCountdownToEvent(event, *, currentDatetime=None):
+    """
+    Given an event, this function returns a string that conveys the amount of time left
+    until the start of the event.
+
+    Note about dates:
+    Natural language is unintuitive. There are two major rules that govern how we discuss dates.
+    - If an event happens tomorrow but less than 24 hours away from us we still say that it happens 
+    tomorrow with no mention of the hour. 
+    - If an event happens tomorrow but more than 24 hours away from us, we'll count the number of days 
+    and hours in actual time.
+
+    E.g. if the current time of day is greater than the event start's time of day, we give a number of days 
+    relative to this morning and exclude all hours and minutes
+
+    On the other hand, if the current time of day is less or equal to the event's start of day we can produce 
+    the real difference in days and hours without the aforementioned simplifying language.
+    """
+
+    if currentDatetime is None:
+        currentDatetime = datetime.now().replace(second=0, microsecond=0)  
+    currentMorning = currentDatetime.replace(hour=0, minute=0)
+
+    eventStart = datetime.combine(event.startDate, event.timeStart)
+    eventEnd = datetime.combine(event.endDate, event.timeEnd)
+    
+    if eventEnd < currentDatetime:
+        return "Already passed"
+    elif eventStart <= currentDatetime <= eventEnd:
+        return "Happening now"
+    
+    timeUntilEvent = relativedelta(eventStart, currentDatetime)
+    calendarDelta = relativedelta(eventStart, currentMorning)
+    calendarYearsUntilEvent = calendarDelta.years
+    calendarMonthsUntilEvent = calendarDelta.months
+    calendarDaysUntilEvent = calendarDelta.days
+
+    yearString = f"{calendarYearsUntilEvent} year{'s' if calendarYearsUntilEvent > 1 else ''}"
+    monthString = f"{calendarMonthsUntilEvent} month{'s' if calendarMonthsUntilEvent > 1 else ''}"
+    dayString = f"{calendarDaysUntilEvent} day{'s' if calendarDaysUntilEvent > 1 else ''}"
+    hourString = f"{timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''}"
+    minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
+    
+    # Years until
+    if calendarYearsUntilEvent: 
+        if calendarMonthsUntilEvent:
+            return f"{yearString} and {monthString}"
+        return f"{yearString}"
+    # Months until
+    if calendarMonthsUntilEvent:
+        if calendarDaysUntilEvent:
+            return f"{monthString} and {dayString}"
+        return f"{monthString}"
+    # Days until
+    if calendarDaysUntilEvent:
+        if eventStart.time() < currentDatetime.time():
+            if calendarDaysUntilEvent == 1:
+                return "Tomorrow"
+            return f"{dayString}"
+        if timeUntilEvent.hours:
+            return f"{dayString} and {hourString}"
+        return f"{dayString}"
+    # Hours until
+    if timeUntilEvent.hours:
+        if timeUntilEvent.minutes:
+            return f"{hourString} and {minuteString}"
+        return f"{hourString}"
+    # Minutes until
+    elif timeUntilEvent.minutes > 1:
+        return f"{minuteString}"
+    # Seconds until
+    return "<1 minute"
+    
 def copyRsvpToNewEvent(priorEvent, newEvent):
     """
         Copies rvsps from priorEvent to newEvent

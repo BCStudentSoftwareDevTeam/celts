@@ -15,7 +15,7 @@
 {% block app_content %}
 
     {# Figure out if we are showing a particular tab inside of the accordion #}
-    {% set subTab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
+    {% set subTab = visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion and visibleAccordion[7:]|int <= cohorts.keys()|sort|last else "newest" %}
 
 <h1 class="text-center mb-5">Bonner Management</h1>
 
@@ -32,12 +32,13 @@
             <!---------------- Cohort management ---------------->
             <div class="d-flex justify-content-center">
                 <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                {% set subTab = cohorts.keys()|last if subTab == "newest" else subTab %}
-                {% for year in cohorts.keys()|reverse %}
-                    {% set show = "active" if subTab|int == year else "" %}
-                    {% set aria = "true" if subTab|int == year else "false" %}
-                    <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
-                {% endfor %}
+                    <button class="btn btn-success py-2 mb-2" id="addCohort">Add New Cohort</button>
+                    {% set subTab = cohorts.keys()|sort|last if subTab == "newest" else subTab %}
+                    {% for year in cohorts.keys()|sort|reverse %}
+                        {% set show = "active" if subTab|int == year else "" %}
+                        {% set aria = "true" if subTab|int == year else "false" %}
+                        <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
+                    {% endfor %}
                 </div>
                 <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
                     {% for year, users in cohorts.items() %}
