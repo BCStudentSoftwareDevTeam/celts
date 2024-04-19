@@ -50,7 +50,7 @@ $(document).ready(function(){
 
     $.ajax({
         type: "POST",
-        url: `/profile/${username}/updateTranscript/${programID}`,  
+        url: `/profile/${username}/updateTranscript/${programID}`,
         contentType: "application/json",
         data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
         success: function(response) {
@@ -99,30 +99,24 @@ $(document).ready(function(){
 
 
   var programID;
-  $(".ban").click(function() {
+  $(".banEdit").click(function() {
     $.ajax({
       url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
       type: "GET",
       success: function(response) {
-          // Check if the program is marked for removal from transcript
-          if (response.removedFromTranscript) {
-              // Handle the case where program is marked for removal
-              $('.removeFromTranscriptCheckbox').prop('checked', true);
-          } else {
-              // Handle the case where program is not marked for removal
-              $('.removeFromTranscriptCheckbox').prop('checked', false);
-          }
+        // Check if the program is marked for removal from transcript
+        $('#removeFromTranscriptCheckbox').prop('checked', response.removedFromTranscript)
       },
       error: function(error, status) {
           console.log(error, status);
       }
     });
-  
+
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
-                                     //Should only diplay when the modal is going to unban a user
+    banNoteDiv.hide();                //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
@@ -135,7 +129,6 @@ $(document).ready(function(){
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
-    banNoteDiv.hide();
     $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);

@@ -202,7 +202,7 @@
                     {% endif %}
                     <td>
                     {% if g.current_user.isCeltsAdmin %}
-                      <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                      <button type="button" class="banEdit btn btn-primary" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
                     {% endif %}
                     </td>
                   {% endif %}
