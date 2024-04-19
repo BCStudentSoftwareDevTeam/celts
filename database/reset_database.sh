@@ -27,8 +27,6 @@ else
     exit;
 fi
 
-
-
 ########### Recreate Database Schema ###########
 echo "Dropping databases"
 mysql -u root -proot --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';"

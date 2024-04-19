@@ -13,17 +13,24 @@
 
 **Assumptions**
  * Mac OS or Linux
- * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```
+ * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```)
  * default python is Python 3
 
-## Developing on CELTS
-1. Pull down the repo in your home directory: ```git clone <URL>```
+## Getting Started With CELTS in a devcontainer
+1. If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+3. Set up an SSH agent with your GitHub SSH key. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+4. Open repository directory in VSCode (either clone with VSCode or install git yourself and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```)
+5. Follow prompts to install Dev Container extension and open project in dev container
+6. If everything completes without error, ```flask run```! Otherwise, try rebuilding the container again.
+
+## Getting Started With CELTS Manually (Linux or Mac OS) 
+1. Pull down the repo in your home directory: ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```
 2. Run ```source setup.sh```
 3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` or ```/etc/init.d/mysql start``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
 4. If you have non-default root and application database credentials, match your MySQL configuration to the application config. You can either:
     - Update MySQL to use the database, username, and password in ```app/config/default.yml```. *OR*
-    - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/local-override.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service.  
-5. In the database directory, run ```./reset_database.sh test```. Use ```real``` instead of ```test``` to use production data.
+    - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/local-override.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service. 
+5. Run ```database/reset_database.sh test```. Use the ```from-backup``` argument instead of ```test``` to use production data.
 6. Run the app with ```flask run``` in the root directory
 
 ## Testing

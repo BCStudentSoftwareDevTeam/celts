@@ -82,7 +82,7 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
-    
+
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -119,32 +119,30 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-  // -----------------------------------------
+  $("#instructorTable").on("click", ".removeButton", function() {
+    let closestRow = $(this).closest("tr");
+    let username = closestRow.data('username');
 
-      $("#instructorTable").on("click", "#remove", function() {
-        let closestRow =  $(this).closest("tr");
-        let username = closestRow.data('username');
-
+    // Check if the username is not empty or undefined
+    if (username) {
         $("#instructorTableNames input[value='" + username + "']").remove();
         closestRow.remove();
-      });
+    }
+});
 
-      $("#courseInstructor").on('input', function() {
-          searchUser("courseInstructor", createNewRow, true, null, "instructor");
-          setTimeout(function() {
-            $(".ui-autocomplete").css("z-index", 9999);
-        }, 500);
-      });
+    $("#courseInstructor").on('input', function() {
+        searchUser("courseInstructor", createNewRow, true, null, "instructor");
+    });
 
-      // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-      $('#instructorTable tr').each(function(){
-        var username = getRowUsername(this)
-        var edit = "#editButton-" + username
-        var input = "#inputPhoneNumber-" + username
-        if (username){
-          setupPhoneNumber(edit, input)
-        }
-      })
+    // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+    $('#instructorTable tr').each(function(){
+      var username = getRowUsername(this)
+      var edit = "#editButton-" + username
+      var input = "#inputPhoneNumber-" + username
+      if (username){
+        setupPhoneNumber(edit, input)
+      }
+    })
   }
 })
 
@@ -316,8 +314,54 @@ function disableSyllabusUploadFile() {
   $("#fileUpload").prop("disabled", true);
 }
 
-function enableSyllabusUploadFile() {
-    $("#fileUpload").prop("disabled", false);
+function createNewRow(selectedInstructor) {
+  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
+  let username = selectedInstructor["username"];
+  let phone = selectedInstructor["phoneNumber"];
+  let tableBody = $("#instructorTable").find("tbody");
+  if(tableBody.prop('outerHTML').includes(instructor)){
+    msgFlash("Instructor is already added.", "danger");
+    return;
+  }
+
+  // Create new table row and update necessary attributes
+  let newRow = $("<tr></tr>");
+
+  newRow.attr("data-username", username);
+
+  let instructorCell = $("<td></td>");
+  let instructorName = $("<p class='mb-0'>" + instructor + "</p>");
+  let phoneInput = $("<input type='text' style='border: none' size='14' class='form-control-sm' aria-label='Instructor Phone' placeholder='Phone Number' />");
+  phoneInput.attr("id", "inputPhoneNumber-" + username);
+  phoneInput.attr("name", "courseInstructorPhone");
+  phoneInput.val(phone);
+  phoneInput.inputmask('(999)-999-9999');
+
+  let editLink = $("<a class='text-decoration-none primary editButton' tabindex='0' type='button'>Edit</a>");
+  editLink.attr("data-username", username);
+
+  let removeButton = $("<button class='btn btn-danger removeButton'>Remove</button>");
+
+  instructorCell.append(instructorName);
+  instructorCell.append(phoneInput);
+  instructorCell.append(editLink);
+
+  newRow.append(instructorCell);
+  newRow.append("<td class='align-middle'></td>");
+  newRow.find("td.align-middle").append(removeButton);
+
+  tableBody.append(newRow);
+
+  // Add the username to the hidden input for form submission
+  $("#instructorTableNames").append('<input type="hidden" name="instructor[]" value="' + username + '"/>');
+
+  // Setup phone number input
+  setupPhoneNumber(editLink, phoneInput);
+}
+
+function getCourseInstructors() {
+  // get usernames out of the table rows into an array
+  return $("#instructorTableNames input").map((i, instructorRow) => $(instructorRow).val())
 }
 
 const textareas = $(".textarea");
