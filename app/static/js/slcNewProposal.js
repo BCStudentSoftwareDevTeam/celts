@@ -118,8 +118,6 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-
-  // -----------------------------------------
   $("#instructorTable").on("click", ".removeButton", function() {
     let closestRow = $(this).closest("tr");
     let username = closestRow.data('username');
