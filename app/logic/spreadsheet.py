@@ -12,13 +12,13 @@ from app.models.event import Event
 from app.models.term import Term
 
 
-def getUniqueVolunteers():
+def getUniqueVolunteers(academicYear):
 
     uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Term.academicYear == "2022-2023")
+                                        .where(Term.academicYear == academicYear)
                                         .order_by(EventParticipant.user_id))
     
     return uniqueVolunteers.tuples()
@@ -26,14 +26,14 @@ def getUniqueVolunteers():
 def getVolunteerProgramEventByTerm(term):
 # Volunteers by term for each event the participated in for wich program. user: program, event, term
 
-    bloo = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
+    volunteersByTerm = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
                             .join(User).switch(EventParticipant)
                             .join(Event)
                             .join(Program)
                             .where(Event.term_id == term)
                             .order_by(EventParticipant.user_id))
-    
-    return bloo.tuples()
+
+    return volunteersByTerm.tuples()
 
 def totalVolunteerHours(): 
     
@@ -50,19 +50,19 @@ def volunteerProgramHours():
 
     return volunteerProgramHours.tuples()
 
-def onlyCompletedAllVolunteer():
+def onlyCompletedAllVolunteer(academicYear):
     # Return volunteers that only attended the All Volunteer Training and then nothing else
 
     subQuery = (EventParticipant.select(EventParticipant.user_id)
                                 .join(Event)
                                 .join(Term)
-                                .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
+                                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear))
 
     onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Event.name == "All Volunteer Training", Term.academicYear == "2022-2023", EventParticipant.user_id.not_in(subQuery)))
+                                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear, EventParticipant.user_id.not_in(subQuery)))
 
     return onlyAllVolunteer.tuples()
 
@@ -96,13 +96,15 @@ def volunteerMajorAndClass(column, reorderClassLevel=False):
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
-    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
-                                             .join(Event, on=(EventParticipant.event_id ==Event.id))
+    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'), 
+                                                     Program.programName.alias("programName"), 
+                                                     fn.COUNT(EventParticipant.event_id).alias('event_count'))
+                                             .join(Event, on=(EventParticipant.event_id == Event.id))
                                              .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName, Event.program)
-                                             .having(fn.Count(EventParticipant.event_id) > 1)
-                                             .order_by(Event.program, User.lastName ))
+                                             .having(fn.COUNT(EventParticipant.event_id) > 1)
+                                             .order_by(Event.program, User.lastName))
         
     return repeatPerProgramQuery.tuples()
 
@@ -115,53 +117,54 @@ def repeatVolunteers():
     
     return repeatAllProgramQuery.tuples()
 
-def getRetentionRate():
-    retentionDict = []
-
-    fallParticipationDict = termParticipation("Fall 2022")
-    springParticipationDict = termParticipation("Spring 2023")  
+def getRetentionRate(academicYear):
+    # Returns a list of tuples of program retention information in the format ('program name', 'percent people retained')
+    retentionList = []
+    fall, spring = academicYear.split("-")
+    fallParticipationDict = termParticipation(f"Fall {fall}")
+    springParticipationDict = termParticipation(f"Spring {spring}")  
 
     # calculate the retention rate using the defined function
-    retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
-    for program, retention_rate in retention_rate_dict.items():
-         retentionDict.append((program, str(round(retention_rate * 100, 2)) + "%"))
+    retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
+    for program, retentionRate in retentionRateDict.items():
+         retentionList.append((program, str(round(retentionRate * 100, 2)) + "%"))
 
-    return  retentionDict
+    return retentionList
 
 def termParticipation(termDescription):
-    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
+    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
                                       .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
                                       .join(Program, on=(Program.id == Event.program))
-                                      .join(Term, on=(Event.term_id == Term.id) )
-                                      .where(Term.description == termDescription ))
+                                      .join(Term, on=(Event.term_id == Term.id))
+                                      .where(Term.description == termDescription))
 
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
-        prog_name = result['progName']
+        programName = result['programName']
         participant = result['participant']
-        programParticipationDict[prog_name].append(participant)
+        programParticipationDict[programName].append(participant)
 
-    return programParticipationDict
+    return dict(programParticipationDict)
 
-def removeNullParticipants(bla):
+def removeNullParticipants(participantList):
     # loop through the list and remove all entries that do not have a participant
-    return list(filter(lambda participant: bool(participant), bla))
+    return list(filter(lambda participant: participant, participantList))
     
 # function to calculate the retention rate for each program
-def calculateRetentionRate(fall_dict, spring_dict):
-    retention_dict = {}
-    for program in fall_dict.keys():
-        fall_participants = set(removeNullParticipants(fall_dict[program]))
-        spring_participants = set(removeNullParticipants(spring_dict.get(program, [])))
-        retention_rate = 0.0
+def calculateRetentionRate(fallDict, springDict):
+    retentionDict = {}
+    for program in fallDict:
+        fallParticipants = set(removeNullParticipants(fallDict[program]))
+        springParticipants = set(removeNullParticipants(springDict.get(program, [])))
+        retentionRate = 0.0
         try: 
-            retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+            retentionRate = len(fallParticipants & springParticipants) / len(fallParticipants)
         except ZeroDivisionError:
             pass
+        retentionDict[program] = retentionRate
 
-        retention_dict[program] = retention_rate
   
-    return retention_dict
+    return retentionDict
 
 # def halfRetentionRateRecurringEvents():
 
@@ -263,7 +266,7 @@ def makeDataXls(getData, columnTitles, sheetName, workbook):
         setColumnWidth = max(len(str(x)) for x in columnData)
         worksheet.set_column(column, column, setColumnWidth + 3)
 
-def create_spreadsheet(): 
+def createSpreadsheet(academicYear): 
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
@@ -276,21 +279,21 @@ def create_spreadsheet():
     uniqueVolunteersColumns = ["Username", "Full Name", "B-Number"]
     totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
-    onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
+    onlyCompletedAllVolunteerColumns = ["Username", "Full Name"]
     volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
 
-
+  
     makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
     makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
     makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
     makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
     makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
-    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
-    makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
+    makeDataXls(getRetentionRate(academicYear), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
+    makeDataXls(getUniqueVolunteers(academicYear), uniqueVolunteersColumns, "Unique Volunteers", workbook)
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
-    makeDataXls(onlyCompletedAllVolunteer(), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
-    makeDataXls(getVolunteerProgramEventByTerm(Term.get_by_id(8)), volunteerProgramEventByTerm, "Fall 2022", workbook)
+    makeDataXls(onlyCompletedAllVolunteer(academicYear), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
+    makeDataXls(getVolunteerProgramEventByTerm(Term.get_or_none(Term.description == f"Fall {academicYear.split('-')[0]}")), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
     
     workbook.close()
 
