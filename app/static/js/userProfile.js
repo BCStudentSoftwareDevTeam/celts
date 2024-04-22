@@ -118,21 +118,22 @@ $(document).ready(function(){
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
     banNoteDiv.hide();                //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
+    var banValue = $(this).val()
 
-    banButton.text($(this).val() + " Volunteer");
+    banButton.text(banValue + " Volunteer");
     programID = $(this).data("programid"); // Assign value to programID variable
-    banButton.data("programID", $(this).data("programid"))
+    banButton.data("programID", programID)
     banButton.data("username", $("#notifyInput").data("username"))
-    banButton.data("banOrUnban", $(this).val());
+    banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title").text($(this).val() + " Volunteer");
+    $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
-    if( $(this).val()=="Unban"){
+    if(banValue == "Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
