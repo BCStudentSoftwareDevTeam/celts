@@ -1,4 +1,5 @@
 from peewee import fn
+from collections import defaultdict
 
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
@@ -29,17 +30,14 @@ def getProgramTranscript(username):
 
     # Create a set of program IDs to remove from transcript
     programsToRemoveFromTranscript = {bannedProgram.program_id for bannedProgram in bannedProgramsForParticipant if bannedProgram.removeFromTranscript}
-    transcriptData = {}
+    transcriptData = defaultdict(list)
 
     # Iterate through EventData and populate transcriptData
     for event in EventData:
         if event.program.id not in programsToRemoveFromTranscript:  # Check if program is not in programs to be removed from transcript
-            if event.program in transcriptData:
-                transcriptData[event.program].append([event.term.description, event.hoursEarned])
-            else:
-                transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
-
-    return transcriptData
+            transcriptData[event.program].append([event.term.description, event.hoursEarned])
+            
+    return dict(transcriptData)
 
 def getSlCourseTranscript(username):
     """
