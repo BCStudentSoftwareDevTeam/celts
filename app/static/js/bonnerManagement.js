@@ -14,14 +14,20 @@ function cohortRequest(year, method, username){
   })
 }
 
+function addSearchCapabilities(inputElement){
+    $(inputElement).on("input", function(){
+        let year = $(this).data('year');
+        searchUser(this.id, student => cohortRequest(year, "add", student.username), false, null, "student");
+    });
+}
+
+
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
-    $("input[type=search]").on("input", function(){
-        let year = $(this).data('year')
-        searchUser(this.id, s => cohortRequest(year, "add", s.username), false, null, "student")
-    });
-    $(".removeBonner").on("click",function(){
-        let year = $(this).data('year')
+    $("#addCohort").on('click', addCohort);
+    $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
+    $(".removeBonner").on("click", function(){
+        let year = $(this).data('year');
         cohortRequest(year, "remove", $(this).data("username"));
     });
 
@@ -70,6 +76,33 @@ function addRequirement() {
     newRow.find("input").focus()
 }
 
+
+function addCohort(){
+    // Grab all the cohort years currently displayed
+    let years = $('#v-pills-tab .nav-link').map((i, element) => {return Number($(element).data('year'))}).get();
+    // Get the latest year from our list and add one
+    let newCohortYear = Math.max(...years) + 1;
+    // Deselect the currently active tab
+    $('#v-pills-tab .active').removeClass('active');
+    $('#v-pills-tabContent .tab-pane').removeClass('show active')
+    // Add a new (selected) tab to our list of tabs
+    $('#v-pills-tab #addCohort').after(`<button class="nav-link active" id="v-pills-${newCohortYear}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-${newCohortYear}" type="button" role="tab" data-year="${newCohortYear}" aria-controls="v-pills-${newCohortYear}" aria-selected="{{aria}}">${newCohortYear} - ${newCohortYear + 1}</button>`)
+    // and its corresponding tab pane
+    $('#v-pills-tabContent').prepend(`
+    <div class="tab-pane fade show active" id="v-pills-${newCohortYear}" role="tabpanel" aria-labelledby="v-pills-${newCohortYear}-tab">
+        <div>
+            <div class="input-group mb-3">
+                <input type="search" id="search-${newCohortYear}" name="search-${newCohortYear}" class="form-control" data-year="${newCohortYear}" placeholder="Add Student" autocomplete="off" style="width:50%" />
+                <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
+            </div>
+            <table class="w-100 table table-striped">
+                <tr><td>No students added.</td></tr>
+            </table>
+        </div>
+    </div>`)
+    // Add functionality to the search box on the newly added tab
+    addSearchCapabilities($(`#search-${newCohortYear}`).get());
+}
 /* Get the data for the whole requirement set and save them */
 function saveRequirements() {
     var data = $("#requirements tbody tr").map((i,row) => (
