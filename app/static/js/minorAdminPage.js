@@ -10,15 +10,13 @@ function emailAllInterested(){
           windowRef.close();
       }
     }, 500);
+  } else {
+    msgFlash("No interested students to email.", "info")
   }
 }
 
 $(document).ready(function() {
   $('#engagedStudentsTable').DataTable();
-  $('#interestedStudentsTable').DataTable({
-    "fnDrawCallback": function(oSettings) {
-      $('#interestedStudentsTable_wrapper .dataTables_length').html(`<button class="btn btn-primary" id="emailAllInterested">Email All</button>`);
-      $('#emailAllInterested').on('click', emailAllInterested);
-    }
-  });
+  $('#interestedStudentsTable').DataTable();
+  $('#emailAllInterested').on('click', emailAllInterested);
 });
