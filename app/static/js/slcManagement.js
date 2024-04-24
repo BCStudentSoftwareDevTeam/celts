@@ -30,7 +30,7 @@ $(document).ready(function() {
         return "This proposal has not been submitted for review."
 
       } else if ($(this).attr('data-content') == "Imported") {
-        return "This proposal has been submitted and is waiting for review."
+        return "This course has been imported and is waiting for review."
 
       }
     }
