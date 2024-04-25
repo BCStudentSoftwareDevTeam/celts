@@ -1,6 +1,6 @@
 function emailAllInterested(){
   // Read all student emails from the input as a string and put them in mailto format
-  let interestedStudentEmails = $("#interestedStudentEmails").val().slice(1, -1).replace(/['\s]/g, '')
+  let interestedStudentEmails =  $("#interestedStudentEmails").val();
   // If there are any students interested, open the mailto link
   if (interestedStudentEmails.length) {
     const windowRef = window.open(`mailto:${interestedStudentEmails}`, '_blank');

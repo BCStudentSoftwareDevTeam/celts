@@ -24,7 +24,7 @@ def getEngagementTotal(engagementData):
     return sum(map(lambda e: e['matched'], sum(engagementData.values(),[])))
 
 
-def getMinorInterest():
+def getMinorInterest() -> list[dict]:
     """
         Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
     """

@@ -9,10 +9,12 @@ def manageMinor():
     if not g.current_user.isAdmin:
         abort(403)
 
-    interestedStudents = getMinorInterest()
+    interestedStudentsList = getMinorInterest()
+    interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
 
     return render_template('/admin/cceMinor.html',
-                            interestedStudentsList = interestedStudents, 
+                            interestedStudentsList = interestedStudentsList,
+                            interestedStudentEmailString = interestedStudentEmailString,
                             sustainedEngagement = sustainedEngagement,
                             )

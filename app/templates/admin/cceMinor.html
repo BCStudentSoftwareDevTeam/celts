@@ -60,16 +60,14 @@
         </tr>
     </thead>
     <tbody>
-        {% set interestedStudentEmails = [] %}
         {% for student in interestedStudentsList %}
-            {% set _ = interestedStudentEmails.append(student.email) %}
             <tr>
                 <td>
                     <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
                 </td>
             </tr>
         {% endfor %}
-        <input id="interestedStudentEmails" hidden value="{{interestedStudentEmails}}"/>
+        <input id="interestedStudentEmails" hidden value="{{interestedStudentEmailString}}"/>
     </tbody>
 </table>
 {% endblock %}
