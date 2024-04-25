@@ -112,6 +112,7 @@ users = [
         "major": "Chemistry",
         "classLevel": "Junior",
         "minorInterest": 1,
+        "hasGraduated": True,
 
     },
     {

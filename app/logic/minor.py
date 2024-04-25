@@ -55,12 +55,15 @@ def getMinorProgress():
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
-    engagedStudentsList = [{'username': student.username,
-                            'firstName': student.firstName,
-                            'lastName': student.lastName,
-                            'engagementCount': student.engagementCount - student.hasSummer,
-                            'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
-                            'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
+    engagedStudentsList = [{
+        'username': student.username,
+        'firstName': student.firstName,
+        'lastName': student.lastName,
+        'engagementCount': student.engagementCount - student.hasSummer,
+        'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
+        'hasSummer': "Completed" if student.hasSummer else "Incomplete",
+        'hasGraduated': "Yes" if student.hasGraduated else "No" } for student in engagedStudentsWithCount]
+
     return engagedStudentsList
 
 def toggleMinorInterest(username):
