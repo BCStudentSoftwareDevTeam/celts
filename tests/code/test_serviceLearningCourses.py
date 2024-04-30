@@ -79,12 +79,12 @@ def test_courseManagement():
                                         isPermanentlyDesignated = 0)
         
         importedCourse = Course.create(courseName = "Testing Approved",
-                                        term = 3,
-                                        status = CourseStatus.IMPORTED,
-                                        courseCredit = "4",
-                                        createdBy = "ramsayb2",
-                                        isAllSectionsServiceLearning = 0,
-                                        isPermanentlyDesignated = 0)
+                                       term = 3,
+                                       status = CourseStatus.IMPORTED,
+                                       courseCredit = "4",
+                                       createdBy = "ramsayb2",
+                                       isAllSectionsServiceLearning = 0,
+                                       isPermanentlyDesignated = 0)
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
