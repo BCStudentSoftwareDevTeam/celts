@@ -22,7 +22,7 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="inputTerm"> <strong>Term:</strong> </label>
+        <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
         <select class="form-select" name="term" id="inputTerm" required>
           {% for term in terms %}
             <option value="{{term}}">{{term.description}}</option>
@@ -36,6 +36,8 @@
         <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
         <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
       </div>
+
+      <br> <br> <br> <br>
 
       <div class="form-group">
         <br>
@@ -69,6 +71,8 @@
         </div>
       </div>
 
+      <br> 
+
       <div class="form-group">
         <br>
         <h4> Supervisor Information </h4>
@@ -89,10 +93,12 @@
 
       <br>
 
-      <div class="form-group mb-4">
-      <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (from supervisor) </label>
+      <div class="form-group">
+      <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
         <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
       </div>
+
+      <br>
 
       <div class="form-group">
         <br>
