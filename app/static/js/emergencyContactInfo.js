@@ -1,21 +1,8 @@
+import { validateEmail } from "./emailValidation.mjs";
+
 $(document).ready(function(){
     
-    $('#emergencyContactEmail').on('input', function(){
-        let emailAddress = $(this).val();
-        if (emailAddress === '') {
-            this.setCustomValidity('');
-        } else if (!isValidEmailAddress(emailAddress)) {
-            this.setCustomValidity('Please enter a valid email address.');
-            this.reportValidity();
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-
-    function isValidEmailAddress(emailAddress) {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return emailRegex.test(emailAddress);
-    }
+    $('#emergencyContactEmail').on('input', validateEmail);
 
     $('input.phone-input').inputmask('(999)-999-9999')
     $('input.phone-input').on('input', function(){

@@ -58,7 +58,7 @@ $(document).ready(function(e) {
 });
 
 function submitData(){
-    $("#flasher").remove()
+    $(".alert").remove()
     $.ajax({
       method: "POST",
       url: '/signintoEvent',
@@ -68,23 +68,15 @@ function submitData(){
       },
 
       success: function(resultID) {
-        flasherStatus = "success"
         if (resultID.status == "already signed in") {
-          message = resultID.user + " already signed in!"
-          flasherStatus = "warning"
-
+          msgFlash(`${resultID.user} already signed in!`, "warning");
         } else if (resultID.status === "banned") {
-          message = resultID.user + " is ineligible."
-          flasherStatus = "danger"
-          
+          msgFlash(`${resultID.user} is ineligible!`, "danger");
         } else if (resultID.status === "does not exist") {
-          message = "User does not exist"
-          flasherStatus = "danger"
-          
+          msgFlash("User does not exist", "danger");
         } else {
-          message = resultID.user + " successfully signed in!"
+          msgFlash(`${resultID.user} successfully signed in!`, "success");
         }
-        msgFlash(message, flasherStatus);
         $("#submitScannerData").val("").blur();
       },
 

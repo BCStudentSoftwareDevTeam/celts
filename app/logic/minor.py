@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List, Dict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 
@@ -24,15 +25,15 @@ def getEngagementTotal(engagementData):
     return sum(map(lambda e: e['matched'], sum(engagementData.values(),[])))
 
 
-def getMinorInterest():
+def getMinorInterest() -> List[Dict]:
     """
         Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
     """
-    interestedStudents = (User.select(User.firstName, User.lastName, User.username)
+    interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
                               .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
 
-    interestedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName, 'username': student.username} for student in interestedStudents]
+    interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
     return interestedStudentList
 
