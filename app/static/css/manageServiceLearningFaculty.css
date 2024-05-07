@@ -27,3 +27,7 @@ li {
 .course-container.even {
     background-color: #f2f2f2; /* from the table striping odd color */
 }
+
+#flash_container {
+    z-index: 9999;
+}

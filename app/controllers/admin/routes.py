@@ -12,6 +12,9 @@ from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
+from app.models.course import Course
+from app.models.courseInstructor import CourseInstructor
+from app.models.courseParticipant import CourseParticipant
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
 from app.models.eventRsvpLog import EventRsvpLog
@@ -32,7 +35,7 @@ from app.logic.participants import getParticipationStatusForTrainings, checkUser
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
-from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getInstructorCourses
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
 
@@ -342,6 +345,7 @@ def deleteRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
@@ -352,6 +356,7 @@ def deleteEventAndAllFollowingRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
@@ -421,6 +426,7 @@ def addCourseFile():
 @admin_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @admin_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def manageServiceLearningCourses(term=None):
+    
     """
     The SLC management page for admins
     """
@@ -435,16 +441,35 @@ def manageServiceLearningCourses(term=None):
     manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
-
+    # retrieve and store the courseID of the imported course from a session variable if it exists. 
+    # This allows us to export the courseID in the html and use it.
+    courseID = session.get("alterCourseId")  
+    
+    if courseID:
+        # delete courseID from the session if it was retrieved, for storage purposes.
+        session.pop("alterCourseId")  
+        return render_template('/admin/manageServiceLearningFaculty.html',
+                                courseInstructors = getInstructorCourses(),
+                                unapprovedCourses = unapprovedCourses(manageTerm),
+                                approvedCourses = approvedCourses(manageTerm),
+                                importedCourses = getImportedCourses(manageTerm),
+                                terms = selectSurroundingTerms(g.current_term),
+                                term = manageTerm,
+                                cpPreview = session.get('cpPreview', {}),
+                                cpPreviewErrors = session.get('cpErrors', []),
+                                courseID = courseID
+                            )
+    
     return render_template('/admin/manageServiceLearningFaculty.html',
                             courseInstructors = getInstructorCourses(),
                             unapprovedCourses = unapprovedCourses(manageTerm),
                             approvedCourses = approvedCourses(manageTerm),
+                            importedCourses = getImportedCourses(manageTerm),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
                             cpPreviewErrors = session.get('cpErrors',[])
-                           )
+                        )
 
 @admin_bp.route('/admin/getSidebarInformation', methods=['GET'])
 def getSidebarInformation() -> str:
@@ -467,6 +492,44 @@ def removeFromSession():
 
     return ""
 
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID):
+    """
+    This route handles a GET and a POST request for the purpose of imported courses. 
+    The GET request provides preexisting information of an imported course in a modal. 
+    The POST request updates a specific imported course (course name, course abbreviation, 
+    hours earned on completion, list of instructors) in the database with new information 
+    coming from the imported courses modal. 
+    """
+    if request.method == 'GET':
+        try:
+            targetCourse = Course.get_by_id(courseID)
+            targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
+            
+            try:
+                serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
+            except IndexError:  # If a course has no participant, IndexError will be raised
+                serviceHours = 20
+                
+            courseData = model_to_dict(targetCourse, recurse=False)
+            courseData['instructors'] = [model_to_dict(instructor.user) for instructor in targetInstructors]
+            courseData['hoursEarned'] = serviceHours
+
+            return jsonify(courseData)
+        
+        except DoesNotExist:
+            flash("Course not found")
+            return jsonify({"error": "Course not found"}), 404
+        
+    if request.method == 'POST':
+        # Update course information in the database
+        courseData = request.form.copy()
+        editImportedCourses(courseData)
+        session['alterCourseId'] = courseID
+ 
+    return redirect(url_for("admin.manageServiceLearningCourses", term=courseData['termId']))
+
+
 @admin_bp.route("/manageBonner")
 def manageBonner():
     if not g.current_user.isCeltsAdmin:
@@ -475,7 +538,7 @@ def manageBonner():
     return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term),
-                           requirements = getCertRequirements(certification=Certification.BONNER))
+                           requirements=getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):

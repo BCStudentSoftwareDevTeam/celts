@@ -43,7 +43,7 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name":course.courseName,
+                                 "name":course.courseName if course.courseName else course.courseAbbreviation,
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}
@@ -114,6 +114,21 @@ def approvedCourses(termId: int) -> List[Course]:
                                                .group_by(Course, Term, CourseStatus))
 
     return approvedCourses
+
+def getImportedCourses(termId: int) -> List[Course]:
+    """
+    Queries the database to get all the necessary information for
+    imported courses.
+    """
+    importedCourses: List[Course] = list(Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+                                               .join(CourseInstructor, JOIN.LEFT_OUTER)
+                                               .join(User, JOIN.LEFT_OUTER).switch(Course)
+                                               .join(CourseStatus).switch(Course)
+                                               .join(Term)
+                                               .where(Term.id == termId, Course.status == CourseStatus.IMPORTED)
+                                               .group_by(Course, Term, CourseStatus))
+
+    return importedCourses
 
 def getInstructorCourses() -> Dict[User, str]:
     """
@@ -246,6 +261,40 @@ def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
 
             return Course.get_by_id(course.id)
         
+        except Exception as e:
+            print(e)
+            transaction.rollback()
+            return False
+        
+def editImportedCourses(courseData):
+    """
+        This function will take in courseData for the SLC proposal page and a dictionary
+        of instructors assigned to the imported course after that one is edited 
+        and update the information in the db.
+    """
+
+    with mainDB.atomic() as transaction:
+        try:
+            course = Course.get_by_id(courseData["courseId"])
+            
+            Course.update(courseName=courseData["courseName"]).where(Course.id == course.id).execute()
+
+            (CourseParticipant.update(hoursEarned=courseData["hoursEarned"])
+                              .where(CourseParticipant.course_id == course.id).execute())
+            
+            instructorList = []
+            CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
+            
+            if 'instructor[]' in courseData:
+                instructorList = courseData.getlist('instructor[]') 
+                
+                for instructor in instructorList: 
+                    # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
+                    if instructor: 
+                        CourseInstructor.create(course=course, user=instructor)         
+
+            return Course.get_by_id(course.id)
+
         except Exception as e:
             print(e)
             transaction.rollback()
