@@ -42,13 +42,13 @@
       <br><h2 class="m-1">Service-Learning Courses</h2>
       <table class="table table-bordered table-striped">
       <tr>
-      <th>Course Name</th>
+      <th>Course</th>
       <th>Term</th>
       <th class="w-25">Accrued Service Hours</th>
       </tr>
       {% for slcourse in slCourses %}
         <tr>
-        <td> {{ slcourse.courseName }}</td>
+        <td> {{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
         <td> {{ slcourse.term.description }}</td>
         <td class="w-25">{{ slcourse.hoursEarned }}</td>
         </tr>

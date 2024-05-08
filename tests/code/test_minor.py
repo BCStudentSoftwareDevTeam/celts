@@ -174,37 +174,32 @@ def test_getCommunityEngagementByTerm():
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
         testInfo = {'user': 'ramsayb2',
-                    'experienceName': 'Test Experience',
                     'term': 3,
-                    'description': 'Test Description',
+                    'experienceName': 'Test Experience',
                     'company': 'Test Company',
-                    'weeklyHours': 5,
+                    'companyAddress': '123 test ln',
+                    'companyPhone': '(123)-456-7890',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
                     'weeks': 10,
+                    'description': 'Test Description',
                     'filename': 'test_file.txt',
+                    'status': 'Pending',
                    }
+        
+        expectedValues = testInfo.copy()
 
         # Save the requested event to the database
         saveOtherEngagementRequest(testInfo)
-
-        expectedValues = {'user': testInfo['user'],
-                           'experienceName': testInfo['experienceName'],
-                           'term': testInfo['term'],
-                           'description': testInfo['description'],
-                           'company': testInfo['company'],
-                           'weeklyHours': testInfo['weeklyHours'],
-                           'weeks': testInfo['weeks'],
-                           'filename': testInfo['filename'],
-                           'status': "Pending"
-                          }
 
         # Get the actual saved request from the database (the most recent one)
         savedRequest = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
         # Check that the saved request matches the expected values
         for key, expectedValue in expectedValues.items():
             if key == "user":
-                assert savedRequest.user.username == 'ramsayb2'
+                assert savedRequest.user.username == expectedValues['user']
             elif key == "term":
-                assert savedRequest.term.id == 3
+                assert savedRequest.term.id == expectedValues['term']
             else:             
                 assert getattr(savedRequest, key) == expectedValue
 

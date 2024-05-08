@@ -77,6 +77,14 @@ def test_courseManagement():
                                         createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
+        
+        importedCourse = Course.create(courseName = "Testing Approved",
+                                       term = 3,
+                                       status = CourseStatus.IMPORTED,
+                                       courseCredit = "4",
+                                       createdBy = "ramsayb2",
+                                       isAllSectionsServiceLearning = 0,
+                                       isPermanentlyDesignated = 0)
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
@@ -84,6 +92,8 @@ def test_courseManagement():
                                                     user = 'neillz')
         CourseInstructor.create(course = approvedCourse.id,
                                                     user = 'ramsayb2')
+        CourseInstructor.create(course = importedCourse.id,
+                                                    user = "ramsayb2")
 
         termId = 3
 
@@ -93,6 +103,7 @@ def test_courseManagement():
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
+        assert importedCourse in getImportedCourses(termId)
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
 
 
@@ -290,8 +301,79 @@ def test_updateCourse():
         transaction.rollback()
 
 @pytest.mark.integration
+def test_editImportedCourses():
+    with mainDB.atomic() as transaction:
+        # Create an imported course for testing
+        testImportedCourse = Course.create(courseName = "Testing Imported Course",
+                                           term = 4,
+                                           status = CourseStatus.IMPORTED,
+                                           courseCredit = "4",
+                                           createdBy = "ramsayb2",
+                                           isAllSectionsServiceLearning = 0,
+                                           isPermanentlyDesignated = 0
+                                        )
+        
+        # Create an instructor for testing
+        testInstructor = User.create(username="testInstructor",
+                                     bnumber="B00000011",
+                                     email="testInstructor@test.edu",
+                                     phoneNumber="555-555-5425",
+                                     firstName="TestInstructor",
+                                     lastName="User1",
+                                     isFaculty="1"
+                                     )
+        
+        # Create a user for testing
+        testUser = User.create(username="testParticipant",
+                               bnumber="B00000111",
+                               email="testParticipant@test.edu",
+                               phoneNumber="555-555-3455",
+                               firstName="TestParticipant",
+                               lastName="User2",
+                               isFaculty="0"
+                                )
+        
+        # Assign the previous user to a preexisting imported course
+        testParticipant = CourseParticipant.create(user_id=testUser,
+                                                   course_id=testImportedCourse,
+                                                   hoursEarned=1
+                                                   )
+        
+        # Wrap the new data for the imported course in a MultiDict
+        courseData = MultiDict({
+            "courseId": testImportedCourse.id,
+            "courseName": "New Test Course Name",
+            "courseAbbreviation": testImportedCourse.courseAbbreviation,
+            "instructor[]": [testInstructor],
+            "hoursEarned": 34
+        })
+        
+        # Get the imported course, the participant, and the instructor before any update
+        expectedCourse = Course.get_by_id(testImportedCourse)
+        expectedParticipant = CourseParticipant.get_by_id(testParticipant)
+        expectedInstructor = list(CourseInstructor.select().where(CourseInstructor.course == testImportedCourse))
+        
+        # Test imported course, participant, and instructor before the update
+        assert expectedParticipant.hoursEarned == 1
+        assert expectedCourse.courseName == "Testing Imported Course"
+        assert [user.user for user in expectedInstructor] == []
+        assert editImportedCourses(courseData) == Course.get_by_id(testImportedCourse)
+        
+        # Get the imported course, the participant, and the instructor after any update
+        expectedCourse = Course.get_by_id(testImportedCourse)
+        expectedParticipant = CourseParticipant.get_by_id(testParticipant)
+        expectedInstructor = list(CourseInstructor.select().where(CourseInstructor.course_id == testImportedCourse))
+
+        # Test imported course, participant, and instructor after the update
+        assert expectedCourse.courseName == "New Test Course Name"
+        assert expectedParticipant.hoursEarned == 34
+        assert [user.user for user in expectedInstructor] == [testInstructor]
+        
+        transaction.rollback()
+
+
+@pytest.mark.integration
 def test_pushDataToDatabase():
-    
     with mainDB.atomic() as transaction:
         CourseParticipant.delete().execute()
         cpPreview = {'Fall 2019' : {'courses': {'CSC 226' : {'students': [

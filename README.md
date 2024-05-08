@@ -13,14 +13,15 @@
 
 **Assumptions**
  * Mac OS or Linux
- * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```
+ * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```)
  * default python is Python 3
 
 ## Getting Started With CELTS in a devcontainer
-1. Download Docker and Visual Studio Code (NOT Visual Studio) 
-3. Make sure you have your GitHub SSH key setup and an SSH Agent running. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-4. Open repository directory in VSCode (either clone with vs code or install git and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```
+1. If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+3. Set up an SSH agent with your GitHub SSH key. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+4. Open repository directory in VSCode (either clone with VSCode or install git yourself and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```)
 5. Follow prompts to install Dev Container extension and open project in dev container
+6. If everything completes without error, ```flask run```! Otherwise, try rebuilding the container again.
 
 ## Getting Started With CELTS Manually (Linux or Mac OS) 
 1. Pull down the repo in your home directory: ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```
@@ -29,10 +30,8 @@
 4. If you have non-default root and application database credentials, match your MySQL configuration to the application config. You can either:
     - Update MySQL to use the database, username, and password in ```app/config/default.yml```. *OR*
     - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/local-override.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service. 
-
-## Running The CELTS Application   
-1. Run ```database/reset_database.sh test```. Use the ```from-backup``` argument instead of ```test``` to use production data.
-2. Run the app with ```flask run``` in the root directory
+5. Run ```database/reset_database.sh test```. Use the ```from-backup``` argument instead of ```test``` to use production data.
+6. Run the app with ```flask run``` in the root directory
 
 ## Testing
 Tests should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. You can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh` or `tests/monitor.sh`. `tests/run_tests.sh` will only execute the test suite once, where `tests/monitor.sh` will rerun the test suite everytime a change is made and saved. In most cases, `tests/monitor.sh` should be used over `tests/run_tests.sh`. Where possible, use TDD (Test-Driven Development) and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
@@ -105,3 +104,7 @@ If you want to test with actual emails, use an email other than outlook to test 
 This is SSDT Documentation that contains details, references, workflow, system administration, etc. You are welcome to contribute to it and/or review it:
 
 http://ssdt-documentation.berea.edu/
+
+This is a permissions spreadsheet that lists all possible roles a user could have in the application and what permissions they are allowed. If you are adding a new role or feature please update this document:
+
+https://docs.google.com/spreadsheets/d/1RQao6WqHZFZo0rYBPnuwnhvVI856ysqTaY0a5m3IR1Q/edit?usp=sharing
