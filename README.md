@@ -2,6 +2,7 @@
 
 ## Requirements
  * Python 3.7+
+ * Josh Wakin is a cool bean
 
 **Packages (Ubuntu)**
  * python3-dev
