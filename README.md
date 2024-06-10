@@ -100,7 +100,7 @@ If you want to test with actual emails, use an email other than outlook to test 
 3. Inside of your secret_config.yaml file set the MAIL_USERNAME and MAIL_DEFAULT_SENDER as your Gmail, set the MAIL_PASSWORD as your new app password as, and set ALWAYS_SEND_MAIL as True. If you want emails to go to their real recipients, remove MAIL_OVERRIDE_ALL from your config or set it to "".
 4. For testing purposes, change the email of the student and supervisor to match another email that can receive your test emails (or you can use MAIL_OVERRIDE_ALL to send everything to the address specified.
 
-### SSDT Documentation
+### SSDT's Documentation
 This is SSDT Documentation that contains details, references, workflow, system administration, etc. You are welcome to contribute to it and/or review it:
 
 http://ssdt-documentation.berea.edu/
@@ -108,3 +108,4 @@ http://ssdt-documentation.berea.edu/
 This is a permissions spreadsheet that lists all possible roles a user could have in the application and what permissions they are allowed. If you are adding a new role or feature please update this document:
 
 https://docs.google.com/spreadsheets/d/1RQao6WqHZFZo0rYBPnuwnhvVI856ysqTaY0a5m3IR1Q/edit?usp=sharing
+
