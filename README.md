@@ -15,7 +15,7 @@
  * Mac OS or Linux
  * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```)
  * default python is Python 3
-
+   
 ## Getting Started With CELTS in a devcontainer
 1. If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
 3. Set up an SSH agent with your GitHub SSH key. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
