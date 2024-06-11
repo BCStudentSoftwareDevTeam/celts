@@ -2,7 +2,6 @@
 
 ## Requirements
  * Python 3.7+
- 
 **Packages (Ubuntu)**
  * python3-dev
  * python3-pip
