@@ -108,4 +108,3 @@ http://ssdt-documentation.berea.edu/
 This is a permissions spreadsheet that lists all possible roles a user could have in the application and what permissions they are allowed. If you are adding a new role or feature please update this document: 
 
 https://docs.google.com/spreadsheets/d/1RQao6WqHZFZo0rYBPnuwnhvVI856ysqTaY0a5m3IR1Q/edit?usp=sharing
-Aravgit
