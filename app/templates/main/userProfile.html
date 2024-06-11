@@ -35,6 +35,10 @@
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
+    <div class="col-md-6 col-lg-3" style="display: flex;">
+      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> &nbsp;
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -43,12 +47,13 @@
     {% if volunteer.classLevel -%}
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
+      <div>
+      CPO {{volunteer.cpoNumber}} 
+    </div>
   </div>
+      
   <div class="row pb-2 pe-0">
-    <div class="col-md-6 col-lg-3">
-      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> &nbsp;
+    
     <div class="col"></div>
     <div class="col-auto pe-0 ">
       <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">

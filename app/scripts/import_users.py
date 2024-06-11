@@ -101,10 +101,23 @@ def addToDb(userList):
 def getFacultyStaffData():
     """
     This function pulls all the faculty and staff data from Tracy and formats for our table
+
+    Tracy's STUSTAFF table has the following columns:
+    1: B-Number/ID
+    2: First Name
+    3: Last Name
+    4: Class Level
+    5: Academic  focus
+    6: Major
+    7: Probation
+    8: Advisor
+    9: Email
+    10: CPO Number
+    11: Last postion
     """
     print("Retrieving Faculty data from Tracy...",end="")
     c = getMssqlCursor()
-    return [
+    return [ 
           { "username": getUsernameFromEmail(row[4].strip()),
             "bnumber": row[1].strip(),
             "email": row[4].strip(),
@@ -116,6 +129,7 @@ def getFacultyStaffData():
             "isStaff": False,
             "major": None,
             "classLevel": None,
+            "cpoNumber": row[10].strip(),
           }
         for row in c.execute('select * from STUSTAFF')
     ]
@@ -135,7 +149,8 @@ def getStudentData():
             "lastName": row[3].strip(),
             "isStudent": True,
             "major": row[6].strip(),
-            "classLevel": row[4].strip()
+            "classLevel": row[4].strip(),
+            "cpoNumber": row[10].strip(),
           }
         for row in c.execute('select * from STUDATA')
     ]
