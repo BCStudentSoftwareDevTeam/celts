@@ -1,6 +1,6 @@
 {% macro displayFiles(filePaths, titleName, deleteLink, databaseId)  %}
 
-<table>
+<!-- <table>
     <tr>
         <td class="py-2"><strong>Display</strong></td>
         <td class="py-2 px-3"><strong>{{ titleName }}</strong></td>
@@ -37,5 +37,66 @@
             </td>
         </tr>
     {% endfor %}
+</table> -->
+<table>
+    <tr>
+        <td class="py-2"><strong>Display</strong></td>
+        <td class="py-2 px-3"><strong>{{ titleName }}</strong></td>
+    </tr>
+    {% for key, value in filePaths.items() %}
+        <tr id="attachment_{{ value[1] }}" class="attachmentRow_{{ key }}" data-id="{{ key }}">
+            <td class="py-2 px-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input type="checkbox" class="attachmentCheck" data-id="{{ value[1] }}" 
+                            {% if value[-1].isDisplayed %} checked {% endif %} 
+                            {% if not (value[0].endswith('.png') or value[0].endswith('.jpg') or value[0].endswith('.svg') or value[0].endswith('.jpeg') or value[0].endswith('.gif')) %} disabled {% endif %}>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="py-2 px-3">
+                {% set idx = key.index("/") %}
+                {% set fileName = key[idx+1:] %}
+                {% set shortName = fileName[:8] + "..." + fileName[-10:] if fileName|length > 25 else fileName %}
+                <a class="mr-5 fileName" data-filename='{{ fileName }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{fileName}}" aria-labelledby="{{fileName}}">{{ shortName }}</a>
+            </td>
+            <td style="text-align:center">
+                <button
+                    data-id="{{ value[1] }}"
+                    data-delete-url="{{ deleteLink }}"
+                    data-database-id='{{ databaseId }}'
+                    type="button"
+                    class="removeAttachment btn btn-danger btn-sm">
+                    <i class="bi bi-trash h5 align-middle"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
 </table>
+
+<!-- Uncheck All Button -->
+<button type="button" class="btn btn-warning" onclick="uncheckAll()">Uncheck</button>
+
+<script>
+    function uncheckAll() {
+        document.querySelectorAll('.attachmentCheck').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+
+    document.querySelectorAll('.attachmentCheck').forEach(item => {
+        item.addEventListener('click', event => {
+            if (item.checked) {
+                uncheckAll();
+                item.checked = true;
+            } else {
+                item.checked = false;
+            }
+        });
+    });
+</script>
+</script>
+
 {% endmacro %}
