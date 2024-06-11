@@ -1,5 +1,4 @@
 # Flask application to manage CELTS programs
-# Hi this is Anupriya 
 
 ## Requirements
  * Python 3.7+
