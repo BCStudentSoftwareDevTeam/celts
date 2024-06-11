@@ -228,6 +228,7 @@ users = [
         "isStaff": True,
         "minorInterest": 0,
     },
+
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
