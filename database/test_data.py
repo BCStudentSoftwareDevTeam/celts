@@ -228,6 +228,20 @@ users = [
         "isStaff": True,
         "minorInterest": 0,
     },
+    {
+        "username": "dixita",
+        "bnumber": "B00763542",
+        "email": "dixita@berea.edu",
+        "firstName": "Anupriya",
+        "lastName": "Dixit",
+        "isStudent": True,
+        "phoneNumber": "(859)433-1559",
+        "major": "Computer Science",
+        "classLevel": "Senior",
+        "minorInterest": 1,
+
+    },
+    
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
