@@ -76,27 +76,28 @@
     {% endfor %}
 </table>
 
-<!-- Uncheck All Button -->
-<button type="button" class="btn btn-warning" onclick="uncheckAll()">Uncheck</button>
-
 <script>
-    function uncheckAll() {
-        document.querySelectorAll('.attachmentCheck').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-    }
-
     document.querySelectorAll('.attachmentCheck').forEach(item => {
         item.addEventListener('click', event => {
             if (item.checked) {
-                uncheckAll();
-                item.checked = true;
+                console.log("checked");
+                item.checked = false; // This toggles the checkbox off if it was already checked
+
+                console.log(item.checked);
             } else {
-                item.checked = false;
+                uncheckAllExcept(item);
+                item.checked = true;
             }
         });
     });
-</script>
+ 
+    function uncheckAllExcept(current) {
+        document.querySelectorAll('.attachmentCheck').forEach(checkbox => {
+            if (checkbox !== current) {
+                checkbox.checked = false;
+            }
+        });
+    }
 </script>
 
 {% endmacro %}

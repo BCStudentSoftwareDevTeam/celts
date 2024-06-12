@@ -21,10 +21,18 @@ $(document).ready(function(){
         });
 
     $('.attachmentCheck').change(function() {
+        // Store the current checkbox state
+        var isChecked = $(this).is(':checked');
+        
         // Uncheck all checkboxes
         $('.attachmentCheck').prop('checked', false);
-        // Check the selected checkbox
-        $(this).prop('checked', true);
+        
+        // If the current checkbox was previously unchecked, check it
+        if (!isChecked) {
+            $(this).prop('checked', true);
+        } else {
+            $(this).prop('checked', false);
+        }
 
         var attachmentId = $(this).data('id');
         var isChecked = $(this).is(':checked');
