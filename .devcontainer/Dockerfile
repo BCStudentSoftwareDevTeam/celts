@@ -2,6 +2,8 @@ FROM mcr.microsoft.com/devcontainers/python:0-3.11
 
 ENV PYTHONUNBUFFERED 1
 
+RUN echo "America/New_York" > /etc/timezone
+
 RUN pip install --upgrade pip
 
 COPY requirements.txt /tmp/pip-tmp/

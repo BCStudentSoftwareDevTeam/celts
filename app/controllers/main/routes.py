@@ -47,17 +47,22 @@ def redirectToLogout():
 def landingPage():
 
     managerProgramDict = getManagerProgramDict(g.current_user)
-
     # Optimize the query to fetch programs with non-canceled, non-past events in the current term
+  
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
-                                         .where((Event.term == g.current_term) & (Event.isCanceled == False) and (Event.endDate >= datetime.date.today()))
+                                         .where((Event.term == g.current_term) & (Event.isCanceled == False))
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
+    
+    futureEvents = [p for p in programsWithEventsList if not p.event.isPast] #List Comprehension: filtered upcoming events from programWithEventsList 
+
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
-                           programsWithEventsList=programsWithEventsList)
+                           programsWithEventsList = futureEvents)
+
+
 
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
@@ -138,6 +143,7 @@ def viewUsersProfile(username):
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []
+        current_time = datetime.datetime.now()
         for program in programs:
             banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
