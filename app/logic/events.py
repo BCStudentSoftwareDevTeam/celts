@@ -42,7 +42,7 @@ def deleteEvent(eventId):
     """
     event = Event.get_or_none(Event.id == eventId)
 
-    if event:
+    if event is not None:
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
