@@ -27,15 +27,7 @@
 .step.finish {
   background-color: #0d6efd;
 }
-@media (max-width: 1500px){
-  .btn{
-    height:60px;
-  }
-  .step{
-    width: 13px;
-    height:13px;
-  }
-}
+
 @media (max-width: 1500px){
   .btn{
     height:60px;
