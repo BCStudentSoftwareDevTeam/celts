@@ -280,6 +280,7 @@
               <!--DELETE BUTTON BELOW-->
               {% if event %}
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
+              {% endif %}
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
               {% elif event and (event.isCanceled) %}
