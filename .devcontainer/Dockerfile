@@ -2,7 +2,8 @@ FROM mcr.microsoft.com/devcontainers/python:0-3.11
 
 ENV PYTHONUNBUFFERED 1
 
-RUN echo "America/New_York" > /etc/timezone
+ENV TZ="America/New_York"
+RUN date
 
 RUN pip install --upgrade pip
 
