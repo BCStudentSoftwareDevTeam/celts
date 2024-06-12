@@ -103,17 +103,14 @@ def getFacultyStaffData():
     This function pulls all the faculty and staff data from Tracy and formats for our table
 
     Tracy's STUSTAFF table has the following columns:
-    1: B-Number/ID
-    2: First Name
-    3: Last Name
-    4: Class Level
-    5: Academic  focus
-    6: Major
-    7: Probation
-    8: Advisor
-    9: Email
-    10: CPO Number
-    11: Last postion
+    1. PIDM
+    2. ID
+    3. FIRST_NAME
+    4. LAST_NAME
+    5. EMAIL
+    6. CPO
+    7. ORG
+    8. DEPT_NAME
     """
     print("Retrieving Faculty data from Tracy...",end="")
     c = getMssqlCursor()
@@ -129,7 +126,7 @@ def getFacultyStaffData():
             "isStaff": False,
             "major": None,
             "classLevel": None,
-            "cpoNumber": row[10].strip(),
+            "cpoNumber": row[5].strip(),
           }
         for row in c.execute('select * from STUSTAFF')
     ]
