@@ -41,6 +41,7 @@ def deleteEvent(eventId):
     to make sure there is no gap in weeks.
     """
     event = Event.get_or_none(Event.id == eventId)
+    print("LOOKIE LOOKIE", event, '\n')
 
     if event:
         print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
