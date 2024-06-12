@@ -47,9 +47,14 @@
     {% if volunteer.classLevel -%}
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
+    {% if volunteer.cpoNumber %}
       <div>
       CPO {{volunteer.cpoNumber}} 
     </div>
+    {% else %}
+      <div>
+    </div>
+    {%endif%}
   </div>
       
   <div class="row pb-2 pe-0">
