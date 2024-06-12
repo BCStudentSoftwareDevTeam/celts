@@ -41,11 +41,8 @@ def deleteEvent(eventId):
     to make sure there is no gap in weeks.
     """
     event = Event.get_or_none(Event.id == eventId)
-    print("LOOKIE LOOKIE", event, '\n')
 
-    #check to see if we can compare web paths
     if event:
-        print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
@@ -69,8 +66,6 @@ def deleteEvent(eventId):
             createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
-    else:
-        print("LOOKIE LOOKIE, IT's NOT A COOKIE", event, '\n')
 
 def deleteEventAndAllFollowing(eventId):
         """
