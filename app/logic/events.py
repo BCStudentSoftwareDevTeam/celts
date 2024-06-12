@@ -107,8 +107,11 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
+    #preprocess data to match data with proper values
     newEventData = preprocessEventData(eventData)
     
+    #validates whether the data has been preprocessed
+    #returns true if data is valid, false if not
     isValid, validationErrorMessage = validateNewEventData(newEventData)
     
     if not isValid:
@@ -127,19 +130,31 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
 
 def saveEventToDb(newEventData, renewedEvent = False):
     """
-        Comment here
+        :param dict newEventData: Dictionary containing event info (name, dates etc)
+        :param bool renewedEvent: Deterimines if the event is being renewed from an existing event
+
+
+        Takes in a preprocessed dictionary (newEventData)
+        and adds it to the data base, checking to see it is
+        reoccuring, and if its a new event.
+
+        :return eventRecords: dictionary containing event data
     """
+    #error catch 
     if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
     
-    
+    #returns true if event doesn't exist
     isNewEvent = ('id' not in newEventData)
 
-    
+    #list to hold a number of events based on how much they will occur
     eventsToCreate = []
     recurringSeriesId = None
+    # Checks if newEventdata is: A new Event that doesnt exist and that it is reoccuring
     if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
+        #If it is then modify that dates and weeks parameter to match Frequency of times the event happens
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
+        #Creates a new unique ID for the reoccuring event
         recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -148,6 +163,9 @@ def saveEventToDb(newEventData, renewedEvent = False):
         if renewedEvent:
             recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
+    #loops based on many times an event recurs, will loop multiple times
+    #if it recurs, but execute once if not
+    #will change recurring event name for each event and date information
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -175,14 +193,19 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
+                #copy of eventData dictionary containing updated program, recurringId, and volunteer check
                 eventRecord = Event.create(**eventData)
             else:
+                #for accessing event to be editted (this is if it already exists)
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
+                #If event requires certification, add that certification to eventRecord
             if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
                 updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
+            #new list of event data created from newEventData (list of data from preprocessing user selections)
+            #and newly processed selections
             eventRecords.append(eventRecord)
     return eventRecords
 
@@ -201,7 +224,9 @@ def getStudentLedEvents(term):
 
     for event in studentLedEvents:
         programs.setdefault(event.program, []).append(event)
-
+    print("LOOOK")
+    print(studentLedEvents)
+    print(programs)
     return programs
 
 def getUpcomingStudentLedCount(term, currentTime):
