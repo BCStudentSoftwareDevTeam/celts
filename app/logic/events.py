@@ -42,7 +42,7 @@ def deleteEvent(eventId):
     """
     event = Event.get_or_none(Event.id == eventId)
 
-    if event is not None:
+    if event:
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
@@ -66,6 +66,8 @@ def deleteEvent(eventId):
             createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
+    else:
+        print(event)
 
 def deleteEventAndAllFollowing(eventId):
         """
