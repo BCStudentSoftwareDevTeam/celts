@@ -43,6 +43,7 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     print("LOOKIE LOOKIE", event, '\n')
 
+    #check to see if we can compare web paths
     if event:
         print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
         if event.recurringId:
