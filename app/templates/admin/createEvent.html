@@ -277,7 +277,8 @@
     <div class="row justify-content-left mt-2">
           <div class="col-md-6 offset-md-3">
             <div class="text-center">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
+              <!--TEXT FOR DELETE POPUP BELOW-->>
+              <button type="button" disabled= True class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">pls Delete Event</button>
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
               {% elif event and (event.isCanceled) %}
@@ -315,7 +316,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="warningModel">Delete Event RAAAAHH</h5>
+        <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         {% if eventData.recurringId%}
