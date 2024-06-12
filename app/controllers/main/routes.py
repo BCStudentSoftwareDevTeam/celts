@@ -54,8 +54,8 @@ def landingPage():
                                          .where((Event.term == g.current_term) & (Event.isCanceled == False))
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
-    
-    futureEvents = [p for p in programsWithEventsList if not p.event.isPast] #List Comprehension: filtered upcoming events from programWithEventsList 
+    # Limit returned list to events in the future
+    futureEvents = [p for p in programsWithEventsList if not p.event.isPast]
 
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
@@ -143,7 +143,7 @@ def viewUsersProfile(username):
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []
-        current_time = datetime.datetime.now()
+        
         for program in programs:
             banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
