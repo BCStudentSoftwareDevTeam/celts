@@ -54,8 +54,6 @@ def landingPage():
                                          .where((Event.term == g.current_term) & (Event.isCanceled == False) and (Event.endDate >= datetime.date.today()))
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
-    print("####################################################")
-    print(programsWithEventsList)
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
