@@ -211,8 +211,14 @@ def saveEventToDb(newEventData, renewedEvent = False):
 
 def getStudentLedEvents(term):
     """
-        comment here
+        :param term: Object that gives a range of time (fall 2024, spring 2024..) and dates.
+
+        :returns programs: dictionary containing all student led Events for given term
+        and which programs they belong to.
     """
+    #lists program identifying numbers with their corresponding events saved in the DB
+    #sorted by date and time
+    #student led programs included Berea Buddies(program 2) and adopt a grandparent (program 3)
     studentLedEvents = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where(Program.isStudentLed,
@@ -222,11 +228,10 @@ def getStudentLedEvents(term):
 
     programs = {}
 
+    #loops through list of student led events and adds them to their proper program categories
+    #which is returned as dictionaries
     for event in studentLedEvents:
         programs.setdefault(event.program, []).append(event)
-    print("LOOOK")
-    print(studentLedEvents)
-    print(programs)
     return programs
 
 def getUpcomingStudentLedCount(term, currentTime):
@@ -272,8 +277,12 @@ def getTrainingEvents(term, user):
 
 def getBonnerEvents(term):
     """
-        Comment here
+        :param term: Object that gives a range of time (fall 2024, spring 2024..) and dates.
+
+        :returns bonnerScholarsEvents: dictionary containing all Bonner related events for given term
     """
+    #Creates dictionary that contains specifically Bonner Scholars events
+    #sorted by date and time
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
