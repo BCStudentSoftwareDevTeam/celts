@@ -54,23 +54,6 @@ def updateEventParticipants(participantData):
             return False
     return True
 
-
-def addVolunteerToEventRsvp(user, volunteerEventID):
-    '''
-    Adds a volunteer to event rsvp table when a user rsvps and when they are
-    added through the track volunteer page by an admin.
-
-    param: user - a string containing username
-           volunteerEventID - id of the event the volunteer is being registered for
-    '''
-    try:
-        if not EventRsvp.get_or_none(user=user, event=volunteerEventID):
-            EventRsvp.create(user=user, event=volunteerEventID)
-        return True
-
-    except Exception as e:
-        return False
-
 def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
