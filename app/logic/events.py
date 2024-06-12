@@ -43,6 +43,7 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
 
     if event:
+        print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
@@ -67,7 +68,7 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
     else:
-        print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
+        print("LOOKIE LOOKIE, IT's NOT A COOKIE", event, '\n')
 
 def deleteEventAndAllFollowing(eventId):
         """
