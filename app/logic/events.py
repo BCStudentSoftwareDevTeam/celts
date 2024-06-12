@@ -126,7 +126,9 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
         return False, e
 
 def saveEventToDb(newEventData, renewedEvent = False):
-    
+    """
+        Comment here
+    """
     if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
     
@@ -185,6 +187,9 @@ def saveEventToDb(newEventData, renewedEvent = False):
     return eventRecords
 
 def getStudentLedEvents(term):
+    """
+        comment here
+    """
     studentLedEvents = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where(Program.isStudentLed,
@@ -241,6 +246,9 @@ def getTrainingEvents(term, user):
     return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
+    """
+        Comment here
+    """
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
