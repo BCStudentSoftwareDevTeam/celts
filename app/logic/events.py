@@ -67,7 +67,7 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
     else:
-        print(event)
+        print("LOOKIE LOOKIE, IT's A COOKIE", event, '\n')
 
 def deleteEventAndAllFollowing(eventId):
         """
