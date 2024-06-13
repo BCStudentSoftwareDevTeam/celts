@@ -32,8 +32,9 @@ def cancelEvent(eventId):
 
     :returns none:
     """
-    #
+    #Assign eventId key value pair to variable
     event = Event.get_or_none(Event.id == eventId)
+    #If event exists (Id is valid) then updates data base 
     if event: 
         event.isCanceled = True
         event.save()
