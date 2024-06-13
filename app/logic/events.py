@@ -84,13 +84,21 @@ def deleteEvent(eventId):
 
 def deleteEventAndAllFollowing(eventId):
         """
+        :param eventId : Key value pair from a dictionary.
+        Used to find specific event to be canceled.
+
         Deletes a recurring event and all the recurring events after it.
+
+        :return: None
         """
+        #Assign eventId key value pair to variable
         event = Event.get_or_none(Event.id == eventId)
         if event:
+            #Makes a list of all instances of the recurring event 
             if event.recurringId:
                 recurringId = event.recurringId
                 recurringSeries = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+        # Loops through list, deletes matching events in database.
         for seriesEvent in recurringSeries:
             seriesEvent.delete_instance(recursive = True)
 
