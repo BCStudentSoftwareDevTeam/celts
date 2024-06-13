@@ -192,10 +192,10 @@ def emergencyContactInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
 
+    contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
-        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
                                 contactInfo=contactInfo,
@@ -203,13 +203,13 @@ def emergencyContactInfo(username):
                                 )
     
     elif request.method == 'POST':
-        if g.current_user.username != username:
+        if g.current_user.username != username:   
             abort(403)
 
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createAdminLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -225,9 +225,9 @@ def insuranceInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
 
+    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
     if request.method == 'GET':
-        readOnly = g.current_user.username != username
-        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+        readOnly = False and g.current_user.username != username
         return render_template ("/main/insuranceInfo.html",
                                 username=username,
                                 userInsuranceInfo=userInsuranceInfo,
@@ -240,9 +240,9 @@ def insuranceInfo(username):
             abort(403)
 
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        if not rowsUpdated:
+        if  rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createAdminLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
