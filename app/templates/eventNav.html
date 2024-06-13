@@ -23,7 +23,7 @@
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
         {% if eventPast and event.isCanceled %}
             This is a past event and it was canceled.
-        {% elif eventPast %}
+        {% elif isEventPast %}
             This is a past event.
         {% elif event.isCanceled %}
             This event has been canceled.

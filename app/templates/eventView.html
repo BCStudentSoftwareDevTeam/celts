@@ -1,6 +1,7 @@
 {% set title = eventData.name %}
 {% set page_title = eventData.name %}
-{% set eventPast = event.isPast %}
+{% set eventPast = event.isEventPast %} 
+{% set isEventPast = event.isEventPast %} 
 {% set tabName = 'view' %}
 {% extends "eventNav.html"%}
 
