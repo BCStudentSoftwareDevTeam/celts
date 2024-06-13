@@ -45,12 +45,19 @@ def cancelEvent(eventId):
 
 def deleteEvent(eventId):
     """
+    :param eventId : Key value pair from a dictionary.
+    Used to find specific event to be canceled.
+
     Deletes an event, if it is a recurring event, rename all following events
     to make sure there is no gap in weeks.
-    """
-    event = Event.get_or_none(Event.id == eventId)
 
+    : return none :
+    """
+    #Assign eventId key value pair to variable
+    event = Event.get_or_none(Event.id == eventId)
+    
     if event:
+        #Runs if Event is recurring
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
@@ -67,7 +74,7 @@ def deleteEvent(eventId):
                     eventDeleted = True
 
         program = event.program
-
+        #Document deletion of event in admin logs
         if program:
             createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
