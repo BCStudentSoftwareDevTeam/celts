@@ -35,7 +35,8 @@ class Event(baseModel):
 
     @property
     def isPast(self):
-        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)
+        # return False 
+        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd)  
 
     @property
     def isRecurring(self):
