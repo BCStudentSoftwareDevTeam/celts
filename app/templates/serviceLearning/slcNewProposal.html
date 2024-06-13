@@ -30,18 +30,18 @@
       <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
       <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
     </div>
-    <div class="col stepsIndicator">
+    <div class="col-2 stepsIndicator">
       <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
     </div>
-    <div class="col" align="right">
+    <div class="col d-flex flex-nowrap gap-2 justify-content-end">
       <button class="btn btn-primary" type="button" id="saveExit">Save and Exit</button>
       <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
       <button class="btn btn-primary" type="button" id="exitButton">Exit</button>
       {% if g.current_user.isCeltsAdmin %}
-        <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
+        <button class="btn btn-success" type="button" id="submitAndApproveButton"width ='100px'>Submit and Approve</button>
       {% endif %}
     </div>
   </div>
