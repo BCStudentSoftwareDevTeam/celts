@@ -24,8 +24,15 @@ from app.logic.certification import updateCertRequirementForEvent
 
 def cancelEvent(eventId):
     """
-    Cancels an event.
+    :param eventId : Key value pair from a dictionary.
+    Used to find specific event to be canceled.
+
+    Checks to see if event is in the data base and if so 
+    then cancels that event in the database.
+
+    :returns none:
     """
+    #
     event = Event.get_or_none(Event.id == eventId)
     if event: 
         event.isCanceled = True
