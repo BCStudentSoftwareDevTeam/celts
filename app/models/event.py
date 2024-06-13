@@ -35,7 +35,6 @@ class Event(baseModel):
 
     @property
     def isPast(self):
-        # return False 
         return datetime.now() >= datetime.combine(self.endDate, self.timeEnd)  
 
     @property
