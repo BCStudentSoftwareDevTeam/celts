@@ -94,7 +94,7 @@ def deleteEventAndAllFollowing(eventId):
         #Assign eventId key value pair to variable
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            #Makes a list of all instances of the recurring event 
+            #Makes a list of all instances of the recurring event and events AFTER its start date.
             if event.recurringId:
                 recurringId = event.recurringId
                 recurringSeries = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
@@ -104,19 +104,31 @@ def deleteEventAndAllFollowing(eventId):
 
 def deleteAllRecurringEvents(eventId):
         """
-        Deletes all recurring events.
+        :param eventId : Key value pair from a dictionary.
+        Used to find specific event to be canceled.
+        
+        Deletes all recurring events in a series.
+
+        :return: None
         """
+        #Assign eventId key value pair to variable
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId:
+                #Makes of list of all recurring events in a series
                 recurringId = event.recurringId
                 allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId))
+            #Deletes the events from the data base
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
+    :param eventData: Dictionary that holds data related to the event.
+    :param attachmentFiles: files to be attached to event.
+    :param bool renewedEvent: Condition to check if the event has passed and is being reused.
+    
     Tries to save an event to the database:
     Checks that the event data is valid and if it is it continus to saves the new
     event to the database and adds files if there are any.
@@ -126,7 +138,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     Created events and an error message.
     """
 
-    # Manually set the value of RSVP Limit if it is and empty string since it is
+    # Manually set the value of RSVP Limit if it is an empty string
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
@@ -139,7 +151,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     
     if not isValid:
         return False, validationErrorMessage
-
+    #Try to save, throw exception if fails.
     try:
         events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
@@ -147,6 +159,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
                 addFile = FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
         return events, ""
+    #Exception to display an error in saving event
     except Exception as e:
         print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
@@ -234,10 +247,12 @@ def saveEventToDb(newEventData, renewedEvent = False):
 
 def getStudentLedEvents(term):
     """
-        :param term: Object that gives a range of time (fall 2024, spring 2024..) and dates.
+        :param term: Object that gives a range of time (fall 2024, spring 2024..)
+        as an integer ID, 1 being the oldest term in DB.
 
         :returns programs: dictionary containing all student led Events for given term
         and which programs they belong to.
+
     """
     #lists program identifying numbers with their corresponding events saved in the DB
     #sorted by date and time
@@ -259,9 +274,17 @@ def getStudentLedEvents(term):
 
 def getUpcomingStudentLedCount(term, currentTime):
     """
+        :param term: Object that gives a range of time (fall 2024, spring 2024..)
+        as an integer ID, 1 being the oldest term in DB.
+
+        :param currentTime: Takes in the current time
+
         Return a count of all upcoming events for each student led program.
+
+        :return: programCountDict, a list of key value pairs
+        key = programID value = number of events for that key(Program) in a given term
     """
-    
+    #Gets all student led events in DB who start time is >= current time(Get)
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
@@ -271,27 +294,32 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .group_by(Program.id))
     
     programCountDict = {}
-
+    #Make a list of key value pairs (from dictionary)
     for programCount in upcomingCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
 def getTrainingEvents(term, user):
     """
+        :param term: Object that gives a range of time (fall 2024, spring 2024..)
+        as an integer ID, 1 being the oldest term in DB.
+
+        :param user: Expected to be the current user 
+
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
-        term: expected to be the ID of a term
-        user: expected to be the current user
+        
         return: a list of all trainings the user can view
     """
+    #Get all the train events for term in question
     trainingQuery = (Event.select(Event).distinct()
                           .join(Program, JOIN.LEFT_OUTER)
                           .where(Event.isTraining == True,
                                  Event.term == term)
                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
-
+    #Hide Bonner Scholar sect. if user IS NOT ADMIN OR BONNER SCHOLAR
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
         trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
@@ -300,7 +328,8 @@ def getTrainingEvents(term, user):
 
 def getBonnerEvents(term):
     """
-        :param term: Object that gives a range of time (fall 2024, spring 2024..) and dates.
+        :param term: Object that gives a range of time (fall 2024, spring 2024..)
+        as an integer ID, 1 being the oldest term in DB.
 
         :returns bonnerScholarsEvents: dictionary containing all Bonner related events for given term
     """
@@ -316,8 +345,12 @@ def getBonnerEvents(term):
 
 def getOtherEvents(term):
     """
+    :param term: Object that gives a range of time (fall 2024, spring 2024..)
+    as an integer ID, 1 being the oldest term in DB.
+
     Get the list of the events not caught by other functions to be displayed in
     the Other Events section of the Events List page.
+
     :return: A list of Other Event objects
     """
     # Gets all events that are not associated with a program and are not trainings
@@ -338,14 +371,17 @@ def getOtherEvents(term):
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
-        Get the list of upcoming events that the user is interested in as long
-        as they are not banned from the program that the event is a part of.
         :param user: a username or User object
         :param asOf: The date to use when determining future and past events.
-                      Used in testing, defaults to the current timestamp.
+                      Used in testing, defaults to the current timestamp. 
+        :param program: What type of program the event is.
+
+        Get the list of upcoming events that the user is interested in as long
+        as they are not banned from the program that the event is a part of.
+
         :return: A list of Event objects
     """
-
+    #Get its all events from DB that user is not banned from
     events =  (Event.select().distinct()
                     .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program) & (ProgramBan.user == user)))
                     .join(Interest, JOIN.LEFT_OUTER, on=(Event.program == Interest.program))
@@ -353,10 +389,10 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
                     .where(Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
-
+    #set events to programs that the user is interested in.
     if program:
         events = events.where(Event.program == program)
-
+    #Order interested events by closest start date
     events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
@@ -553,6 +589,9 @@ def addEventView(viewer,event):
 
 def getEventRsvpCountsForTerm(term):
     """
+        :param term: Object that gives a range of time (fall 2024, spring 2024..)
+        as an integer ID, 1 being the oldest term in DB.
+        
         Get all of the RSVPs for the events that exist in the term.
         Returns a dictionary with the event id as the key and the amount of
         current RSVPs to that event as the pair.
