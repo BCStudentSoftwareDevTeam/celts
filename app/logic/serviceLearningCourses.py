@@ -43,8 +43,8 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name": course.courseName if course.courseName else 'TBD',     
-                                 "abbreviation": course.courseAbbreviation if course.courseAbbreviation else 'TBD',                           
+                                 "name": course.courseName if course.courseName else '',     
+                                 "abbreviation": course.courseAbbreviation if course.courseAbbreviation else '',                           
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}
