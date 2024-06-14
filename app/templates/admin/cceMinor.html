@@ -13,6 +13,9 @@
 {% endblock %}
 {% block app_content %}
 
+{% set modalTitle = "Add Students" %}
+
+{% set buttonName = "Add Students" %}
 <h1 class="text-center mb-5">CCE Minor Management</h1>
 <h2>CCE Minor Progress</h2>
 <table class="display" id="engagedStudentsTable">
@@ -50,7 +53,7 @@
         <h2>Interested Students</h2>
     </div>
     <div class="col-auto">
-        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{modalTitle}}</a>
+        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addInterestedStudentsModal" style="margin:5px;">{{modalTitle}}</a>
         <button class="btn btn-primary" id="emailAllInterested">Email All</button>
     </div>
 </div>
@@ -74,12 +77,12 @@
 
 <!-- #################  Modal  ################# -->
 
-<div class="modal fade float-start" id="addInterestedStudents" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
+<div class="modal fade float-start" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{modalTitle}}</h5>
-          <button type="button" class="addInterestedStudents" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="input-group">
@@ -91,9 +94,19 @@
             </button>
           </div>         
         </div>
+        <ul class="list-unstyled mx-3 mt-2" id= "interestedStudentList">
+      
+                {%for participant in interestedStudentList%}
+                  <li>
+                    <input class="interestedStudents" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="interestedStuednts[]" value= {{participant}} />
+                    <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                    <label class="text-dark" data-toggle="previousVolunteerHover">*</label>
+                  </li>
+                {% endfor %}
+        </ul>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-          <button id="addInterestedStudents" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
+          <button id="addInterestedStudentsbtn" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
         </div>
       </div>
     </div>
