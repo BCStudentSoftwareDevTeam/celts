@@ -81,7 +81,7 @@
     </thead>
     <tbody>
       {% for event in events %}
-          {% if event.isPastStart %}
+          {% if event.isPastEnd %}
             <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
             <tr height = '50' class="">
@@ -108,15 +108,15 @@
               {% endif %}
             {% if user.isAdmin %}
               <td>
-                {% if event.isPastEnd %}
-                  {% set isPastEvent = "true" %}
+                {% if event.isPastStart %}
+                  {% set isPastStart = "true" %}
                 {% else %}
-                  {% set isPastEvent = "false" %}
+                  {% set isPastStart = "false" %}
                 {% endif %}
                 {% set defaultTemplate = "Test" %} {# The default template is set via the purpose column of the corresponding template #}
                 {% set btn_class = 'btn-secondary' if event.isPastStart or event.isCanceled else 'btn-primary' %}
                 {% set btn_text = 'Email' if event.isPastStart or event.isCanceled else 'Invite' %}
-                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }}, '{{defaultTemplate}}')">
+                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastStart }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>
               </td>
