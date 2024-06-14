@@ -32,10 +32,71 @@ from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
 
 @pytest.mark.integration
-def test_event_model():
-    event = Event.get_by_id(11)
-    assert event.isPastStart
-    assert event.isPastEnd
+def test_event_end():
+    with mainDB.atomic() as transaction:
+        # creates an event in the future
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now() + timedelta(days=1),
+                                    endDate = datetime.now() + timedelta(days=2),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == False
+        assert testingEvent.isPastStart == False
+        transaction.rollback()
+
+    with mainDB.atomic() as transaction:
+        # creates an event in the present
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now(),
+                                    endDate = datetime.now() + timedelta(days=1),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == False
+        assert testingEvent.isPastStart == True
+        transaction.rollback()
+
+    with mainDB.atomic() as transaction:
+        # creates an event in the past
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now() + timedelta(days=-3),
+                                    endDate = datetime.now() + timedelta(days=-1),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == True
+        assert testingEvent.isPastStart == True
+        transaction.rollback()
+
+
 
 @pytest.mark.integration
 def test_eventTemplate_model():
