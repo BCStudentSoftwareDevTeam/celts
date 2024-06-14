@@ -560,7 +560,7 @@ def getCountdownToEvent(event, *, currentDatetime=None):
         if calendarDaysUntilEvent:
             return f"{monthString} and {dayString}"
         return f"{monthString}"
-    # Days until
+    # Days until 
     if calendarDaysUntilEvent:
         if eventStart.time() < currentDatetime.time():
             if calendarDaysUntilEvent == 1:
