@@ -413,27 +413,26 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
 def getParticipatedEventsForUser(user):
     """
-        Get all the events a user has participated in.
         :param user: a username or User object
-        :param asOf: The date to use when determining future and past events.
-                      Used in testing, defaults to the current timestamp.
+
+        Get all the events a user has participated in.
+        
         :return: A list of Event objects
     """
-
+    #Get all events that the user has participated in
     participatedEvents = (Event.select(Event, Program.programName)
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
                                       Event.isAllVolunteerTraining == False)
                                .order_by(Event.startDate, Event.name))
-
+    #Get all volunteer training events the user has taken part in
     allVolunteer = (Event.select(Event, "")
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
-
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
