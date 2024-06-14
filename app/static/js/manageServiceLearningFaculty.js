@@ -40,7 +40,7 @@ $(document).ready( function () {
   
 
   /************** Preview Events **************/
-  $('#previewImportedCourses button[data-bs-dismiss="modal"]').click(function () {
+  $('#previewImportedCourses button[data-bs-dismiss="modal", class="btn-close"]').click(function () { //modded this 
     $('#previewImportedCourses').removeClass('show d-block');
   });
 
