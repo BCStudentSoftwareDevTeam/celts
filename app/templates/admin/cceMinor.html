@@ -50,7 +50,7 @@
         <h2>Interested Students</h2>
     </div>
     <div class="col-auto">
-        <button class ="btn btn-primary" id="addInterestedStudents">Add Students</button>
+        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{modalTitle}}</a>
         <button class="btn btn-primary" id="emailAllInterested">Email All</button>
     </div>
 </div>
@@ -79,7 +79,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{modalTitle}}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="addInterestedStudents" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="input-group">
