@@ -17,7 +17,7 @@
   {% extends "eventNav.html"%}
 {% endif %}
 
-{% set eventPast = event.isPast if not isNewEvent else False %}
+{% set eventPast = event.isPastStart if not isNewEvent else False %}
 {% set tabName = 'edit' %}
 
 

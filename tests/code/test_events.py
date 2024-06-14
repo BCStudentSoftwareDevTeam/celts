@@ -34,7 +34,8 @@ from app.logic.utils import format24HourTime
 @pytest.mark.integration
 def test_event_model():
     event = Event.get_by_id(11)
-    assert event.isPast
+    assert event.isPastStart
+    assert event.isPastEnd
 
 @pytest.mark.integration
 def test_eventTemplate_model():
