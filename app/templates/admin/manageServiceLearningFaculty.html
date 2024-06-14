@@ -332,6 +332,7 @@
           <div class="modal-header">
             <h5 class="modal-title">List of Participants</h5>
             <!--preview modal 'X' button-->
+            {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
             <button type="button" class="btn-close" {{disableSave}} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body py-0">
