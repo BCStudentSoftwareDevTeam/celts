@@ -426,12 +426,13 @@ def getParticipatedEventsForUser(user):
                                .where(EventParticipant.user == user,
                                       Event.isAllVolunteerTraining == False)
                                .order_by(Event.startDate, Event.name))
-    #Get all volunteer training events the user has taken part in
+    #Get all volunteer events the user has taken part in
     allVolunteer = (Event.select(Event, "")
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
+    #list of events separated by ID and whether they are typical or volunteer events
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
@@ -648,7 +649,8 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     """
     :param event: The particular event in question
 
-    :param *: Must specify currentDatetime in parameters 
+    :param *: Must specify currentDatetime in parameters, when called
+    this would look like: getCountdownToEvent(event, currentDatetime=currentTime)
 
     :param currentDatetime: Current time
 
@@ -668,10 +670,11 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     :return: A string that conveys the amount of time left until the start of the event.
     """
 
+    #If currentDatetime is None, get current time
     if currentDatetime is None:
         currentDatetime = datetime.now().replace(second=0, microsecond=0)  
     currentMorning = currentDatetime.replace(hour=0, minute=0)
-
+    #formats how times look into variables
     eventStart = datetime.combine(event.startDate, event.timeStart)
     eventEnd = datetime.combine(event.endDate, event.timeEnd)
     
@@ -680,6 +683,7 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     elif eventStart <= currentDatetime <= eventEnd:
         return "Happening now"
     
+    #assgins remaining days (years, months, days) and remaining time until the event starts
     timeUntilEvent = relativedelta(eventStart, currentDatetime)
     calendarDelta = relativedelta(eventStart, currentMorning)
     calendarYearsUntilEvent = calendarDelta.years
@@ -724,7 +728,13 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     
 def copyRsvpToNewEvent(priorEvent, newEvent):
     """
-        Copies rvsps from priorEvent to newEvent
+        :param priorEvent: Dictionary data from a prior event
+
+        :param newEvent: Dictionary data from a new event
+
+        Copies rvsps from priorEvent to newEvent and saves it to the DB
+
+        :return: None
     """
     rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent['id']).execute())
     
