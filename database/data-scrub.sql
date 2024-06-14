@@ -22,4 +22,4 @@ UPDATE emergencycontact set name='<Redacted>', relationship='<Redacted>',homePho
 UPDATE insuranceinfo set insuranceType=1,policyHolderName='<Redacted>',policyHolderRelationship='<Redacted>',insuranceCompany='<Redacted>',policyNumber='<Redacted>',groupNumber='<Redacted>',healthIssues='<Redacted>'
 
 -- scrub admin logs
-UPDATE adminlog set logContent='<Redacted>' where logContent REGEXP 'Banned|Unbanned|dietary|background check'
+UPDATE activitylog set logContent='<Redacted>' where logContent REGEXP 'Banned|Unbanned|dietary|background check'
