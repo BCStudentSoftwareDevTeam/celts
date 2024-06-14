@@ -20,6 +20,7 @@ from app.models.note import Note
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
+from app.logic.courseNameAndNumber import nameNumCombo
 
 def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
     """
@@ -43,8 +44,7 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name": course.courseName if course.courseName else '',     
-                                 "abbreviation": course.courseAbbreviation if course.courseAbbreviation else '',                           
+                                 "coursename": nameNumCombo(course.courseName, course.courseAbbreviation),                               
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}

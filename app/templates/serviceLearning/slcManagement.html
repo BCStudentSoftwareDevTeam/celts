@@ -29,14 +29,7 @@
     <tbody>
       {% for course in courseDict %}
         <tr>
-          <td id="name-{{ courseDict[course]['id'] }}">
-            {% set abbreviation = courseDict[course]['abbreviation'].strip() %}
-            {% if abbreviation %}
-                {{ abbreviation }} - {{ courseDict[course]['name'] }}
-            {% else %}
-                {{ courseDict[course]['name'] }}
-            {% endif %}
-          </td>
+          <td id="name-{{ courseDict[course]['id'] }}">{{courseDict[course]['coursename']}}</td>
           <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
           <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
           <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td>
