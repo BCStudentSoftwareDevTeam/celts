@@ -31,7 +31,7 @@
       <!--Term change dropdown for course managment-->
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
         {% for t in terms %}
-          <option value="{{t.id}}" {{ "selected" if t.id==term.id }}> {{ t.description }}</option>
+          <option value="{{t.id}}" {{"selected" if t.id==term.id }}> {{ t.description }}</option>
         {% endfor %}
       </select>
     </form>
@@ -332,7 +332,7 @@
           <div class="modal-header">
             <h5 class="modal-title">List of Participants</h5>
             <!--preview modal 'X' button-->
-            <button type="button" class="btn-close" data-bs-dismiss="modal" name="cancelModalPreview" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview" aria-label="Close"></button>
           </div>
           <div class="modal-body py-0">
             <br>
