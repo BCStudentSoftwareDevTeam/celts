@@ -46,7 +46,7 @@ def cancelEvent(eventId):
 def deleteEvent(eventId):
     """
     :param eventId : Key value pair from a dictionary.
-    Used to find specific event to be canceled.
+    Used to find specific event to be deleted.
 
     Deletes an event, if it is a recurring event, rename all following events
     to make sure there is no gap in weeks.
@@ -85,7 +85,7 @@ def deleteEvent(eventId):
 def deleteEventAndAllFollowing(eventId):
         """
         :param eventId : Key value pair from a dictionary.
-        Used to find specific event to be canceled.
+        Used to find the first event and following events to be deleted.
 
         Deletes a recurring event and all the recurring events after it.
 
@@ -105,7 +105,7 @@ def deleteEventAndAllFollowing(eventId):
 def deleteAllRecurringEvents(eventId):
         """
         :param eventId : Key value pair from a dictionary.
-        Used to find specific event to be canceled.
+        Used to find all recurring events in a series to be deletes.
         
         Deletes all recurring events in a series.
 
@@ -437,6 +437,8 @@ def getParticipatedEventsForUser(user):
 
 def validateNewEventData(data):
     """
+        :param data: Dictionary containing information pertaining to an event
+
         Confirm that the provided data is valid for an event.
 
         Assumes the event data has been processed with `preprocessEventData`. NOT raw form data
@@ -463,6 +465,7 @@ def validateNewEventData(data):
         
         sameEventListCopy = sameEventList.copy()
 
+        #removes canceled/recurring events from sameEventList
         for event in sameEventListCopy:
             if event.isCanceled or event.recurringId:   
                 sameEventList.remove(event)
@@ -473,13 +476,17 @@ def validateNewEventData(data):
             return (False, f"Not a valid term: {data['term']}")
         if sameEventList:
             return (False, "This event already exists")
-        
+    
     data['valid'] = True
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
     """
     Gets the highest recurring Id so that a new recurring Id can be assigned
+    if the event is recurring
+
+    :return: integer based on the amount of events in a recurring series
+    (used to ID recurring events)
     """
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
@@ -489,8 +496,14 @@ def calculateNewrecurringId():
 
 def getPreviousRecurringEventData(recurringId):
     """
+    :param recurringId: Id for a specific event in a recurring series
+
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
+
+    :return previousEventVolunteers: key value pairs containing users that have participated in past events 
+    within a same recurring series
     """
+
     previousEventVolunteers = (User.select(User).distinct()
                                    .join(EventParticipant)
                                    .join(Event)
@@ -499,12 +512,12 @@ def getPreviousRecurringEventData(recurringId):
 
 def calculateRecurringEventFrequency(event):
     """
-        Calculate the events to create based on a recurring event start and end date. Takes a
-        dictionary of event data.
+        :param event: Dictionary data of the particular event in question.
 
+        Calculate the events to create based on a recurring event start and end date.
         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
 
-        Return a list of events to create from the event data.
+        :Return: a list of events to create from the event data.
     """
     if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
@@ -518,6 +531,8 @@ def calculateRecurringEventFrequency(event):
 
 def preprocessEventData(eventData):
     """
+        :param eventData: Data of an event from the database.
+
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
 
         - dates should exist and be date objects if there is a value
@@ -525,6 +540,8 @@ def preprocessEventData(eventData):
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
         - Look up matching certification requirement if necessary
+
+        :return eventData: Dictionary of data for the event after being processed
     """
     ## Process checkboxes
     eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
@@ -567,6 +584,7 @@ def preprocessEventData(eventData):
         match = RequirementMatch.get_or_none(event=eventData['id'])
         if match:
             eventData['certRequirement'] = match.requirement
+    #changes event start and end times to matach a 24hr format
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
@@ -576,13 +594,25 @@ def preprocessEventData(eventData):
     return eventData
 
 def getTomorrowsEvents():
-    """Grabs each event that occurs tomorrow"""
+    """
+    Grabs each event that occurs tomorrow
+    
+    :return events: Events that occur tomorrow
+    """
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
 
 def addEventView(viewer,event):
-    """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
+    """
+    :param viewer: User that is looking at specified event
+
+    :param event: particular event in question
+
+    This checks if the current user already viewed the event. If not, insert a recored to EventView table
+    
+    :return: None
+    """
     if not viewer.isCeltsAdmin:
          EventView.get_or_create(user = viewer, event = event)   
 
@@ -592,7 +622,8 @@ def getEventRsvpCountsForTerm(term):
         as an integer ID, 1 being the oldest term in DB.
         
         Get all of the RSVPs for the events that exist in the term.
-        Returns a dictionary with the event id as the key and the amount of
+
+        :return amountAsDict: dictionary with the event id as the key and the amount of
         current RSVPs to that event as the pair.
     """
     amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
@@ -606,14 +637,20 @@ def getEventRsvpCountsForTerm(term):
 
 def getEventRsvpCount(eventId):
     """
-        Returns the number of RSVP'd participants for a given eventId.
+        :param eventId : Key value pair from a dictionary.
+        Used to track specific event
+
+        :return: the number of RSVP'd participants for a given eventId.
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
 def getCountdownToEvent(event, *, currentDatetime=None):
     """
-    Given an event, this function returns a string that conveys the amount of time left
-    until the start of the event.
+    :param event: The particular event in question
+
+    :param *: Must specify currentDatetime in parameters 
+
+    :param currentDatetime: Current time
 
     Note about dates:
     Natural language is unintuitive. There are two major rules that govern how we discuss dates.
@@ -622,11 +659,13 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     - If an event happens tomorrow but more than 24 hours away from us, we'll count the number of days 
     and hours in actual time.
 
-    E.g. if the current time of day is greater than the event start's time of day, we give a number of days 
+    E.g. if the current time of day is greater than the event start's time of day, we give a number of days  
     relative to this morning and exclude all hours and minutes
 
     On the other hand, if the current time of day is less or equal to the event's start of day we can produce 
     the real difference in days and hours without the aforementioned simplifying language.
+
+    :return: A string that conveys the amount of time left until the start of the event.
     """
 
     if currentDatetime is None:
