@@ -85,17 +85,7 @@ $(document).ready( function () {
       }
     }
 
-    $("#cancelModalPreview").click(function(){
-      $.ajax({
-        url: "/deleteUploadedFile",
-        type: 'POST',
-        error: function(error, status){
-          console.log(error, status)
-        }
-      });
-    })
-
-    $("#previewModalxButton").click(function(){
+    $("#cancelModalPreview", "previewModalxButton").click(function(){
       $.ajax({
         url: "/deleteUploadedFile",
         type: 'POST',
