@@ -40,7 +40,7 @@ $(document).ready( function () {
   
 
   /************** Preview Events **************/
-  $('#previewImportedCourses button[data-bs-dismiss="modal", class="btn-close"]').click(function () { //modded this , class="btn-close"
+  $('#previewImportedCourses button[data-bs-dismiss="modal"]').click(function () { //modded this , class="btn-close"
     $('#previewImportedCourses').removeClass('show d-block');
   });
 
@@ -86,6 +86,16 @@ $(document).ready( function () {
     }
 
     $("#cancelModalPreview").click(function(){
+      $.ajax({
+        url: "/deleteUploadedFile",
+        type: 'POST',
+        error: function(error, status){
+          console.log(error, status)
+        }
+      });
+    })
+
+    $("#previewModalxButton").click(function(){
       $.ajax({
         url: "/deleteUploadedFile",
         type: 'POST',
