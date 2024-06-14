@@ -28,6 +28,7 @@
   <h1 class="text-center pb-2">Designated Service-Learning Courses</h1>
   <div class="text-center">
     <form id="termSelector" action="" method="post">
+      <!--Term change dropdown for course managment-->
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
         {% for t in terms %}
           <option value="{{t.id}}" {{ "selected" if t.id==term.id }}> {{ t.description }}</option>
@@ -330,6 +331,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">List of Participants</h5>
+            <!--preview modal 'X' button-->
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body py-0">
@@ -375,6 +377,7 @@
           </div>
           <br>
           <div class="modal-footer">
+            <!--Preview modal cancel and save file buttons-->
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
             {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
             <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
