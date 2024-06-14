@@ -11,7 +11,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 
 from app.logic.serviceLearningCourses import *
-from app.logic.courseNameAndNumber import nameNumCombo
+from app.models.courseNameAndNumber import nameNumCombo
 
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():

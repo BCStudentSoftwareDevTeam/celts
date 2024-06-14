@@ -20,7 +20,7 @@ from app.models.note import Note
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
-from app.logic.courseNameAndNumber import nameNumCombo
+from app.models.courseNameAndNumber import nameNumCombo
 
 def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
     """
