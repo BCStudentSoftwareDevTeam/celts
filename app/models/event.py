@@ -34,11 +34,11 @@ class Event(baseModel):
         return not self.program_id
 
     @property
-    def isPast(self):
+    def isPastStart(self):
         return datetime.now() >= datetime.combine(self.startDate, self.timeStart)  
 
     @property
-    def isEventPast(self):
+    def isPastEnd(self):
         return datetime.now() >= datetime.combine(self.endDate, self.timeEnd) 
 
     @property
