@@ -51,8 +51,8 @@ def test_courseNameandNumber():
     assert 'Databases' == nameNumCombo("Databases", '')
     assert 'Databases' == nameNumCombo("Databases", "")
     assert 'FRN 103 - Frenchy Help' == nameNumCombo("Frenchy Help", 'FRN 103')
+    assert 'FRN 103' == nameNumCombo("", 'FRN 103')
     assert '' == nameNumCombo("", '')
-    assert "" == nameNumCombo("", '')
     
     
 
