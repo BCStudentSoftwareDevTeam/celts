@@ -38,7 +38,6 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
-from minorAdminPage.js import  getInterestedStudents
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -593,10 +592,3 @@ def displayEventFile():
     eventfile=FileHandler(eventId=fileData["id"])
     eventfile.changeDisplay(fileData['id'])
     return ""
-
-
-@app.route('/interested_students')
-def interested_students():
-    
-    interestedStudentList =  getInterestedStudents()
-    return render_template('cceMinor.html',  interestedStudentList= interestedStudentList)
