@@ -67,27 +67,58 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
+    """Deleting an event for custom events"""
+    if event:
+        if event.customEventId:
+            customEventId = event.customEventId
+            customEvents = list(Event.select().where(Event.customEventId==customEventId).order_by(Event.id)) # orders for tests
+            eventDeleted = False
+
+            # once the deleted event is detected, change all other names to the previous event's name
+            #commenting this part out for now since it is not relevant to the new ID
+            ''' for recurringEvent in recurringEvents:
+                if eventDeleted:
+                    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
+                    newEventName = recurringEvent.name
+
+                if recurringEvent == event:
+                    newEventName = recurringEvent.name
+                    eventDeleted = True'''
+
+        program = event.program
+
+        if program:
+            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        else:
+            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
+        event.delete_instance(recursive = True, delete_nullable = True)
+
 def deleteEventAndAllFollowing(eventId):
         """
         Deletes a recurring event and all the recurring events after it.
+        Modified to also apply to the case of events with multiple offerings
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId:
+            if event.recurringId or event.customEventId:
                 recurringId = event.recurringId
-                recurringSeries = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+                customEventId = event.customEventId
+                recurringSeries = list(Event.select().where((Event.recurringId == recurringId or Event.customEventId==customEventId) & (Event.startDate >= event.startDate)))
         for seriesEvent in recurringSeries:
             seriesEvent.delete_instance(recursive = True)
 
 def deleteAllRecurringEvents(eventId):
         """
         Deletes all recurring events.
+        Modified to also apply for events with multiple offerings
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId:
+            if event.recurringId or event.customEventId:
                 recurringId = event.recurringId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId))
+                customEventId = event.customEventId
+                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId or Event.customEventId == customEventId))
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
 
@@ -95,7 +126,7 @@ def deleteAllRecurringEvents(eventId):
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
     Tries to save an event to the database:
-    Checks that the event data is valid and if it is it continus to saves the new
+    Checks that the event data is valid and if it is, it continues to save the new
     event to the database and adds files if there are any.
     If it is not valid it will return a validation error.
 
@@ -136,9 +167,14 @@ def saveEventToDb(newEventData, renewedEvent = False):
     
     eventsToCreate = []
     recurringSeriesId = None
+    customSeriesId = None
     if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
+        
+    # elif(isNewEvent and newEventData['isCustom']) and not renewedEvent:
+    #     eventsToCreate = calculateCustomEventFrequency(newEventData)
+        
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
@@ -146,7 +182,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
         if renewedEvent:
             recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
-    for eventInstance in eventsToCreate:
+    for eventInstance in eventsToCreate: 
         with mainDB.atomic():
            
             eventData = {
@@ -172,6 +208,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
             if isNewEvent:
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
+                eventData['customEventId'] = customSeriesId
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
@@ -296,10 +333,11 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     events_list = []
     shown_recurring_event_list = []
+    shown_custom_event_list = []
 
     # removes all recurring events except for the next upcoming one
     for event in events:
-        if event.recurringId:
+        if event.recurringId or event.customEventId:
             if not event.isCanceled:
                 if event.recurringId not in shown_recurring_event_list:
                     events_list.append(event)
@@ -369,7 +407,7 @@ def validateNewEventData(data):
 
         try:
             Term.get_by_id(data['term'])
-        except DoesNotExist as e:
+        except DoesNotExt as e:
             return (False, f"Not a valid term: {data['term']}")
         if sameEventList:
             return (False, "This event already exists")
@@ -412,6 +450,23 @@ def calculateRecurringEventFrequency(event):
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
     return [ {'name': f"{event['name']} Week {counter+1}",
+              'date': event['startDate'] + timedelta(days=7*counter),
+              "week": counter+1}
+            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
+
+def calculateCustomEventFrequency(event):
+    """
+        Calculate the events to create based on the different dates and times provided. Takes a
+        dictionary of event data.
+
+        Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
+
+        Return a list of events to create from the event data.
+    """
+    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
+        raise Exception("startDate and endDate must be datetime.date objects.")
+    
+    return [ {'name': f"{event['name']}",
               'date': event['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]

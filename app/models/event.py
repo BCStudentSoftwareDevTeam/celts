@@ -19,6 +19,7 @@ class Event(baseModel):
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
+    customEventId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
@@ -45,6 +46,10 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
+    
+    @property
+    def isCustom(self):
+        return bool(self.customEventId)
 
     @property
     def relativeTime(self):
