@@ -98,6 +98,6 @@ coursestatus = [
     {
         "id": 4,
         "status": "Imported"
-    }
+    }, 
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
