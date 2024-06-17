@@ -2,7 +2,7 @@ from flask import render_template, g, abort, request, redirect, url_for
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest
+from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, checkToggle
 
 @admin_bp.route('/admin/cceMinor', methods=['POST','GET'])
 def manageMinor():
@@ -11,12 +11,10 @@ def manageMinor():
         abort(403)
     
     if request.method == 'POST':
-        interested_students = request.form.getlist('interestedStudent[]')
-        
-        print("###################################################")
-        print(interested_students)
+        interested_students = request.form.getlist('interestedStudents[]')
         for i in interested_students:
-            toggleMinorInterest(i)    
+            if checkToggle(i) == False:
+                toggleMinorInterest(i)    
 
 
     interestedStudentsList = getMinorInterest()

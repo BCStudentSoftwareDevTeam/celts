@@ -49,8 +49,8 @@ function updateInterestedStudents(){
   } else {
     $("#addInterestedStudentsbtn").prop("disabled", false)
   }
-  $('#addInterestedStudentbtn').click(function() {
-    $('#interestedStudentForm').submit();
+  $('#addInterestedStudentsbtn').click(function() {
+    $('#interestedStudentForm').submit();s
   });
 }
 
@@ -64,7 +64,7 @@ function callback(selected) {
       userlist.push(user)
       let i = userlist.length;
       $("#interestedStudentList").prepend("<li class id= 'interestedStudentElement"+i+"'> </li>")          
-      $("#interestedStudentElement"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
+      $("#interestedStudentElement"+i).append("<input  name = 'interestedStudents[]' type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input> ")
       $("#interestedStudentElement"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
       //handleBanned(selected["username"], $("#eventID").val(), i)
       $("#userlistCheckbox"+i).click(updateInterestedStudents)

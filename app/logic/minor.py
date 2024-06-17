@@ -72,6 +72,17 @@ def toggleMinorInterest(username):
     user.minorInterest = not user.minorInterest
 
     user.save()
+
+def checkToggle(username):
+    '''
+        To check if a username is already selected as an interested student   
+    '''
+    user = User.get(username=username)
+    if user.minorInterest == 0:
+        return False
+    else:
+        return True
+
     
 def getCourseInformation(id):
     """
