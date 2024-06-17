@@ -321,3 +321,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   })
 }
 
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  Open modal
+</button>
+
+

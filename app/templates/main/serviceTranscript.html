@@ -63,10 +63,15 @@
     </div>
     <p>*Volunteering since {{ startDate }}</p>
     <div class="float-end">
-      <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
+       <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
+       <a href="mailto:?" class="btn btn-primary d-print-none m-4">
+            <span class="bi bi-envelope-at"></span>Email
+        </a>
       <p class="fw-bold pb-3 d-inline">Total Hours:</p>
       <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
     </div>
+    
+
     {% else %}
       <h5>No Volunteer Record</h5>
     {% endif %}
