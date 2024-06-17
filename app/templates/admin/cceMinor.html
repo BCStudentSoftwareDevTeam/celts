@@ -94,7 +94,7 @@
             </button>
           </div>         
         </div>
-        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST' id = "interestedStudentForm">
+        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST' id = "interestedStudentForm" name ="interestedStudent[]">
           <ul class="list-unstyled mx-3 mt-2" id= "interestedStudentList">
       
                 {%for participant in interestedStudentList%}

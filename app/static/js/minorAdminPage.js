@@ -17,7 +17,6 @@ function emailAllInterested(){
 }
 
 
-
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
   // checkboxes are selected
@@ -30,27 +29,6 @@ function getInterestedStudents() {
   })
   return interestedStudentsList
 }
-
-
-
-// Adding the interested student to the user database table
-$("#addInterestedStudentsbtn").click(function(){
-    $("#addInterestedStudentsbtn").prop("disabled", true)
-    let eventId = $("#eventID").val()
-    let interestedStudentList = getInterestedStudents()
-    $.ajax({
-      url: `/addVolunteersToEvent/${eventId}`,
-      type: "POST",
-      data: {"interestedStudentList": interestedStudentList, "ajax": true},
-      success:
-      function(s){
-          location.reload()
-      },
-      error: function(request, status, error){
-          location.reload()
-      }
-  })
-})
 
 function updateInterestedStudents(){
   let interestedStudentList = getInterestedStudents()
@@ -71,7 +49,9 @@ function updateInterestedStudents(){
   } else {
     $("#addInterestedStudentsbtn").prop("disabled", false)
   }
-
+  $('#addInterestedStudentbtn').click(function() {
+    $('#interestedStudentForm').submit();
+  });
 }
 
 
@@ -106,22 +86,22 @@ searchUser("addStudentInput", callback, true, "addInterestedStudentsModal");
 
 
 
-function removeVolunteer(){
-  $(".removeVolunteer").prop("disabled", true)
-  let username =  this.id;
-  let eventId = $('#eventID').val()
-  $.ajax({
-    url: '/removeVolunteerFromEvent',
-    type: "POST",
-    data: {username: username, eventId: eventId},
-    success: function(response) {
-       location.reload();
-    },
-    error: function(request, status, error) {
-        $(".removeVolunteer").prop("disabled", false)
-    }
-  });
-}
+// function removeVolunteer(){
+//   $(".removeVolunteer").prop("disabled", true)
+//   let username =  this.id;
+//   let eventId = $('#eventID').val()
+//   $.ajax({
+//     url: '/removeVolunteerFromEvent',
+//     type: "POST",
+//     data: {username: username, eventId: eventId},
+//     success: function(response) {
+//        location.reload();
+//     },
+//     error: function(request, status, error) {
+//         $(".removeVolunteer").prop("disabled", false)
+//     }
+//   });
+// }
 
 
 

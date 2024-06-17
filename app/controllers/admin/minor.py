@@ -9,13 +9,14 @@ def manageMinor():
 
     if not g.current_user.isAdmin:
         abort(403)
-
-    if request.method == 'POST':
-        interested_students = request.form.getlist('interestedStudents[]')
-        for i in interested_students:
-            toggleMinorInterest(i)
-        return redirect(url_for('admin.manageMinor'))
     
+    if request.method == 'POST':
+        interested_students = request.form.getlist('interestedStudent[]')
+        
+        print("###################################################")
+        print(interested_students)
+        for i in interested_students:
+            toggleMinorInterest(i)    
 
 
     interestedStudentsList = getMinorInterest()
