@@ -285,12 +285,12 @@
 <!-- ################# Background Check Section ################ -->
   {% if g.current_user.isCeltsAdmin %}
     <div class="accordion-item">
-      <h3 class="accordion-header" id="headingSix">
+      <h3 class="accordion-header" id="headingFive">
         {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">Background Check</button>
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Background Check</button>
       </h3>
       {% set show = "show" if visibleAccordion == "background" else "" %}
-      <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+      <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="table-responsive">
             <table class="table table-striped" id="bgHistoryTable">
