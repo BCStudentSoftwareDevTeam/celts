@@ -396,7 +396,7 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": False,
+        "isCurrentTerm": True,
         "termOrder": "2021-2"
     },
     {
