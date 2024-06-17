@@ -12,10 +12,6 @@
   {% endblock %}
 {% endblock %}
 {% block app_content %}
-
-{% set modalTitle = "Add Students" %}
-
-{% set buttonName = "Add Students" %}
 <h1 class="text-center mb-5">CCE Minor Management</h1>
 <h2>CCE Minor Progress</h2>
 <table class="display" id="engagedStudentsTable">
@@ -53,7 +49,7 @@
         <h2>Interested Students</h2>
     </div>
     <div class="col-auto">
-        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addInterestedStudentsModal" style="margin:5px;">{{modalTitle}}</a>
+        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addInterestedStudentsModal" style="margin:5px;">Add Students</a>
         <button class="btn btn-primary" id="emailAllInterested">Email All</button>
     </div>
 </div>
@@ -94,13 +90,13 @@
             </button>
           </div>         
         </div>
-        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST' id = "interestedStudentForm">
+        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST'>
             <ul 
               class="list-unstyled mx-3 mt-2" id= "interestedStudentList">
             </ul>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-            <button id="addInterestedStudentsbtn" type="submit" class="btn btn-success" disabled>{{buttonName}}</button>
+            <button id="addInterestedStudentsbtn" type="submit" class="btn btn-success" disabled>Add Students</button>
           </div>
         </form>
       </div>

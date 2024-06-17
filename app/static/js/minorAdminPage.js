@@ -20,12 +20,10 @@ function emailAllInterested(){
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
   // checkboxes are selected
-  let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]")
+  let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]:checked")
   let interestedStudentsList = []
-   checkboxesDisplayedInModal.each(function(index, checkbox){
-    if(checkbox["checked"]){
-      interestedStudentsList.push(checkbox["value"])
-    }
+  checkboxesDisplayedInModal.each(function(index, checkbox){
+    interestedStudentsList.push(checkbox["value"])
   })
   return interestedStudentsList
 }
@@ -49,24 +47,17 @@ function updateInterestedStudents(){
   } else {
     $("#addInterestedStudentsbtn").prop("disabled", false)
   }
-  $('#addInterestedStudentsbtn').click(function() {
-    $('#interestedStudentForm').submit();s
-  });
 }
 
-
-var userlist = $(".interestedStudentList").map(function(){
-  return $(this).val()
-}).get()
+var userlist = []
 function callback(selected) {
   let user = $("#addStudentInput").val()
   if (userlist.includes(selected["username"]) == false){
       userlist.push(user)
       let i = userlist.length;
       $("#interestedStudentList").prepend("<li class id= 'interestedStudentElement"+i+"'> </li>")          
-      $("#interestedStudentElement"+i).append("<input  name = 'interestedStudents[]' type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input> ")
-      $("#interestedStudentElement"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
-      //handleBanned(selected["username"], $("#eventID").val(), i)
+      $("#interestedStudentElement"+i).append("<input  name = 'interestedStudents[]' type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>",
+       "<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
       $("#userlistCheckbox"+i).click(updateInterestedStudents)
       updateInterestedStudents()
   }
@@ -83,27 +74,6 @@ $("#addInterestedStudentsModal").on("shown.bs.modal", function() {
 $("#addStudentInput").on("input", function() {
 searchUser("addStudentInput", callback, true, "addInterestedStudentsModal");
 });
-
-
-
-// function removeVolunteer(){
-//   $(".removeVolunteer").prop("disabled", true)
-//   let username =  this.id;
-//   let eventId = $('#eventID').val()
-//   $.ajax({
-//     url: '/removeVolunteerFromEvent',
-//     type: "POST",
-//     data: {username: username, eventId: eventId},
-//     success: function(response) {
-//        location.reload();
-//     },
-//     error: function(request, status, error) {
-//         $(".removeVolunteer").prop("disabled", false)
-//     }
-//   });
-// }
-
-
 
 $(document).ready(function() {
   $('#engagedStudentsTable').DataTable();
