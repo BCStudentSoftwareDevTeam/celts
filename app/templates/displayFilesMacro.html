@@ -9,7 +9,7 @@
             <td class="py-2 px-3">
                 <input type="checkbox" class="attachmentCheck" data-id="{{ value[1] }}" 
                 {% if value[-1].isDisplayed %} checked {% endif %} 
-                {% if not (value[0].endswith('.png') or value[0].endswith('.jpg') or value[0].endswith('.svg') or value[0].endswith('.jpeg') or value[0].endswith('.gif')) %} disabled {% endif %}>
+                {% if not (value[0].endswith('.png') or value[0].endswith('.PNG') or value[0].endswith('.jpg') or value[0].endswith('.JPG') or value[0].endswith('.svg') or value[0].endswith('.SVG') or value[0].endswith('.jpeg') or value[0].endswith('.JPEG') or value[0].endswith('.gif') or value[0].endswith('.GIF')) %} disabled {% endif %}>
             </td>
             <td class="py-2 px-3">
                 {% set idx = key.index("/") %}
