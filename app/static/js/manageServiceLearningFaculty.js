@@ -95,6 +95,16 @@ $(document).ready( function () {
       });
     })
 
+    $("#closeModalPreview").click(function(){
+      $.ajax({
+        url: "/deleteUploadedFile",
+        type: 'POST',
+        error: function(error, status){
+          console.log(error, status)
+        }
+      });
+    })
+
     $("a.studentview").click(function(e) {
         let course_id=e.target.getAttribute('data-course');
         if(e.target.innerHTML == "View") {
