@@ -2,6 +2,7 @@ import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTa
 import searchUser from './searchUser.js';
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
+  $('#renewBtn').on('click', renew);
   $('.modal').on('hidden.bs.modal', function () {
     resetAllSelections()
   });
@@ -114,8 +115,10 @@ function changeAction(action){
 }
 
 function renew(){
-    courseID = $("#courseID").val();
-    termID = $('#renewTerm').find(":selected").val()
+    let courseID = document.querySelector("#courseID").value; 
+    console.log("Should work")
+    console.log(courseID);
+    let termID = $('#renewTerm').find(":selected").val();
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",
@@ -130,7 +133,7 @@ function renew(){
 }
 function withdraw(){
   // uses hidden label to withdraw course
-  courseID = $("#courseID").val();
+  let courseID = $("#renewBtn").val();
   $.ajax({
     url: `/serviceLearning/withdraw/${courseID}`,
     type: "POST",
