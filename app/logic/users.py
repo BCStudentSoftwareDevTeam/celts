@@ -118,9 +118,9 @@ def getUserBGCheckHistory(username):
                                           .join(BackgroundCheckType)
                                           .where(BackgroundCheck.user == username)
                                           .order_by(BackgroundCheck.dateCompleted.desc()))
+    print('Look')
     for row in allBackgroundChecks:
         bgHistory[row.type_id].append(row)
-
     return bgHistory
 
 def addProfileNote(visibility, bonner, noteTextbox, username):
