@@ -55,7 +55,7 @@ def landingPage():
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
     # Limit returned list to events in the future
-    futureEvents = [p for p in programsWithEventsList if not p.event.isPast]
+    futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
 
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
