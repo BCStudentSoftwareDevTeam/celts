@@ -104,30 +104,45 @@ $(document).ready(function () {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
+<<<<<<< HEAD
   $("#checkIsRecurring").click(function () {
     var recurringStatus = $("input[name='isRecurring']:checked").val();
+=======
+  $("#checkIsRecurring, #checkIsCustom").click(function() {
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val()
+    var customStatus = $("input[id='checkIsCustom']:checked").val()
+    console.log(recurringStatus +"recurring")
+>>>>>>> 81724e36 (modal toggle button created)
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $(".endDatePicker").prop('required', true);
+<<<<<<< HEAD
     } else {
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDatePicker").prop('required', false);
-    }
-  });
-  $("#checkIsCustom").click(function() {
-    console.log("here")
-    var recurringStatus = $("input[name='isRecurring']:checked").val()
-    if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
-      $(".endDatePicker").prop('required', true);
-    } else {
+=======
+    } 
+    else if (recurringStatus == undefined){
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+>>>>>>> 81724e36 (modal toggle button created)
       $(".endDatePicker").prop('required', false);
     }
+    if (customStatus == 'on') {
+      $(".modalCustomEvent").removeClass('d-none')
+    } 
+    else if (customStatus == undefined){
+      $(".modalCustomEvent").addClass('d-none')
+    }
   });
+<<<<<<< HEAD
 
   $("#allowPastStart").click(function () {
     var allowPast = $("#allowPastStart:checked").val();
+=======
+  
+  
+  $("#allowPastStart").click(function() {
+    var allowPast = $("#allowPastStart:checked").val()
+>>>>>>> 81724e36 (modal toggle button created)
     if (allowPast == 'on') {
       $.datepicker.setDefaults({
         minDate: new Date('1999/10/25'),
