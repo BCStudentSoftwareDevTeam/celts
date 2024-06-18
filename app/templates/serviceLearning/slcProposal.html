@@ -68,12 +68,14 @@
         value="{{course.courseAbbreviation}}"
         type="text"
         />
+        <!--Credit value input-->
       <label for="credit" class="pt-3">Credit</label>
       <input
         class="form-control"
         id="credit"
         name="credit"
         value="{{course.courseCredit}}"
+        onkeyup="if(credit<0 || credit == '-') credit=0;"
         type="number"
         min="0"
         required/>
