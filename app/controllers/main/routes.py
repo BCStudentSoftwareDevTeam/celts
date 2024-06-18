@@ -32,7 +32,7 @@ from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.celtsLabor import getCeltsLaborHistory
-from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
@@ -209,7 +209,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -242,7 +242,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
@@ -312,7 +312,7 @@ def ban(program_id, username):
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
-        createAdminLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
+        createActivityLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
         print("Error while updating ban", e)
@@ -332,7 +332,7 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createAdminLog(f'Unbanned {username} from {programInfo.programName}.')
+        createActivityLog(f'Unbanned {username} from {programInfo.programName}.')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 
@@ -479,9 +479,9 @@ def getDietInfo():
         updateDietInfo(user, dietInfo)
         userInfo = User.get(User.username == user) 
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+            createActivityLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
-            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
+            createActivityLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
 
     return " "

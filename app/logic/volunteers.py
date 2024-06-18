@@ -6,7 +6,7 @@ from app.models.program import Program
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -62,17 +62,17 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     today = date.today()
     user = User.get_by_id(user)
     if bgStatus == '' and dateCompleted == '':
-        createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
+        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
     else:
         if not dateCompleted:
             dateCompleted = None
         update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
         if bgStatus == 'Submitted':
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
         elif bgStatus == 'Passed':
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
 def setProgramManager(username, program_id, action):
     '''
