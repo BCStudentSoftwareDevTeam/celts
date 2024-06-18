@@ -1,5 +1,4 @@
 import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
-
 import searchUser from './searchUser.js'
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
