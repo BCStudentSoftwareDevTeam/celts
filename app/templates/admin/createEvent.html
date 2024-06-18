@@ -1,13 +1,19 @@
 {% set title = "Create Single Event" %}
 
 {% set isNewEvent = 'create' in request.path %}
-{% if isNewEvent %}
-  {% if template.tag == 'single-program' %}             
-    {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+{% if isNewEvent %}          
+  {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+    {% set page_title = 'Create A ' + eventData["program"].programName %}
+
+  {% elif template.tag == 'single-program' %}
+    {%set page_title = 'Create Event for ' + eventData["program"].programName %}
+
   {% elif template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
+
   {% elif template.tag == 'no-program' %}
     {% set page_title = 'Create Other CELTS-Sponsored Event' %}
+
   {% else %}
     {% set page_title = 'Create ' + template.name + ' Event' %}
   {% endif %}
@@ -277,7 +283,10 @@
     <div class="row justify-content-left mt-2">
           <div class="col-md-6 offset-md-3">
             <div class="text-center">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
+              <!--DELETE BUTTON BELOW-->
+              {% if event %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
+              {% endif %}
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
               {% elif event and (event.isCanceled) %}
