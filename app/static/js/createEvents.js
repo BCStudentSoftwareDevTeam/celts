@@ -164,6 +164,17 @@ $(document).ready(function() {
       $("#multipleOfferingEvent" + id).remove(); 
     });
   });
+  $("#checkIsCustom").click(function() {
+    console.log("here")
+    var recurringStatus = $("input[name='isRecurring']:checked").val()
+    if (recurringStatus == 'on') {
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
+      $(".endDatePicker").prop('required', true);
+    } else {
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+      $(".endDatePicker").prop('required', false);
+    }
+  });
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
