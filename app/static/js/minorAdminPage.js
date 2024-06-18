@@ -16,22 +16,25 @@ function emailAllInterested(){
 }
  
 
-function removeVolunteer(){
-  $(".removeVolunteer").prop("disabled", true)
-  let username =  this.id;
-  let eventId = $('#eventID').val()
-  $.ajax({
-    url: '/removeVolunteerFromEvent',
-    type: "POST",
-    data: {username: username, eventId: eventId},
-    success: function(response) {
-       location.reload();
-    },
-    error: function(request, status, error) {
-        $(".removeVolunteer").prop("disabled", false)
-    }
+$(document).ready(function() {
+  $(document).on('click', '.remove_interested_student', function() {
+      let username = $(this).attr('id'); 
+
+      
+      $.ajax({
+          type: 'POST',
+          url: '/profile/' + username + '/indicateInterest',
+          success: function(response) {
+            msgToast("Student successfully removed")
+            location.reload();  
+          },
+          error: function(error) {
+           console.log("error")
+          }
+      });
   });
-}
+});
+
 
 
 $(document).ready(function() {
