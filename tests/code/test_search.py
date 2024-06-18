@@ -30,7 +30,7 @@ def test_searchUsers():
 
     #test with multiple users matching query
     with mainDB.atomic() as transaction:
-        secondUser = User.create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', email = 'test@berea.edu', isStudent = True)
+        secondUser = User.create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', email = 'test@berea.edu', isStudent = True, cpoNumber = '1400')
 
         searchResults = searchUsers('sa')
         assert len(searchResults) == 2
