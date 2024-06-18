@@ -75,7 +75,7 @@
         id="credit"
         name="credit"
         value="{{course.courseCredit}}"
-        onkeyup="if(credit<0 || credit == '-') credit=0;"
+        onkeyup="if(value<0) value=0;"
         type="number"
         min="0"
         required/>
