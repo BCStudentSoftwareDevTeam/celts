@@ -127,10 +127,13 @@ $(document).ready(function () {
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      $(".modalCustomEvent").removeClass('d-none')
+      //$(".modalCustomEvent").removeClass('d-none')
+      $('#modal').modal('toggle')
+      console.log("here")
     } 
     else if (customStatus == undefined){
-      $(".modalCustomEvent").addClass('d-none')
+      //$(".modalCustomEvent").addClass('d-none')
+      console.log("here in else")
     }
   });
 <<<<<<< HEAD
