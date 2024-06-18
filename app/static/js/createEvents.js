@@ -87,7 +87,6 @@ $(document).ready(function() {
   $("#checkIsRecurring, #checkIsCustom").click(function() {
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val()
     var customStatus = $("input[id='checkIsCustom']:checked").val()
-    console.log(recurringStatus +"recurring")
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
       $(".endDatePicker").prop('required', true);
@@ -97,10 +96,13 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      $(".modalCustomEvent").removeClass('d-none')
+      //$(".modalCustomEvent").removeClass('d-none')
+      $('#modal').modal('toggle')
+      console.log("here")
     } 
     else if (customStatus == undefined){
-      $(".modalCustomEvent").addClass('d-none')
+      //$(".modalCustomEvent").addClass('d-none')
+      console.log("here in else")
     }
   });
   
