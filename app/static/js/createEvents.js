@@ -84,29 +84,27 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring").click(function() {
-    var recurringStatus = $("input[name='isRecurring']:checked").val()
+  $("#checkIsRecurring, #checkIsCustom").click(function() {
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val()
+    var customStatus = $("input[id='checkIsCustom']:checked").val()
+    console.log(recurringStatus +"recurring")
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
       $(".endDatePicker").prop('required', true);
-    } else {
+    } 
+    else if (recurringStatus == undefined){
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
       $(".endDatePicker").prop('required', false);
     }
-  });
-  $("#checkIsCustom").click(function() {
-    console.log("here")
-    var recurringStatus = $("input[name='isRecurring']:checked").val()
-    if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
-      $(".endDatePicker").prop('required', true);
-    } else {
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
-      $(".endDatePicker").prop('required', false);
+    if (customStatus == 'on') {
+      $(".modalCustomEvent").removeClass('d-none')
+    } 
+    else if (customStatus == undefined){
+      $(".modalCustomEvent").addClass('d-none')
     }
   });
-
-
+  
+  
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
     if (allowPast == 'on') {
