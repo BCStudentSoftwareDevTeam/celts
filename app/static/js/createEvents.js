@@ -96,17 +96,18 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      //$(".modalCustomEvent").removeClass('d-none')
-      $('#modal').modal('toggle')
-      console.log("here")
-    } 
+      $('#modalCustom').modal('show');
+    }
     else if (customStatus == undefined){
-      //$(".modalCustomEvent").addClass('d-none')
+      $('#modalCustom').modal('hide');
       console.log("here in else")
     }
   });
   
-  
+  $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+    $("#checkIsCustom").prop('checked', false);
+  });
+
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
     if (allowPast == 'on') {
@@ -161,6 +162,9 @@ $(document).ready(function() {
 
   $(".startDate").click(function() {
     $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  });
+  $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
   $(".endDate").click(function() {
