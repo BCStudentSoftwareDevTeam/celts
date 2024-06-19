@@ -93,27 +93,28 @@
       </div>
     </div>
     <br>
-    <div class="modal modalCustomEvent fade float-start col" id="previewImportedCourses">
-        <div class="modal-dialog">
+    <!--custom event modal-->
+    <div class="modal modalCustomEvent fade float-start col" id="modalCustom">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">This is an event with multiple time offerings.</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body py-0">
+            <div class="modal-body row py-0">
               <br> 
-              <div class="form-group col-md-6">
-                <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
-                <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-                    <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
-                      value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
-                      name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+              <div class="form-group col-md-4">
+                <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
+                <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+                    <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
+                      value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
+                      name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
                     <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
                         <span><i class="bi bi-calendar-plus-fill"></i></span>
                     </div>
                 </div>
               </div>
-              <div class="form-group col-md-6">
+              <div class="form-group col-md-4">
                 <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
                 <div class="input-group">
                   {% if eventData.timeStart %}
@@ -127,7 +128,7 @@
                   <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
                 </div>
               </div>
-              <div class='form-group col-md-6'>
+              <div class='form-group col-md-4'>
                 <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
                 <div class="input-group">
                   {% if eventData.timeEnd %}

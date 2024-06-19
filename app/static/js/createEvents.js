@@ -127,12 +127,10 @@ $(document).ready(function () {
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      //$(".modalCustomEvent").removeClass('d-none')
-      $('#modal').modal('toggle')
-      console.log("here")
-    } 
+      $('#modalCustom').modal('show');
+    }
     else if (customStatus == undefined){
-      //$(".modalCustomEvent").addClass('d-none')
+      $('#modalCustom').modal('hide');
       console.log("here in else")
     }
   });
@@ -142,7 +140,10 @@ $(document).ready(function () {
     var allowPast = $("#allowPastStart:checked").val();
 =======
   
-  
+  $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+    $("#checkIsCustom").prop('checked', false);
+  });
+
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
 >>>>>>> 81724e36 (modal toggle button created)
@@ -196,6 +197,9 @@ $(document).ready(function () {
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
+  });
+  $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
   $(".startDatePicker, .endDatePicker").change(function () {
