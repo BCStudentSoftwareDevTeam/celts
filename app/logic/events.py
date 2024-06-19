@@ -172,8 +172,8 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
         
-    # elif(isNewEvent and newEventData['isCustom']) and not renewedEvent:
-    #     eventsToCreate = calculateCustomEventFrequency(newEventData)
+    elif(isNewEvent and newEventData['isCustom']) and not renewedEvent:
+        eventsToCreate = calculateRecurringEventFrequency(newEventData)
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -342,6 +342,9 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
                 if event.recurringId not in shown_recurring_event_list:
                     events_list.append(event)
                     shown_recurring_event_list.append(event.recurringId)
+                if event.customEventId not in shown_custom_event_list:
+                    events_list.append(event)
+                    shown_custom_event_list.append(event.customEventId)
         else:
             if not event.isCanceled:
                 events_list.append(event)
@@ -382,7 +385,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isCustom']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
@@ -407,7 +410,7 @@ def validateNewEventData(data):
 
         try:
             Term.get_by_id(data['term'])
-        except DoesNotExt as e:
+        except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
         if sameEventList:
             return (False, "This event already exists")
@@ -449,27 +452,28 @@ def calculateRecurringEventFrequency(event):
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
+    
     return [ {'name': f"{event['name']} Week {counter+1}",
               'date': event['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
-def calculateCustomEventFrequency(event):
-    """
-        Calculate the events to create based on the different dates and times provided. Takes a
-        dictionary of event data.
+# def calculateCustomEventFrequency(event):
+#     """
+#         Calculate the events to create based on the different dates and times provided. Takes a
+#         dictionary of event data.
 
-        Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
+#         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
 
-        Return a list of events to create from the event data.
-    """
-    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
-        raise Exception("startDate and endDate must be datetime.date objects.")
+#         Return a list of events to create from the event data.
+#     """
+#     if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
+#         raise Exception("startDate and endDate must be datetime.date objects.")
     
-    return [ {'name': f"{event['name']}",
-              'date': event['startDate'] + timedelta(days=7*counter),
-              "week": counter+1}
-            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
+#     return [ {'name': f"{event['name']}",
+#               'date': event['startDate'] + timedelta(days=7*counter),
+#               "week": counter+1}
+#             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
     """
