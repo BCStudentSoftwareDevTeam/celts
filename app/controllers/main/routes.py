@@ -488,6 +488,10 @@ def getDietInfo():
 
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    toggleMinorInterest(username)
+    if g.current_user.isCeltsAdmin:
+        toggleMinorInterest(username)
+
+    else:
+        abort(403)
     
     return ""
