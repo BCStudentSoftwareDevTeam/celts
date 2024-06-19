@@ -11,7 +11,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 
 from app.logic.serviceLearningCourses import *
-from app.models.courseNameAndNumber import nameNumCombo
+from app.logic.displayName import displayName
 
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
@@ -23,6 +23,7 @@ def test_getServiceLearningCoursesData():
     assert "Submitted" == courseDict[2]['status']
     assert 'Spring 2021' in courseDict[2]['term'].description
     assert "Scott Heggen"  == courseDict[2]['creator']
+    assert "SPN 104 - Spanish Help" == courseDict[2]['displayName']
 
     
     courseDict = getSLProposalInfoForUser('heggens')
@@ -32,6 +33,7 @@ def test_getServiceLearningCoursesData():
     assert "Approved" == courseDict[3]['status']
     assert 'Summer 2021' in courseDict[3]['term'].description
     assert "Brian Ramsay"  == courseDict[3]['creator']
+    assert "FRN 103 - Frenchy Help" == courseDict[3]['displayName']
 
 
     courseDict = getSLProposalInfoForUser('heggens')
@@ -41,18 +43,19 @@ def test_getServiceLearningCoursesData():
     assert "In Progress" == courseDict[4]['status']
     assert 'Spring 2021' in courseDict[4]['term'].description
     assert "Scott Heggen"  == courseDict[4]['creator']
+    assert "Testing" == courseDict[4]['displayName']
 
 
 
 @pytest.mark.integration
-def test_courseNameandNumber():
+def test_displayName():
     '''tests for the successful implementation of combining course name and number to proper format'''
     
-    assert 'Databases' == nameNumCombo("Databases", '')
-    assert 'Databases' == nameNumCombo("Databases", "")
-    assert 'FRN 103 - Frenchy Help' == nameNumCombo("Frenchy Help", 'FRN 103')
-    assert 'FRN 103' == nameNumCombo("", 'FRN 103')
-    assert '' == nameNumCombo("", '')
+    assert 'Databases' == displayName("Databases", '')
+    assert 'Databases' == displayName("Databases", "")
+    assert 'FRN 103 - Frenchy Help' == displayName("Frenchy Help", 'FRN 103')
+    assert 'FRN 103' == displayName("", 'FRN 103')
+    assert '' == displayName ("", '')
     
     
 
