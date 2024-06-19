@@ -146,7 +146,7 @@ def test_preprocessEventData_checkboxes():
     assert newData['isService'] == False
     assert newData['isTraining'] == False
 
-    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isCustom': True, 'isService':True }
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isCustom': 'on', 'isService':True }
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isRsvpRequired'] == False
