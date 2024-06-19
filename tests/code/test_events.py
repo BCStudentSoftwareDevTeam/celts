@@ -146,12 +146,13 @@ def test_preprocessEventData_checkboxes():
     assert newData['isService'] == False
     assert newData['isTraining'] == False
 
-    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isCustom': True, 'isService':True }
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
     assert newData['isRecurring'] == True
+    assert newData['isCustom'] == True
 
 @pytest.mark.integration
 def test_preprocessEventData_dates():
