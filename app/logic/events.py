@@ -116,9 +116,8 @@ def deleteAllRecurringEvents(eventId):
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId or event.customEventId:
-                recurringId = event.recurringId
-                customEventId = event.customEventId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId or Event.customEventId == customEventId))
+                recurringOrCustomId = event.recurringId or event.customEventId
+                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringOrCustomId or Event.customEventId == recurringOrCustomId))
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
 
@@ -172,8 +171,11 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
         
+    #temporarily applying the append for single events for now to tests  
     elif(isNewEvent and newEventData['isCustom']) and not renewedEvent:
-        eventsToCreate = calculateRecurringEventFrequency(newEventData)
+        eventsToCreate.append({'name': f"{newEventData['name']}",
+                                'date':newEventData['startDate'],
+                                "week":1})
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
