@@ -122,16 +122,15 @@ $(document).ready(function () {
 =======
     } 
     else if (recurringStatus == undefined){
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
 >>>>>>> 81724e36 (modal toggle button created)
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
       $('#modalCustom').modal('show');
-    }
-    else if (customStatus == undefined){
-      $('#modalCustom').modal('hide');
-      console.log("here in else")
+      $('#nonCustomTime, #nonCustomDate').addClass('d-none');
+      $("#recurringTableDiv").removeClass('d-none');
     }
   });
 <<<<<<< HEAD
@@ -142,6 +141,11 @@ $(document).ready(function () {
   
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
+    $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
+  });
+
+  $(".customSave").click(function(){
+    $("#recurringTableDiv").removeClass('d-none');
   });
 
   $("#allowPastStart").click(function() {
@@ -199,6 +203,9 @@ $(document).ready(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
   });
   $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  });
+  $(".customDate1").click(function() {
     $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
