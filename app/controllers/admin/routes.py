@@ -149,7 +149,7 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
