@@ -22,9 +22,7 @@
         </a>
       </li>
 
-      {% if g.current_user.isFaculty and not g.current_user.isAdmin%}
-      <li>
-        <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
+      {% if g.current_user.isFaculty and not g.current_user.isAdmin%} xt-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
         </a>
       </li>

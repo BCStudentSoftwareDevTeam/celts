@@ -88,32 +88,33 @@ function submitData(){
     })
 }
 
-function hideElements(hide) {
-  if (hide == true) {
+function disabledElements(disabled) {
+  if (disabled== true) {
 
-    $("footer").hide();
-    $("kiosk-hide").animate({ opacity: 0 }, 1);
-    $("kiosk-hide").css("width", "0");
-    $("kiosk-hide").prop("disabled", true);
-    $("a").hide();
-    $("nav").css("width", "0");
-  } else {
-    $("footer").show();
-    $("kiosk-hide").css("width", "inherit");
-    $("kiosk-hide").animate({ opacity: 1 }, 1);
-    $("kiosk-hide").prop("disabled", false);
-    $("a").show();
-    $("nav").css("width", "inherit");
-  }
+    // $("footer").disabled();
+    // $("kiosk-disabled").animate({ opacity: 0 }, 1);
+    // $("kiosk-disabled").css("width", "0");
+    // $("kiosk-disabled").prop("disabled", true);
+    // $("a").disabled();
+    $("col-md-auto d-print-none d-lg-none").css("width", "0");
+  } 
+  // else {
+  //   $(".footer").show();
+  //   $("kiosk-disabled").css("width", "inherit");
+  //   $("kiosk-disabled").animate({ opacity: 1 }, 1);
+  //   $("kiosk-disabled").prop("disabled", false);
+  //   $("a").show();
+  //   $("nav").css("width", "inherit");
+  // }
 }
 
 // Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-screen
 function toggleFullscreen() {
   if($("#fullscreenCheck").prop("checked") == false){
-    hideElements(false);
+    disabledElements(false);
     document.exitFullscreen() || document.webkitExitFullscreen() || document.msExitFullscreen()
   } else {
-    hideElements(true);
+    disabledElements(true);
 
     var el = document.documentElement
     , rfs = // for newer Webkit and Firefox
