@@ -185,7 +185,8 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId'])
+                    'isRecurring': bool(priorEvent['recurringId']),
+                    'isCustom': bool(priorEvent['customEventId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:

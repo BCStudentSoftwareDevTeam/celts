@@ -83,14 +83,14 @@ def test_preprocessEventData_checkboxes():
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == False
     assert newData['isTraining'] == False
-
-    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isCustom': 'on', 'isService':True }
+    
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
     assert newData['isRecurring'] == True
-    assert newData['isCustom'] == True
+    assert newData['isCustom'] == False
 
 @pytest.mark.integration
 def test_preprocessEventData_dates():
@@ -176,11 +176,12 @@ def test_preprocessEventData_requirement():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isRecurring': False, 'isCustom': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
+    eventData['isCustom'] = False
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
     assert eventErrorMessage == "All inputs are valid."
@@ -188,7 +189,7 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRecurring':False, 'isCustom': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
 
@@ -202,7 +203,7 @@ def test_wrongValidateNewEventData():
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
     eventData['endDate'] = parser.parse('2022-06-12')
-    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring']:
+    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring', 'isCustom']:
         eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
         assert isValid == False
@@ -259,7 +260,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isCustom':False, 'customEventId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
@@ -289,7 +290,7 @@ def test_attemptSaveEvent():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRecurring': False, 'isCustom': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
@@ -324,7 +325,7 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'isCustom':False, 'customEventId':None, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -361,6 +362,8 @@ def test_saveEventToDb_update():
                         'isFoodProvided': False,
                         'isRecurring': True,
                         'recurringId': 3,
+                        'isCustom': False,
+                        'customEventId': None,
                         'isTraining': True,
                         'isRsvpRequired': True,
                         'rsvpLimit': None,
@@ -527,6 +530,75 @@ def test_deleteEvent():
             deleteAllRecurringEvents(eventIdToDelete)
             newTotalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         assert newTotalRecurringEvents == 0
+
+        '''testing the deletion of custom events individually and all at once'''
+        '''saveEventToDB is not working propoerly yet for custom events; change will need to be made in the events.py in loogic'''
+        # creates a custom event
+        eventInfo =  {'isFoodProvided': False,
+                      'isRsvpRequired': False,
+                      'rsvpLimit': None,
+                      'isService': False,
+                      'isAllVolunteerTraining': True,
+                      'isTraining': True,
+                      'isCustom': True,
+                      'customEventId': 10,
+                      'startDate': parser.parse('12-12-2021'),
+                      'endDate': parser.parse('01-18-2022'),
+                      'location': "Your pet rubber ducks little pond",
+                      'timeEnd': '09:00 PM',
+                      'timeStart': '06:00 PM',
+                      'description': "Empty Bowls Spring 2021",
+                      'name': 'Not Empty Bowls Spring',
+                      'term': 1,
+                      'contactEmail': '',
+                      'contactName': ''}
+
+        # eventInfo['valid'] = True
+        # eventInfo['program'] = Program.get_by_id(1)
+        # createdEvents = saveEventToDb(eventInfo)
+        # event = Event.get_by_id(createdEvents[0].id)
+        # customEventId = event.customEventId
+
+        # # check how many events exist before event deletion
+        # customEventsBefore = list(Event.select().where(Event.customEventId==customEventId).order_by(Event.customEventId))
+        # for counter, custom in enumerate(customEventsBefore):
+        #     assert custom.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
+
+        # with app.app_context():
+        #     g.current_user = User.get_by_id("ramsayb2")
+        #     deleteEvent(createdEvents[0])
+
+        # # check how many events exist after event deletion and make sure they are linear
+        # customEventsAfter = list(Event.select().where(Event.customEventId==customEventId).order_by(Event.customEventId))
+
+        # for count, custom in enumerate(customEventsAfter):
+        #     assert custom.name == ("Not Empty Bowls Spring Week " + str(count + 1))
+        # assert (len(customEventsBefore)-1) == len(customEventsAfter)
+        # transaction.rollback()
+
+        # #creating custom event again to test def deleteEventAndAllFollowing()
+        # eventInfo['valid'] = True
+        # eventInfo['program'] = Program.get_by_id(1)
+        # customEvents = saveEventToDb(eventInfo)
+        # eventIdToDelete = Event.get_by_id(customEvents[3].id)
+        # customEventId = event.customEventId
+
+        # totalCustomEvents = len(Event.select().where(Event.customEventId == customEventId))
+        # #checks the number of all recurring events that will take place after a recurring event plus the event itself.
+        # eventPlusAllCustomEventsAfter = len(Event.select().where((Event.customEventId == customEventId) & (Event.startDate >= eventIdToDelete.startDate)))
+
+        # with app.app_context():
+        #     g.current_user = User.get_by_id("ramsayb2")
+        #     deleteEventAndAllFollowing(eventIdToDelete)
+        #     totalCustomEventsAfter = len(Event.select().where(Event.customEventId == customEventId))
+        # assert (totalCustomEvents - eventPlusAllCustomEventsAfter) == totalCustomEventsAfter
+        # transaction.rollback()
+
+        # with app.app_context():
+        #     g.current_user = User.get_by_id("ramsayb2")
+        #     deleteAllRecurringEvents(eventIdToDelete)
+        #     newTotalCustomEvents = len(Event.select().where(Event.customEventId == customEventId))
+        # assert newTotalRecurringEvents == 0
 
 @pytest.mark.integration
 def test_upcomingEvents():

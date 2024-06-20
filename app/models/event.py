@@ -19,7 +19,7 @@ class Event(baseModel):
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
-    #customEventId = IntegerField(null=True)
+    customEventId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
