@@ -85,27 +85,30 @@ $(document).ready(function() {
   });
 
   $("#checkIsRecurring, #checkIsCustom").click(function() {
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val()
-    var customStatus = $("input[id='checkIsCustom']:checked").val()
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val();
+    var customStatus = $("input[id='checkIsCustom']:checked").val();
     if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
     else if (recurringStatus == undefined){
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
       $('#modalCustom').modal('show');
-    }
-    else if (customStatus == undefined){
-      $('#modalCustom').modal('hide');
-      console.log("here in else")
+      $('#nonCustomTime, #nonCustomDate').addClass('d-none');
+      $("#recurringTableDiv").removeClass('d-none');
     }
   });
   
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
+    $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
+  });
+
+  $(".customSave").click(function(){
+    $("#recurringTableDiv").removeClass('d-none');
   });
 
   $("#allowPastStart").click(function() {
@@ -164,6 +167,9 @@ $(document).ready(function() {
     $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
   $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  });
+  $(".customDate1").click(function() {
     $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
@@ -228,6 +234,10 @@ $(document).ready(function() {
   $(".startDatePicker").change(function(){
      updateDate(this)
   });
+
+  $(".customDatePicker").change(function(){
+    updateDate(this)
+ });
 
   $("#inputCharacters").keyup(function(event){
     setCharacterLimit(this, "#remainingCharacters")
