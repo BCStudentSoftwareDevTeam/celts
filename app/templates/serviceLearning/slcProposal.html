@@ -1,4 +1,20 @@
-<h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2>
+<!-- <h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2> -->
+ <h2 class="text-center pt-4 pb-2">Proposal For Service-Learning Course</h2>
+        <!-- <h3 class="text-center pb-4">Proposal Status: {{ courseStatus }}</h3> -->
+        <h3 class="text-center pb-4">Proposal Status: 
+          {% if courseStatus == 'IN_PROGRESS' %}
+              In Progress
+          {% elif courseStatus == 'SUBMITTED' %}
+              Submitted
+          {% elif courseStatus == 'APPROVED' %}
+              Approved
+          {% elif courseStatus == 'IMPORTED' %}
+              Imported
+          {% else %}
+              Unknown1
+          {% endif %}
+      </h3>
+
 <p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
 <div class="container-fluid">
   <div class="row">

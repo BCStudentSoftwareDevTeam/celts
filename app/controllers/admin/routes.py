@@ -39,6 +39,17 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 
 from app.controllers.admin import admin_bp
 
+from flask import render_template
+from app import app
+from app.models.courseStatus import get_course_status
+
+@app.route('/service-learning-proposal/<int:course_id>')
+def service_learning_proposal(course_id):
+    course_status = get_course_status(course_id)
+    print(f"Course Status passed to template: {course_status}")  # Debug print
+    return render_template('serviceLearning/slcProposal.html', courseStatus=course_status)
+
+
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
     if app.env == "production":
