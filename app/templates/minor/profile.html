@@ -95,13 +95,11 @@
               </select>
               <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{ summerExperience }}' type="text" />
               <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
-              <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>    
-         <div class="left-align">      
-          <p class="pt-2">If you would like to download the Proposal for Community-Engaged Summer Experience, click <a href="/static/files/serviceLearningProposalForm/CCEminorForm1online.docx">here</a>.</p>
+              <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>         
           </div>
             </div>
+          <p class="pt-2">If you would like to download the Proposal for Community-Engaged Summer Experience, click <a href="/static/files/serviceLearningProposalForm/CCEminorForm1online.docx">here</a>.</p>
            </div>
-          </div>
       </div>
       <div class="tab-pane fade {{ 'active' if activeTab == 'bonnerScholarsEvents' else '' }}" id="pills-bonner-scholars"role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
         <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{ user.username }}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>
