@@ -77,8 +77,13 @@ def rsvpForBonnerCohort(year, event):
     """
     Adds an EventRsvp record to the given event for each user in the given Bonner year.
     """
-    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()')).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
-    bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName")).join(User, on=(User.username == BonnerCohort.user)).where(BonnerCohort.year == year))
+    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()'))
+                                      .where(BonnerCohort.year == year),
+                                      [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    
+    bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
+                                    .join(User, on=(User.username == BonnerCohort.user))
+                                    .where(BonnerCohort.year == year))
     for bonner in bonnerCohort:
         fullName = bonner.fullName
         createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")

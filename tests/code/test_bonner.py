@@ -2,6 +2,7 @@ import pytest
 from datetime import date
 from peewee import IntegrityError
 
+from app.models.user import User
 from app.models import mainDB
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
@@ -66,7 +67,7 @@ def test_getBonnerCohorts():
 
 @pytest.mark.integration
 def test_bonnerRsvp():
-    with mainDB.atomic() as transaction:
+    # with mainDB.atomic() as transaction:
         # reset pre-determined bonner cohorts
         BonnerCohort.delete().execute()
 
@@ -86,6 +87,6 @@ def test_bonnerRsvp():
         rsvpForBonnerCohort(2020, event_id)
         assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 3
 
-        transaction.rollback()
+        # transaction.rollback()
 
 
