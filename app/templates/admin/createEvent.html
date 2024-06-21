@@ -244,7 +244,7 @@
           <div class="form-group col-md-6 mb-3">
             <div class="form-check form-switch">
               {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-              <div class="form-group" id="limitGroup" style="{{hide}}">
+              <div class="form-group" id="limitGroup" style= "{{hide}}">
                 <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
                 <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
               </div>
@@ -391,97 +391,65 @@
   </div>
 </form>
 <!--custom event modal-->
-<div class="modal modalCustomEvent fade float-start col" data-bs-backdrop='static' id="modalCustom">\
-  <form>
+<div class="modal modalCustomEvent fade float-start col" data-bs-backdrop='static' id="modalCustom">
+  <!--<form>-->
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">This is an event with multiple time offerings.</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body row py-0">
-          <br> 
-          <div class="form-group col-md-4">
-            <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
-            <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-                <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
-                  value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
-                  name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
-                <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
-                    <span><i class="bi bi-calendar-plus-fill"></i></span>
-                </div>
+        <div class="modal-body  py-0">
+          <div class="row mb-2" id ="customEvent">
+            <br> 
+            <div class="form-group col-md-3">
+              <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
+              <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+                  <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
+                    value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
+                    name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+                  <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
+                      <span><i class="bi bi-calendar-plus-fill"></i></span>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
+              <div class="input-group">
+                {% if eventData.timeStart %}
+                  {% set startTime = eventData.timeStart %}
+                {% else %}
+                  {% set startTime = "12:00" %}
+                {% endif %}
+                <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+                  aria-describedby="timeIcon1" placeholder="Pick a start time"  
+                  id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
+              </div>
+            </div>
+            <div class='form-group col-md-3'>
+              <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+              <div class="input-group">
+                {% if eventData.timeEnd %}
+                  {% set endTime = eventData.timeEnd %}
+                {%else%}
+                  {% set endTime = "13:00" %}
+                {% endif %}
+                  <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+                    aria-describedby="timeIcon2" placeholder="Pick an end time" 
+                    id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                  <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
+              </div>
+            </div>
+            <div class="d-none col-md-3" id="delete_customevent">
+              <i class="bi bi-trash3"></i>
             </div>
           </div>
-          <div class="form-group col-md-4">
-            <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
-            <div class="input-group">
-              {% if eventData.timeStart %}
-                {% set startTime = eventData.timeStart %}
-              {% else %}
-                {% set startTime = "12:00" %}
-              {% endif %}
-              <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
-                aria-describedby="timeIcon1" placeholder="Pick a start time"  
-                id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
-            </div>
-          </div>
-          <div class='form-group col-md-4'>
-            <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-            <div class="input-group">
-              {% if eventData.timeEnd %}
-                {% set endTime = eventData.timeEnd %}
-              {%else%}
-                {% set endTime = "13:00" %}
-              {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
-                  aria-describedby="timeIcon2" placeholder="Pick an end time" 
-                  id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-                <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
-            </div>
+          <div class="extraSlots">
           </div>
         </div>
-        <div class="modal-body row py-0">
-          <br> 
-          <div class="form-group col-md-4">
-            <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
-            <div class='input-group date customDate' id="customDate1-{{pageLocation}}" data-page-location="{{pageLocation}}">
-                <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
-                  value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
-                  name="customDate" placeholder="Pick a start date" id='customDatePicker1-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
-                <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
-                    <span><i class="bi bi-calendar-plus-fill"></i></span>
-                </div>
-            </div>
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
-            <div class="input-group">
-              {% if eventData.timeStart %}
-                {% set startTime = eventData.timeStart %}
-              {% else %}
-                {% set startTime = "12:00" %}
-              {% endif %}
-              <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
-                aria-describedby="timeIcon1" placeholder="Pick a start time"  
-                id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
-            </div>
-          </div>
-          <div class='form-group col-md-4'>
-            <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-            <div class="input-group">
-              {% if eventData.timeEnd %}
-                {% set endTime = eventData.timeEnd %}
-              {%else%}
-                {% set endTime = "13:00" %}
-              {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
-                  aria-describedby="timeIcon2" placeholder="Pick an end time" 
-                  id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-                <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
-            </div>
-          </div>
+        <div class="add_customevent">
+            <i class="bi bi-plus-square col-md-12 mt-2 mb-2 d-flex flex-row justify-content-center"></i>
         </div>
         <br>
         <div class="modal-footer">
@@ -491,7 +459,7 @@
         </div>
       </div>
     </div>
-  </form>
+  <!--</form>-->
 </div>
 <!--<div id="review-modal"></div>-->
 
