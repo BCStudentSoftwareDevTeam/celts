@@ -1,5 +1,6 @@
 import searchUser from './searchUser.js';
 
+
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatiblity 
@@ -142,11 +143,23 @@ $(document).ready(function () {
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
     $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
+    $('.extraSlots').empty();
   });
 
   $(".customSave").click(function(){
     $("#recurringTableDiv").removeClass('d-none');
   });
+  
+  let counterAdd = 0
+  $(".add_customevent").click(function(){
+    counterAdd += 1
+    let clonedCustom = $("#customEvent").clone();
+    clonedCustom.attr("id", "customEvent" + counterAdd)
+    clonedCustom.attr("id", "delete_customevent" + counterAdd)
+    $(".extraSlots").append(clonedCustom)
+    $("#delete_customevent" + counterAdd).removeClass('d-none');
+    console.log("here last")
+  })
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
