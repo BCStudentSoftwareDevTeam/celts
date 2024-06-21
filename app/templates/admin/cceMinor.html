@@ -22,6 +22,7 @@
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
             <th>Requested Other Engagement</th>
+            <th>Completed All Requirements</th>
         </tr>
     </thead>
     <tbody>
@@ -39,6 +40,13 @@
             {% else %}
                 No
             {% endif %}
+            </td>
+            <td>
+                {% if student.hasSummer and student.engagementCount == 4 %}
+                    Yes
+                {% else %}
+                    No
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
