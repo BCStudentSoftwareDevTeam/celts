@@ -90,20 +90,21 @@ function submitData(){
 
 function hideElements(hide) {
   if (hide == true) {
-
+    $("col-md-auto d-print-none d-lg-none").css("width", "0");
     $("footer").hide();
     $("kiosk-hide").animate({ opacity: 0 }, 1);
     $("kiosk-hide").css("width", "0");
     $("kiosk-hide").prop("disabled", true);
-    $("a").hide();
-    $("nav").css("width", "0");
-  } else {
+    $("position-fixed float-start").hide();
+    $("position-fixed float-start").css("width", "0");
+  } else 
+   {
     $("footer").show();
     $("kiosk-hide").css("width", "inherit");
     $("kiosk-hide").animate({ opacity: 1 }, 1);
     $("kiosk-hide").prop("disabled", false);
     $("a").show();
-    $("nav").css("width", "inherit");
+   
   }
 }
 
