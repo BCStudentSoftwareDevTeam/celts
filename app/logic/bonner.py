@@ -84,6 +84,10 @@ def rsvpForBonnerCohort(year, event):
     bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
                                     .join(User, on=(User.username == BonnerCohort.user))
                                     .where(BonnerCohort.year == year))
+    
     for bonner in bonnerCohort:
         fullName = bonner.fullName
+        print("######################################################")
+        print(fullName)
+        print(event)
         createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")

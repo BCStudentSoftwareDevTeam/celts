@@ -67,7 +67,7 @@ def test_getBonnerCohorts():
 
 @pytest.mark.integration
 def test_bonnerRsvp():
-    # with mainDB.atomic() as transaction:
+    with mainDB.atomic() as transaction:
         # reset pre-determined bonner cohorts
         BonnerCohort.delete().execute()
 
@@ -87,6 +87,6 @@ def test_bonnerRsvp():
         rsvpForBonnerCohort(2020, event_id)
         assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 3
 
-        # transaction.rollback()
+        transaction.rollback()  
 
 
