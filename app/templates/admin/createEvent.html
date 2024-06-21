@@ -425,6 +425,7 @@
             <div class="form-check form-switch">
               {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
               <div class="form-group" id="limitGroup" style= "{{hide}}">
+              <div class="form-group" id="limitGroup" style= "{{hide}}">
                 <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
                 <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
               </div>

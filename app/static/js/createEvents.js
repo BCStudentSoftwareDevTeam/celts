@@ -175,6 +175,17 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
   });
+  
+  let counterAdd = 0
+  $(".add_customevent").click(function(){
+    counterAdd += 1
+    let clonedCustom = $("#customEvent").clone();
+    clonedCustom.attr("id", "customEvent" + counterAdd)
+    clonedCustom.attr("id", "delete_customevent" + counterAdd)
+    $(".extraSlots").append(clonedCustom)
+    $("#delete_customevent" + counterAdd).removeClass('d-none');
+    console.log("here last")
+  })
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
