@@ -10,6 +10,10 @@ from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.logic.createLogs import createRsvpLog
 
+# Global variable 
+year = None
+event = None 
+
 def makeBonnerXls():
     """
     Create and save a BonnerStudents.xlsx file with all of the current and former bonner students.
@@ -73,6 +77,8 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
 
     return cohorts
 
+
+
 def rsvpForBonnerCohort(year, event):
     """
     Adds an EventRsvp record to the given event for each user in the given Bonner year.
@@ -80,14 +86,14 @@ def rsvpForBonnerCohort(year, event):
     EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()'))
                                       .where(BonnerCohort.year == year),
                                       [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    year = year 
+    event = event 
     
+def addToRsvpLog():
+    """ This method adds the table information in the RSVP Log page"""
     bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
                                     .join(User, on=(User.username == BonnerCohort.user))
                                     .where(BonnerCohort.year == year))
-    
     for bonner in bonnerCohort:
         fullName = bonner.fullName
-        print("######################################################")
-        print(fullName)
-        print(event)
         createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")

@@ -76,8 +76,9 @@ def test_bonnerRsvp():
         BonnerCohort.create(user="khatts", year=2020)
         BonnerCohort.create(user="neillz", year=2020)
         event_id = 13
+        year1 = 2020
 
-        rsvpForBonnerCohort(2020, event_id)
+        rsvpForBonnerCohort(year1, event_id)
         assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "khatts").exists()
         assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "neillz").exists()
         assert not EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "ramsayb2").exists()
