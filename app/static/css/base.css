@@ -103,3 +103,6 @@ select.empty {
 .rsvp-btn{
     padding-top: 4em;
 }
+.sidebar.hidden{
+  display:none
+}

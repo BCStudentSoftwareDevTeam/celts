@@ -96,7 +96,7 @@ function disabledElements(disabled) {
     // $("kiosk-disabled").css("width", "0");
     // $("kiosk-disabled").prop("disabled", true);
     // $("a").disabled();
-    $("col-md-auto d-print-none d-lg-none").css("width", "0");
+    $("col-md-auto d-print-none d-lg-none").css("width", "0"); 
   } 
   // else {
   //   $(".footer").show();
@@ -114,7 +114,8 @@ function toggleFullscreen() {
     disabledElements(false);
     document.exitFullscreen() || document.webkitExitFullscreen() || document.msExitFullscreen()
   } else {
-    disabledElements(true);
+   disabledElements(true);
+  sidebar.style.display=sidebar.style.display === 'none'? 'block':'none';
 
     var el = document.documentElement
     , rfs = // for newer Webkit and Firefox
