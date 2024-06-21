@@ -54,6 +54,7 @@ def slcEditProposal(courseID):
     if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCourseCreator:
         course = Course.get_by_id(courseID)
         courseStatus = CourseStatus.get_by_id(course.status)
+        print("Type of courseStatus:", type(courseStatus))
         courseStatusInt = courseStatus.get_id()
         approved = 3
         # Condition to check the route you are comming from
@@ -69,7 +70,7 @@ def slcEditProposal(courseID):
             filePaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
 
             terms = selectSurroundingTerms(g.current_term, 0)
-           
+
             return render_template('serviceLearning/slcNewProposal.html',
                                     course = course,
                                     questionanswers = questionAnswers,
@@ -77,6 +78,7 @@ def slcEditProposal(courseID):
                                     statusOfCourse = statusOfCourse,
                                     courseInstructor = courseInstructor,
                                     filePaths = filePaths,
+                                    courseStatus = courseStatus,
                                     redirectTarget = getRedirectTarget())
 
     else:
