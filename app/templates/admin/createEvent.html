@@ -464,7 +464,7 @@
 </form>
 <!--custom event modal-->
 <div class="modal modalCustomEvent fade float-start col" data-bs-backdrop='static' id="modalCustom">
-  <!--<form>-->
+  <form enctype="multipart/form-data" id="saveCustomEvent" data-toggle="validator" role="form" action="{{request.path}}" method="POST">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
@@ -474,7 +474,7 @@
         <div class="modal-body  py-0">
           <div class="row mb-2" id ="customEvent">
             <br> 
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-5">
               <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
               <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
                   <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
@@ -486,7 +486,7 @@
               </div>
             </div>
             <div class="form-group col-md-3">
-              <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
+              <label class="form-label me-2" for="customstartTime-{{pageLocation}}"><strong>Start Time</strong></label>
               <div class="input-group">
                 {% if eventData.timeStart %}
                   {% set startTime = eventData.timeStart %}
@@ -495,7 +495,7 @@
                 {% endif %}
                 <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
                   aria-describedby="timeIcon1" placeholder="Pick a start time"  
-                  id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                  id="customstartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                 <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
@@ -509,18 +509,19 @@
                 {% endif %}
                   <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
                     aria-describedby="timeIcon2" placeholder="Pick an end time" 
-                    id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                    id="customendTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                   <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
-            <div class="d-none col-md-3" id="delete_customevent">
+            <div class="delete_row d-none col-md-1" id="delete_customevent"> <!--delete div icon-->
+              <br/>
               <i class="bi bi-trash3"></i>
             </div>
           </div>
-          <div class="extraSlots">
+          <div class="extraSlots"><!--addition slot for data start time and end time-->
           </div>
         </div>
-        <div class="add_customevent">
+        <div class="add_customevent"> <!--add button for the slots-->
             <i class="bi bi-plus-square col-md-12 mt-2 mb-2 d-flex flex-row justify-content-center"></i>
         </div>
         <br>

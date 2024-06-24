@@ -115,7 +115,7 @@ $(document).ready(function () {
     console.log(recurringStatus +"recurring")
 >>>>>>> 81724e36 (modal toggle button created)
     if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
       $(".endDatePicker").prop('required', true);
 <<<<<<< HEAD
     } else {
@@ -129,8 +129,8 @@ $(document).ready(function () {
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      $('#modalCustom').modal('show');
-      $('#nonCustomTime, #nonCustomDate').addClass('d-none');
+      $('#modalCustom').modal('show');// this line pop up the modal for the custom event
+      $('#nonCustomTime, #nonCustomDate').addClass('d-none'); // this line disappear the non custom tims and dates and replace them with recurring table div for custom events to show
       $("#recurringTableDiv").removeClass('d-none');
     }
   });
@@ -143,23 +143,29 @@ $(document).ready(function () {
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
     $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
-    $('.extraSlots').empty();
+    $('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
 
-  $(".customSave").click(function(){
+  $(".customSave").click(function(){// this function doesn't work
     $("#recurringTableDiv").removeClass('d-none');
   });
   
-  let counterAdd = 0
+  let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".add_customevent").click(function(){
     counterAdd += 1
-    let clonedCustom = $("#customEvent").clone();
+    let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.attr("id", "delete_customevent" + counterAdd)
     $(".extraSlots").append(clonedCustom)
+    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
-    console.log("here last")
-  })
+  });
+
+  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
+    console.log("here in delete")
+    let numbers= $(".delete_row").length
+    console.log(numbers)
+  });
+
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
