@@ -62,22 +62,39 @@ function format24to12HourTime(timeStr){
 
   }
 
+
+  var save_button = document.getElementById('submitParticipant')
+
+  save_button.addEventListener('click', function() {
+    // Call the function storingCustomEventAttributes() when the button is clicked
+    storingCustomEventAttributes();
+  });
+
+
   function storingCustomEventAttributes(){
-    var customModalForm = document.getElementById("modalCustom")
-    //copied from recurring events
-    var customDatesAndTimes = {name:$("#inputEventName").val(),
-                              isCustom: true,
-                              customDate:$("#customDatePicker-{{pageLocation}}")[0].value,
-                              startTime:$("#customstartTime-{{pageLocation}}")[0].value,
-                              endTime:$("#ustomendTime-{{pageLocation}}")}
+    //var pageLocation = 'someLocation'; 
+    var pageLocation = "{{ pageLocation }}";
+    console.log("pageLocation:", pageLocation);
+   
+
+    var customDatesAndTimes = {
+      name: $("#inputEventName").val(),
+      isCustom: true,
+      customDate: $("#customDatePicker" + pageLocation).val(),
+      startTime: $("#customstartTime-" + pageLocation).val(),
+      endTime: $("#customendTime-" + pageLocation).val()
+    };
+
+    console.log('customDatesAndTime:' , customDatesAndTimes);
       
       $.ajax({
       type:"POST",
       url: "/makeCustomEvents",
       data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
       success: function(jsonData){
-      var recurringEvents = JSON.parse(jsonData)
-      var recurringTable = $("#customEventsTable")
+      var customEvents = JSON.parse(jsonData)
+      console.log('customEvents:', customEvents)
+      var customTable = $("#customEventsTable")
       $("#customEventsTable tbody tr").remove();
 
       for (var event of customEvents){
