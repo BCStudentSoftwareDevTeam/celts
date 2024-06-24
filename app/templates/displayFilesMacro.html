@@ -20,7 +20,11 @@
                 {% endif %}
             </td>
             <td class="py-2 px-3" >
-                {% set idx = key.index("/") %}
+                {% if '/' in key %}
+                    {% set idx = key.index("/") %}
+                {% else %}
+                    {% set idx = -1 %}
+                {% endif %} 
                 {% set fileName = key[idx+1:] %}
                 {% set shortName = fileName[:8] + "..." + fileName[-10:] if fileName|length > 25 else fileName %}
                 <a class="mr-5 fileName" data-filename='{{ fileName }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{fileName}}" aria-labelledby="{{fileName}}">{{ shortName }}</a>
