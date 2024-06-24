@@ -62,6 +62,56 @@ function format24to12HourTime(timeStr){
 
   }
 
+  function storingCustomEventAttributes(){
+    /*while (index < num.length || index < color.length || index < value.length) {
+    // Retrieve elements from arrays if they exist at current index
+    a = index < num.length ? num[index] : null;
+    b = index < color.length ? color[index] : null;
+    c = index < value.length ? value[index] : null;
+    console.log(a, b, c);
+    index++;
+    }
+    let customDate=[];
+    let customStartTime=[];
+    let customEndTime=[];
+    for (let i = 1; i = $(".add_customevent").length; i++){
+      customDate.append($(".add_customevent"+i).children("input#customDatePicker").value);
+      customStartTime.append($(".add_customevent"+i).children("input.customstartTime").value);
+      customEndTime.append($(".add_customevent"+i).children("input.customendTime").value);
+    }
+    var customDatesAndName = {name:$("#inputEventName").val(),
+                              isRecurring: true,
+                              startDate:$(".startDatePicker")[0].value,
+                              endDate:$(".endDatePicker")[0].value}
+    let index = 0;
+    while (index < customDate.length || index < customStartTime.length || index < customEndTime){
+
+    }*/
+    var eventDatesAndName = {name:$("#inputEventName").val(),
+      isRecurring: true,
+      startDate:$(".startDatePicker")[0].value,
+      endDate:$(".endDatePicker")[0].value}   
+    $.ajax({
+      type:"POST",
+      url: "/makeRecurringEvents",
+      data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+      success: function(jsonData){
+        var recurringEvents = JSON.parse(jsonData)
+        var recurringTable = $("#recurringEventsTable")
+        $("#recurringEventsTable tbody tr").remove();
+
+        for (var event of recurringEvents){
+          var eventdate = new Date(event.date).toLocaleDateString()
+          recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+          }
+      },
+      error: function(error){
+        console.log(error)
+      }
+    });
+
+}
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -85,20 +135,20 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring, #checkIsCustom").click(function() {
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val();
-    var customStatus = $("input[id='checkIsCustom']:checked").val();
+  $("#checkIsRecurring, #checkIsCustom").click(function() { //#checkIsRecurring, #checkIsCustom are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
+    var customStatus = $("input[id='checkIsCustom']:checked").val();// this line function is to retrive ON when toggle for custom event button createEvent.html line 160
     if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
       $(".endDatePicker").prop('required', true);
     } 
     else if (recurringStatus == undefined){
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
-      $('#modalCustom').modal('show');
-      $('#nonCustomTime, #nonCustomDate').addClass('d-none');
+      $('#modalCustom').modal('show');// this line pop up the modal for the custom event
+      $('#nonCustomTime, #nonCustomDate').addClass('d-none'); // this line disappear the non custom tims and dates and replace them with recurring table div for custom events to show
       $("#recurringTableDiv").removeClass('d-none');
     }
   });
@@ -106,23 +156,29 @@ $(document).ready(function() {
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
     $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
-    $('.extraSlots').empty();
+    $('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
 
-  $(".customSave").click(function(){
+  $(".customSave").click(function(){// this function doesn't work
     $("#recurringTableDiv").removeClass('d-none');
   });
   
-  let counterAdd = 0
+  let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".add_customevent").click(function(){
     counterAdd += 1
-    let clonedCustom = $("#customEvent").clone();
+    let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.attr("id", "delete_customevent" + counterAdd)
     $(".extraSlots").append(clonedCustom)
+    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
-    console.log("here last")
-  })
+  });
+
+  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
+    console.log("here in delete")
+    let numbers= $(".delete_row").length
+    console.log(numbers)
+  });
+
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
@@ -248,7 +304,7 @@ $(document).ready(function() {
      updateDate(this)
   });
 
-  $(".customDatePicker").change(function(){
+  $(".customDatePicker").change(function(){ //custom data calender function
     updateDate(this)
  });
 
