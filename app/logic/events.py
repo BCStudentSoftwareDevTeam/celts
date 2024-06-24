@@ -506,7 +506,7 @@ def preprocessEventData(eventData):
         elif not isinstance(eventData[eventDate], date):
             eventData[eventDate] = ''
     
-    # If we aren't recurring, all of our events are single-day
+    # If we aren't recurring, all of our events are single-day or mutliple offerings, which also have the same start and end date
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
     

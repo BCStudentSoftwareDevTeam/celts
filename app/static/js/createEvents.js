@@ -63,6 +63,34 @@ function format24to12HourTime(timeStr){
   }
 
   function storingCustomEventAttributes(){
+    var customModalForm = document.getElementById("modalCustom")
+    //copied from recurring events
+    var customDatesAndTimes = {name:$("#inputEventName").val(),
+                              isCustom: true,
+                              customDate:$("#customDatePicker-{{pageLocation}}")[0].value,
+                              startTime:$("#customstartTime-{{pageLocation}}")[0].value,
+                              endTime:$("#ustomendTime-{{pageLocation}}")}
+      
+      $.ajax({
+      type:"POST",
+      url: "/makeCustomEvents",
+      data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
+      success: function(jsonData){
+      var recurringEvents = JSON.parse(jsonData)
+      var recurringTable = $("#customEventsTable")
+      $("#customEventsTable tbody tr").remove();
+
+      for (var event of customEvents){
+      var eventdate = new Date(event.date).toLocaleDateString()
+      customTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+      }
+      },
+      error: function(error){
+      console.log(error)
+      }
+      });
+
+}
     /*while (index < num.length || index < color.length || index < value.length) {
     // Retrieve elements from arrays if they exist at current index
     a = index < num.length ? num[index] : null;
@@ -86,9 +114,9 @@ function format24to12HourTime(timeStr){
     let index = 0;
     while (index < customDate.length || index < customStartTime.length || index < customEndTime){
 
-    }*/
+    }
     var eventDatesAndName = {name:$("#inputEventName").val(),
-      isRecurring: true,
+      isCustom: true,
       startDate:$(".startDatePicker")[0].value,
       endDate:$(".endDatePicker")[0].value}   
     $.ajax({
@@ -110,7 +138,7 @@ function format24to12HourTime(timeStr){
       }
     });
 
-}
+}*/
 
 /*
  * Run when the webpage is ready for javascript
