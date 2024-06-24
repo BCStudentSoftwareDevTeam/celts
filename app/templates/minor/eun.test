@@ -18,7 +18,7 @@
     <div class="row">
       <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
         <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link {{ 'active' if activeTab == 'studentLedEvents' or activeTab is not defined else '' }}" id="studentLedEvents"
+          <button class="nav-link {{ 'active' if activeTab == 'studentLedEvents' else '' }}" id="studentLedEvents"
             data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Sustained Community Engagements</button>
         </li>
         <li class="col-md-3 col-12 nav-item" role="presentation">
@@ -34,7 +34,7 @@
       </ul>
     </div>
     <div class="tab-content" id="pills-tabContent">
-      <div class="tab-pane fade show {{ 'active' if activeTab == 'studentLedEvents' or activetab is not defined else '' }}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+      <div class="tab-pane fade show {{ 'active' if activeTab == 'studentLedEvents' else '' }}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
         <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagementactivities can be credited in a single semester.</p>
         <div class="accordion" id="communityEngagement">
           {% if sustainedEngagementByTerm %}

@@ -8,7 +8,7 @@ from app.logic.minor import getMinorInterest, getMinorProgress
 def manageMinor():
     if not g.current_user.isAdmin:
         abort(403)
-
+ 
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
