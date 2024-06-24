@@ -189,7 +189,12 @@ def withdrawProposal(courseID) -> None:
     except DoesNotExist:
         print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
-    # delete course object
+    # deletes course
+    deletedCourse = deleteCourseObject(courseID=courseID)
+
+    createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
+
+def deleteCourseObject(courseID):
     course: Course = Course.get(Course.id == courseID)
     courseName: str = course.courseName
     questions: List[CourseQuestion] = CourseQuestion.select().where(CourseQuestion.course == course)
@@ -200,8 +205,7 @@ def withdrawProposal(courseID) -> None:
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
-
-    createActivityLog(f"Withdrew SLC proposal: {courseName}")
+    return courseName
 
 def createCourse(creator: str="No user provided") -> Course:
     """
