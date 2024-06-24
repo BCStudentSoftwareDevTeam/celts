@@ -74,6 +74,10 @@ backgroundTypes = [
     "id": "BSL",
     "description": "Berea Student Life Background Check",
     },
+    {
+    "id": "DDC",
+    "description": "Defensive Driving Certification",
+    }
 
 ]
 BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
@@ -94,6 +98,6 @@ coursestatus = [
     {
         "id": 4,
         "status": "Imported"
-    }
+    }, 
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
