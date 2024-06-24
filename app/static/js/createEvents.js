@@ -176,16 +176,22 @@ $(document).ready(function() {
     }
   });
   
-  let counterAdd = 0
+  let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".add_customevent").click(function(){
     counterAdd += 1
-    let clonedCustom = $("#customEvent").clone();
+    let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.attr("id", "delete_customevent" + counterAdd)
     $(".extraSlots").append(clonedCustom)
+    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
-    console.log("here last")
-  })
+  });
+
+  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
+    console.log("here in delete")
+    let numbers= $(".delete_row").length
+    console.log(numbers)
+  });
+
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
