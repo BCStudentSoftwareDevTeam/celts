@@ -1,3 +1,4 @@
+import logging
 import pyodbc
 from ldap3 import Server, Connection, ALL
 import peewee
@@ -6,23 +7,29 @@ from app import app
 from app.models.user import User
 from app.logic.utils import getUsernameFromEmail
 
+# Configure logging
+logging.basicConfig(
+    filename='/home/celts/cron.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 def main():
     """
     This function runs the updateRecords function once the script is run.
     """
-    print("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
+    logging.info("Script started.")
+    logging.warning("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
 
-    print("\nGetting Updated Names, Majors, and Class Levels\n--------------------------------------------------\n")
-
+    logging.info("Getting Updated Names, Majors, and Class Levels")
     addToDb(getStudentData())
-    print("done.")
+    logging.info("Finished updating student data.")
     addToDb(getFacultyStaffData())
-    print("done.")
+    logging.info("Finished updating faculty and staff data.")
 
-    print("\n\nGetting Preferred Names\n--------------------------\n")
-
+    logging.info("Getting Preferred Names from LDAP")
     ldap = getLdapConn()
-    print("LDAP Connected.")
+    logging.info("LDAP Connected.")
 
     people = fetchLdapList(ldap, alphaRange('a','d'))
     people += fetchLdapList(ldap, alphaRange('e','j'))
@@ -30,28 +37,35 @@ def main():
     people += fetchLdapList(ldap, alphaRange('q','z'))
 
     updateFromLdap(people)
-    print("Update Complete.")
+    logging.info("Update from LDAP Complete.")
 
-def alphaRange(start,end):
+def alphaRange(start, end):
     return [chr(i) for i in range(ord(start), ord(end)+1)]
 
 def getLdapConn():
-    server = Server ('berea.edu', port=389, use_ssl=False, get_info='ALL')
-    conn   = Connection (server, user=app.config['ldap']['user'], password=app.config['ldap']['password'])
-    if not conn.bind():
-        print(conn.result)
-        raise Exception("BindError")
-
-    return conn
+    try:
+        server = Server('berea.edu', port=389, use_ssl=False, get_info=ALL)
+        conn = Connection(server, user=app.config['ldap']['user'], password=app.config['ldap']['password'])
+        if not conn.bind():
+            logging.error(f"LDAP bind failed: {conn.result}")
+            raise Exception("BindError")
+        return conn
+    except Exception as e:
+        logging.error(f"Failed to connect to LDAP: {e}")
+        raise
 
 def fetchLdapList(conn, startletters):
-    # Get the givennames from LDAP - we have to segment them to make sure each request is under 1500
-    conn.search('dc=berea,dc=edu',
-      f"(|" + "".join(map(lambda s: f"(givenname={s}*)", startletters)) + ")",
-      attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
-      )
-    print(f"Found {len(conn.entries)} {startletters[0]}-{startletters[-1]} in AD");
-    return conn.entries
+    try:
+        conn.search(
+            'dc=berea,dc=edu',
+            f"(|" + "".join(map(lambda s: f"(givenname={s}*)", startletters)) + ")",
+            attributes=['samaccountname', 'givenname', 'sn', 'employeeid']
+        )
+        logging.info(f"Found {len(conn.entries)} entries for {startletters[0]}-{startletters[-1]} in AD")
+        return conn.entries
+    except Exception as e:
+        logging.error(f"Failed to fetch LDAP list for {startletters[0]}-{startletters[-1]}: {e}")
+        raise
 
 def updateFromLdap(people):
     for person in people:
@@ -59,12 +73,13 @@ def updateFromLdap(people):
         preferred = str(get_key(person, 'givenname')).strip()
 
         if preferred:
-            count = User.update(firstName=preferred).where(User.bnumber == bnumber).execute()
-            if count:
-                print(f"Updating {bnumber} name to {preferred}")
+            try:
+                count = User.update(firstName=preferred).where(User.bnumber == bnumber).execute()
+                if count:
+                    logging.info(f"Updated {bnumber} name to {preferred}")
+            except Exception as e:
+                logging.error(f"Failed to update user {bnumber} with preferred name {preferred}: {e}")
 
-# Return the value for a key or None
-# Can't use .get() because it's a ldap3.abstract.entry.Entry instead of a Dict
 def get_key(entry, key):
     if key in entry:
         return entry[key]
@@ -78,81 +93,87 @@ def getMssqlCursor():
         "host": app.config["tracy"]["host"],
         "db": app.config["tracy"]["name"]
     }
-    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['host'],details['db'],details['user'],details['password'])
-
-    pyconn = pyodbc.connect(pyodbc_uri)  # connects a tcp based client socket to a tcp based server socket
-    return pyconn.cursor()  # allows python to execute sql database commands
+    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(
+        details['host'], details['db'], details['user'], details['password']
+    )
+    try:
+        pyconn = pyodbc.connect(pyodbc_uri)
+        logging.info("Connected to Tracy database.")
+        return pyconn.cursor()
+    except Exception as e:
+        logging.error(f"Failed to connect to Tracy database: {e}")
+        raise
 
 def addToDb(userList):
     for user in userList:
         try:
             User.insert(user).execute()
-
+            logging.info(f"Inserted user {user['bnumber']}")
         except peewee.IntegrityError as e:
-            if user['username']:
-                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'])
-                     .where(user['bnumber'] == User.bnumber)).execute()
-            else:
-                print(f"No username for {user['bnumber']}!", user)
-
+            try:
+                if user['username']:
+                    (User.update(
+                        firstName=user['firstName'],
+                        lastName=user['lastName'],
+                        email=user['email'],
+                        major=user['major'],
+                        classLevel=user['classLevel']
+                    ).where(User.bnumber == user['bnumber'])).execute()
+                    logging.info(f"Updated user {user['bnumber']}")
+                else:
+                    logging.warning(f"No username for {user['bnumber']}!", user)
+            except Exception as e:
+                logging.error(f"Failed to update user {user['bnumber']}: {e}")
         except Exception as e:
-            print(e)
+            logging.error(f"Failed to insert or update user {user['bnumber']}: {e}")
 
 def getFacultyStaffData():
-    """
-    This function pulls all the faculty and staff data from Tracy and formats for our table
-
-    Tracy's STUSTAFF table has the following columns:
-    1. PIDM
-    2. ID
-    3. FIRST_NAME
-    4. LAST_NAME
-    5. EMAIL
-    6. CPO
-    7. ORG
-    8. DEPT_NAME
-    """
-    print("Retrieving Faculty data from Tracy...",end="")
-    c = getMssqlCursor()
-    return [ 
-          { "username": getUsernameFromEmail(row[4].strip()),
-            "bnumber": row[1].strip(),
-            "email": row[4].strip(),
-            "phoneNumber": None, 
-            "firstName": row[2].strip(),
-            "lastName": row[3].strip(),
-            "isStudent": False,
-            "isFaculty": True,
-            "isStaff": False,
-            "major": None,
-            "classLevel": None,
-            "cpoNumber": row[5].strip(),
-          }
-        for row in c.execute('select * from STUSTAFF')
-    ]
+    logging.info("Retrieving Faculty and Staff data from Tracy...")
+    try:
+        c = getMssqlCursor()
+        return [ 
+            {
+                "username": getUsernameFromEmail(row[4].strip()),
+                "bnumber": row[1].strip(),
+                "email": row[4].strip(),
+                "phoneNumber": None, 
+                "firstName": row[2].strip(),
+                "lastName": row[3].strip(),
+                "isStudent": False,
+                "isFaculty": True,
+                "isStaff": False,
+                "major": None,
+                "classLevel": None,
+                "cpoNumber": row[5].strip(),
+            }
+            for row in c.execute('select * from STUSTAFF')
+        ]
+    except Exception as e:
+        logging.error(f"Failed to retrieve Faculty and Staff data: {e}")
+        raise
 
 def getStudentData():
-    """
-    This function pulls all the student data from Tracy and formats for our table
-    """
-    print("Retrieving Student data from Tracy...",end="")
-    c = getMssqlCursor()
-    return [
-          { "username": getUsernameFromEmail(row[9].strip()),
-            "bnumber": row[1].strip(),
-            "email": row[9].strip(),
-            "phoneNumber": None, 
-            "firstName": row[2].strip(),
-            "lastName": row[3].strip(),
-            "isStudent": True,
-            "major": row[6].strip(),
-            "classLevel": row[4].strip(),
-            "cpoNumber": row[10].strip(),
-          }
-        for row in c.execute('select * from STUDATA')
-    ]
+    logging.info("Retrieving Student data from Tracy...")
+    try:
+        c = getMssqlCursor()
+        return [
+            {
+                "username": getUsernameFromEmail(row[9].strip()),
+                "bnumber": row[1].strip(),
+                "email": row[9].strip(),
+                "phoneNumber": None, 
+                "firstName": row[2].strip(),
+                "lastName": row[3].strip(),
+                "isStudent": True,
+                "major": row[6].strip(),
+                "classLevel": row[4].strip(),
+                "cpoNumber": row[10].strip(),
+            }
+            for row in c.execute('select * from STUDATA')
+        ]
+    except Exception as e:
+        logging.error(f"Failed to retrieve Student data: {e}")
+        raise
 
 if __name__ == '__main__':
     main()
-
-
