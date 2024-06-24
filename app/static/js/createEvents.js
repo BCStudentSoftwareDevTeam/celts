@@ -105,27 +105,13 @@ $(document).ready(function () {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-<<<<<<< HEAD
   $("#checkIsRecurring").click(function () {
     var recurringStatus = $("input[name='isRecurring']:checked").val();
-=======
-  $("#checkIsRecurring, #checkIsCustom").click(function() {
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val()
-    var customStatus = $("input[id='checkIsCustom']:checked").val()
-    console.log(recurringStatus +"recurring")
->>>>>>> 81724e36 (modal toggle button created)
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
       $(".endDatePicker").prop('required', true);
-<<<<<<< HEAD
     } else {
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-=======
-    } 
-    else if (recurringStatus == undefined){
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
->>>>>>> 81724e36 (modal toggle button created)
       $(".endDatePicker").prop('required', false);
     }
     if (customStatus == 'on') {
@@ -134,42 +120,9 @@ $(document).ready(function () {
       $("#recurringTableDiv").removeClass('d-none');
     }
   });
-<<<<<<< HEAD
 
   $("#allowPastStart").click(function () {
     var allowPast = $("#allowPastStart:checked").val();
-=======
-  
-  $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
-    $("#checkIsCustom").prop('checked', false);
-    $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
-    $('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
-  });
-
-  $(".customSave").click(function(){// this function doesn't work
-    $("#recurringTableDiv").removeClass('d-none');
-  });
-  
-  let counterAdd = 0 // counter to add customized ids into the newly created slots
-  $(".add_customevent").click(function(){
-    counterAdd += 1
-    let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
-    clonedCustom.attr("id", "customEvent" + counterAdd)
-    $(".extraSlots").append(clonedCustom)
-    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
-    $("#delete_customevent" + counterAdd).removeClass('d-none');
-  });
-
-  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
-    console.log("here in delete")
-    let numbers= $(".delete_row").length
-    console.log(numbers)
-  });
-
-
-  $("#allowPastStart").click(function() {
-    var allowPast = $("#allowPastStart:checked").val()
->>>>>>> 81724e36 (modal toggle button created)
     if (allowPast == 'on') {
       $.datepicker.setDefaults({
         minDate: new Date('1999/10/25'),
