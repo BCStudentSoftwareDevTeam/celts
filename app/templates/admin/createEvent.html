@@ -472,10 +472,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body  py-0">
+          <div class="form-group">
+            {{ locationTimeMacro(eventData, hideDate, 'modal') }}
+          </div>
           <div class="row mb-2" id ="customEvent">
             <br> 
             <div class="form-group col-md-5">
-              <label class="form-label me-2" for="customDatePicker-{{pageLocation}}"><strong>Custom Date</strong></label>
+              <label class="form-label me-2" for="customDatePicker"><strong>Custom Date</strong></label>
               <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
                   <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
                     value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
