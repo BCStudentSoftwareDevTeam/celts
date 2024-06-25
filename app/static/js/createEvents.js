@@ -72,9 +72,9 @@ function format24to12HourTime(timeStr){
 
 
   function storingCustomEventAttributes(){
-    //var pageLocation = 'someLocation'; 
-    var pageLocation = "{{ pageLocation }}";
-    console.log("pageLocation:", pageLocation);
+    
+    
+ 
    
 
     var customDatesAndTimes = {
@@ -216,7 +216,17 @@ $(document).ready(function() {
     $(".extraSlots").append(clonedCustom)
     $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
+
+
+      $(".extraSlots").children().each(function(index, element) {
+          let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
+          console.log("Data in row " + (index + 1) + ": " + rowData)
+          // Modify this to display or manipulate your data as needed
+      });
+
   });
+
+ 
 
   $(".delete_row").click(function(){ // delete function for the added row, it is still not working
     console.log("here in delete")
