@@ -1,6 +1,6 @@
 {% set title = "Manage Volunteers" %}
 {% set page_title = event.name %}
-{% set eventPast = event.isPast %}
+{% set eventPast = event.isPastStart %}
 {% set tabName = 'manageVolunteers' %}
 {% extends "eventNav.html" %}
 
@@ -27,15 +27,19 @@
 
 {% from 'trainingsHoverMacro.html' import trainingsHover %}
 
+{% set rsvpNeeded = (event.isRsvpRequired) and (not event.isPastStart) %}
+{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
+{% set modalTitle = "Waitlist Volunteers" if rsvpFull else("RSVP Volunteers" if rsvpNeeded else "Add Volunteers") %}
+
 <label class='d-none' id="eventLength">{{eventLength}}</label>
 <input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-flex row'>
     <div class="col-6 px-1">
-      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteers</a>
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{modalTitle}}</a>
       <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
-    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
+    {% if rsvpFull %}
     <div class="col-6 text-end">
       <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
     </div>
@@ -50,7 +54,7 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#attended-collapse" aria-expanded="true" aria-controls="attended-collapse" {{'disabled' if not eventNonAttendedData and not eventWaitlistData else ''}}>
-          {% if event.isPast %}
+          {% if event.isPastStart %}
           Attended Volunteers
           {% elif event.isRsvpRequired %}
           RSVP'd Volunteers
@@ -64,14 +68,14 @@
           <table class="table" id="trackVolunteerstable" data-entry-count="{{ eventVolunteerData|length }}">
             <thead>
               <tr>
-                {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                {% if (not event.isPastStart) and (event.isRsvpRequired)  %}
                   <th>RSVP Time</th>
                 {% endif %}
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
                 
-                {% if event.isPast %}
+                {% if event.isPastStart %}
                   <th class="noSort">Total Hours</th>
                   <th class="noSort">Attended</th>
                 {% else %}
@@ -84,7 +88,7 @@
               {% if eventVolunteerData %}
                 {% for participant in eventVolunteerData %}
                   <tr>
-                    {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                    {% if (not event.isPastStart) and (event.isRsvpRequired)  %}
                       <td>
                         {# This only works because we are assuming that all participants are RSVP entries #}
                         {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
@@ -106,7 +110,7 @@
                     </td>
                     <td>{{participant.user.email}}</td>
                     <td>{{participant.user.phoneNumber}}</td>
-                    {% if event.isPast %}
+                    {% if event.isPastStart %}
                       <td>
                         <input
                           class="form-control number-only form-control input-sm"
@@ -128,7 +132,7 @@
                           type="checkbox"
                           class='attendanceCheck'
                           name="checkbox_{{participant.user.username}}"
-                          {% if event.isPast %}
+                          {% if event.isPastStart %}
                             checked
                           {% endif %} />
                       </td>
@@ -136,7 +140,7 @@
                       <td style="text-align:center">
                         {% set isTrained = participant.user in trainedParticipantsForProgramAndTerm %}
                         {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
-                        <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                        <span class="bi bi-{{'check' if isTrained or not participationStatusForTrainings[participant.user.username] else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
                         <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(participationStatusForTrainings[participant.user.username])}}">View</a>
                       </td>
                     {% endif %}
@@ -154,7 +158,7 @@
               {% endif %}
             </tbody>
           </table>
-          {% if event.isPast %}
+          {% if event.isPastStart %}
             <div class="row">
               <div class="col"></div>
               <button type="submit" class="btn btn-primary float-end nowrap col-auto mx-3">Save</button>
@@ -166,7 +170,7 @@
 </form>
 
 <!-- #################  Waitlist Table  ################# -->
-{% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
+{% if event.isRsvpRequired and event.rsvpLimit and not event.isPastStart and eventWaitlistData %}
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -196,7 +200,7 @@
                   <td>
                     <button class="btn btn-primary text-nowrap" value="{{participant.user.username}}" id="addRsvpFromWaitlistBtn" type="submit">Add to RSVP</button>
                   </td>
-                  {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                  {% if (not event.isPastStart) and (event.isRsvpRequired)  %}
                   <td>
                     {# This only works because we are assuming that all participants are RSVP entries #}
                     {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
@@ -216,7 +220,7 @@
                   <td style="text-align:center">
                     {% set isTrained = participant.user in trainedParticipantsForProgramAndTerm %}
                     {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
-                    <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                    <span class="bi bi-{{'check' if isTrained or not participationStatusForTrainings[participant.user.username] else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
                     <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(participationStatusForTrainings[participant.user.username])}}">View</a>
                   </td>
                   <td style="text-align:center">
@@ -235,7 +239,7 @@
 {% endif %}
 
 <!-- #################  Non Attended Table  ################# -->
-{% if event.isPast and eventNonAttendedData %}
+{% if event.isPastStart and eventNonAttendedData %}
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -322,13 +326,10 @@
 </form>
 
 <!-- #################  Modal  ################# -->
-{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
-{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        {% set modalTitle = "Add Volunteers to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
         <h5 class="modal-title">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -360,7 +361,7 @@
         {% if event.isRecurring and recurringVolunteers and not event.isFirstRecurringEvent  %}
         <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% endif %}
-        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
+        {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteer") %}
         <button id="addVolunteersButton" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
       </div>
     </div>

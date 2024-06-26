@@ -9,9 +9,14 @@ import os
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
+from app.models.course import Course
+from app.models.courseInstructor import CourseInstructor
+from app.models.courseParticipant import CourseParticipant
 from app.models.eventTemplate import EventTemplate
-from app.models.adminLog import AdminLog
+from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
@@ -22,18 +27,17 @@ from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
+from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
-from app.controllers.admin import admin_bp
-from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
-from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
+from app.controllers.admin import admin_bp
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -112,11 +116,11 @@ def createEvent(templateid, programid):
 
             if program:
                 if len(savedEvents) > 1:
-                    createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 else:
-                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
-                createAdminLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -151,6 +155,54 @@ def rsvpLogDisplay(eventId):
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route('/event/<eventId>/renew', methods=['POST'])
+def renewEvent(eventId):
+    try: 
+        formData = request.form
+        try:
+            assert formData['timeStart'] < formData['timeEnd']
+        except AssertionError:
+            flash("End time must be after start time", 'warning')
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+        
+        try:
+            if formData.get('dateEnd'):
+                assert formData['dateStart'] < formData['dateEnd']
+        except AssertionError:
+            flash("End date must be after start date", 'warning')
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+
+
+        priorEvent = model_to_dict(Event.get_by_id(eventId))
+        newEventDict = priorEvent.copy()
+        newEventDict.pop('id')
+        newEventDict.update({
+                    'program': int(priorEvent['program']['id']),
+                    'term': int(priorEvent['term']['id']),
+                    'timeStart': formData['timeStart'],
+                    'timeEnd': formData['timeEnd'],
+                    'location': formData['location'],
+                    'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
+                    'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
+                    'isRecurring': bool(priorEvent['recurringId'])
+                    })
+        newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
+        if message:
+            flash(message, "danger")
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
+
+        copyRsvpToNewEvent(priorEvent, newEvent[0])
+        createActivityLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        flash("Event successfully renewed.", "success")
+        return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
+
+
+    except Exception as e:
+        print("Error while trying to renew event:", e)
+        flash("There was an error renewing the event. Please try again or contact Systems Support.", 'danger')
+        return redirect(url_for('admin.eventDisplay', eventId = eventId))
+            
 
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
@@ -235,10 +287,12 @@ def eventDisplay(eventId):
                                 filepaths = filepaths)
     # Event View
     else:
-        # get text representations of dates
+        # get text representations of dates for html
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
-        eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
+        eventCountdown = getCountdownToEvent(event)
+
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -249,20 +303,22 @@ def eventDisplay(eventId):
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+        currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
         return render_template("eventView.html",
-                                eventData = eventData,
-                                event = event,
-                                userHasRSVPed = userHasRSVPed,
-                                programTrainings = userParticipatedTrainingEvents,
-                                currentEventRsvpAmount = currentEventRsvpAmount,
-                                isProgramManager = isProgramManager,
-                                filepaths = filepaths,
-                                image = image,
-                                pageViewsCount= pageViewsCount)
+                                eventData=eventData,
+                                event=event,
+                                userHasRSVPed=userHasRSVPed,
+                                programTrainings=userParticipatedTrainingEvents,
+                                currentEventRsvpAmount=currentEventRsvpAmount,
+                                isProgramManager=isProgramManager,
+                                filepaths=filepaths,
+                                image=image,
+                                pageViewsCount=pageViewsCount,
+                                eventCountdown=eventCountdown)
+                                
 
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
@@ -289,6 +345,7 @@ def deleteRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
@@ -299,6 +356,7 @@ def deleteEventAndAllFollowingRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
@@ -340,11 +398,11 @@ def addParticipants():
     return render_template('addParticipants.html',
                             title="Add Participants")
 
-@admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
-def adminLogs():
+@admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
+def activityLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLog.select(AdminLog, User).join(User).order_by(AdminLog.createdOn.desc())
-        return render_template("/admin/adminLogs.html",
+        allLogs = ActivityLog.select(ActivityLog, User).join(User).order_by(ActivityLog.createdOn.desc())
+        return render_template("/admin/activityLogs.html",
                                 allLogs = allLogs)
     else:
         abort(403)
@@ -368,13 +426,14 @@ def addCourseFile():
 @admin_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @admin_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def manageServiceLearningCourses(term=None):
+    
     """
     The SLC management page for admins
     """
     if not g.current_user.isCeltsAdmin:
         abort(403) 
 
-    if request.method =='POST' and "submitParticipant" in request.form:
+    if request.method == 'POST' and "submitParticipant" in request.form:
         saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
         flash('Courses and participants saved successfully!', 'success')
         return redirect(url_for('admin.manageServiceLearningCourses'))
@@ -382,16 +441,47 @@ def manageServiceLearningCourses(term=None):
     manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
-
+    # retrieve and store the courseID of the imported course from a session variable if it exists. 
+    # This allows us to export the courseID in the html and use it.
+    courseID = session.get("alterCourseId")  
+    
+    if courseID:
+        # delete courseID from the session if it was retrieved, for storage purposes.
+        session.pop("alterCourseId")  
+        return render_template('/admin/manageServiceLearningFaculty.html',
+                                courseInstructors = getInstructorCourses(),
+                                unapprovedCourses = unapprovedCourses(manageTerm),
+                                approvedCourses = approvedCourses(manageTerm),
+                                importedCourses = getImportedCourses(manageTerm),
+                                terms = selectSurroundingTerms(g.current_term),
+                                term = manageTerm,
+                                cpPreview = session.get('cpPreview', {}),
+                                cpPreviewErrors = session.get('cpErrors', []),
+                                courseID = courseID
+                            )
+    
     return render_template('/admin/manageServiceLearningFaculty.html',
                             courseInstructors = getInstructorCourses(),
-                            unapprovedCourses = unapprovedCourses(term),
-                            approvedCourses = approvedCourses(term),
+                            unapprovedCourses = unapprovedCourses(manageTerm),
+                            approvedCourses = approvedCourses(manageTerm),
+                            importedCourses = getImportedCourses(manageTerm),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
                             cpPreviewErrors = session.get('cpErrors',[])
-                           )
+                        )
+
+@admin_bp.route('/admin/getSidebarInformation', methods=['GET'])
+def getSidebarInformation() -> str:
+    """
+    Get the count of unapproved courses and students interested in the minor for the current term 
+    to display in the admin sidebar. It must be returned as a string to be received by the
+    ajax request.
+    """
+    unapprovedCoursesCount: int = len(unapprovedCourses(g.current_term))
+    interestedStudentsCount: int = len(getMinorInterest())
+    return {"unapprovedCoursesCount": unapprovedCoursesCount,
+            "interestedStudentsCount": interestedStudentsCount}
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():
@@ -402,6 +492,44 @@ def removeFromSession():
 
     return ""
 
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID):
+    """
+    This route handles a GET and a POST request for the purpose of imported courses. 
+    The GET request provides preexisting information of an imported course in a modal. 
+    The POST request updates a specific imported course (course name, course abbreviation, 
+    hours earned on completion, list of instructors) in the database with new information 
+    coming from the imported courses modal. 
+    """
+    if request.method == 'GET':
+        try:
+            targetCourse = Course.get_by_id(courseID)
+            targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
+            
+            try:
+                serviceHours = list(CourseParticipant.select().where(CourseParticipant.course_id == targetCourse.id))[0].hoursEarned
+            except IndexError:  # If a course has no participant, IndexError will be raised
+                serviceHours = 20
+                
+            courseData = model_to_dict(targetCourse, recurse=False)
+            courseData['instructors'] = [model_to_dict(instructor.user) for instructor in targetInstructors]
+            courseData['hoursEarned'] = serviceHours
+
+            return jsonify(courseData)
+        
+        except DoesNotExist:
+            flash("Course not found")
+            return jsonify({"error": "Course not found"}), 404
+        
+    if request.method == 'POST':
+        # Update course information in the database
+        courseData = request.form.copy()
+        editImportedCourses(courseData)
+        session['alterCourseId'] = courseID
+ 
+    return redirect(url_for("admin.manageServiceLearningCourses", term=courseData['termId']))
+
+
 @admin_bp.route("/manageBonner")
 def manageBonner():
     if not g.current_user.isCeltsAdmin:
@@ -410,7 +538,7 @@ def manageBonner():
     return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term),
-                           requirements = getCertRequirements(certification=Certification.BONNER))
+                           requirements=getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):

@@ -35,6 +35,10 @@
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
+    <div class="col-md-6 col-lg-3" style="display: flex;">
+      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> &nbsp;
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -43,12 +47,18 @@
     {% if volunteer.classLevel -%}
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
+    {% if volunteer.cpoNumber %}
+      <div>
+      {{volunteer.cpoNumber}} 
+    </div>
+    {% else %}
+      <div>
+    </div>
+    {%endif%}
   </div>
+      
   <div class="row pb-2 pe-0">
-    <div class="col-md-6 col-lg-3">
-      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> &nbsp;
+    
     <div class="col"></div>
     <div class="col-auto pe-0 ">
       <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
@@ -189,7 +199,7 @@
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                   <td>
                     {% set hasCompletedAllTrainings = row.completedTraining %}
-                    <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
+                    <i class="bi bi-{{'check' if hasCompletedAllTrainings or not trainingList else 'x'}}-lg"></i> &nbsp&nbsp
                     <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}

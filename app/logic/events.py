@@ -1,8 +1,8 @@
 from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
-from datetime import timedelta, date
-import datetime
+from datetime import timedelta, date, datetime
+from dateutil.relativedelta import relativedelta
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
@@ -17,7 +17,7 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -32,7 +32,7 @@ def cancelEvent(eventId):
         event.save()
 
     program = event.program
-    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    createActivityLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 
 def deleteEvent(eventId):
@@ -61,9 +61,9 @@ def deleteEvent(eventId):
         program = event.program
 
         if program:
-            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createActivityLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
-            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
@@ -92,7 +92,7 @@ def deleteAllRecurringEvents(eventId):
                 aRecurringEvent.delete_instance(recursive = True)
 
 
-def attemptSaveEvent(eventData, attachmentFiles = None):
+def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
     Tries to save an event to the database:
     Checks that the event data is valid and if it is it continus to saves the new
@@ -108,41 +108,44 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
     newEventData = preprocessEventData(eventData)
+    
     isValid, validationErrorMessage = validateNewEventData(newEventData)
-
+    
     if not isValid:
         return False, validationErrorMessage
 
     try:
-        events = saveEventToDb(newEventData)
+        events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
             for event in events:
-                addFile= FileHandler(attachmentFiles, eventId=event.id)
+                addFile = FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
-
-        return events, " "
+        return events, ""
     except Exception as e:
-        print(f'Failed attemptSaveEvent() with Exception:{e}')
+        print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
 
-def saveEventToDb(newEventData):
-    if not newEventData.get('valid', False):
+def saveEventToDb(newEventData, renewedEvent = False):
+    
+    if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
-
+    
+    
     isNewEvent = ('id' not in newEventData)
 
-
+    
     eventsToCreate = []
     recurringSeriesId = None
-    if isNewEvent and newEventData['isRecurring']:
+    if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
+        if renewedEvent:
+            recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
-
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -179,7 +182,6 @@ def saveEventToDb(newEventData):
                 updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
             eventRecords.append(eventRecord)
-
     return eventRecords
 
 def getStudentLedEvents(term):
@@ -269,7 +271,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
+def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in as long
         as they are not banned from the program that the event is a part of.
@@ -350,24 +352,28 @@ def validateNewEventData(data):
 
     if data['timeEnd'] <= data['timeStart']:
         return (False, "Event end time must be after start time.")
-
+    
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        event = (Event.select()
-                      .where((Event.name == data['name']) &
-                             (Event.location == data['location']) &
-                             (Event.startDate == data['startDate']) &
-                             (Event.timeStart == data['timeStart'])))
+        sameEventList = list((Event.select().where((Event.name == data['name']) &
+                                                   (Event.location == data['location']) &
+                                                   (Event.startDate == data['startDate']) &
+                                                   (Event.timeStart == data['timeStart'])).execute()))
+        
+        sameEventListCopy = sameEventList.copy()
+
+        for event in sameEventListCopy:
+            if event.isCanceled or event.recurringId:   
+                sameEventList.remove(event)
 
         try:
             Term.get_by_id(data['term'])
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
-
-        if event.exists():
+        if sameEventList:
             return (False, "This event already exists")
-
+        
     data['valid'] = True
     return (True, "All inputs are valid.")
 
@@ -400,13 +406,13 @@ def calculateRecurringEventFrequency(event):
 
         Return a list of events to create from the event data.
     """
-    if not isinstance(event['endDate'], datetime.date) or not isinstance(event['startDate'], datetime.date):
+    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              'date': event['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
@@ -431,25 +437,25 @@ def preprocessEventData(eventData):
 
     ## Process dates
     eventDates = ['startDate', 'endDate']
-    for date in eventDates:
-        if date not in eventData:
-            eventData[date] = ''
-        elif type(eventData[date]) is str and eventData[date]:
-            eventData[date] = parser.parse(eventData[date])
-        elif not isinstance(eventData[date], datetime.date):
-            eventData[date] = ''
-
+    for eventDate in eventDates:
+        if eventDate not in eventData:
+            eventData[eventDate] = ''
+        elif type(eventData[eventDate]) is str and eventData[eventDate]:
+            eventData[eventDate] = parser.parse(eventData[eventDate])
+        elif not isinstance(eventData[eventDate], date):
+            eventData[eventDate] = ''
+    
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
-
+    
     # Process terms
     if 'term' in eventData:
         try:
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
-
+    
     # Process requirement
     if 'certRequirement' in eventData:
         try:
@@ -461,7 +467,6 @@ def preprocessEventData(eventData):
         match = RequirementMatch.get_or_none(event=eventData['id'])
         if match:
             eventData['certRequirement'] = match.requirement
-
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
@@ -501,3 +506,93 @@ def getEventRsvpCount(eventId):
         Returns the number of RSVP'd participants for a given eventId.
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
+
+def getCountdownToEvent(event, *, currentDatetime=None):
+    """
+    Given an event, this function returns a string that conveys the amount of time left
+    until the start of the event.
+
+    Note about dates:
+    Natural language is unintuitive. There are two major rules that govern how we discuss dates.
+    - If an event happens tomorrow but less than 24 hours away from us we still say that it happens 
+    tomorrow with no mention of the hour. 
+    - If an event happens tomorrow but more than 24 hours away from us, we'll count the number of days 
+    and hours in actual time.
+
+    E.g. if the current time of day is greater than the event start's time of day, we give a number of days 
+    relative to this morning and exclude all hours and minutes
+
+    On the other hand, if the current time of day is less or equal to the event's start of day we can produce 
+    the real difference in days and hours without the aforementioned simplifying language.
+    """
+
+    if currentDatetime is None:
+        currentDatetime = datetime.now().replace(second=0, microsecond=0)  
+    currentMorning = currentDatetime.replace(hour=0, minute=0)
+
+    eventStart = datetime.combine(event.startDate, event.timeStart)
+    eventEnd = datetime.combine(event.endDate, event.timeEnd)
+    
+    if eventEnd < currentDatetime:
+        return "Already passed"
+    elif eventStart <= currentDatetime <= eventEnd:
+        return "Happening now"
+    
+    timeUntilEvent = relativedelta(eventStart, currentDatetime)
+    calendarDelta = relativedelta(eventStart, currentMorning)
+    calendarYearsUntilEvent = calendarDelta.years
+    calendarMonthsUntilEvent = calendarDelta.months
+    calendarDaysUntilEvent = calendarDelta.days
+
+    yearString = f"{calendarYearsUntilEvent} year{'s' if calendarYearsUntilEvent > 1 else ''}"
+    monthString = f"{calendarMonthsUntilEvent} month{'s' if calendarMonthsUntilEvent > 1 else ''}"
+    dayString = f"{calendarDaysUntilEvent} day{'s' if calendarDaysUntilEvent > 1 else ''}"
+    hourString = f"{timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''}"
+    minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
+    
+    # Years until
+    if calendarYearsUntilEvent: 
+        if calendarMonthsUntilEvent:
+            return f"{yearString} and {monthString}"
+        return f"{yearString}"
+    # Months until
+    if calendarMonthsUntilEvent:
+        if calendarDaysUntilEvent:
+            return f"{monthString} and {dayString}"
+        return f"{monthString}"
+    # Days until
+    if calendarDaysUntilEvent:
+        if eventStart.time() < currentDatetime.time():
+            if calendarDaysUntilEvent == 1:
+                return "Tomorrow"
+            return f"{dayString}"
+        if timeUntilEvent.hours:
+            return f"{dayString} and {hourString}"
+        return f"{dayString}"
+    # Hours until
+    if timeUntilEvent.hours:
+        if timeUntilEvent.minutes:
+            return f"{hourString} and {minuteString}"
+        return f"{hourString}"
+    # Minutes until
+    elif timeUntilEvent.minutes > 1:
+        return f"{minuteString}"
+    # Seconds until
+    return "<1 minute"
+    
+def copyRsvpToNewEvent(priorEvent, newEvent):
+    """
+        Copies rvsps from priorEvent to newEvent
+    """
+    rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent['id']).execute())
+    
+    for student in rsvpInfo:
+        newRsvp = EventRsvp(
+                user = student.user,
+                event = newEvent,
+                rsvpWaitlist = student.rsvpWaitlist
+            )
+        newRsvp.save()
+    numRsvps = len(rsvpInfo)
+    if numRsvps:
+        createRsvpLog(newEvent, f"Copied {numRsvps} Rsvps from {priorEvent['name']} to {newEvent.name}")

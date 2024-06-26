@@ -24,7 +24,7 @@ from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.adminLog import AdminLog
+from app.models.activityLog import ActivityLog
 from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
@@ -61,7 +61,7 @@ users = [
         "lastName" : "Khatt",
         "isStudent": True,
         "isFaculty": False,
-        "isCeltsAdmin": True,
+        "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "classLevel": "Senior",
@@ -91,11 +91,11 @@ users = [
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Computer and Information Science",
+        "classLevel": "Junior",
         "minorInterest": 0,
     },
     {
@@ -223,7 +223,7 @@ users = [
         "lastName": "Bledsoe",
         "phoneNumber": "(123)456-7890",
         "isCeltsAdmin": False,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "minorInterest": 0,
@@ -249,7 +249,7 @@ BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 certs = [
         { "id": 1, "name": "Bonner" },
-        { "id": 2, "name": "CESC Minor" },
+        { "id": 2, "name": "CCE Minor" },
         { "id": 3, "name": "CPR" },
         { "id": 4, "name": "Confidentiality" },
         { "id": 5, "name": "I9" },
@@ -1452,7 +1452,7 @@ logs = [
    "logContent": "Created Adoption Event."
    }
 ]
-AdminLog.insert_many(logs).on_conflict_replace().execute()
+ActivityLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
@@ -1500,6 +1500,12 @@ celtsLabor = [
         "positionTitle": "Bonner Manager",
         "term": 3,
         "isAcademicYear": False
+    },
+    {
+        "user": "ayisie",
+        "positionTitle": "AGP Team Memeber",
+        "term": 2,
+        "isAcademicYear": True
     }
 ]
 CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()

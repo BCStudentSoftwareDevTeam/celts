@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/minorRequirements.js"></script>
+  <script type="module" src="/static/js/minorAdminPage.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
   {% block styles %}
@@ -21,6 +21,7 @@
             <th>Name</th>
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
+            <th>Requested Other Engagement</th>
         </tr>
     </thead>
     <tbody>
@@ -31,12 +32,27 @@
             </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
+            <td>
+            {% if student.hasCommunityEngagementRequest %}
+                {# Placeholder for request other engagement #}
+                <a href="#">Yes</a>
+            {% else %}
+                No
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<br>
-<h2>Interested Students</h2>
+<br> <br>
+<div class="row">
+    <div class="col">
+        <h2>Interested Students</h2>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" id="emailAllInterested">Email All</button>
+    </div>
+</div>
 <table class="display" id="interestedStudentsTable">
     <thead>
         <tr>
@@ -47,11 +63,11 @@
         {% for student in interestedStudentsList %}
             <tr>
                 <td>
-                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
                 </td>
             </tr>
         {% endfor %}
+        <input id="interestedStudentEmails" hidden value="{{interestedStudentEmailString}}"/>
     </tbody>
 </table>
-
 {% endblock %}

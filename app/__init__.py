@@ -90,7 +90,7 @@ def load_visibleAccordion():
     acc = request.args.get("accordion", default = False)
     return {"visibleAccordion": acc}
 """
-Error handling for all 403, 404, 500 errors. Works by rendering a customm html
+Error handling for all 403, 404, 500 errors. Works by rendering a custom html
 file located at templates/errors. All abort calls are automatically routed here
 to be handled.
 """

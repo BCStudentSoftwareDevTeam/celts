@@ -2,7 +2,9 @@ import pytest
 from flask import g
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
+from playhouse.shortcuts import model_to_dict
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
 
@@ -23,16 +25,78 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
-from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
+from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
 
 @pytest.mark.integration
-def test_event_model():
-    event = Event.get_by_id(11)
-    assert event.isPast
+def test_event_end():
+    with mainDB.atomic() as transaction:
+        # creates an event in the future
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now() + timedelta(days=1),
+                                    endDate = datetime.now() + timedelta(days=2),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == False
+        assert testingEvent.isPastStart == False
+        transaction.rollback()
+
+    with mainDB.atomic() as transaction:
+        # creates an event in the present
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now(),
+                                    endDate = datetime.now() + timedelta(days=1),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == False
+        assert testingEvent.isPastStart == True
+        transaction.rollback()
+
+    with mainDB.atomic() as transaction:
+        # creates an event in the past
+        testingEvent = Event.create(name = "Testing event start/end time",
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = datetime.now() + timedelta(seconds=-2),
+                                    timeEnd = datetime.now() + timedelta(seconds=2),
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = datetime.now() + timedelta(days=-3),
+                                    endDate = datetime.now() + timedelta(days=-1),
+                                    recurringId = None,
+                                    program = 9)
+        testingEvent = Event.get_by_id(testingEvent.id)
+
+        assert testingEvent.isPastEnd == True
+        assert testingEvent.isPastStart == True
+        transaction.rollback()
+
+
 
 @pytest.mark.integration
 def test_eventTemplate_model():
@@ -896,3 +960,128 @@ def test_getEventRsvpCount():
             assert rsvpd_user_count == (index + 1)
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getCountdownToEvent():
+    """
+    This functions creates events that are different times away from the current time and tests
+    the output of the getCountdown
+    """
+    # Define a custom datetime representing the current time
+    currentTime = datetime.strptime('1/1/2024 12:00 PM', '%m/%d/%Y %I:%M %p')
+    def makeEventIn(*, timeDifference=None, **kwargs):
+        """
+        Takes in a datetime.relativedelta object or keyword argumentsand creates a 1 hour long event that starts
+        at currentTime + deltatime
+        """
+        nonlocal currentTime
+        if kwargs:
+            timeDifference = relativedelta(**kwargs)
+        eventStart = currentTime + timeDifference
+        eventEnd = eventStart + relativedelta(hours=1)
+        irrelevantEventData = {'name': 'testing', 'term': 1, 'description': '', 'location': '', 'program': 1}
+        return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), endDate=eventEnd.date(), **irrelevantEventData)
+    
+    def testCountdown(expectedOutput, *, timeDifference=None, **kwargs):
+        """
+        This function creates an event in the future (using either a relativeDelta object or kwargs)
+        and the makeEventIn() function to assert that the countdown until that event is equal to
+        the expectedOutput parameter.
+        
+        Rolls back the DB changes after the function exits
+        """
+        nonlocal currentTime
+        with mainDB.atomic() as transaction:
+            event = makeEventIn(timeDifference=timeDifference, **kwargs)
+            countdown = getCountdownToEvent(event, currentDatetime=currentTime)
+            assert countdown == expectedOutput
+            transaction.rollback()
+
+    # Years and months away
+    testCountdown("2 years and 5 months", years=2, months=5, days=1)
+
+    # Years away
+    testCountdown("1 year", years=1)
+
+    # Months and days away
+    testCountdown("1 month and 7 days", months=1, days=7)
+
+    # Months away
+    testCountdown("3 months", months=3)
+
+    # Days away
+    # When an event is more than a day after the current time today w/o hours
+    testCountdown("4 days", days=4)
+
+    # Days and hours away pt. 1
+    # When an event is more than 1 day away before the current time today
+    testCountdown("3 days", days=2, hours=22)
+
+    # Days and hours away pt. 2
+    # When an event is more than a day after the current time today
+    testCountdown("2 days and 3 hours", days=2, hours=3)
+
+    # 1 day before the current time today
+    testCountdown("Tomorrow", hours=23, minutes=30)
+
+    # Hours and minutes away
+    testCountdown("2 hours and 30 minutes", hours=2, minutes=30)
+
+    # Hours away
+    testCountdown("3 hours", hours=3)
+
+    # Minutes away
+    testCountdown("45 minutes", minutes=45)
+
+    # Less than a minute away
+    testCountdown("<1 minute", minutes=0, seconds=30)
+
+    # Current event
+    testCountdown("Happening now", minutes=-30)
+    
+    # Past event
+    testCountdown("Already passed", days=-1)
+
+@pytest.mark.integration
+def test_copyRsvpToNewEvent():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+
+
+            priorEvent = Event.create(name = "Req and Limit",
+                                    term = 2,
+                                    description = "Event that requries RSVP and has an RSVP limit set.",
+                                    timeStart = "6:00 pm",
+                                    timeEnd = "9:00 pm",
+                                    location = "The Moon",
+                                    isRsvpRequired = 1,
+                                    startDate = "2022-12-19",
+                                    endDate = "2022-12-19",
+                                    program = 9)
+            
+            priorEvent.save()
+            EventRsvp.create(user = "neillz",
+                             event = priorEvent).save()
+            EventRsvp.create(user = "partont",
+                             event = priorEvent).save()
+            
+            newEvent = Event.create(name = "Req and Limit",
+                                     term = 2,
+                                     description = "Event that requries RSVP and has an RSVP limit set.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "The Moon",
+                                     isRsvpRequired = 1,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     program = 9)
+
+            newEvent.save()
+            assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 0
+            
+            copyRsvpToNewEvent(model_to_dict(priorEvent), newEvent) 
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
+
+            transaction.rollback()

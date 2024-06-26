@@ -26,13 +26,13 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import *
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.celtsLabor import getCeltsLaborHistory
-from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
@@ -47,18 +47,22 @@ def redirectToLogout():
 def landingPage():
 
     managerProgramDict = getManagerProgramDict(g.current_user)
-
     # Optimize the query to fetch programs with non-canceled, non-past events in the current term
+  
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
-                                         .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
+                                         .where((Event.term == g.current_term) & (Event.isCanceled == False))
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
+    # Limit returned list to events in the future
+    futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
 
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
-                           programsWithEventsList=programsWithEventsList)
+                           programsWithEventsList = futureEvents)
+
+
 
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
@@ -139,6 +143,7 @@ def viewUsersProfile(username):
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []
+        
         for program in programs:
             banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
@@ -209,7 +214,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -242,7 +247,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
@@ -312,7 +317,7 @@ def ban(program_id, username):
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
-        createAdminLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
+        createActivityLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
         print("Error while updating ban", e)
@@ -332,7 +337,7 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createAdminLog(f'Unbanned {username} from {programInfo.programName}.')
+        createActivityLog(f'Unbanned {username} from {programInfo.programName}.')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 
@@ -469,18 +474,6 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
-@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
-def reviewProposal():
-    """
-    this function gets the submitted course id and returns the its data to the review proposal modal
-    """
-    courseID=request.form
-    course=Course.get_by_id(courseID["course_id"])
-    instructors_data=course.courseInstructors
-    return render_template('/main/reviewproposal.html',
-                            course=course,
-                            instructors_data=instructors_data)
-
 @main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
 def getDietInfo():
     dietaryInfo = request.form
@@ -491,9 +484,9 @@ def getDietInfo():
         updateDietInfo(user, dietInfo)
         userInfo = User.get(User.username == user) 
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+            createActivityLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
-            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
+            createActivityLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
 
     return " "

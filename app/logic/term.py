@@ -1,6 +1,6 @@
 from flask import session, g
 from playhouse.shortcuts import model_to_dict
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.models.term import Term
 
 def addNextTerm():
@@ -15,7 +15,7 @@ def addNextTerm():
     
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear   
-    if prevSemester == "Summer ": # we only change academic year when the latest term in the table is Summer
+    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
 
@@ -59,4 +59,4 @@ def changeCurrentTerm(term):
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createAdminLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+    createActivityLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")

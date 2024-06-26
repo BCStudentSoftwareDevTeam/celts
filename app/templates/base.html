@@ -47,13 +47,7 @@
         <div id="maincontent" class="main-content container">
           <div class="flash_container" id="flash_container">
             {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert  alert-{{category}} alert-dismissible" role="alert">{{ message }}
-                    <button type="button" class="btn-close kiosk-hide" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-                {% endfor %}
-              {% endif %}
+              <script> var flashMessages = {{messages | tojson}} </script>
             {% endwith %}
           </div>
           <div class="sidebar-icon d-lg-none position-fixed top-0 start-0 d-print-none">

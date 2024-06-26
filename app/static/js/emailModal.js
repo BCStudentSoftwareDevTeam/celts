@@ -83,7 +83,7 @@ function readyPlaceholderOptions(eventId) {
 
 
 
-function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=null) {
+function showEmailModal(eventID, programID, selectedTerm, isPastStart, template=null) {
   
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
@@ -93,7 +93,7 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
   } else{
     $("#emailSender option[value=optional]").hide();
   }
-  if (isPastEvent) {
+  if (isPastStart) {
     $(".pastEventWarning").prop("hidden", false);
   } else {
     $(".pastEventWarning").prop("hidden", true);
