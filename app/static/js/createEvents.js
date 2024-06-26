@@ -70,44 +70,76 @@ function format24to12HourTime(timeStr){
     storingCustomEventAttributes();
   });
 
-
-  function storingCustomEventAttributes(){
+let entries = []
+function storingCustomEventAttributes() {
     
-    
- 
-   
+  $(".extraSlots").children().each(function(index, element) {
+    let rowData = $.map($(element).find("input"), (el) =>  $(el).val());
+    console.log("Data in row " + (index + 1) + ": " + rowData);
 
-    var customDatesAndTimes = {
-      name: $("#inputEventName").val(),
-      isCustom: true,
-      customDate: $("#customDatePicker" + pageLocation).val(),
-      startTime: $("#customstartTime-" + pageLocation).val(),
-      endTime: $("#customendTime-" + pageLocation).val()
-    };
-
-    console.log('customDatesAndTime:' , customDatesAndTimes);
+      entries.push({
+      eventDate: rowData[0],
+      startTime: rowData[1],
+      endTime: rowData[2]
+    });
       
-      $.ajax({
-      type:"POST",
-      url: "/makeCustomEvents",
-      data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
-      success: function(jsonData){
+    
+  });
+  console.log(entries)
+  $.ajax({
+    type:"POST",
+    url: "/makeCustomEvents",
+    data: entries, //get the startDate, endDate and name as a dictionary
+    success: function(jsonData){
       var customEvents = JSON.parse(jsonData)
-      console.log('customEvents:', customEvents)
       var customTable = $("#customEventsTable")
       $("#customEventsTable tbody tr").remove();
 
       for (var event of customEvents){
-      var eventdate = new Date(event.date).toLocaleDateString()
-      customTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-      }
-      },
-      error: function(error){
+        var eventdate = new Date(event.date).toLocaleDateString()
+        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+        }
+    },
+    error: function(error){
       console.log(error)
-      }
-      });
+    }
+  });
+ 
+}   
 
-}
+    // var customDatesAndTimes = {
+    //   name: $("#inputEventName").val(),
+    //   isCustom: true,
+    //   customDate: $("#customDatePicker" + pageLocation).val(),
+    //   startTime: $("#customstartTime-" + pageLocation).val(),
+    //   endTime: $("#customendTime-" + pageLocation).val()
+    // };
+
+    // console.log('customDatesAndTime:' , customDatesAndTimes);
+      
+    //   $.ajax({
+    //   type:"POST",
+    //   url: "/makeCustomEvents",
+    //   data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
+    //   success: function(jsonData){
+    //   var customEvents = JSON.parse(jsonData)
+    //   console.log('customEvents:', customEvents)
+    //   var customTable = $("#customEventsTable")
+    //   $("#customEventsTable tbody tr").remove();
+
+    //   for (var event of customEvents){
+    //   var eventdate = new Date(event.date).toLocaleDateString()
+    //   customTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+    //   }
+    //   },
+    //   error: function(error){
+    //   console.log(error)
+    //   }
+    //   });
+    // }
+  
+
+    
     /*while (index < num.length || index < color.length || index < value.length) {
     // Retrieve elements from arrays if they exist at current index
     a = index < num.length ? num[index] : null;
@@ -218,11 +250,11 @@ $(document).ready(function() {
     $("#delete_customevent" + counterAdd).removeClass('d-none');
 
 
-      $(".extraSlots").children().each(function(index, element) {
-          let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
-          console.log("Data in row " + (index + 1) + ": " + rowData)
-          // Modify this to display or manipulate your data as needed
-      });
+      // $(".extraSlots").children().each(function(index, element) {
+      //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
+      //     console.log("Data in row " + (index + 1) + ": " + rowData)
+      //     // Modify this to display or manipulate your data as needed
+      // });
 
   });
 
