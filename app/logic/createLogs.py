@@ -1,6 +1,5 @@
 from flask import g
 from datetime import datetime
-from app.models.adminLog import AdminLog
 from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
 
@@ -12,6 +11,3 @@ def createActivityLog(content):
     date = datetime.now()
     ActivityLog.create(createdBy=g.current_user,createdOn=date,logContent=content)
 
-def createAdminLog(content):
-    date = datetime.now()
-    AdminLog.create(createdBy=g.current_user,createdOn=date,logContent=content)

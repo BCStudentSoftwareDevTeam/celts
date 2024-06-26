@@ -32,7 +32,7 @@ from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.celtsLabor import getCeltsLaborHistory
-from app.logic.createLogs import createRsvpLog, createActivityLog, createAdminLog
+from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
@@ -189,7 +189,7 @@ def viewUsersProfile(username):
                             )
     abort(403)
 
-@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST']) ##########COME BACK HERE AFTER LUNCH##########################
 def emergencyContactInfo(username):
     """
     This loads the Emergency Contact Page
@@ -198,7 +198,6 @@ def emergencyContactInfo(username):
         abort(403)
 
     contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
-
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
@@ -217,15 +216,14 @@ def emergencyContactInfo(username):
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
 
-        createAdminLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/insuranceInfo")
-
+#######################################################################################
 @main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
 def insuranceInfo(username):
     """
@@ -234,9 +232,10 @@ def insuranceInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
 
+    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+
     if request.method == 'GET':
         readOnly = g.current_user.username != username
-        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
                                 username=username,
                                 userInsuranceInfo=userInsuranceInfo,
@@ -252,15 +251,14 @@ def insuranceInfo(username):
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
 
-        createAdminLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/emergencyContact")
-
+####################################################################################
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
