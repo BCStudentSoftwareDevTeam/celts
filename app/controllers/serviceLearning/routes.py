@@ -92,9 +92,11 @@ def slcCreateCourse():
 @serviceLearning_bp.route('/serviceLearning/canceledProposal', methods=['POST'])
 def slcCancelProposal():
     courseID = request.form.get('courseID')
-    print('##########################################', courseID, '##########################################')
-
-    return 0
+    course = Course.get_by_id(courseID)
+    if not course.courseName and not course.courseAbbreviation:
+        CourseQuestion.delete().where(CourseQuestion.course_id == courseID).execute()
+        course.delete_instance()
+    return "Proposal Canceled"
           
 
 @serviceLearning_bp.route('/serviceLearning/exit', methods=['GET'])

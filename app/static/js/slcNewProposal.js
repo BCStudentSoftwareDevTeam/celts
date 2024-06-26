@@ -83,17 +83,14 @@ $(document).ready(function(e) {
       method: 'POST',
       data: {courseID : document.getElementById('courseID').value},
       success: function(response) {
-          alert('Successfully canceled the proposal')
-          msgToast("Proposal Canceled ", "Successfully canceled the proposal edit/creation.")
+          msgToast("Proposal Canceled", "Successfully canceled the proposal edit/creation.")
       },
       error: function(error) {
-          alert('Didnt successfully canceled the proposal :(')
-          msgFlash(error)
-          console.log(error)
+          msgFlash('Error: ', error)
           
       }
   });
-      // window.location.replace($(this).val());
+      window.location.replace($(this).val());
   });
 
   $("#saveContinue").on("click", function() {
