@@ -177,6 +177,7 @@ $(document).ready(function() {
   });
   
   let counterAdd = 0 // counter to add customized ids into the newly created slots
+  
   $(".add_customevent").click(function(){
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
@@ -184,7 +185,26 @@ $(document).ready(function() {
     $(".extraSlots").append(clonedCustom)
     $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
+    
+   
+    clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
 
+  
+    deleteId.push({id: "#delete_customevent" + counterAdd})
+    console.log("#delete_customevent" + counterAdd)
+    console.log(deleteId)
+
+    // Attach click handler for the delete button using event delegation
+    $(document).on("click", "#delete_customevent" + counterAdd, function() {
+        // Handle delete action here
+        $(this).closest("#customEvent" + counterAdd).remove();
+    });
+    
+  });
+
+
+
+    
 
       // $(".extraSlots").children().each(function(index, element) {
       //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
@@ -192,7 +212,7 @@ $(document).ready(function() {
       //     // Modify this to display or manipulate your data as needed
       // });
 
-  });
+ 
 
  
 
