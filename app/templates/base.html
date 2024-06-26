@@ -23,9 +23,9 @@
 {% block content %}
 <div>
   <div class="row g-0">
-    <div class="col-md-auto d-print-none d-none d-lg-block">
+    <div class="col-md-auto d-print-none d-none d-lg-block" id="sideBarContainer">
       <div style="margin-right: 280px">
-        <nav class="position-fixed float-start">
+        <nav class="position-fixed float-start" id="sideBar">
           {% block sidebar %}
             {% include 'sidebar.html' %}
           {% endblock %}
@@ -51,7 +51,7 @@
             {% endwith %}
           </div>
           <div class="sidebar-icon d-lg-none position-fixed top-0 start-0 d-print-none">
-            <button class="btn btn-dark rounded-0 rounded-end kiosk-hide" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
+            <button class="btn btn-dark rounded-0 rounded-end kiosk-hide" id="sideBarSandwichUI" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
               <span class="bi bi-list" role="button" aria-label="Sidebar"></span>
             </button>
           </div>
