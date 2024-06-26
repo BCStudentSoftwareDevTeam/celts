@@ -324,3 +324,5 @@ Object.keys(allExports).forEach(key => {
 })
 
 
+window.formSubmit = formSubmit;
+window.changeAction = changeAction; 
