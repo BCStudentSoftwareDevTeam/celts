@@ -62,20 +62,33 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 continue
             data = Course.select().where(Course.courseAbbreviation == course).order_by(Course.term.desc()).limit(1)
             get_existing_info = list(data.dicts())
-            existing_info_dict = get_existing_info[0]
-            print("#########################################################")
-            print(existing_info_dict['courseName'])
-            courseObj: Course = Course.create(
-                #  courseAbbreviation = course,
-                #  term = termObj, 
-                 defaults = {"CourseName" : existing_info_dict['courseName'],
-                             "sectionDesignation" : "",
-                             "courseCredit" : "1",
-                             "term" : termObj,
-                             "status" : 4,
-                             "createdBy" : g.current_user,
-                             "serviceLearningDesignatedSections" : "",
-                             "previouslyApprovedDescription" : "" })[0]
+
+            if not get_existing_info:
+                courseObj: Course = Course.create(
+                    defaults = {"CourseName" : "",
+                                "sectionDesignation" : "",
+                                "courseCredit" : "1",
+                                "term" : termObj,
+                                "status" : 4,
+                                "createdBy" : g.current_user,
+                                "serviceLearningDesignatedSections" : "",
+                                "previouslyApprovedDescription" : "" })[0]
+            
+            else :
+                existing_info_dict = get_existing_info[0]
+                print("#########################################################")
+                print(existing_info_dict['courseName'])
+                courseObj: Course = Course.create(
+                    #  courseAbbreviation = course,
+                    #  term = termObj, 
+                    defaults = {"CourseName" : existing_info_dict['courseName'],
+                                "sectionDesignation" : "",
+                                "courseCredit" : "1",
+                                "term" : termObj,
+                                "status" : 4,
+                                "createdBy" : g.current_user,
+                                "serviceLearningDesignatedSections" : "",
+                                "previouslyApprovedDescription" : "" })[0]
 
             for userDict in courseInfo['students']:
                 if userDict['errorMsg']:
