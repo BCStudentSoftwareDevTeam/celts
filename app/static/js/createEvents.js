@@ -63,12 +63,18 @@ function format24to12HourTime(timeStr){
   }
 
 
-  var save_button = document.getElementById('submitParticipant')
-
+  var save_button = document.getElementById('submitParticipant');
+  var modal = document.getElementById('modalCustom');
+  
   save_button.addEventListener('click', function() {
     // Call the function storingCustomEventAttributes() when the button is clicked
     storingCustomEventAttributes();
+  
+    // Remove the modal and overlay from the DOM
+    $('#modalCustom').modal('hide');
+
   });
+  
 
 let entries = []
 function storingCustomEventAttributes() {
@@ -86,24 +92,24 @@ function storingCustomEventAttributes() {
     
   });
   console.log(entries)
-  $.ajax({
-    type:"POST",
-    url: "/makeCustomEvents",
-    data: entries, //get the startDate, endDate and name as a dictionary
-    success: function(jsonData){
-      var customEvents = JSON.parse(jsonData)
-      var customTable = $("#customEventsTable")
-      $("#customEventsTable tbody tr").remove();
+  // $.ajax({
+  //   type:"POST",
+  //   url: "/makeCustomEvents",
+  //   data: entries, //get the startDate, endDate and name as a dictionary
+  //   success: function(jsonData){
+  //     var customEvents = JSON.parse(jsonData)
+  //     var customTable = $("#customEventsTable")
+  //     $("#customEventsTable tbody tr").remove();
 
-      for (var event of customEvents){
-        var eventdate = new Date(event.date).toLocaleDateString()
-        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-        }
-    },
-    error: function(error){
-      console.log(error)
-    }
-  });
+  //     for (var event of customEvents){
+  //       var eventdate = new Date(event.date).toLocaleDateString()
+  //       recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+  //       }
+  //   },
+  //   error: function(error){
+  //     console.log(error)
+  //   }
+  //});
  
 }   
 
