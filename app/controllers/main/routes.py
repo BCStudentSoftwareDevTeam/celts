@@ -212,6 +212,7 @@ def emergencyContactInfo(username):
         createAdminLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
+        
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
