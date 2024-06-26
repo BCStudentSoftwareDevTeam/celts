@@ -186,11 +186,11 @@ $(document).ready(function() {
     $("#delete_customevent" + counterAdd).removeClass('d-none');
 
 
-      $(".extraSlots").children().each(function(index, element) {
-          let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
-          console.log("Data in row " + (index + 1) + ": " + rowData)
-          // Modify this to display or manipulate your data as needed
-      });
+      // $(".extraSlots").children().each(function(index, element) {
+      //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
+      //     console.log("Data in row " + (index + 1) + ": " + rowData)
+      //     // Modify this to display or manipulate your data as needed
+      // });
 
   });
 
