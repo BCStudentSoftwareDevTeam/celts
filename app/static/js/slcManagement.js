@@ -14,6 +14,9 @@ $(document).ready(function() {
   $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
   $("#renewBtn").on("click", renew);
 
+
+
+
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -188,6 +191,8 @@ function unapproveProposal(el){
     })
 }
 
+
+
 /************** Imported Courses Modal Functions **************/
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
@@ -290,5 +295,32 @@ function emptyInstructorTable() {
   $("#instructorTableBody").empty().html(saveRow);
 }
 
-window.formSubmit = formSubmit;
-window.changeAction = changeAction;
+// Since the JS code is a module, the variables and functions are locally scoped; hence, reviewProposal.html 
+// did not have access to the functions and the variables. The following export object contains all functions 
+// that need to be set to the window/global scope, and the iterator below it attaches the functions to the window object
+// to make them accessible globally 
+export const allExports = {
+  resetAllSelections,
+  updateRenewModal,
+  changeAction,
+  renew,
+  withdraw,
+  changeTerm,
+  formSubmit,
+  reviewCourses,
+  approveProposal,
+  unapproveProposal,
+  showAlterModalWithCourse,
+  getImportedCourseInfo,
+  setInstructorList,
+  updateInstructorsTable,
+  attachInstructorsInfo,
+  createInstructorRow,
+  emptyInstructorTable,
+}
+
+Object.keys(allExports).forEach(key => {
+  window[key] = allExports[key] 
+})
+
+
