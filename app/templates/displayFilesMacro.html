@@ -1,29 +1,25 @@
-{% macro displayFiles(filePaths, titleName, deleteLink, databaseId)  %}
-
+{% macro displayFiles(filePaths, titleName, deleteLink, databaseId) %}
 <table>
-    <tr>
-        <td class="py-2"><strong>Display</strong></td>
-        <td class="py-2 px-3"><strong>{{ titleName }}</strong></td>
-    </tr>
     {% for key, value in filePaths.items() %}
         <tr id="attachment_{{ value[1] }}" class="attachmentRow_{{ key }}" data-id="{{ key }}">
             <td class="py-2 px-3">
-                {% if value[-1].isDisplayed %}
-                    <input type="radio" class="attachmentCheck" data-id="{{ value[1] }}" checked>
-                
-                {% else %}
-                    {% if not (value[0].endswith('.png') or value[0].endswith('.jpg') or value[0].endswith('.svg') or value[0].endswith('.jpeg') or value[0].endswith('.gif')) %}
-                        -
-                    {% else %}
-                        <input type="radio" class="attachmentCheck" data-id="{{ value[1] }}" >
-                    {% endif %}
-                {% endif %}
-            </td>
-            <td class="py-2 px-3" >
                 {% set idx = key.index("/") %}
                 {% set fileName = key[idx+1:] %}
                 {% set shortName = fileName[:8] + "..." + fileName[-10:] if fileName|length > 25 else fileName %}
-                <a class="mr-5 fileName" data-filename='{{ fileName }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{fileName}}" aria-labelledby="{{fileName}}">{{ shortName }}</a>
+                {% set iconClass = '' %}
+                {% if fileName.endswith('.jpg') or fileName.endswith('.jpeg') or fileName.endswith('.png') %}
+                    {% set iconClass = 'bi-file-image' %}
+                {% elif fileName.endswith('.pdf') %}
+                    {% set iconClass = 'bi-filetype-pdf' %}
+                {% elif fileName.endswith('.docx') %}
+                    {% set iconClass = 'bi-filetype-docx' %}
+                {% elif fileName.endswith('.xlsx') %}
+                    {% set iconClass = 'bi-filetype-xlsx' %}
+                {% else %}
+                    {% set iconClass = 'bi-file-earmark-arrow-up' %}
+                {% endif %}
+                <i class="bi {{ iconClass }} fs-2"></i>
+                <a class="mr-5 fileName" data-filename='{{ fileName }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ fileName }}" aria-labelledby="{{ fileName }}">{{ shortName }}</a>
             </td>
             <td style="text-align:center">
                 <button
