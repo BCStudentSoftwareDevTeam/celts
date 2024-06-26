@@ -47,22 +47,20 @@ def redirectToLogout():
 def landingPage():
 
     managerProgramDict = getManagerProgramDict(g.current_user)
+
     # Optimize the query to fetch programs with non-canceled, non-past events in the current term
-  
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
                                          .where((Event.term == g.current_term) & (Event.isCanceled == False))
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
     # Limit returned list to events in the future
-    futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
+    futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd] 
 
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList = futureEvents)
-
-
 
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
@@ -188,8 +186,8 @@ def viewUsersProfile(username):
                                 totalSustainedEngagements = totalSustainedEngagements,
                             )
     abort(403)
-
-@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST']) ##########COME BACK HERE AFTER LUNCH##########################
+###############################EMERGENCY CONTACT######################################
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST']) 
 def emergencyContactInfo(username):
     """
     This loads the Emergency Contact Page
@@ -201,7 +199,6 @@ def emergencyContactInfo(username):
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
-        #contactInfo went here
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
                                 contactInfo=contactInfo,
@@ -213,7 +210,9 @@ def emergencyContactInfo(username):
             abort(403)
 
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
-        if not rowsUpdated:
+        print("LOOOK HERE ")
+        print(str(rowsUpdated))
+        if rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
 
         createActivityLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
@@ -223,7 +222,7 @@ def emergencyContactInfo(username):
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/insuranceInfo")
-#######################################################################################
+###############################INSURANCE INFO######################################
 @main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
 def insuranceInfo(username):
     """
@@ -248,7 +247,10 @@ def insuranceInfo(username):
             abort(403)
 
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        if not rowsUpdated:
+        print("LOOOK HERE ")
+        print(str(rowsUpdated))
+        if rowsUpdated:
+            print("YOUR MOM KID< YOUR MOM")
             InsuranceInfo.create(user = username, **request.form)
 
         createActivityLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
@@ -258,7 +260,7 @@ def insuranceInfo(username):
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/emergencyContact")
-####################################################################################
+###############################TRAVEL FORM######################################
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
@@ -276,8 +278,7 @@ def travelForm(username):
     return render_template ('/main/travelForm.html',
                             userData = userData
                             )
-
-
+###############################PROFILE NOTES######################################
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
     """
@@ -349,7 +350,6 @@ def unban(program_id, username):
         print("Error while updating Unban", e)
         flash("Failed to unban the volunteer", "danger")
         return "Failed to unban the volunteer", 500
-
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
 def addInterest(program_id, username):

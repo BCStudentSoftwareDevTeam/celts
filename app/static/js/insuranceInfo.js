@@ -18,11 +18,11 @@ $(document).ready(function(){
 
     function formIsValid(){
         let invalidInputs = $('input').map(function(i, e){
-            if (! e.checkValidity()) {
-                e.reportValidity()
-                return e
+            if (!e.checkValidity()) {
+                e.reportValidity();
+                return e;
             }
-        })
-        return invalidInputs.length == 0
+        });
+        return invalidInputs.length == 0;
     }
 });

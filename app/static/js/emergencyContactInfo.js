@@ -40,7 +40,6 @@ $(document).ready(function(){
                 return e;
             }
         });
-    
         return invalidInputs.length == 0;
     }
 });
