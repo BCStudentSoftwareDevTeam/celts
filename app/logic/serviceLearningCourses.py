@@ -60,23 +60,22 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             if 'errorMsg' in courseInfo and courseInfo['errorMsg']:
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
-            
-            data = Course.select().where(Course.courseAbbreviation == course)
-            existing_Course_Info = data.dicts()
-
-            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-            print(existing_Course_Info)
-            courseObj: Course = Course.get_or_create(
-            courseAbbreviation = course,
-            term = termObj,
-            defaults = {"CourseName" : "",
-                        "sectionDesignation" : "",
-                        "courseCredit" : "1",
-                        "term" : termObj,
-                        "status" : 4,
-                        "createdBy" : g.current_user,
-                        "serviceLearningDesignatedSections" : "",
-                        "previouslyApprovedDescription" : "" })[0]
+            data = Course.select().where(Course.courseAbbreviation == course).order_by(Course.term.desc()).limit(1)
+            get_existing_info = list(data.dicts())
+            existing_info_dict = get_existing_info[0]
+            print("#########################################################")
+            print(existing_info_dict['courseName'])
+            courseObj: Course = Course.create(
+                #  courseAbbreviation = course,
+                #  term = termObj, 
+                 defaults = {"CourseName" : existing_info_dict['courseName'],
+                             "sectionDesignation" : "",
+                             "courseCredit" : "1",
+                             "term" : termObj,
+                             "status" : 4,
+                             "createdBy" : g.current_user,
+                             "serviceLearningDesignatedSections" : "",
+                             "previouslyApprovedDescription" : "" })[0]
 
             for userDict in courseInfo['students']:
                 if userDict['errorMsg']:
@@ -440,4 +439,6 @@ def parseUploadedFile(filePath):
             
         elif cellVal: # but didn't match the regex
             errors.append((f'ERROR: "{cellVal}" in row {cellRow} of the Excel document does not appear to be a term, course, or valid B#.',1))
+        
+
     return result, errors
