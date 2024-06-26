@@ -63,9 +63,15 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             data = Course.select().where(Course.courseAbbreviation == course).order_by(Course.term.desc()).limit(1)
             get_existing_info = list(data.dicts())
 
+
             if not get_existing_info:
+<<<<<<< HEAD
                 print("########################################################")
                 courseObj: Course = Course.get_or_create(
+=======
+                print("############################################################################################")
+                courseObj: Course = Course.create(
+>>>>>>> 40fcba960e38fa07d49f286d05fd9f740784423d
                     defaults = {"CourseName" : "",
                                 "sectionDesignation" : "",
                                 "courseCredit" : "1",
@@ -77,7 +83,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             
             else :
                 existing_info_dict = get_existing_info[0]
-                print("#########################################################")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print(existing_info_dict['courseName'])
                 courseObj: Course = Course.get_or_create(
                     #  courseAbbreviation = course,
