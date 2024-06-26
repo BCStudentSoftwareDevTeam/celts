@@ -14,9 +14,6 @@ $(document).ready(function() {
   $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
   $("#renewBtn").on("click", renew);
 
-
-
-
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -191,8 +188,6 @@ function unapproveProposal(el){
     })
 }
 
-
-
 /************** Imported Courses Modal Functions **************/
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
@@ -324,5 +319,3 @@ Object.keys(allExports).forEach(key => {
 })
 
 
-window.formSubmit = formSubmit;
-window.changeAction = changeAction; 
