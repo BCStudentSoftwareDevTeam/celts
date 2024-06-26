@@ -13,11 +13,11 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCourses import getSLProposalInfoForUser, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses
+from app.logic.serviceLearningCourses import getSLProposalInfoForUser, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses, deleteCourseObject
 from app.logic.downloadFile import *
 from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
-
+global courseIDGLOBAL
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -87,9 +87,15 @@ def slcEditProposal(courseID):
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
     course = createCourse(g.current_user)
-
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
+@serviceLearning_bp.route('/serviceLearning/canceledProposal', methods=['POST'])
+def slcCancelProposal():
+    courseID = request.form.get('courseID')
+    print('##########################################', courseID, '##########################################')
+
+    return 0
+          
 
 @serviceLearning_bp.route('/serviceLearning/exit', methods=['GET'])
 def slcExitView():
