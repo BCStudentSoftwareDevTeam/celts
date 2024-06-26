@@ -53,6 +53,7 @@ function format24to12HourTime(timeStr){
           for (var event of recurringEvents){
             var eventdate = new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+            
             }
         },
         error: function(error){
@@ -68,12 +69,16 @@ function format24to12HourTime(timeStr){
   
   save_button.addEventListener('click', function() {
     // Call the function storingCustomEventAttributes() when the button is clicked
+    $("#checkIsCustom").prop('checked', true);
     storingCustomEventAttributes();
-  
+    $("#checkIsCustom").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalCustom').modal('hide');
 
   });
+    
+
+
   
 
 let entries = []
@@ -82,34 +87,60 @@ function storingCustomEventAttributes() {
   $(".extraSlots").children().each(function(index, element) {
     let rowData = $.map($(element).find("input"), (el) =>  $(el).val());
     console.log("Data in row " + (index + 1) + ": " + rowData);
+    console.log(rowData)
 
       entries.push({
       eventDate: rowData[0],
       startTime: rowData[1],
-      endTime: rowData[2]
+      endTime: rowData[2],
+      isCustom: 'true'
     });
+    // Clear previous content
+    $('#displayEntries').empty();
+
+    // Iterate through entries array
+    entries.forEach(function(entry, index) {
+        // Create a string with entry details
+        let entryString = `
+            <p>Event Date: ${entry.eventDate}</p>
+            <p>Start Time: ${entry.startTime}</p>
+            <p>End Time: ${entry.endTime}</p>
+            <p>Is Custom: ${entry.isCustom}</p>
+            <hr>
+        `;
+
+        // Append entry details to displayEntries div
+        $('#displayEntries').append(entryString);
+    });
+
+
       
     
   });
   console.log(entries)
-  // $.ajax({
-  //   type:"POST",
-  //   url: "/makeCustomEvents",
-  //   data: entries, //get the startDate, endDate and name as a dictionary
-  //   success: function(jsonData){
-  //     var customEvents = JSON.parse(jsonData)
-  //     var customTable = $("#customEventsTable")
-  //     $("#customEventsTable tbody tr").remove();
+  $.ajax({
+    type:"POST",
+    url: "/makeCustomEvents",
+    data: entries, //get the startDate, endDate and name as a dictionary
+    success: function(jsonData){
+      var customEvents = JSON.parse(jsonData)
+      var customTable = $("#customEventsTable")
+      $("#customEventsTable tbody tr").remove();
 
-  //     for (var event of customEvents){
-  //       var eventdate = new Date(event.date).toLocaleDateString()
-  //       recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-  //       }
-  //   },
-  //   error: function(error){
-  //     console.log(error)
-  //   }
-  //});
+      
+
+      for (var event of customEvents){
+        var eventdate = new Date(event.date).toLocaleDateString()
+        var startTime = new TimeRanges(event.startTime).String()
+        var endTime = new TimeRanges(event.endTime).String()
+
+        customTable.append("<tr><td>"+event.name+"</td><td><input name='Date"+eventdate+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td><td>"+startTime+"</td><td>"+endTime+"</td></tr>");
+        }
+    },
+    error: function(error){
+      console.log(error)
+    }
+  });
  
 }   
 
@@ -232,21 +263,24 @@ $(document).ready(function() {
     if (customStatus == 'on') {
       $('#modalCustom').modal('show');// this line pop up the modal for the custom event
       $('#nonCustomTime, #nonCustomDate').addClass('d-none'); // this line disappear the non custom tims and dates and replace them with recurring table div for custom events to show
-      $("#recurringTableDiv").removeClass('d-none');
+      $("#customTableDiv").removeClass('d-none');
+      $("#checkIsCustom").prop('checked', true);
+    }
+    else if (customStatus == undefined){
+      $("#customTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
+
     }
   });
   
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsCustom").prop('checked', false);
     $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
+    $("#customTableDiv").addClass('d-none');
     $('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
-  });
-
-  $(".customSave").click(function(){// this function doesn't work
-    $("#recurringTableDiv").removeClass('d-none');
   });
   
   let counterAdd = 0 // counter to add customized ids into the newly created slots
+  
   $(".add_customevent").click(function(){
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
@@ -254,7 +288,26 @@ $(document).ready(function() {
     $(".extraSlots").append(clonedCustom)
     $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
+    
+   
+    clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
 
+  
+    deleteId.push({id: "#delete_customevent" + counterAdd})
+    console.log("#delete_customevent" + counterAdd)
+    console.log(deleteId)
+
+    // Attach click handler for the delete button using event delegation
+    $(document).on("click", "#delete_customevent" + counterAdd, function() {
+        // Handle delete action here
+        $(this).closest("#customEvent" + counterAdd).remove();
+    });
+    
+  });
+
+
+
+    
 
       // $(".extraSlots").children().each(function(index, element) {
       //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
@@ -262,7 +315,7 @@ $(document).ready(function() {
       //     // Modify this to display or manipulate your data as needed
       // });
 
-  });
+ 
 
  
 
