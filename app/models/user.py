@@ -1,7 +1,6 @@
 from app.models import *
 
 
-
 class User(baseModel):
     username = CharField(primary_key = True)
     bnumber = CharField(unique = True)
@@ -9,6 +8,7 @@ class User(baseModel):
     phoneNumber = CharField(null = True)
     firstName = CharField()
     lastName  = CharField()
+    cpoNumber = CharField(null=False)   
     isStudent = BooleanField(default = False)
     major = CharField(null = True)
     classLevel = CharField(null = True)

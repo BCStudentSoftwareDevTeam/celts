@@ -17,7 +17,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
 
@@ -201,7 +201,7 @@ def withdrawProposal(courseID) -> None:
     for note in notes:
         note.delete_instance()
 
-    createAdminLog(f"Withdrew SLC proposal: {courseName}")
+    createActivityLog(f"Withdrew SLC proposal: {courseName}")
 
 def createCourse(creator: str="No user provided") -> Course:
     """
@@ -257,7 +257,7 @@ def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
                 addFile: FileHandler = FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
 
-            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+            createActivityLog(f"Saved SLC proposal: {courseData['courseName']}")
 
             return Course.get_by_id(course.id)
         
