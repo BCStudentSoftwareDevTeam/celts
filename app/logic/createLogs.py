@@ -1,8 +1,8 @@
 from flask import g
 from datetime import datetime
+from app.models.adminLog import AdminLog
 from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
-from app.models.adminLog import AdminLog
 
 def createRsvpLog(eventId, content):
     date = datetime.now()
