@@ -101,7 +101,7 @@
                     <th scope="col">Participants</th>
                   </thead>
                   {% for event in events|reverse %}
-                    <tr style="{% if event.isPast  %} opacity: 0.6 {% endif %}">
+                    <tr style="{% if event.isPastStart  %} opacity: 0.6 {% endif %}">
                         <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                         <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                         <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
