@@ -57,36 +57,141 @@ function calculateRecurringEventFrequency(){
           console.log(error)
         }
       });
+
   }
-  
-$(document).ready(function () {
-  // Initialize datepicker with proper options
-  $.datepicker.setDefaults({
-    dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-    minDate: new Date()
+
+
+  var save_button = document.getElementById('submitParticipant')
+
+  save_button.addEventListener('click', function() {
+    // Call the function storingCustomEventAttributes() when the button is clicked
+    storingCustomEventAttributes();
   });
 
-  $(".datePicker").datepicker({
-    dateFormat: 'mm/dd/yy',
-    minDate: new Date() 
-  });
+let entries = []
+function storingCustomEventAttributes() {
+    
+  $(".extraSlots").children().each(function(index, element) {
+    let rowData = $.map($(element).find("input"), (el) =>  $(el).val());
+    console.log("Data in row " + (index + 1) + ": " + rowData);
 
-    $(".datePicker").each(function() {
-    var dateStr = $(this).val();
-    if (dateStr) {
-      var dateObj = new Date(dateStr);
-      if (!isNaN(dateObj.getTime())) {
-        $(this).datepicker("setDate", dateObj);
-      }
+      entries.push({
+      eventDate: rowData[0],
+      startTime: rowData[1],
+      endTime: rowData[2]
+    });
+      
+    
+  });
+  console.log(entries)
+  $.ajax({
+    type:"POST",
+    url: "/makeCustomEvents",
+    data: entries, //get the startDate, endDate and name as a dictionary
+    success: function(jsonData){
+      var customEvents = JSON.parse(jsonData)
+      var customTable = $("#customEventsTable")
+      $("#customEventsTable tbody tr").remove();
+
+      for (var event of customEvents){
+        var eventdate = new Date(event.date).toLocaleDateString()
+        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+        }
+    },
+    error: function(error){
+      console.log(error)
     }
   });
+ 
+}   
 
-  // Update datepicker min and max dates on change
-  $(".startDatePicker, .endDatePicker").change(function () {
-    updateDate(this);
-  });
+    // var customDatesAndTimes = {
+    //   name: $("#inputEventName").val(),
+    //   isCustom: true,
+    //   customDate: $("#customDatePicker" + pageLocation).val(),
+    //   startTime: $("#customstartTime-" + pageLocation).val(),
+    //   endTime: $("#customendTime-" + pageLocation).val()
+    // };
 
-  if ($(".startDatePicker")[0].value != $(".endDatePicker")[0].value) {
+    // console.log('customDatesAndTime:' , customDatesAndTimes);
+      
+    //   $.ajax({
+    //   type:"POST",
+    //   url: "/makeCustomEvents",
+    //   data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
+    //   success: function(jsonData){
+    //   var customEvents = JSON.parse(jsonData)
+    //   console.log('customEvents:', customEvents)
+    //   var customTable = $("#customEventsTable")
+    //   $("#customEventsTable tbody tr").remove();
+
+    //   for (var event of customEvents){
+    //   var eventdate = new Date(event.date).toLocaleDateString()
+    //   customTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+    //   }
+    //   },
+    //   error: function(error){
+    //   console.log(error)
+    //   }
+    //   });
+    // }
+  
+
+    
+    /*while (index < num.length || index < color.length || index < value.length) {
+    // Retrieve elements from arrays if they exist at current index
+    a = index < num.length ? num[index] : null;
+    b = index < color.length ? color[index] : null;
+    c = index < value.length ? value[index] : null;
+    console.log(a, b, c);
+    index++;
+    }
+    let customDate=[];
+    let customStartTime=[];
+    let customEndTime=[];
+    for (let i = 1; i = $(".add_customevent").length; i++){
+      customDate.append($(".add_customevent"+i).children("input#customDatePicker").value);
+      customStartTime.append($(".add_customevent"+i).children("input.customstartTime").value);
+      customEndTime.append($(".add_customevent"+i).children("input.customendTime").value);
+    }
+    var customDatesAndName = {name:$("#inputEventName").val(),
+                              isRecurring: true,
+                              startDate:$(".startDatePicker")[0].value,
+                              endDate:$(".endDatePicker")[0].value}
+    let index = 0;
+    while (index < customDate.length || index < customStartTime.length || index < customEndTime){
+
+    }
+    var eventDatesAndName = {name:$("#inputEventName").val(),
+      isCustom: true,
+      startDate:$(".startDatePicker")[0].value,
+      endDate:$(".endDatePicker")[0].value}   
+    $.ajax({
+      type:"POST",
+      url: "/makeRecurringEvents",
+      data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+      success: function(jsonData){
+        var recurringEvents = JSON.parse(jsonData)
+        var recurringTable = $("#recurringEventsTable")
+        $("#recurringEventsTable tbody tr").remove();
+
+        for (var event of recurringEvents){
+          var eventdate = new Date(event.date).toLocaleDateString()
+          recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+          }
+      },
+      error: function(error){
+        console.log(error)
+      }
+    });
+
+}*/
+
+/*
+ * Run when the webpage is ready for javascript
+ */
+$(document).ready(function() {
+  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
 
