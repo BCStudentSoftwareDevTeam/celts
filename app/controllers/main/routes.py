@@ -210,8 +210,7 @@ def emergencyContactInfo(username):
             abort(403)
 
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
-        print("LOOOK HERE ")
-        print(str(rowsUpdated))
+  
         if rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
 
@@ -247,10 +246,8 @@ def insuranceInfo(username):
             abort(403)
 
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        print("LOOOK HERE ")
-        print(str(rowsUpdated))
+
         if rowsUpdated:
-            print("YOUR MOM KID< YOUR MOM")
             InsuranceInfo.create(user = username, **request.form)
 
         createActivityLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
