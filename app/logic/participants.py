@@ -79,7 +79,7 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-        if event.isPast:
+        if event.isPastStart:
             if not volunteerExists:
                 # We duplicate these two lines in addBnumberAsParticipant
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -148,7 +148,7 @@ def getParticipationStatusForTrainings(program, userList, term):
     trainingData = {}
     for training in programTrainings:
         try:
-            if training.isPast:
+            if training.isPastStart:
                 trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
             else:  # The training has yet to happen
                 trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
@@ -177,7 +177,7 @@ def sortParticipantsByStatus(event):
     eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventParticipants]
 
-    if event.isPast:
+    if event.isPastStart:
         eventVolunteerData = eventParticipants
         
         # if the event date has passed disregard the waitlist

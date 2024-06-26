@@ -13,7 +13,7 @@ from app.logic.participants import trainedParticipants, addPersonToEvent, getPar
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
-from app.logic.createLogs import createAdminLog, createRsvpLog
+from app.logic.createLogs import createActivityLog, createRsvpLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
 
 
@@ -214,7 +214,7 @@ def updateProgramManager():
         username = User.get(User.username == data["user_name"])
         program = Program.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createAdminLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
+        createActivityLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:
         abort(403)
