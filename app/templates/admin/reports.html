@@ -1,0 +1,26 @@
+{% set title = "Download Reports" %}
+{% extends "base.html" %}
+
+
+{% block styles %}
+  {{ super() }}
+  <style>
+      .download-container {
+          text-align: center;
+          margin-top: 50px;
+      }
+  </style>
+{% endblock %}
+
+{% block app_content %}
+<div class="download-container">
+    <h1 class="mb-3">Download the Spreadsheet</h1>
+    <form method="get" action="/download">
+        <div class="form-group">
+            <label for="academicYear">Academic Year:</label>
+            <input type="text" id="academicYear" name="academic_year" class="form-control" placeholder="e.g., 2023-2024" required>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="confirmDownload()">Download Spreadsheet</button>
+    </form>
+</div>
+{% endblock %} 
