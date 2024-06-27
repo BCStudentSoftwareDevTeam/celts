@@ -17,7 +17,6 @@ from app.logic.serviceLearningCourses import getSLProposalInfoForUser, withdrawP
 from app.logic.downloadFile import *
 from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
-global courseIDGLOBAL
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -94,7 +93,7 @@ def slcCancelProposal():
     courseID = request.form.get('courseID')
     course = Course.get_by_id(courseID)
     if not course.courseName and not course.courseAbbreviation:
-        CourseQuestion.delete().where(CourseQuestion.course_id == courseID).execute()
+        CourseQuestion.delete().where(CourseQuestion.course == course)
         course.delete_instance()
     return "Proposal Canceled"
           

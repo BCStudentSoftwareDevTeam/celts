@@ -83,7 +83,7 @@ $(document).ready(function(e) {
       method: 'POST',
       data: {courseID : document.getElementById('courseID').value},
       success: function(response) {
-          msgToast("Proposal Canceled", "Successfully canceled the proposal edit/creation.")
+          msgFlash("Proposal Canceled", "Successfully canceled the proposal edit/creation.")
       },
       error: function(error) {
           msgFlash('Error: ', error)
