@@ -12,8 +12,13 @@
                     <input type="checkbox" class="attachmentCheck" data-id="{{ value[1] }}" {% if value[-1].isDisplayed %} checked {% endif %}>
                 {% endif %}
             </td>
-            <td class="py-2 px-3">
-                {% set idx = key.index("/") %}
+            <td class="py-2 px-3" >
+                {% if '/' in key %}
+                    {% set idx = key.index("/") %}
+                {% else %}
+                    {% set idx = -1 %}
+                {% endif %} 
+
                 {% set fileName = key[idx+1:] %}
                 {% set shortName = fileName[:8] + "..." + fileName[-10:] if fileName|length > 25 else fileName %}
                 {% set iconClass = '' %}
