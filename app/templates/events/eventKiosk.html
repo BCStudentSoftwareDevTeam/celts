@@ -11,25 +11,30 @@
 {% endblock %}
 
 {% block app_content %}
-
-  <div>
-    <h1 class="my-5" align="center">{{ event.name }}</h1>
-    <h2 class="m-5" align="center">{{ bNumberToUser }}</h2>
-  </div>
-  <div id="signinData" class="mx-auto px-5 mb-2">
-    <div class="input-group">
-      <input type="hidden" id="eventid" name="eventid" value="{{event.id}}" />
-      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg"style="font-size: 2rem;" placeholder="Enter B#">
-      <button id ='camera-button' class="qr-reader-button btn-success btn-lg"><span  class="bi bi-camera"></span></button>
+  <div id="show">
+    <!--<button onclick="openFullscreen();">Open Video in Fullscreen Mode</button>-->
+    <div>
+      <h1 class="my-5" align="center">{{ event.name }}</h1>
+      <h2 class="m-5" align="center">{{ bNumberToUser }}</h2>
     </div>
-    <div id="qr-reader" style="display:none"></div>
-  </div>
-  <div class="row px-5 mx-auto">
-    <a class="col-auto btn btn-primary kiosk-hide mt-0" href="/event/{{event.id}}/manage_volunteers" role="button">Back</a>
-    <div class="col"> </div> 
-    <div class="form-check form-switch mt-2 col-auto">
-      <input class="form-check-input " type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
-      <label class=" form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label> 
+    <div id="signinData" class="mx-auto px-5 mb-2">
+      <div class="input-group">
+        <input type="hidden" id="eventid" name="eventid" value="{{event.id}}" />
+        <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg"style="font-size: 2rem;" placeholder="Enter B#">
+        <button id ='camera-button' class="qr-reader-button btn-success btn-lg"><span  class="bi bi-camera"></span></button>
+      </div>
+      <div id="qr-reader" style="display:none"></div>
+    </div>
+    <div class="row px-5 mx-auto">
+      <a class="col-auto btn btn-primary kiosk-hide mt-0" href="/event/{{event.id}}/manage_volunteers" role="button">Back</a>
+      <div class="col"> </div> 
+      <div class="form-check form-switch mt-2 col-auto">
+        <button class="btn btn-info" type="button" id="fullscreenCheck" onclick="openFullscreen()" checked> Open Full Screen</button>
+        <!--<button class="btn btn-info" type="button" id="fullopenscreenCheck" onclick="openFullscreen()" checked> Open Full Screen</button>
+        <button class="btn btn-info d-none" type="button" id="fullclosescreenCheck" onclick="closeFullscreen()" checked> Close Full Screen</button>
+        <input class="form-check-input " type="checkbox" id="fullscreenCheck" onclick="openFullscreen()">
+        <label class=" form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle </label> -->
+      </div>
     </div>
   </div>
 {% endblock %}

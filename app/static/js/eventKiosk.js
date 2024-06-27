@@ -1,20 +1,67 @@
+var elem = document.getElementById("show");
+/*
 $(document).keydown(function(e){
-  console.log(e.key)
-  if (e.key== "Escape"){
-    $("#fullscreenCheck").prop("checked", false)
-    console.log("here test")
-    hideElements(false);
-    document.exitFullscreen() || document.webkitExitFullscreen() || document.msExitFullscreen()
-    console.log("in toggle function keydown-2")
+  if (e.key == "F11" && document.fullscreenElement && document.webkitFullscreenElement && document.mozFullScreenElement && document.msFullscreenElement){ 
+    e.preventDefault();
+    openFullscreen();
+  } 
+  else if (e.key == "F11" &&  !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement){ 
+    e.preventDefault();
+    closeFullscreen();
   }
-})
+})*/
+
+$(document).keydown(function(e) {
+  if (e.key === "F11") {
+    e.preventDefault();
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+      closeFullscreen();
+    } else {
+      openFullscreen();
+    }
+  }
+});
+ 
+function openFullscreen(){
+  $("#show").css({
+    'background-color': 'white',
+    'padding-top' : '10%',
+    'padding-left' : '20%',
+    'padding-right' : '20%'
+  })
+  
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+  $("#fullscreenCheck").attr("onclick", "closeFullscreen()").text("Close Full Screen");
+} 
+
+function closeFullscreen(){
+  $("#show").css({
+    'background-color': 'white',
+    'padding-top' : '0%',
+    'padding-left' : '0%',
+    'padding-right' : '0%'
+  })
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+  }
+  $("#fullscreenCheck").attr("onclick", "openFullscreen()").text("Open Full Screen");
+}
 
 $(document).ready(function(e) {
     $("#submitScannerData").focus();
 
 
     $("#submitScannerData").keydown(function(e) {
-      console.log("in submit keydopnw")
         if (e.key === "Enter") {
             submitData();
         }
@@ -94,7 +141,7 @@ function submitData(){
     })
 }
 
-function hideElements(hide) {
+/*function hideElements(hide) {
   if (hide == true) {
     $("col-md-auto d-print-none d-lg-none").css("width", "0");
     $("footer").hide();
@@ -124,10 +171,7 @@ function hideElements(hide) {
 // Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-screen
 function toggleFullscreen() {
   if($("#fullscreenCheck").prop("checked") == true){
-    exited = true
-    console.log(exited)
     hideElements(true);
-
     var el = document.documentElement
     , rfs = // for newer Webkit and Firefox
     el.requestFullscreen
@@ -138,24 +182,34 @@ function toggleFullscreen() {
     
     if(typeof rfs!="undefined" && rfs){
       rfs.call(el);
-  }else if(typeof window.ActiveXObject!="undefined"){
+      exited = false
+
+    }else if(typeof window.ActiveXObject!="undefined"){
       // for Internet Explorer
+      exited = false
+
       var wscript = new ActiveXObject("WScript.Shell");
       if (wscript!=null) {
+        exited = false
+
         wscript.SendKeys("{F11}");
       }
     } 
   }else if ($("#fullscreenCheck").prop("checked") == false){
-    console.log("here test")
     hideElements(false);
     document.exitFullscreen() || document.webkitExitFullscreen() || document.msExitFullscreen()
-    console.log("in toggle function keydown-2")
   }
   $('#submitScannerData').focus();
+
 };
-/*if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+/*  if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+  console.log("Fullscreen mode was entered");
+  hideElements(true);
+  console.log("here wewe")
+} else {
+  console.log("Fullscreen mode was exited");
+}if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
   console.log("Fullscreen mode was exited");
 }*/
-if (document.fullscreenElement && document.webkitFullscreenElement && document.mozFullScreenElement && document.msFullscreenElement) {
-  console.log("Fullscreen mode was entered");
-}
+
+  
