@@ -264,7 +264,7 @@ def makeDataXls(getData, columnTitles, sheetName, workbook):
     for column, title in enumerate(columnTitles):
         columnData = [title] + [rowData[column] for rowData in getData]
         setColumnWidth = max(len(str(x)) for x in columnData)
-        worksheet.set_column(column, column, setColumnWidth + 3)
+        worksheet.set_column(column, column, setColumnWidth + 3) 
 
 def createSpreadsheet(academicYear): 
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
