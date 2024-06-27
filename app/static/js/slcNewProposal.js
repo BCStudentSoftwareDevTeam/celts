@@ -78,19 +78,15 @@ $(document).ready(function(e) {
   });
 
   $("#cancelButton").on("click", function() {
-    $.ajax({
-      url: '/serviceLearning/canceledProposal',
-      method: 'POST',
-      data: {courseID : document.getElementById('courseID').value},
-      success: function(response) {
-          msgFlash("Proposal Canceled", "Successfully canceled the proposal edit/creation.")
-      },
-      error: function(error) {
-          msgFlash('Error: ', error)
-          
-      }
-  });
-      window.location.replace($(this).val());
+    var cancelButtonContext = this
+      $.ajax({
+        url: '/serviceLearning/canceledProposal',
+        method: 'POST',
+        data: {courseID : document.getElementById('courseID').value},
+        success: function(response) {
+            window.location.replace($(cancelButtonContext).val());
+        }
+      })
   });
 
   $("#saveContinue").on("click", function() {

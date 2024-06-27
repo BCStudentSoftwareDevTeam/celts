@@ -93,7 +93,7 @@ def slcCancelProposal():
     courseID = request.form.get('courseID')
     course = Course.get_by_id(courseID)
     if not course.courseName and not course.courseAbbreviation:
-        CourseQuestion.delete().where(CourseQuestion.course == course)
+        CourseQuestion.delete().where(CourseQuestion.course_id == courseID).execute()
         course.delete_instance()
     return "Proposal Canceled"
           
