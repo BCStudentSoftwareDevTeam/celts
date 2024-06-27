@@ -148,7 +148,7 @@
 
                 
                     {% if filepaths.keys()|count %}
-                    <div class="form-group mt-5">
+                    <div class="form-group mt-5 ml-5>
                         <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
                         <table>
                             {% for key, value in filepaths.items() %}
@@ -169,9 +169,7 @@
                                 {% else %}
                                     {% set iconClass = 'bi-file-earmark-arrow-up' %}
                                 {% endif %}
-                                <td>
-                                    <i class="bi {{ iconClass }} fs-2"></i>
-                                </td>
+                                <i class="bi {{ iconClass }} fs-2" style="margin-right: 10px;"></i>
                                 <td>
                                 <a class="mr-5 fileName" data-filename='{{ fileName }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ fileName }}" aria-labelledby="{{ fileName }}">{{ shortName }}</a>
                                     </td>
