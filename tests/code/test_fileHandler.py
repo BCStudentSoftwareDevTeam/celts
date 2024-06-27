@@ -160,13 +160,13 @@ def test_displayFile():
         eventfile = FileHandler(eventId=1)
 
         # display image1 as an event cover 
-        eventfile.changeDisplay(image1)
+        eventfile.changeDisplay(image1, isDisplayed=True)
 
         assert AttachmentUpload.get_by_id(image1).isDisplayed ==True
         assert AttachmentUpload.get_by_id(image2).isDisplayed ==False
 
         # display image2 as an event cover 
-        eventfile.changeDisplay(image2)
+        eventfile.changeDisplay(image2, isDisplayed=True)
         assert AttachmentUpload.get_by_id(image2).isDisplayed ==True
         assert AttachmentUpload.get_by_id(image1).isDisplayed ==False
 
