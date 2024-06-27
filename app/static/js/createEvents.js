@@ -64,84 +64,82 @@ function calculateRecurringEventFrequency(){
 
   var save_button = document.getElementById('submitParticipant');
   var modal = document.getElementById('modalCustom');
-  
-  save_button.addEventListener('click', function() {
+
+// Assuming save_button is properly defined elsewhere in your code
+save_button.addEventListener('click', function() {
     // Call the function storingCustomEventAttributes() when the button is clicked
-    $("#checkIsCustom").prop('checked', true);
     storingCustomEventAttributes();
     $("#checkIsCustom").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalCustom').modal('hide');
+});
 
-  });
-    
+let entries = [];
 
-
-  
-
-let entries = []
 function storingCustomEventAttributes() {
-    
-  $(".extraSlots").children().each(function(index, element) {
-    let rowData = $.map($(element).find("input"), (el) =>  $(el).val());
-    console.log("Data in row " + (index + 1) + ": " + rowData);
-    console.log(rowData)
+    $(".extraSlots").children().each(function(index, element) {
+        let rowData = $.map($(element).find("input"), (el) => $(el).val());
+        console.log("Data in row " + (index + 1) + ": " + rowData);
 
-      entries.push({
-      eventDate: rowData[0],
-      startTime: rowData[1],
-      endTime: rowData[2],
-      isCustom: 'true'
-    });
-    // Clear previous content
-    $('#displayEntries').empty();
-
-    // Iterate through entries array
-    entries.forEach(function(entry, index) {
-        // Create a string with entry details
-        let entryString = `
-            <p>Event Date: ${entry.eventDate}</p>
-            <p>Start Time: ${entry.startTime}</p>
-            <p>End Time: ${entry.endTime}</p>
-            <p>Is Custom: ${entry.isCustom}</p>
-            <hr>
-        `;
-
-        // Append entry details to displayEntries div
-        $('#displayEntries').append(entryString);
+        entries.push({
+            eventDate: rowData[0],
+            startTime: rowData[1],
+            endTime: rowData[2]
+        });
     });
 
+    console.log(entries);
+    console.log(typeof entires)
+    console.log(entries)
 
-      
+  var customTable = $("#customEventsTable");
+  entries.forEach(function(entry){
     
+    customTable.append("<tr><td>" + event.name + "</td><td>" + entry.eventDate +"</td><td>" + entry.startTime + "</td><td>" + entry.endTime + "</td></tr>");
   });
-  console.log(entries)
-  $.ajax({
-    type:"POST",
-    url: "/makeCustomEvents",
-    data: entries, //get the startDate, endDate and name as a dictionary
-    success: function(jsonData){
-      var customEvents = JSON.parse(jsonData)
-      var customTable = $("#customEventsTable")
-      $("#customEventsTable tbody tr").remove();
 
-      
+}  
 
-      for (var event of customEvents){
-        var eventdate = new Date(event.date).toLocaleDateString()
-        var startTime = new TimeRanges(event.startTime).String()
-        var endTime = new TimeRanges(event.endTime).String()
 
-        customTable.append("<tr><td>"+event.name+"</td><td><input name='Date"+eventdate+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td><td>"+startTime+"</td><td>"+endTime+"</td></tr>");
-        }
-    },
-    error: function(error){
-      console.log(error)
-    }
-  });
- 
-}   
 
+// $.ajax({
+//   type: "POST",
+//   url: "/makeCustomEvents",
+//   data: { events: entries }, // Send data as an object
+//   success: function(jsonData) {
+//       console.log("success AJAX call");
+//       console.log(jsonData);
+
+//       var customEvents = JSON.parse(jsonData);
+//       var customTable = $("#customEventsTable");
+//       customTable.find("tbody tr").remove(); // Clear existing rows
+
+//       console.log("Data Type of", typeof customEvents);
+//       console.log(customEvents);
+
+//       // Check if customEvents is an object
+//       if (typeof customEvents === 'object' && !Array.isArray(customEvents)) {
+//           // Iterate over the properties of the object using for...in
+//           for (var key in customEvents) {
+//               console.log(key)
+//               if (customEvents.hasOwnProperty(key)) {
+//                   var event = customEvents[key];
+//                   console.log(event)
+//                   var eventDate = new Date(event.date).toLocaleDateString();
+//                   var startTime = event.startTime;
+//                   var endTime = event.endTime;
+
+//                   customTable.append("<tr><td>" + event.name + "</td><td><input name='eventdate" + eventDate + "' type='hidden' value='" + eventDate + "'>" + eventDate + "</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
+//               }
+//           }
+//       } else {
+//           console.error("customEvents is not an object:", customEvents);
+//       }
+//   },
+//   error: function(error) {
+//       console.log(error);
+//   }
+// });
     // var customDatesAndTimes = {
     //   name: $("#inputEventName").val(),
     //   isCustom: true,
