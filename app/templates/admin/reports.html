@@ -14,11 +14,16 @@
 
 {% block app_content %}
 <div class="download-container">
-    <h1 class="mb-3">Download the Spreadsheet</h1>
+    <h1 class="mb-3">Download Reports</h1>
     <form method="get" action="/download">
         <div class="form-group">
-            <label for="academicYear">Academic Year:</label>
-            <input type="text" id="academicYear" name="academic_year" class="form-control" placeholder="e.g., 2023-2024" required>
+            <label for="academicYear">Academic Year:</label>            
+            <select id="academicYear" name="academic_year" class="form-control" required>
+                <option value="" disabled selected>Select an academic year</option>
+                {% for year in academic_years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
         </div>
         <button type="submit" class="btn btn-primary" onclick="confirmDownload()">Download Spreadsheet</button>
     </form>
