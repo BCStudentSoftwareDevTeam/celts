@@ -22,13 +22,14 @@ def viewCceMinor(username):
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
     selectedSummerTerm, summerExperience = getSummerExperience(username)
 
+    terms = selectSurroundingTerms(g.current_term)
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             summerExperience = summerExperience if summerExperience else "",
                             selectedSummerTerm = selectedSummerTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
-                            summerTerms = getSummerTerms())
+                            summerTerms = getSummerTerms(), terms=terms) 
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
@@ -57,33 +58,6 @@ def modifyCommunityEngagement(username):
         return "There are already 4 Sustained Community Engagement records." 
     
     return ""
-
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
-def requestOtherEngagement(username):
-    """
-        Load the "request other" form and submit it.
-    """
-    user = User.get_by_id(username)
-    terms = selectSurroundingTerms(g.current_term)
-    
-
-    if request.method == 'POST':
-        filename = None
-        attachment = request.files.get("attachmentObject")
-        if attachment:
-                addFile = FileHandler(getFilesFromRequest(request))
-                addFile.saveFiles()
-                filename = attachment.filename
-        formData = request.form.copy()
-        formData["filename"] = filename
-        saveOtherEngagementRequest(formData)
-        flash("Other community engagement request submitted.", "success")
-        return redirect(url_for("minor.viewCceMinor", username=user))
-
-
-    return render_template("/minor/requestOtherEngagement.html",
-                            user=user,
-                            terms=terms)
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
