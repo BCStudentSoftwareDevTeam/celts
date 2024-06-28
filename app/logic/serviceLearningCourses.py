@@ -60,11 +60,32 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             if 'errorMsg' in courseInfo and courseInfo['errorMsg']:
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
+            # Look in the db for a course that matches abbreviation and term (query that returns one course)
+            # If matches, use this course to add participants
 
-            check_for_Existing_Courses = list((Course.select().where(Course.courseAbbreviation == course ).order_by(Course.term.desc()).limit(1)))
+            # If no match
+                # Select most recent course whose abbreviations match, but term is before the term we are trying to import for (termorder is LESS)
+                # If this course exists, use this course 
+                # If this course does not exist, create a new course
 
+            # Add participants to desired course from the database
 
-            if not check_for_Existing_Courses :
+            termCheck = Term.get(Term.id == termObj)
+
+            checkTermOrder = termCheck.termOrder
+
+            print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
+            print(checkTermOrder)
+
+            check_for_Existing_Courses = list((Course.select()
+                                        .join(Term, on =(Course.term == Term.id))
+                                        .where((Course.courseAbbreviation == course) & (Term.termOrder < checkTermOrder))
+                                        .order_by(Course.term.desc())
+                                        .limit(1)))
+
+          
+            if not check_for_Existing_Courses:
 
                 courseObj: Course = Course.create(courseName = "",
                                 sectionDesignation = "",
@@ -75,12 +96,12 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 createdBy = g.current_user,
                                 serviceLearningDesignatedSections = "",
                                 previouslyApprovedDescription = "" )
-            
-            elif termObj == check_for_Existing_Courses[0].term: 
 
-                print("The course already exists")
+            elif Term.termOrder == checkTermOrder :
 
-            else :
+                print("###################################################")
+
+            else:
 
                 previous_data = check_for_Existing_Courses[0]
 
