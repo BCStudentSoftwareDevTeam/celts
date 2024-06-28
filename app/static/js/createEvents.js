@@ -86,6 +86,7 @@ function storingCustomEventAttributes() {
             eventDate: rowData[0],
             startTime: rowData[1],
             endTime: rowData[2]
+
         });
     });
 
@@ -264,8 +265,8 @@ $(document).ready(function() {
       $("#checkIsCustom").prop('checked', true);
     }
     else if (customStatus == undefined){
-      $("#customTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
-
+      $("#customTableDiv").addClass('d-none');
+      $('#modalCustom').modal('hide');
     }
   });
   
@@ -273,7 +274,9 @@ $(document).ready(function() {
     $("#checkIsCustom").prop('checked', false);
     $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
     $("#customTableDiv").addClass('d-none');
-    $('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
+    $('#modalCustom').modal('hide');
+    $('.extraSlots').children().not(':first').remove();
+    //$('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
   
   let counterAdd = 0 // counter to add customized ids into the newly created slots
