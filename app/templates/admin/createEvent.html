@@ -1,13 +1,19 @@
 {% set title = "Create Single Event" %}
 
 {% set isNewEvent = 'create' in request.path %}
-{% if isNewEvent %}
-  {% if template.tag == 'single-program' %}             
-    {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+{% if isNewEvent %}          
+  {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+    {% set page_title = 'Create A ' + eventData["program"].programName %}
+
+  {% elif template.tag == 'single-program' %}
+    {%set page_title = 'Create Event for ' + eventData["program"].programName %}
+
   {% elif template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
+
   {% elif template.tag == 'no-program' %}
     {% set page_title = 'Create Other CELTS-Sponsored Event' %}
+
   {% else %}
     {% set page_title = 'Create ' + template.name + ' Event' %}
   {% endif %}
@@ -17,7 +23,7 @@
   {% extends "eventNav.html"%}
 {% endif %}
 
-{% set eventPast = event.isPast if not isNewEvent else False %}
+{% set eventPast = event.isPastStart if not isNewEvent else False %}
 {% set tabName = 'edit' %}
 
 
