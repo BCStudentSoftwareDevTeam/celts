@@ -1,13 +1,14 @@
 var elem = document.getElementById("show");
 
-$(document).on("fullscreenchange", function(){
-  if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+$(document).on("fullscreenchange", function(){ // this listen to the full screen event //https://developer.mozilla.org/en-US/docs/Web/API/Element/fullscreenchange_event
+  /*if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
     closeFullscreen();
   } else {
     openFullscreen();
-  }
+  }*/
+ console.log("yippie")
 })
-$(document).keydown(function(e) {
+$(document).keydown(function(e) { // this is for F11 keydown
   if (e.key === "F11") {
     e.preventDefault();
     if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
@@ -19,7 +20,7 @@ $(document).keydown(function(e) {
 });
  
 
-function openFullscreen(){
+function openFullscreen(){ // open full screen function
   $("#show").css({
     'background-color': 'white',
     'padding-top' : '10%',
@@ -34,7 +35,7 @@ function openFullscreen(){
   } else if (elem.msRequestFullscreen) { /* IE11 */
     elem.msRequestFullscreen();
   }
-  ensureFocus();
+  ensureFocus(); // focus function
   $("#fullscreenCheck").attr("onclick", "closeFullscreen()").text("Close Full Screen");
 } 
 function ensureFocus() {
