@@ -56,7 +56,7 @@ pem add app.models.programManager.ProgramManager
 pem add app.models.emailLog.EmailLog
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
-pem add app.models.adminLog.AdminLog
+pem add app.models.activityLog.ActivityLog
 pem add app.models.attachmentUpload.AttachmentUpload
 pem add app.models.emergencyContact.EmergencyContact
 pem add app.models.insuranceInfo.InsuranceInfo

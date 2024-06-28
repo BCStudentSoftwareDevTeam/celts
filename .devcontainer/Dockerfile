@@ -2,6 +2,9 @@ FROM mcr.microsoft.com/devcontainers/python:0-3.11
 
 ENV PYTHONUNBUFFERED 1
 
+ENV TZ="America/New_York"
+RUN date
+
 RUN pip install --upgrade pip
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
