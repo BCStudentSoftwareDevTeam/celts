@@ -1,6 +1,6 @@
 from flask import session, g
 from playhouse.shortcuts import model_to_dict
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.models.term import Term
 
 def addNextTerm():
@@ -59,4 +59,4 @@ def changeCurrentTerm(term):
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createAdminLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+    createActivityLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
