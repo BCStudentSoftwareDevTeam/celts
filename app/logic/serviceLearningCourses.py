@@ -61,13 +61,10 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
-            data = list((Course.select().where(Course.courseAbbreviation == course ).order_by(Course.term.desc()).limit(1)))
+            check_for_Existing_Courses = list((Course.select().where(Course.courseAbbreviation == course ).order_by(Course.term.desc()).limit(1)))
 
-            print("#################################################################LOOKIE")
-            
-            
 
-            if not data :
+            if not check_for_Existing_Courses :
 
                 courseObj: Course = Course.create(courseName = "",
                                 sectionDesignation = "",
@@ -79,21 +76,23 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 serviceLearningDesignatedSections = "",
                                 previouslyApprovedDescription = "" )
             
+            elif termObj == check_for_Existing_Courses[0].term: 
+
+                print("The course already exists")
+
             else :
 
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                previous_data = check_for_Existing_Courses[0]
 
-                existing_data =data[0]
-                
-                courseObj: Course = Course.create(courseName = existing_data.courseName,
-                                courseAbbreviation = existing_data.courseAbbreviation,
-                                sectionDesignation = existing_data.sectionDesignation,
+                courseObj: Course = Course.create(courseName = previous_data.courseName,
+                                courseAbbreviation = previous_data.courseAbbreviation,
+                                sectionDesignation = previous_data.sectionDesignation,
                                 courseCredit = 1,
                                 term = termObj,
                                 status = 4,
                                 createdBy = g.current_user, 
-                                serviceLearningDesignatedSections = existing_data.serviceLearningDesignatedSections,
-                                previouslyApprovedDescription = existing_data.previouslyApprovedDescription)
+                                serviceLearningDesignatedSections = previous_data.serviceLearningDesignatedSections,
+                                previouslyApprovedDescription = previous_data.previouslyApprovedDescription)
 
             for userDict in courseInfo['students']:
                 if userDict['errorMsg']:
