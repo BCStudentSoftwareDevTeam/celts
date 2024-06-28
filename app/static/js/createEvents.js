@@ -286,10 +286,19 @@ $(document).ready(function() {
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
+    clonedCustom.find("[id^='customDate']").attr("id", "customDate-" + counterAdd);
+    clonedCustom.find("[data-page-location]").attr("id", "customDatePicker-" + counterAdd);
+    clonedCustom.find("[data-page-location]").attr("data-page-location", counterAdd);
+    clonedCustom.find("[id^='calendarIconStart']").attr("id", "calendarIconStart-" + counterAdd);
+    clonedCustom.find("[id^='customDatePicker']").attr("id", "customDatePicker-" + counterAdd);
     $(".extraSlots").append(clonedCustom)
     $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
     
+    $('#calendarIconStart-' + counterAdd).click(function() {
+      console.log('ok')
+        $('#customDatePicker-'+ counterAdd).datepicker().datepicker('show');
+    });
    
     clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
 
