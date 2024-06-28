@@ -145,68 +145,25 @@ $(document).ready(function() {
     $("#multipleOfferingTableDiv").addClass('d-none');
     $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
-    //$('.extraSlots').empty();//this line remove the added multiple offering event slots from appearing if the multiple offering modal is toggle again
+    //$('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
   
-  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
+  /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
   that specific row will be deleted*/
-  let counterAdd = 0 // counter to add customized ids into the newly created slots
-  $(".addMultipleOfferingEvent").click(function(){
-    counterAdd += 1
-    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
-    clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
-    clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
-    $(".extraSlots").append(clonedMultipleOffering)
 
-    //this is so that the trash icon can be used to delete the event
-    clonedMultipleOffering.on("click", "[id^=deleteMultipleOfferingEvent]", function() {
-      var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id
-      $("#multipleOfferingEvent" + id).remove(); 
-    });
-  });
-  $("#checkIsCustom").click(function() {
-    console.log("here")
-    var recurringStatus = $("input[name='isRecurring']:checked").val()
-    if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none')
-      $(".endDatePicker").prop('required', true);
-    } else {
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
-      $(".endDatePicker").prop('required', false);
-    }
-  });
-  
-  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
-  that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
-  
   $(".add_customevent").click(function(){
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
+    clonedCustom.find("#delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedCustom)
-    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
-    $("#delete_customevent" + counterAdd).removeClass('d-none');
-    
-   
-    clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
 
-  
-    deleteId.push({id: "#delete_customevent" + counterAdd})
-    console.log("#delete_customevent" + counterAdd)
-    console.log(deleteId)
-  });
-
-      // $(".extraSlots").children().each(function(index, element) {
-      //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
-      //     console.log("Data in row " + (index + 1) + ": " + rowData)
-      //     // Modify this to display or manipulate your data as needed
-      // });
-
-  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
-    console.log("here in delete")
-    let numbers= $(".delete_row").length
-    console.log(numbers)
+    //this is so that the trash icon can be used to delete the event
+    clonedCustom.on("click", "[id^=delete_customevent]", function() {
+      var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id
+      $("#customEvent" + id).remove(); 
+    });
   });
 
   $("#allowPastStart").click(function() {
@@ -263,10 +220,6 @@ $(document).ready(function() {
 
   $(".startDate").click(function() {
     $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  });
-
-  $(".endDate").click(function () {
-    $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
   });
 
   $(".endDate").click(function() {
