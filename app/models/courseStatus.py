@@ -1,6 +1,4 @@
-# from app.models import*
-from app.models import baseModel
-from peewee import CharField
+from app.models import*
 
 
 class CourseStatus(baseModel):

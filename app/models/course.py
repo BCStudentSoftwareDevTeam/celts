@@ -1,9 +1,7 @@
 from app.models import *
 from app.models.term import Term
 from app.models.courseStatus import CourseStatus
-from app.models.note import Note
 from app.models.user import User
-from peewee import CharField, FloatField, BooleanField, ForeignKeyField, TextField
 
 class Course(baseModel):
     courseName = CharField()
