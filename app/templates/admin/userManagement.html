@@ -1,11 +1,21 @@
 {% set title = "User Management" %}
 {% extends "base.html" %}
-
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/userManagement.js"></script>
-{% endblock %}
 
+  <!--added this, delete comment later-->
+  <script type="module" src="/static/js/userManagement.js"></script>
+  <script type="module" src="/static/js/programManagement.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+{% endblock %}
+<!--added this, may delete later-->
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/programManagment.css')}}">
+{% endblock %}
+<!--added above, may delete later-->
 {% block app_content %}
 {% macro createInputsButtons(inputId, labelName) %}
 <label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
@@ -14,7 +24,6 @@
     <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
   </div>
 {% endmacro %}
-
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
   <div class="accordion-item">
@@ -99,7 +108,7 @@
                       tabindex="0">
                       {{term.description}}
                       <span class="sr-only visually-hidden">{{'Selected term' if g.current_term == term}}</span>
-                  </li>
+                    </li>
                   {% endfor %}
                   </ul>
                 <div class="card-footer">
@@ -114,36 +123,82 @@
   </div>
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
+      <!--Program managment acordian and modal-->
       {% set focus = "open" if visibleAccordion == "program" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
         Program Management
         </button>
       </h3>
       {% set show = "show" if visibleAccordion == "program" else "" %}
-      <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
+      <div id="collapseThree" class="accordion-collapse collapse {{ show }}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
         <div class="accordion-body">
-          <table>
-            <tr>
-              <th>Program Name</th>
-              <th>Contact Email</th>
-              <th>Contact Name</th>
-              <th>Location</th>
-            </tr>
-            {% for program in programs %}
-            <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
-              <tr class="p-1">
-                <td><input class="form-control" type="text" name="programName" value ="{{program.programName}}" required></td>
-                <td><input class="form-control" type="text" name="contactEmail" value="{{program.contactEmail or ""}}"></td>
-                <td><input class="form-control" type="text" name="contactName" value="{{program.contactName or ""}}"></td>
-                <td><input class="form-control" type="text" name="location" value="{{program.defaultLocation or ""}}"></td>
-                <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
+           <table>
+              <tr>
+                 <th>Program</th>
               </tr>
-            </form>
-            {% endfor %}
-        </table>
+              {% for program in programs %}
+              <tr class="p-1">
+                 <td><input class="form-label" name="programName" type="text"  value="{{ program.programName }}" required></td>
+                 <td>
+                    <button class="btn btn-success" role="button" id="programManagementButton{{ loop.index }}" data-bs-toggle="modal" data-bs-target="#adminProgramManagement" onclick="populateModal('{{ program.programName }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}')">Update Program Information</button>
+                 </td>
+              </tr>
+              {% endfor %}
+           </table>
+        </div>
+     </div>
+  </div>
+</div>
+<div>
+  <!--modal button here-->
+<!--modal begin here, yoinked from preview imported classes model in manageServiceLearningFaculty.html-->
+<div class="modal fade" id="adminProgramManagement">
+  <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title">Update Program Information</h5>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+           <form id="updateProgramForm" action="" method="POST">
+              <div class="mb-3">
+                 <label for="programName" class="form-label">Program Name</label>
+                 <input type="text" class="form-control" id="programName" name="programName" >
+              </div>
+              <div class="mb-3">
+                 <label for="contactEmail" class="form-label">Contact Email</label>
+                 <input type="email" class="form-control" id="contactEmail" name="contactEmail">
+              </div>
+              <div class="mb-3">
+                 <label for="contactName" class="form-label">Contact Name</label>
+                 <input type="text" class="form-control" id="contactName" name="contactName">
+              </div>
+              <div class="mb-3">
+                 <label for="location" class="form-label">Location</label>
+                 <input type="text" class="form-control" id="location" name="location">
+              </div>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+           </form>
+        </div>
+     </div>
+  </div>
+</div>
+       <br>
+      </div>
+      <br>
+          <div class="modal-footer">
+          <button type="button"
+            class="btn btn-secondary me-auto"
+            data-bs-dismiss="modal"
+            name="cancelModalView"
+            id="cancelModalView">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+
+<!--modal end here-->
 {% endblock %}

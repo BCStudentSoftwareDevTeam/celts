@@ -47,14 +47,14 @@ def redirectToLogout():
 def landingPage():
 
     managerProgramDict = getManagerProgramDict(g.current_user)
+
     # Optimize the query to fetch programs with non-canceled, non-past events in the current term
-  
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
-                                         .where((Event.term == g.current_term) & (Event.isCanceled == False))
+                                         .where((Event.term == g.current_term) & (Event.isCanceled == False)) 
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
-    # Limit returned list to events in the future
+    # Limit returned list 
     futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
 
     return render_template("/main/landingPage.html", 
@@ -143,7 +143,7 @@ def viewUsersProfile(username):
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []
-        
+
         for program in programs:
             banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
@@ -212,20 +212,17 @@ def emergencyContactInfo(username):
             abort(403)
 
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
-        if not rowsUpdated:
+        if  rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-
-        createAdminLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
-
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
-
+        
+        createActivityLog(f"{g.current_user.fullName}  updated {contactInfo.user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/insuranceInfo")
-
+################################################################################
 @main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
 def insuranceInfo(username):
     """
@@ -234,9 +231,11 @@ def insuranceInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
 
-    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+    
     if request.method == 'GET':
         readOnly = False and g.current_user.username != username
+
         return render_template ("/main/insuranceInfo.html",
                                 username=username,
                                 userInsuranceInfo=userInsuranceInfo,
@@ -248,21 +247,17 @@ def insuranceInfo(username):
         if g.current_user.username != username:
             abort(403)
 
-        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
+        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user_id == username).execute()
         if  rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-
-        createAdminLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
-
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
-
+        createActivityLog(f"{g.current_user.fullName} updated { userInsuranceInfo.user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
             return redirect (f"/profile/{username}/emergencyContact")
-
+#####################################################
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
