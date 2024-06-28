@@ -423,11 +423,10 @@
             <div class="form-group col-md-5">
               <label class="form-label me-2" for="customDatePicker"><strong>Custom Date</strong></label>
               <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-                  <input autocomplete="off" type='text' class="form-control datePicker customDatePicker readonly" 
+                  <input autocomplete="off" type='date' class="form-control datePicker customDatePicker readonly" 
                     value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
                     name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
                   <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
-                      <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
               </div>
             </div>
