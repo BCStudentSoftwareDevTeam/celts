@@ -74,9 +74,10 @@ save_button.addEventListener('click', function() {
     $('#modalCustom').modal('hide');
 });
 
-let entries = [];
+
 
 function storingCustomEventAttributes() {
+    let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
         console.log("Data in row " + (index + 1) + ": " + rowData);
@@ -90,9 +91,11 @@ function storingCustomEventAttributes() {
 
     console.log(entries);
     console.log(typeof entires)
-    console.log(entries)
 
   var customTable = $("#customEventsTable");
+  console.log(customTable)
+  customTable.find("tbody tr").remove(); // Clear existing rows
+  console.log(customTable)
   entries.forEach(function(entry){
     
     customTable.append("<tr><td>" + event.name + "</td><td>" + entry.eventDate +"</td><td>" + entry.startTime + "</td><td>" + entry.endTime + "</td></tr>");
