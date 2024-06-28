@@ -50,17 +50,14 @@ function calculateRecurringEventFrequency(){
           $("#recurringEventsTable tbody tr").remove();
           for (var event of recurringEvents){
             var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
             }
         },
         error: function(error){
           console.log(error)
         }
       });
-
   }
-
 
   var save_button = document.getElementById('submitParticipant');
   var modal = document.getElementById('modalCustom');
@@ -74,8 +71,6 @@ save_button.addEventListener('click', function() {
     $('#modalCustom').modal('hide');
 });
 
-
-
 function storingCustomEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
@@ -86,7 +81,6 @@ function storingCustomEventAttributes() {
             eventDate: rowData[0],
             startTime: rowData[1],
             endTime: rowData[2]
-
         });
     });
 
@@ -279,17 +273,15 @@ $(document).ready(function() {
     //$('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
   
+  /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
+  that specific row will be deleted*/
+
   let counterAdd = 0 // counter to add customized ids into the newly created slots
-  let deleteId = []
   $(".add_customevent").click(function(){
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.find("[id^='customDate']").attr("id", "customDate-" + counterAdd);
-    clonedCustom.find("[data-page-location]").attr("id", "customDatePicker-" + counterAdd);
-    clonedCustom.find("[data-page-location]").attr("data-page-location", counterAdd);
-    clonedCustom.find("[id^='calendarIconStart']").attr("id", "calendarIconStart-" + counterAdd);
-    clonedCustom.find("[id^='customDatePicker']").attr("id", "customDatePicker-" + counterAdd);
+    clonedCustom.find("#delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedCustom)
     $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
     $("#delete_customevent" + counterAdd).removeClass('d-none');
@@ -360,22 +352,25 @@ $(document).ready(function() {
       e.preventDefault();
   });
 
-  $(".startDate").click(function () {
-    $("#startDatePicker-" + $(this).data("page-location")).datepicker("show");
+  $.datepicker.setDefaults({
+    minDate:  new Date($.now()),
+    dateFormat:'mm-dd-yy'
+  });
+
+  $(".startDate").click(function() {
+    $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
   });
-  $(".customDate").click(function() {
-    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  });
-  $(".customDate1").click(function() {
-    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+
+  $(".endDate").click(function() {
+    $("#endDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
-  $(".startDatePicker, .endDatePicker").change(function () {
-    if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
+  $(".startDatePicker, .endDatePicker").change(function(){
+    if ( $(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()){
       calculateRecurringEventFrequency();
     }
   });
