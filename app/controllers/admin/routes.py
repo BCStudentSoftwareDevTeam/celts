@@ -603,7 +603,8 @@ def saveRequirements(certid):
 
 @admin_bp.route("/displayEventFile", methods=["POST"])
 def displayEventFile():
-    fileData= request.form
-    eventfile=FileHandler(eventId=fileData["id"])
-    eventfile.changeDisplay(fileData['id'])
+    fileData = request.form
+    eventfile = FileHandler(eventId=fileData["id"])
+    isChecked = fileData.get('checked') == 'true'
+    eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
