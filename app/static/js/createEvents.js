@@ -176,6 +176,8 @@ $(document).ready(function() {
     }
   });
   
+  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
+  that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   
   $(".add_customevent").click(function(){
@@ -193,18 +195,7 @@ $(document).ready(function() {
     deleteId.push({id: "#delete_customevent" + counterAdd})
     console.log("#delete_customevent" + counterAdd)
     console.log(deleteId)
-
-    // Attach click handler for the delete button using event delegation
-    $(document).on("click", "#delete_customevent" + counterAdd, function() {
-        // Handle delete action here
-        $(this).closest("#customEvent" + counterAdd).remove();
-    });
-    
   });
-
-
-
-    
 
       // $(".extraSlots").children().each(function(index, element) {
       //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
@@ -212,16 +203,11 @@ $(document).ready(function() {
       //     // Modify this to display or manipulate your data as needed
       // });
 
- 
-
- 
-
   $(".delete_row").click(function(){ // delete function for the added row, it is still not working
     console.log("here in delete")
     let numbers= $(".delete_row").length
     console.log(numbers)
   });
-
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
