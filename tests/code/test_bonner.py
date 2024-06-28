@@ -2,6 +2,7 @@ import pytest
 from datetime import date
 from peewee import IntegrityError
 
+from app.models.user import User
 from app.models import mainDB
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
@@ -75,8 +76,9 @@ def test_bonnerRsvp():
         BonnerCohort.create(user="khatts", year=2020)
         BonnerCohort.create(user="neillz", year=2020)
         event_id = 13
+        year1 = 2020
 
-        rsvpForBonnerCohort(2020, event_id)
+        rsvpForBonnerCohort(year1, event_id)
         assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "khatts").exists()
         assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "neillz").exists()
         assert not EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "ramsayb2").exists()
@@ -86,6 +88,6 @@ def test_bonnerRsvp():
         rsvpForBonnerCohort(2020, event_id)
         assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 3
 
-        transaction.rollback()
+        transaction.rollback()  
 
 
