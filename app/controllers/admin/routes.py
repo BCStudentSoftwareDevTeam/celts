@@ -38,23 +38,19 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
-from flask import send_file, render_template, request
-from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
 
 
 @admin_bp.route('/admin/reports')
 def reports():
-    academic_years = Term.select(Term.academicYear).distinct().order_by(Term.academicYear.desc())
-    academic_years = list(map(lambda t: t.academicYear, academic_years))
-    return render_template("/admin/reports.html", academic_years=academic_years)
+    academicYears = Term.select(Term.academicYear).distinct().order_by(Term.academicYear.desc())
+    academicYears = list(map(lambda t: t.academicYear, academicYears))
+    return render_template("/admin/reports.html", academicYears=academicYears)
 
-@admin_bp.route('/download')
-def download_file():
-    academic_year = request.args.get('academic_year', '2023-2024')  # Default academic year if not provided
-    filepath = createSpreadsheet(academic_year)
-    filepath = os.path.abspath(filepath)
-    
+@admin_bp.route('/admin/reports/download')
+def downloadFile():
+    academicYear = request.args.get('academicYear')
+    filepath = os.path.abspath(createSpreadsheet(academicYear))
     return send_file(filepath, as_attachment=True)
 
 
