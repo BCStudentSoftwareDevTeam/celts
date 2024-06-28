@@ -52,17 +52,14 @@ function format24to12HourTime(timeStr){
 
           for (var event of recurringEvents){
             var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
             }
         },
         error: function(error){
           console.log(error)
         }
       });
-
   }
-
 
   var save_button = document.getElementById('submitParticipant');
   var modal = document.getElementById('modalCustom');
@@ -76,8 +73,6 @@ save_button.addEventListener('click', function() {
     $('#modalCustom').modal('hide');
 });
 
-
-
 function storingCustomEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
@@ -88,7 +83,6 @@ function storingCustomEventAttributes() {
             eventDate: rowData[0],
             startTime: rowData[1],
             endTime: rowData[2]
-
         });
     });
 
@@ -283,61 +277,23 @@ $(document).ready(function() {
     //$('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
   });
   
+  /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
+  that specific row will be deleted*/
+
   let counterAdd = 0 // counter to add customized ids into the newly created slots
-  
   $(".add_customevent").click(function(){
     counterAdd += 1
     let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
     clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.find("[id^='customDate']").attr("id", "customDate-" + counterAdd);
-    clonedCustom.find("[data-page-location]").attr("id", "customDatePicker-" + counterAdd);
-    clonedCustom.find("[data-page-location]").attr("data-page-location", counterAdd);
-    clonedCustom.find("[id^='calendarIconStart']").attr("id", "calendarIconStart-" + counterAdd);
-    clonedCustom.find("[id^='customDatePicker']").attr("id", "customDatePicker-" + counterAdd);
+    clonedCustom.find("#delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedCustom)
-    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
-    $("#delete_customevent" + counterAdd).removeClass('d-none');
-    
-    $('#calendarIconStart-' + counterAdd).click(function() {
-      console.log('ok')
-        $('#customDatePicker-'+ counterAdd).datepicker().datepicker('show');
+
+    //this is so that the trash icon can be used to delete the event
+    clonedCustom.on("click", "[id^=delete_customevent]", function() {
+      var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id
+      $("#customEvent" + id).remove(); 
     });
-   
-    clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
-
-  
-    deleteId.push({id: "#delete_customevent" + counterAdd})
-    console.log("#delete_customevent" + counterAdd)
-    console.log(deleteId)
-
-    // Attach click handler for the delete button using event delegation
-    $(document).on("click", "#delete_customevent" + counterAdd, function() {
-        // Handle delete action here
-        $(this).closest("#customEvent" + counterAdd).remove();
-    });
-    
   });
-
-
-
-    
-
-      // $(".extraSlots").children().each(function(index, element) {
-      //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
-      //     console.log("Data in row " + (index + 1) + ": " + rowData)
-      //     // Modify this to display or manipulate your data as needed
-      // });
-
- 
-
- 
-
-  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
-    console.log("here in delete")
-    let numbers= $(".delete_row").length
-    console.log(numbers)
-  });
-
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
@@ -394,17 +350,10 @@ $(document).ready(function() {
   $(".startDate").click(function() {
     $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
-  $(".customDate").click(function() {
-    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  });
-  $(".customDate1").click(function() {
-    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  });
 
   $(".endDate").click(function() {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
-
 
   $(".startDatePicker, .endDatePicker").change(function(){
     if ( $(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()){
@@ -420,7 +369,6 @@ $(document).ready(function() {
       $("#checkFood").prop('disabled', false);
     }
   });
-
 
   var facilitatorArray = []
   function callback(selectedFacilitator) {
@@ -463,9 +411,9 @@ $(document).ready(function() {
      updateDate(this)
   });
 
-  $(".customDatePicker").change(function(){ //custom data calender function
-    updateDate(this)
- });
+//   $(".customDatePicker").change(function(){ //custom data calender function
+//     updateDate(this)
+//  });
 
   $("#inputCharacters").keyup(function(event){
     setCharacterLimit(this, "#remainingCharacters")
