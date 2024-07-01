@@ -460,23 +460,6 @@ def calculateRecurringEventFrequency(event):
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
-# def calculateCustomEventFrequency(event):
-#     """
-#         Calculate the events to create based on the different dates and times provided. Takes a
-#         dictionary of event data.
-
-#         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
-
-#         Return a list of events to create from the event data.
-#     """
-#     if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
-#         raise Exception("startDate and endDate must be datetime.date objects.")
-    
-#     return [ {'name': f"{event['name']}",
-#               'date': event['startDate'] + timedelta(days=7*counter),
-#               "week": counter+1}
-#             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
-
 def preprocessEventData(eventData):
     """
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
@@ -495,6 +478,21 @@ def preprocessEventData(eventData):
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
+
+    # if eventData['isCustom']:
+    #     if 'customEventsData' in eventData: #this should not exist anymore if the list of dictionaries have been processed once already
+    #         customEventsList = []
+    #         for event in eventData['customEventsData']:
+    #             customDict = {
+    #                 'name': event['eventName'],
+    #                 'startDate': event['eventDate'],
+    #                 'timeStart': event['startTime'],
+    #                 'timeEnd': event['endTime']
+    #         }
+    #             customEventsList.append(customDict)
+    #         for customEvents in customEventsList:
+    #             processedCustomEvents = preprocessEventData(customEvents)
+
 
     ## Process dates
     eventDates = ['startDate', 'endDate']
