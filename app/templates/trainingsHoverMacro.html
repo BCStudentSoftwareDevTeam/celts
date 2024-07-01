@@ -2,7 +2,7 @@
     {% if trainingList %}
         {% for training, rsvpdOrAttended in trainingList %}
             {% set trainingName = training.name %}
-            {% if training.isPast %}
+            {% if training.isPastStart %}
                 {% set didAttend = rsvpdOrAttended %}
                 {% if didAttend %}
                     <p><b>{{trainingName}}</b>: <br>Attended</p>

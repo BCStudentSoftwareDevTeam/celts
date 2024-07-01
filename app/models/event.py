@@ -34,8 +34,12 @@ class Event(baseModel):
         return not self.program_id
 
     @property
-    def isPast(self):
-        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)
+    def isPastStart(self):
+        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)  
+
+    @property
+    def isPastEnd(self):
+        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd) 
 
     @property
     def isRecurring(self):
@@ -54,7 +58,7 @@ class Event(baseModel):
         minutesFromNow = secondsFromNow // 60
         hoursFromNow = minutesFromNow // 60
         daysFromNow = relativeTime.days
-        if self.isPast:
+        if self.isPastStart:
             return ""
         elif (daysFromNow):
             return f"{daysFromNow} day" + ("s" if daysFromNow > 1 else "")
