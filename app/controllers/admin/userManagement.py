@@ -68,7 +68,7 @@ def removeProgramManagers():
         flash('Error while removing a manager.','warning')
         abort(500,"Error while trying to remove a manager.")
 
-@admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
+@admin_bp.route("/admin/updateProgramInfo/<programID>", methods=['POST'])
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     programInfo = request.form # grabs user inputs
