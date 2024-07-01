@@ -78,13 +78,13 @@ $(document).ready(function(e) {
   });
 
   $("#cancelButton").on("click", function() {
-    var cancelButtonContext = this
+    var cancelButton = $(this)
       $.ajax({
         url: '/serviceLearning/canceledProposal',
         method: 'POST',
         data: {courseID : document.getElementById('courseID').value},
         success: function(response) {
-            window.location.replace($(cancelButtonContext).val());
+            window.location.replace(cancelButton.val());
         }
       })
   });
