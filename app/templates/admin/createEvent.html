@@ -64,9 +64,9 @@
       <div class="form-group col-md-6">
           <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
-                value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
-                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+              <input autocomplete="off" type='date' class="form-control datePicker startDatePicker readonly" 
+                value= "{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
+                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
               <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
               </div>
@@ -421,10 +421,10 @@
           <div class="row mb-2" id ="customEvent">
             <br>
 
-            <div class="form-group mb-3"> <!-- Added mb-3 for margin-bottom -->
+            <div class="form-group mb-3">
               <label class="form-label" for="eventName"><strong>Event Name</strong></label>
               <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Enter event name" required>
-            </div>
+          </div>
           
             
 

@@ -104,6 +104,7 @@ def createEvent(templateid, programid):
         except Exception as e:
             print("Error saving event:", e)
             savedEvents = False
+            
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
