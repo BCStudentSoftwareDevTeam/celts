@@ -14,6 +14,28 @@ function emailAllInterested(){
     msgFlash("No interested students to email.", "info")
   }
 }
+ 
+
+$(document).ready(function() {
+  $(document).on('click', '.remove_interested_student', function() {
+      let username = $(this).attr('id'); 
+
+      
+      $.ajax({
+          type: 'POST',
+          url: '/profile/' + username + '/indicateInterest',
+          success: function(response) {
+            msgToast("Student successfully removed")
+            location.reload();  
+          },
+          error: function(error) {
+           console.log("error")
+          }
+      });
+  });
+});
+
+
 
 $(document).ready(function() {
   $('#engagedStudentsTable').DataTable();
