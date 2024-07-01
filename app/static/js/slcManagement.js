@@ -290,5 +290,29 @@ function emptyInstructorTable() {
   $("#instructorTableBody").empty().html(saveRow);
 }
 
+export const allExports = {
+  resetAllSelections,
+  updateRenewModal,
+  changeAction,
+  renew,
+  withdraw,
+  changeTerm,
+  formSubmit,
+  reviewCourses,
+  approveProposal,
+  unapproveProposal,
+  showAlterModalWithCourse,
+  getImportedCourseInfo,
+  setInstructorList,
+  updateInstructorsTable,
+  attachInstructorsInfo,
+  createInstructorRow,
+  emptyInstructorTable,
+}
+
+Object.keys(allExports).forEach(key => {
+  window[key] = allExports[key] 
+})
+
 window.formSubmit = formSubmit;
 window.changeAction = changeAction;
