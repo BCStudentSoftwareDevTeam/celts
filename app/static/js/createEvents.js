@@ -88,6 +88,10 @@ function storingCustomEventAttributes() {
     console.log(entries);
     console.log(typeof entires)
 
+    let entriesJson = JSON.stringify(entries);
+    document.getElementById("customEventsDataId").value = entriesJson
+
+
   var customTable = $("#customEventsTable");
   console.log(customTable)
   customTable.find("tbody tr").remove(); // Clear existing rows
