@@ -5,6 +5,7 @@ from playhouse.shortcuts import model_to_dict
 import json
 from datetime import datetime
 import os
+import ast
 
 from app import app
 from app.models.program import Program
@@ -98,8 +99,45 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         eventData.update(request.form.copy())
+        print(eventData['isCustom'])
+        print('################################################################################')
+        print(eventData)
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print(eventData['customEventsData'])
+        # print(type(eventData['customEventsData'][0]))
+        if eventData['isCustom']:
+            customEventsList = []
+            for event in ast.literal_eval(eventData['customEventsData']):
+                # event = dict(event)
+                customDict = {
+                    'name': event['eventName'],
+                    'term': eventData['term'],
+                    'isCustom': eventData['isCustom'],
+                    'location': eventData['location'],
+                    'startDate': event['eventDate'],
+                    'endDate': eventData['endDate'],
+                    'timeStart': event['startTime'],
+                    'timeEnd': event['endTime'],
+                    'description': eventData['description'],
+                    'contactName':eventData['contactName'],
+                    'contactEmail': eventData['contactEmail'],
+                    'isRsvpRequired': eventData.get('isRsvpRequired'),
+                    'isTraining': eventData.get('isTraining'),
+                    'rsvpLimit': eventData.get('rsvpLimit'),
+                    'isFoodProvided': eventData.get('isFoodProvided'),
+                    'isService': eventData.get('isService'),
+                    'attachmentObject': eventData.get('attachmentObject')
+                    }
+                customEventsList.append(customDict)
+                print('78787r7457575757575757777777777777777777')
+                print(customDict)
+             
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            if eventData['isCustom']:
+                for customEvent in customEventsList:
+                    savedEvents, validationErrorMessage = attemptSaveEvent(customEvent, getFilesFromRequest(request))
+            else:
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
