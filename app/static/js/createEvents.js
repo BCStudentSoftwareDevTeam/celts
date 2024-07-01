@@ -78,9 +78,10 @@ function storingCustomEventAttributes() {
         console.log("Data in row " + (index + 1) + ": " + rowData);
 
         entries.push({
-            eventDate: rowData[0],
-            startTime: rowData[1],
-            endTime: rowData[2]
+            eventName: rowData[0],
+            eventDate: rowData[1],
+            startTime: rowData[2],
+            endTime: rowData[3]
         });
     });
 
@@ -93,7 +94,7 @@ function storingCustomEventAttributes() {
   console.log(customTable)
   entries.forEach(function(entry){
     
-    customTable.append("<tr><td>" + event.name + "</td><td>" + entry.eventDate +"</td><td>" + entry.startTime + "</td><td>" + entry.endTime + "</td></tr>");
+    customTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + entry.startTime + "</td><td>" + entry.endTime + "</td></tr>");
   });
 
 }  
