@@ -2,7 +2,7 @@ var elem = document.getElementById("show");
 
 $(document).on("fullscreenchange", function() {
     if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-        closeFullscreen(false); // Pass false to indicate not to toggle button text
+        closeFullscreen(true); // Pass false to indicate not to toggle button text
     }
 });
 
@@ -41,6 +41,8 @@ function openFullscreen() {
         elem.msRequestFullscreen();
     }
     ensureFocus();
+    
+
     $("#fullscreenCheck").attr("onclick", "toggleFullscreen()").text("Close Full Screen");
 }
 
