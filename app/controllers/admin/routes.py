@@ -169,12 +169,16 @@ def createEvent(templateid, programid):
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
-            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRecurring') == 'on' or eventData.get('isCustom') == 'on') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
 
             if program:
-                if len(savedEvents) > 1:
+                if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                
+                elif len(savedEvents) > 1 and eventData.get('isCustom'):
+
+                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
                 else:
                     createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
