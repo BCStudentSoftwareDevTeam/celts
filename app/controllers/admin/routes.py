@@ -415,10 +415,10 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
-@admin_bp.route('/makeCustomEvents', methods=['POST'])
-def addCustomEvents():
-    customEvents = preprocessEventData(request.form.copy())
-    return json.dumps(customEvents, default=str)
+# @admin_bp.route('/makeCustomEvents', methods=['POST'])
+# def addCustomEvents():
+#     customEvents = preprocessEventData(request.form.copy())
+#     return json.dumps(customEvents, default=str)
 
 
 
