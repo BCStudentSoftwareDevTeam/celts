@@ -59,11 +59,7 @@ function calculateRecurringEventFrequency(){
       });
   }
 
-  var save_button = document.getElementById('submitParticipant');
-  var modal = document.getElementById('modalCustom');
-
-// Assuming save_button is properly defined elsewhere in your code
-save_button.addEventListener('click', function() {
+  document.getElementById('submitParticipant').addEventListener('click', function() {
     // Call the function storingCustomEventAttributes() when the button is clicked
     storingCustomEventAttributes();
     $("#checkIsCustom").prop('checked', true);
@@ -91,19 +87,15 @@ function storingCustomEventAttributes() {
     let entriesJson = JSON.stringify(entries);
     document.getElementById("customEventsDataId").value = entriesJson
 
-
   var customTable = $("#customEventsTable");
-  console.log(customTable)
   customTable.find("tbody tr").remove(); // Clear existing rows
-  console.log(customTable)
   entries.forEach(function(entry){
-    
-    customTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + entry.startTime + "</td><td>" + entry.endTime + "</td></tr>");
+    //fromat to 12hr time for display
+    var startTime = format24to12HourTime(entry.startTime);
+    var endTime = format24to12HourTime(entry.endTime);
+    customTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
-
 }  
-
-
 
 // $.ajax({
 //   type: "POST",
@@ -280,7 +272,6 @@ $(document).ready(function() {
   
   /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
   that specific row will be deleted*/
-
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".add_customevent").click(function(){
     counterAdd += 1
