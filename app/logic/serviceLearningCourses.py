@@ -73,10 +73,11 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             termCheck = Term.get(Term.id == termObj)
 
             checkTermOrder = termCheck.termOrder
+            #dosnt work
+            CurrentTermOrder = Term.termOrder
 
-            print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-            print(checkTermOrder)
+            
 
             check_for_Existing_Courses = list((Course.select()
                                         .join(Term, on =(Course.term == Term.id))
@@ -84,8 +85,10 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                         .order_by(Course.term.desc())
                                         .limit(1)))
 
-          
-            if not check_for_Existing_Courses:
+   
+            if not check_for_Existing_Courses :
+
+                
 
                 courseObj: Course = Course.create(courseName = "",
                                 sectionDesignation = "",
@@ -96,10 +99,15 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 createdBy = g.current_user,
                                 serviceLearningDesignatedSections = "",
                                 previouslyApprovedDescription = "" )
-
-            elif Term.termOrder == checkTermOrder :
-
-                print("###################################################")
+                
+            #peewee dosnt throw an error, always returns true
+            elif CurrentTermOrder == checkTermOrder:
+                print('################################################')
+                print(CurrentTermOrder)
+                print(checkTermOrder)
+                courseObj : Course = Course.get( courseAbbreviation = course,
+                                                 term = termObj)    
+            
 
             else:
 
