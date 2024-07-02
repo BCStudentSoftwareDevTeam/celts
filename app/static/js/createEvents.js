@@ -357,6 +357,10 @@ $(document).ready(function() {
     }
   });
 
+  $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  });
+
   $("#checkRSVP").click(function(){
     if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
       $("#checkFood").prop('checked', true);
@@ -407,9 +411,9 @@ $(document).ready(function() {
      updateDate(this)
   });
 
-//   $(".customDatePicker").change(function(){ //custom data calender function
-//     updateDate(this)
-//  });
+  $(".customDatePicker").change(function(){ //custom data calender function
+    updateDate(this)
+ });
 
   $("#inputCharacters").keyup(function(event){
     setCharacterLimit(this, "#remainingCharacters")

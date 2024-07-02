@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import os
 import ast
+from dateutil.parser import parse
 
 from app import app
 from app.models.program import Program
@@ -108,19 +109,26 @@ def createEvent(templateid, programid):
         if eventData.get('isCustom'):
             customEventsList = []
             for event in ast.literal_eval(eventData.get('customEventsData')):
+                print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+                print(type(event['startTime']))
+                print(type(event['endTime']))
+                print(event['eventDate'])
+                customDate = parse(event.get('eventDate')).date()
+                customStartTime = datetime.strptime(event.get('startTime'), '%H:%M').time()
+                customEndTime = datetime.strptime(event.get('endTime'), '%H:%M').time()
                 # event = dict(event)
                 customDict = {
-                    'name': event['eventName'],
-                    'term': eventData['term'],
+                    'name': event.get('eventName'),
+                    'term': eventData.get('term'),
                     'isCustom': eventData.get('isCustom'),
-                    'location': eventData['location'],
-                    'startDate': event['eventDate'],
-                    'endDate': eventData['endDate'],
-                    'timeStart': event['startTime'],
-                    'timeEnd': event['endTime'],
-                    'description': eventData['description'],
-                    'contactName':eventData['contactName'],
-                    'contactEmail': eventData['contactEmail'],
+                    'location': eventData.get('location'),
+                    'startDate': customDate,
+                    'endDate': eventData.get('endDate'),
+                    'timeStart': customStartTime,
+                    'timeEnd': customEndTime,
+                    'description': eventData.get('description'),
+                    'contactName':eventData.get('contactName'),
+                    'contactEmail': eventData.get('contactEmail'),
                     'isRsvpRequired': eventData.get('isRsvpRequired'),
                     'isTraining': eventData.get('isTraining'),
                     'rsvpLimit': eventData.get('rsvpLimit'),
@@ -413,10 +421,10 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
-@admin_bp.route('/makeCustomEvents', methods=['POST'])
-def addCustomEvents():
-    customEvents = preprocessEventData(request.form.copy())
-    return json.dumps(customEvents, default=str)
+# @admin_bp.route('/makeCustomEvents', methods=['POST'])
+# def addCustomEvents():
+#     customEvents = preprocessEventData(request.form.copy())
+#     return json.dumps(customEvents, default=str)
 
 
 
