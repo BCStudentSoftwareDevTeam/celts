@@ -150,7 +150,6 @@ $(document).ready(function() {
   
   /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
   that specific row will be deleted*/
-
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".add_customevent").click(function(){
     counterAdd += 1
