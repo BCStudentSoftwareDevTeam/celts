@@ -171,7 +171,7 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRecurring') == 'on' or eventData.get('isCustom') == 'on') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
 
             if program:
