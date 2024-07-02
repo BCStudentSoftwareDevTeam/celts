@@ -28,7 +28,7 @@
         {% for student in sustainedEngagement %}
         <tr>
             <td>
-                <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a> 
             </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
@@ -57,13 +57,23 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th> Remove Student</th>
         </tr>
     </thead>
     <tbody>
         {% for student in interestedStudentsList %}
             <tr>
-                <td>
+                <td style = "width: 82%">
                     <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
+                </td>
+                <td style="text-align:center">
+                  <button
+                    type="button"
+                    class="remove_interested_student btn btn-danger btn-sm"
+                    id = "{{student.username}}"
+                    aria-label="remove interested student">
+                    <span class="bi bi-trash h5 align-middle"></span>
+                  </button>
                 </td>
             </tr>
         {% endfor %}
