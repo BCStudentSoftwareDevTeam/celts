@@ -108,50 +108,61 @@ def createEvent(templateid, programid):
         # print(type(eventData['customEventsData'][0]))
         if eventData.get('isCustom'):
             customEventsList = []
+
+            # print(rsvp_limit)
+
             for event in ast.literal_eval(eventData.get('customEventsData')):
                 print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
                 print(type(event['startTime']))
                 print(type(event['endTime']))
-                print(event['eventDate'])
-                customDate = parse(event.get('eventDate')).date()
-                customStartTime = datetime.strptime(event.get('startTime'), '%H:%M').time()
-                customEndTime = datetime.strptime(event.get('endTime'), '%H:%M').time()
+                print(type(event['eventDate']))
+                print(type(eventData['endDate']))
+                print(eventData['rsvpLimit'])
+                print(type(eventData['rsvpLimit']))
+                print(eventData.get("rsvpLimit") != "")
                 # event = dict(event)
                 customDict = {
-                    'name': event.get('eventName'),
-                    'term': eventData.get('term'),
-                    'isCustom': eventData.get('isCustom'),
-                    'location': eventData.get('location'),
-                    'startDate': customDate,
-                    'endDate': eventData.get('endDate'),
-                    'timeStart': customStartTime,
-                    'timeEnd': customEndTime,
-                    'description': eventData.get('description'),
-                    'contactName':eventData.get('contactName'),
-                    'contactEmail': eventData.get('contactEmail'),
+                    'program':  eventData['program'],
+                    'name': event['eventName'],
+                    'term': eventData['term'],
+                    'isCustom': eventData['isCustom'],
+                    'location': eventData['location'],
+                    'startDate': event['eventDate'],
+                    'timeStart': event['startTime'],
+                    'timeEnd': event['endTime'],
+                    'description': eventData['description'],
+                    'contactName':eventData['contactName'],
+                    'contactEmail': eventData['contactEmail'],
                     'isRsvpRequired': eventData.get('isRsvpRequired'),
                     'isTraining': eventData.get('isTraining'),
-                    'rsvpLimit': eventData.get('rsvpLimit'),
+                    'rsvpLimit': None if eventData.get("rsvpLimit") == "" else int(eventData.get("rsvpLimit")),
                     'isFoodProvided': eventData.get('isFoodProvided'),
                     'isService': eventData.get('isService'),
                     'attachmentObject': eventData.get('attachmentObject')
                     }
-                customEventsList.append(customDict)
-                print('78787r7457575757575757777777777777777777')
-                print(customDict)
+                try:
+                    savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
+                except Exception as e:
+                    print("Failed saving multi event", e)
+                # customEventsList.append(customDict)
+        
+            print('################################################################')
+            print(customDict)
              
-        try:
-            if eventData['isCustom']:
-                for customEvent in customEventsList:
-                    savedEvents, validationErrorMessage = attemptSaveEvent(customEvent, getFilesFromRequest(request))
-            else:
+        # try:
+        #     if eventData.get('isCustom'):
+        #         for customEvent in customEventsList:
+        #             savedEvents, validationErrorMessage = attemptSaveEvent(customEvent, getFilesFromRequest(request))
+        else:
+            try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
-
-        except Exception as e:
-            print("Error saving event:", e)
-            savedEvents = False
+            except Exception as e:
+                    print("Failed saving regular event", e)
+        # except Exception as e:
+        #     print("Error saving event:", e)
+        #     savedEvents = False
             
-            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+        #     validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
