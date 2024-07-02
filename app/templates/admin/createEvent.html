@@ -64,7 +64,7 @@
       <div class="form-group col-md-6">
           <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-              <input autocomplete="off" type='date' class="form-control datePicker startDatePicker readonly" 
+              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
                 value= "{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
                 name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
               <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
@@ -72,7 +72,6 @@
               </div>
           </div>
       </div>
-
       <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
       <!--datePicker for End date-->
               <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -185,16 +184,13 @@
           <tbody></tbody>
         </table>
       </div>
-
       <div class="{{hideCustom}}" id="customTableDiv">
         <table class="table" id="customEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>End Time</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
-      
       <input type = "hidden" name = "customEventsData" value = "hidden value here" id = "customEventsDataId">
-     
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
         <div class="row col-md-12 mb-4" >
           <div class="form-group">
@@ -329,7 +325,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal for Delete Event -->
 <div class="modal fade" id="deleteWarning" tabindex="-1" aria-labelledby="warningModel" aria-hidden="true">
   <div class="modal-dialog">
@@ -347,11 +342,9 @@
                 <form action="/event/{{eventData.id}}/delete" method='post'>
                   <button type="submit" class="btn btn-danger">Delete This Event</button>
                 </form>
-
                 <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
                     <button type="submit" class="btn btn-danger">Delete This and All Following</button>
                 </form>
-
                 <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
                     <button type="submit" class="btn btn-danger">Delete Series </button>
                 </form>
@@ -381,7 +374,6 @@
   </div>
 <!-- Modal for Renew Event -->
   <form action="/event/{{eventData.id}}/renew" method='post'>
-
   <div class="modal fade" id="renewWarning" tabindex="-1" aria-labelledby="renewModel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -395,7 +387,6 @@
           <div class="form-group">
                 {{ locationTimeMacro(eventData, hideDate, 'modal') }}
           </div>
-        
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-success">Renew Event</button>
@@ -421,15 +412,10 @@
           <div class="extraSlots"><!--addition slot for data start time and end time-->
           <div class="row mb-2" id ="customEvent">
             <br>
-
             <div class="form-group mb-3">
               <label class="form-label" for="eventName"><strong>Event Name</strong></label>
               <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Enter event name" required>
           </div>
-          
-            
-
-
             <div class="form-group col-md-5">
               <label class="form-label me-2" for="customDatePicker"><strong>Custom Date</strong></label>
               <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
@@ -437,6 +423,7 @@
                     value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
                     name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
                   <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
+                   <!-- <span><i class="bi bi-calendar-plus-fill"></i></span> -->
                   </div>
               </div>
             </div>
@@ -473,8 +460,6 @@
               <i class="bi bi-trash3"></i>
             </div>
           </div>
-          
-            
           </div>
         </div>
         <div class="add_customevent"> <!--add button for the slots-->
@@ -488,19 +473,8 @@
         </div>
       </div>
     </div>
-
   <!--</form>-->
 </div>
-
-
 <div id="displayEntries"></div>
 <!--<div id="review-modal"></div>-->
-
-
-
-
-
-
-
-
 {% endblock %}

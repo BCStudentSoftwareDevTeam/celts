@@ -99,20 +99,20 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         eventData.update(request.form.copy())
-        print(eventData['isCustom'])
+        print(eventData.get('isCustom'))
         print('################################################################################')
         print(eventData)
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        print(eventData['customEventsData'])
+        print(eventData.get('customEventsData'))
         # print(type(eventData['customEventsData'][0]))
-        if eventData['isCustom']:
+        if eventData.get('isCustom'):
             customEventsList = []
-            for event in ast.literal_eval(eventData['customEventsData']):
+            for event in ast.literal_eval(eventData.get('customEventsData')):
                 # event = dict(event)
                 customDict = {
                     'name': event['eventName'],
                     'term': eventData['term'],
-                    'isCustom': eventData['isCustom'],
+                    'isCustom': eventData.get('isCustom'),
                     'location': eventData['location'],
                     'startDate': event['eventDate'],
                     'endDate': eventData['endDate'],
