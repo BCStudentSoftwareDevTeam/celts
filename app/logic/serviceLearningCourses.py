@@ -74,21 +74,17 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
 
             checkTermOrder = termCheck.termOrder
             #dosnt work
-            CurrentTermOrder = Term.termOrder
-
-
-            
-
+                        
             check_for_Existing_Courses = list((Course.select()
                                         .join(Term, on =(Course.term == Term.id))
-                                        .where((Course.courseAbbreviation == course) & (Term.termOrder < checkTermOrder))
+                                        .where((Course.courseAbbreviation == course) & (Term.termOrder <= checkTermOrder))
                                         .order_by(Course.term.desc())
                                         .limit(1)))
+            
+            
 
    
             if not check_for_Existing_Courses :
-
-                
 
                 courseObj: Course = Course.create(courseName = "",
                                 sectionDesignation = "",
@@ -98,30 +94,28 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 status = 4,
                                 createdBy = g.current_user,
                                 serviceLearningDesignatedSections = "",
-                                previouslyApprovedDescription = "" )
-                
-            #peewee dosnt throw an error, always returns true
-            elif CurrentTermOrder == checkTermOrder:
-                print('################################################')
-                print(CurrentTermOrder)
-                print(checkTermOrder)
-                courseObj : Course = Course.get( courseAbbreviation = course,
-                                                 term = termObj)    
-            
-
+                                previouslyApprovedDescription = "")
+        
             else:
-
                 previous_data = check_for_Existing_Courses[0]
 
-                courseObj: Course = Course.create(courseName = previous_data.courseName,
-                                courseAbbreviation = previous_data.courseAbbreviation,
-                                sectionDesignation = previous_data.sectionDesignation,
-                                courseCredit = 1,
-                                term = termObj,
-                                status = 4,
-                                createdBy = g.current_user, 
-                                serviceLearningDesignatedSections = previous_data.serviceLearningDesignatedSections,
-                                previouslyApprovedDescription = previous_data.previouslyApprovedDescription)
+                currentTerm = Term.get(Term.id == previous_data.term)
+                
+                
+                if (currentTerm.termOrder) == checkTermOrder:
+                    print("##########################################################################")
+                    courseObj : Course = Course.get( courseAbbreviation = course, term = termObj) 
+               
+                else:
+                    courseObj: Course = Course.create(courseName = previous_data.courseName,
+                                    courseAbbreviation = previous_data.courseAbbreviation,
+                                    sectionDesignation = previous_data.sectionDesignation,
+                                    courseCredit = 1,
+                                    term = termObj,
+                                    status = 4,
+                                    createdBy = g.current_user, 
+                                    serviceLearningDesignatedSections = previous_data.serviceLearningDesignatedSections,
+                                    previouslyApprovedDescription = previous_data.previouslyApprovedDescription)
 
             for userDict in courseInfo['students']:
                 if userDict['errorMsg']:
