@@ -371,6 +371,10 @@ $(document).ready(function() {
     }
   });
 
+  $(".customDate").click(function() {
+    $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  });
+
   $("#checkRSVP").click(function () {
     if ($("input[name='isRsvpRequired']:checked").val() == 'on') {
       $("#checkFood").prop('checked', true);
