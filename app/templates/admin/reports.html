@@ -11,7 +11,7 @@
                 <label class="fw-bold py-2" for="academicYear">Academic Year:</label>
             </div>
             <div class="col-md-3">          
-                <select id="academicYear" name="academicYear" class="form-control" required>
+                <select id="academicYear" name="academicYear" class="form-select" required>
                     <option value="" disabled selected>Select an academic year</option>
                     {% for year in academicYears %}
                         <option value="{{ year }}">{{ year }}</option>
