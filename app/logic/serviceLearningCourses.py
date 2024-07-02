@@ -60,30 +60,17 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
             if 'errorMsg' in courseInfo and courseInfo['errorMsg']:
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
-            # Look in the db for a course that matches abbreviation and term (query that returns one course)
-            # If matches, use this course to add participants
-
-            # If no match
-                # Select most recent course whose abbreviations match, but term is before the term we are trying to import for (termorder is LESS)
-                # If this course exists, use this course 
-                # If this course does not exist, create a new course
-
-            # Add participants to desired course from the database
 
             termCheck = Term.get(Term.id == termObj)
 
             checkTermOrder = termCheck.termOrder
-            #dosnt work
-                        
+
             check_for_Existing_Courses = list((Course.select()
                                         .join(Term, on =(Course.term == Term.id))
                                         .where((Course.courseAbbreviation == course) & (Term.termOrder <= checkTermOrder))
                                         .order_by(Course.term.desc())
                                         .limit(1)))
             
-            
-
-   
             if not check_for_Existing_Courses :
 
                 courseObj: Course = Course.create(courseName = "",
@@ -103,7 +90,6 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 
                 
                 if (currentTerm.termOrder) == checkTermOrder:
-                    print("##########################################################################")
                     courseObj : Course = Course.get( courseAbbreviation = course, term = termObj) 
                
                 else:
