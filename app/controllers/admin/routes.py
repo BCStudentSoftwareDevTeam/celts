@@ -183,23 +183,24 @@ def createEvent(templateid, programid):
                     createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
                 elif len(savedEventsList) >= 1 and eventData.get('isCustom'):
-                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                    print("saved_event", type(savedEvents),savedEvents)
-                    print("savedEventsList:", savedEventsList)
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
-                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                    print("modifiedSavedEvents", modifiedSavedEvents )
-                    event_names = [event.name for event in modifiedSavedEvents]  # Extract names of all events in savedEvents
+                    
                     event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in ast.literal_eval(eventData.get('customEventsData'))]
 
-                    print("#############################################################################################")
-                    print("event names:", event_names)
                     event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
-                    print("############################################################################# eventlist", event_list)
 
-                    createAdminLog(f"Created {event_list} for {program.programName}, with start dates of {', '.join(event_dates)}.")
+                    if len(modifiedSavedEvents) > 1:
+                        #get last event name and stick at the end before 'and' so that it reads like a sentence in admin log
+                        last_event = f"<a href=\"{url_for('admin.eventDisplay', eventId=modifiedSavedEvents[-1].id)}\">{modifiedSavedEvents[-1].name}</a>"
+                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and {last_event}'
+                        #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
+                        last_event_date = event_dates[-1]
+                        event_date_list = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+
+                    createAdminLog(f"Created events {event_list} for {program.programName}, with start dates of {event_date_list}.")
+                    
                 else:
-                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createAdminLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createAdminLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
