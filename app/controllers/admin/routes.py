@@ -68,6 +68,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
+    savedEventsList = []
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -142,6 +143,8 @@ def createEvent(templateid, programid):
                     }
                 try:
                     savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
+                    savedEventsList.append(savedEvents)
+                    
                 except Exception as e:
                     print("Failed saving multi event", e)
                 # customEventsList.append(customDict)
@@ -171,14 +174,30 @@ def createEvent(templateid, programid):
 
             noun = ((eventData.get('isRecurring') == 'on' or eventData.get('isCustom') == 'on') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-
+            
+            print(type(eventData['startDate']))
+           
+           
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
-                elif len(savedEvents) > 1 and eventData.get('isCustom'):
+                elif len(savedEventsList) >= 1 and eventData.get('isCustom'):
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                    print("saved_event", type(savedEvents),savedEvents)
+                    print("savedEventsList:", savedEventsList)
+                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                    print("modifiedSavedEvents", modifiedSavedEvents )
+                    event_names = [event.name for event in modifiedSavedEvents]  # Extract names of all events in savedEvents
+                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in ast.literal_eval(eventData.get('customEventsData'))]
 
-                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    print("#############################################################################################")
+                    print("event names:", event_names)
+                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+                    print("############################################################################# eventlist", event_list)
+
+                    createAdminLog(f"Created {event_list} for {program.programName}, with start dates of {', '.join(event_dates)}.")
                 else:
                     createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
