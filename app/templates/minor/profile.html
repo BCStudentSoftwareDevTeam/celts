@@ -1,19 +1,22 @@
 {% set title = "Student Minor Page" %}
 {% extends "base.html" %}
+
 {% block scripts %}
-  {{super()}}
+  {{ super() }}
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/cceMinorProfilePage.js') }}?u={{ lastStaticUpdate }}"></script>
 {% endblock %}
+
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/minor.css') }}?u={{ lastStaticUpdate }}">
 {% endblock %}
+
 {% block app_content %}
   <div class="row">
     <input id="username" value="{{ user.username }}" hidden />
     <div name="Header" class="row">
-      <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor Profile</h1>
+      <h1>{{ user.firstName }} {{ user.lastName }}'s CCE Minor Profile</h1>
     </div>
     <div class="row">
       <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
@@ -42,7 +45,7 @@
           <div class="accordion-item">
             <h3 class="accordion-header" id="headingOne">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
-                {{term[0]}}
+                {{ term[0] }}
               </button>
             </h3>
             <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#communityEngagement">
@@ -61,14 +64,14 @@
                           <tr class="engagement-row" data-engagement-data='{{ engagement|tojson }}'>
                             <td>
                               <input type="checkbox" {{ 'checked' if engagement['matched'] else '' }} />
-                              <button type="button" class="btn btn-link">{{engagement["name"]}}</button>
+                              <button type="button" class="btn btn-link">{{ engagement["name"] }}</button>
                             </td>
                           </tr>
                           {% endfor %}
                         </tbody>
                       </table>
                     </div>
-                    <div class="col-md-6 p-3" id="set{{term[1]}}">
+                    <div class="col-md-6 p-3" id="set{{ term[1] }}">
                       Click on an engagement entry to see your event history or course information.
                     </div>
                   </div>
@@ -84,150 +87,295 @@
       </div>
       <div class="tab-pane fade {{ 'active' if activeTab == 'trainingEvents' else '' }}" id="pills-training" role="tabpanel" aria-labelledby="trainingEvents">
         <div name="Community-Engaged Summer Experience" class="pt-4">
-          <h3 class="col-md-auto {% if summerExperience %}bi bi-check2 {% endif %}">Community-Engaged Summer Experience</h3>
-          <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
-          <div class="row-auto col-md-6">
-            <div class="input-group">
-              <select class="form-select" name='term' id='summerExperienceTerm' required>
-                {% for term in summerTerms %}
-                <option value="{{ term.description }}" {{ "selected" if term.description == selectedSummerTerm }}>{{term.description}}</option>
-                {% endfor %}
-              </select>
-              <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{ summerExperience }}' type="text" />
-              <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
-              <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>         
+          <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{ url_for('minor_bp.addSummerExperience', username=user.username) }}" method="POST">
+            <div class='row'>
+              <div class="container">
+                <div class='form-group mb-4 text-center'>
+                  <h3 class='form-label' for='studentUser' style="color: #000000;">COMMUNITY AND CIVIC ENGAGEMENT MINOR (CCE)</h3>
+                  <h4>Proposal for Community-Engaged Summer Experience</h4>
+                  <p>
+                    The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills. Please fill out the following form and return to your CCE Minor Advisor for approval.
+                  </p>
+                </div>
+      
+                <div class="form-group">
+                  <br>
+                  <h4> Student Information </h4>
+                  <hr>
+                </div>
+      
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label class="form-label" for="studentName"> <strong>Student Name</strong> </label>
+                    <input class="form-control name-input" id="studentName" name="studentName" value="{{ user.fullName }}" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="studentEmail"> <strong>Email</strong> </label>
+                    <input class="form-control email-input" id="studentEmail" name="studentEmail" value="{{ user.email }}" />
+                    <br>
+                  </div>
+                </div>
+      
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label class="form-label me-2" for="date"><strong>Today's Date</strong></label>
+                    <br>
+                    <input type="date" id="date" name="date">
+                  </div>
+                </div>
+      
+                <div class="form-group">
+                  <br>
+                  <h4> Company/Organization Information </h4>
+                  <hr>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
+                  <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company" />
+                </div>
+      
+                <br>
+      
+                <div class="form-group">
+                  <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+                  <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress" />
+                </div>
+      
+                <br>
+      
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+                    <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+                    <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite" />
+                  </div>
+                </div>
+      
+                <br> 
+      
+                <div class="form-group">
+                  <br>
+                  <h4> Supervisor Information </h4>
+                  <hr>
+                </div>
+      
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
+                    <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
+                    <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail" />
+                    <br>
+                  </div>
+                </div>
+      
+                <div class="form-group">
+                  <br>
+                  <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector) that is responsive to community-identified initiatives or needs:</strong></label> <br>
+                  <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Please describe your experience" required></textarea>
+                
+                  <br><br>
+                
+                  <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please check one.</strong></label><br>
+                  <input type="checkbox" id="internship" name="experienceType" value="Internship">
+                  <label for="internship">Internship</label><br>
+                
+                  <input type="checkbox" id="cbr" name="experienceType" value="Community-based research">
+                  <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
+                
+                  <input type="checkbox" id="communityLabor" name="experienceType" value="Community-Based Labor Position">
+                  <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
+                
+                  <input type="checkbox" id="epgInternship" name="experienceType" value="EPG Summer Internship">
+                  <label for="epgInternship">EPG Summer Internship</label><br>
+                
+                  <input type="checkbox" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service">
+                  <label for="bonnerService">Bonner Scholar Summer of Service</label><br>
+                
+                  <input type="checkbox" id="otherExperience" name="experienceType" value="Other">
+                  <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+                  <textarea class="form-control" rows="2" cols="72" id="experienceDescription" name="experienceDescription" placeholder="Please describe your summer experience" required></textarea>
+                
+                  <br><br>
+                
+                  <label><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please check all that apply.</strong></label><br>
+                  <input type="checkbox" id="powerInequality" name="contentArea" value="Power and inequality">
+                  <label for="powerInequality">Power and inequality</label><br>
+                
+                  <input type="checkbox" id="communityIdentity" name="contentArea" value="Community and identity">
+                  <label for="communityIdentity">Community and identity</label><br>
+                
+                  <input type="checkbox" id="civicLiteracy" name="contentArea" value="Civic literacy">
+                  <label for="civicLiteracy">Civic literacy</label><br>
+                
+                  <input type="checkbox" id="civicSkills" name="contentArea" value="Civic skills">
+                  <label for="civicSkills">Civic skills</label>
+                
+                  <br><br>
+                
+                  <label><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks with a public-facing organization?</strong></label><br>
+                  <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes">
+                  <label for="yes300hours">Yes</label>
+                
+                  <input type="radio" id="no300hours" name="experienceHoursOver300" value="No">
+                  <label for="no300hours">No</label>
+                
+                  <br><br>
+                
+                  <label for="experienceHoursBelow300"><strong>If no, how many hours over how many weeks will you spend engaged in this summer experience?</strong></label>
+                  <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks" required></textarea>
+                
+                  <br><br>
+                
+                  {% if filepaths %}
+                  <div class="form-group col-md-4 mb-4">
+                    {% from 'displayFilesMacro.html' import displayFiles %}
+                    {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
+                    {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+                  </div>
+                  {% endif %}
+    
+                <div class="text-center">
+                  <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+                </div>
+              </div>
             </div>
           </div>
-          <p class="pt-2">If you would like to download the Proposal for Community-Engaged Summer Experience, click <a href="/static/files/serviceLearningProposalForm/CCEminorForm1online.docx">here</a>.</p>
-        </div>
+        </form> 
       </div>
-      <div class="tab-pane fade {{ 'active' if activeTab == 'bonnerScholarsEvents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerScholarsEvents">
-        <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{request.path}}" method="POST">
-          <div class='row'>
-              <div class="container text-center">
-                <div class='form-group mb-4'>
-                  <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
-                  <input type="hidden" value="{{user}}" name="user"/>
-                </div>
-              </div>
-        
-              <div class="form-group">
-                <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
-                <select class="form-select" name="term" id="inputTerm" required>
-                  {% for term in terms %}   
-                    <option value="{{term}}">{{term.description}}</option>
-                  {% endfor %}
-                </select>
-              </div>
-        
-              <br><br><br><br>
-        
-              <div class="from-group">
-                <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
-                <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
-              </div>
-        
-              <br> <br> <br> <br>
-        
-              <div class="form-group">
-                <br>
-                <h4> Company/Organization Information </h4>
-                <hr>
-              </div>
-        
-              <div class="form-group">
-                <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
-                <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company"/>
-              </div>
-        
-              <br>
-        
-              <div class="form-group">
-                <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
-                <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress"/>
-              </div>
-        
-              <br>
-        
-              <div class="row">
-                <div class="form-group col-6">
-                  <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
-                  <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone"/>
-                </div>
-        
-                <div class="form-group col-6">
-                  <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
-                  <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite"/>
-                </div>
-              </div>
-        
-              <br> 
-        
-              <div class="form-group">
-                <br>
-                <h4> Supervisor Information </h4>
-                <hr>
-              </div>
-        
-              <div class="row">
-                <div class="form-group col-6">
-                  <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
-                  <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone"/>
-                </div>
-        
-                <div class="form-group col-6">
-                  <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
-                  <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail"/>
-                </div>
-              </div>
-        
-              <br>
-        
-              <div class="form-group">
-              <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
-                <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
-              </div>
-        
-              <br>
-        
-              <div class="form-group">
-                <br>
-                <h4> Experience Information </h4>
-                <hr>
-              </div>
-        
-              <div class="form-group">
-                <label class="form-label" for="totalHours"><strong> Total Hours </strong></label>
-                <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours"/>
-              </div>
-        
-              <br>
-        
-              <div class="form-group">
-                <label class="form-label" for="totalWeeks"><strong> Weeks Worked </strong></label>
-                <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks"/>
-              </div>
-        
-              <br>
-        
-              <div class="form-group">
-                <label class="form-label" for="experienceDescription"><strong> Experience Description </strong></label>
-                <textarea class="form-control" rows="5" cols="72" id="experienceDescription" type="text" placeholder="Please describe your experience" name="description" required></textarea>
-                <br>
-              </div>
-        
-              {% if filepaths %}
-                <div class="form-group col-md-4 mb-4">
-                  {% from 'displayFilesMacro.html' import displayFiles %}
-                  {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
-                  {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
-                </div>
-              {% endif %}
-        
-              <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+    </div>
+    <div class="tab-pane fade {{ 'active' if activetab == 'bonnerscholarsevents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerscholarsevents">
+      <form id='requestothercommeng' enctype="multipart/form-data" role='form' action="{{request.path}}" method="post">
+        <div class='row'>
+          <div class="container text-center">
+            <div class='form-group mb-4'>
+              <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
+              <input type="hidden" value="{{user}}" name="user"/>
+            </div>
           </div>
-        </form>
-      </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
+            <select class="form-select" name="term" id="inputTerm" required>
+              {% for term in terms %}   
+              <option value="{{term}}">{{term.description}}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <br><br><br><br>
+
+          <div class="from-group">
+            <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
+            <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
+          </div>
+
+          <br><br><br><br>
+
+          <div class="form-group">
+            <br>
+            <h4> Company/Organization Information </h4>
+            <hr>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
+            <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company"/>
+          </div>
+
+          <br>
+
+          <div class="form-group">
+            <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+            <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress"/>
+          </div>
+
+          <br>
+
+          <div class="row">
+            <div class="form-group col-6">
+              <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+              <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone"/>
+            </div>
+
+            <div class="form-group col-6">
+              <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+              <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite"/>
+            </div>
+          </div>
+
+          <br> 
+
+          <div class="form-group">
+            <br>
+            <h4> Supervisor Information </h4>
+            <hr>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-6">
+              <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
+              <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone"/>
+            </div>
+
+            <div class="form-group col-6">
+              <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
+              <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail"/>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="form-group">
+            <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
+            <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+          </div>
+
+          <br>
+
+          <div class="form-group">
+            <br>
+            <h4> Experience Information </h4>
+            <hr>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="totalHours"><strong> Total Hours </strong></label>
+            <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours"/>
+          </div>
+
+          <br>
+
+          <div class="form-group">
+            <label class="form-label" for="totalWeeks"><strong> Weeks Worked </strong></label>
+            <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks"/>
+          </div>
+
+          <br>
+
+          <div class="form-group">
+            <label class="form-label" for="experienceDescription"><strong> Experience Description </strong></label>
+            <textarea class="form-control" rows="5" cols="72" id="experienceDescription" name="description" placeholder="Please describe your experience" required></textarea>
+            <br>
+          </div>
+
+          {% if filepaths %}
+          <div class="form-group col-md-4 mb-4">
+            {% from 'displayFilesMacro.html' import displayFiles %}
+            {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
+            {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+          </div>
+          {% endif %}
+
+          <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+        </div>
+      </form>
     </div>
   </div>
 {% endblock %}

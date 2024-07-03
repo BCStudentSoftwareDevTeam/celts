@@ -2,7 +2,9 @@ from flask import g, render_template, request, abort, flash, redirect, url_for
 from peewee import DoesNotExist
 
 from app.controllers.minor import minor_bp
+from app.models.summerExperience import SummerExperience
 from app.models.user import User
+from app.logic.summerExperienceUtils import saveSummerExperience
 from app.models.term import Term
 from app.models.attachmentUpload import AttachmentUpload
 
@@ -10,6 +12,40 @@ from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
+
+
+# ##################################################################################
+@minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
+def addSummerExperience(username):
+    user = User.get(User.username == username)
+    summer_experience_data = {
+        'user': user,
+        'fullName': request.form['studentName'],
+        'email': request.form['studentEmail'],
+        # Add all other fields from the form
+        'roleDescription': request.form['roleDescription'],
+        'experienceType': request.form['experienceType'],
+        'contentArea': request.form.getlist('contentArea'),
+        'experienceHoursOver300': request.form['experienceHoursOver300'] == 'Yes',
+        'experienceHoursBelow300': request.form['experienceHoursBelow300'],
+        'dateCreated': request.form['dateCreated'],
+        'company': request.form['company'],
+        'companyAddress': request.form['companyAddress'],
+        'companyPhone': request.form['companyPhone'],
+        'companyWebsite': request.form['companyWebsite'],
+        'supervisorPhone': request.form['supervisorPhone'],
+        'supervisorEmail': request.form['supervisorEmail'],
+        'totalHours': request.form['totalHours'],
+        'weeks': request.form['weeks'],
+        'description': request.form['description'],
+        'filename': request.form['filename'],
+        'status': 'Pending'  # or however you want to set the initial status
+    }
+    
+    saveSummerExperience(summer_experience_data)
+    
+    return redirect(url_for('minor_bp.viewCceMinor', username=username))
+#######################################################################################
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -59,7 +95,7 @@ def modifyCommunityEngagement(username):
     
     return ""
 
-@minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
+# @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
     saveSummerExperience(username, request.form, g.current_user)
 
