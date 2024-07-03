@@ -15,14 +15,15 @@ from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementFo
 
 
 # ##################################################################################
-@minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
+# /profile/<username>/cceMinor
+@minor_bp.route('/profile/<username>/cceMinorr', methods=['POST', 'GET']) 
 def addSummerExperience(username):
     user = User.get(User.username == username)
     summer_experience_data = {
         'user': user,
-        'fullName': request.form['studentName'],
+        'fullName': request.form['fullName'],
         'email': request.form['studentEmail'],
-        # Add all other fields from the form
+        # All other fields from the form
         'roleDescription': request.form['roleDescription'],
         'experienceType': request.form['experienceType'],
         'contentArea': request.form.getlist('contentArea'),
@@ -41,10 +42,19 @@ def addSummerExperience(username):
         'filename': request.form['filename'],
         'status': 'Pending'  # or however you want to set the initial status
     }
+    print("test", summer_experience_data)
     
     saveSummerExperience(summer_experience_data)
+
+    return render_template("minor/profile.html")
     
-    return redirect(url_for('minor_bp.viewCceMinor', username=username))
+    # return redirect(url_for('minor_bp.viewCceMinor', username=username))
+
+
+def addSummerExperience(username):
+    saveSummerExperience(username, request.form, g.current_user)
+
+    return ""
 #######################################################################################
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -95,11 +105,6 @@ def modifyCommunityEngagement(username):
     
     return ""
 
-# @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    saveSummerExperience(username, request.form, g.current_user)
-
-    return ""
 
 @minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
 def deleteSummerExperience(username):        
