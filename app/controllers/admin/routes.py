@@ -68,6 +68,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
+    savedEventsList = []
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -142,6 +143,8 @@ def createEvent(templateid, programid):
                     }
                 try:
                     savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
+                    savedEventsList.append(savedEvents)
+                    
                 except Exception as e:
                     print("Failed saving multi event", e)
                 # customEventsList.append(customDict)
@@ -173,7 +176,10 @@ def createEvent(templateid, programid):
 
             noun = ((eventData.get('isRecurring') == 'on' or eventData.get('isCustom') == 'on') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-
+            
+            print(type(eventData['startDate']))
+           
+           
             if program:
                 if len(savedEvents) > 1:
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
