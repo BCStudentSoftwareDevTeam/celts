@@ -167,8 +167,7 @@
 </div>
 </div>
 <div>
-  <!--modal button here-->
-<!--modal begin here, yoinked from preview imported classes model in manageServiceLearningFaculty.html-->
+<!--modal begins here-->
 <div class="modal fade" id="adminProgramManagement">
   <div class="modal-dialog">
      <div class="modal-content">
@@ -180,9 +179,8 @@
           <table>
             <tr>
               <!--Left modal column-->
-
               <td class="cellSpacing">
-                <form id="updateProgramForm" action="" method="POST"> <!--action given in userManagement.js-->
+                <form id="updateProgramForm" action="" method="POST" enctype="multipart/form-data"> <!--action given in userManagement.js-->
                   <div class="mb-3">
                     <label for="programName" class="form-label">Program Name</label>
                     <input type="text" class="form-control" id="programName" name="programName"></input>
@@ -192,8 +190,8 @@
                     <textarea type="text" rows="4" class="form-control" id="programDescription" name="programDescription"></textarea>
                   </div>
                   <div class="mb-3">
-                    <label for='programImage'><strong>Add File</strong></label>
-                    <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" multiple accept= ".png, .jpg, .jpeg"/>
+                    <label for='modalProgramImage'><strong>Add Image</strong></label>
+                    <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" accept= ".png, .jpg, .jpeg"/>
                   </div>
                   </td>
                   <!--Right modal column-->
@@ -221,7 +219,7 @@
       </div>
       <br>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success me auto" style="position: absolute; right: 10;" role="button">Save changes</button>
+            <button type="submit" class="btn btn-success rightJustify" role="button">Save changes</button>
            </form>
             <button type="button"
             class="btn btn-secondary me-auto"

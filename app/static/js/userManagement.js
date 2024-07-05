@@ -69,6 +69,7 @@ export function populateModal(programName, programDescription, modalprogramImage
 
   document.getElementById('programName').value = programName;
   document.getElementById('programDescription').value = programDescription;
+  document.getElementById('modalProgramImage').setAttribute('data-current-file', modalprogramImage);
   document.getElementById('modalProgramImage').addEventListener('change', function(e){
     const file = e.target.files[0];
     if (file){

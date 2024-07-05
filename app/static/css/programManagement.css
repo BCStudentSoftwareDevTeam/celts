@@ -16,6 +16,10 @@
 .borderless{
   border: 0;
 }
+.rightJustify{
+    position: absolute; 
+    right: 10;
+}
 
   @media (max-width: 1500px){
     .btn{

@@ -71,22 +71,20 @@ def removeProgramManagers():
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
-    programInfo = request.form # grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
-            if 'coverImage' in request.files:
-                file = request.files['coverImage']
+            programInfo = request.form # grabs user inputs
+            if 'modalProgramImage' in request.files:
+                file = request.files['modalProgramImage']
                 if file.filename != '':
-                    # Read file data
                     image_data = file.read()
-
                     # Update program with image data
                     Program.update(coverImage=image_data).where(Program.id == programID).execute()
 
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
-                              programInfo["contactEmail"],
                               programInfo["programDescription"], 
                               programInfo["partner"],
+                              programInfo["contactEmail"],
                               programInfo["contactName"],
                               programInfo["location"],
                               programID)
@@ -95,7 +93,7 @@ def updateProgramInfo(programID):
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
             print(e)
-            flash('Error while updating program info.','warning')
+            flash('Error while updating program info.','warning') #THIS IS THE ERROR WE KEEP GETTING || DELETE THIS COMMENT LATER
             abort(500,'Error while updating program.')
     abort(403)
 
