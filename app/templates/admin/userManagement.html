@@ -4,6 +4,14 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/userManagement.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/programManagement.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -14,7 +22,6 @@
     <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
   </div>
 {% endmacro %}
-
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
   <div class="accordion-item">
@@ -114,36 +121,118 @@
   </div>
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
+      <!--Program managment acordian and modal-->
       {% set focus = "open" if visibleAccordion == "program" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
         Program Management
         </button>
       </h3>
       {% set show = "show" if visibleAccordion == "program" else "" %}
-      <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
-        <div class="accordion-body">
-          <table>
-            <tr>
-              <th>Program Name</th>
-              <th>Contact Email</th>
-              <th>Contact Name</th>
-              <th>Location</th>
-            </tr>
-            {% for program in programs %}
-            <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
-              <tr class="p-1">
-                <td><input class="form-control" type="text" name="programName" value ="{{program.programName}}" required></td>
-                <td><input class="form-control" type="text" name="contactEmail" value="{{program.contactEmail or ""}}"></td>
-                <td><input class="form-control" type="text" name="contactName" value="{{program.contactName or ""}}"></td>
-                <td><input class="form-control" type="text" name="location" value="{{program.defaultLocation or ""}}"></td>
-                <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
+      <div id="collapseThree" class="accordion-collapse collapse {{ show }}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
+        <div class="accordion-body ml-5">
+          <div class="d-flex justify-content-center">
+           <table>
+              <tr>
+                 <th class="programHeader">Program</th>
               </tr>
-            </form>
-            {% endfor %}
-        </table>
-      </div>
-    </div>
+              <!--Populates the Acordian dropdown with the table of programs and their buttons-->
+              {% for program in programs %}
+              <tr>
+                 <td>
+                  <input class="form-label borderless" 
+                    name="programName" 
+                    type="text" readonly 
+                    value="{{ program.programName }}"></td>
+                 <td>
+                    <button class="btn btn-success test" 
+                    role="button" id="programManagementButton{{ loop.index }}" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#adminProgramManagement"
+                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.coverImage }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}')">Update Program Information</button>
+                    <script 
+                      type="module"> import { populateModal } from "/static/js/userManagement.js";
+                      window.programModal = function(programName, programDescription, modalProgramImage, partner, contactEmail, contactName, location, programId){
+                      populateModal(programName, programDescription, modalProgramImage, partner, contactEmail, contactName, location, programId)
+                      }
+                      //This script imports the populateModal function set the input boxes in the modals to program information
+                      //The program info is gotten from the programs list in userManagement.py and is passed using jinja on button click
+                    </script>
+                 </td>
+              </tr>
+              {% endfor %}
+           </table>
+        </div>
+     </div>
   </div>
 </div>
+</div>
+<div>
+  <!--modal button here-->
+<!--modal begin here, yoinked from preview imported classes model in manageServiceLearningFaculty.html-->
+<div class="modal fade" id="adminProgramManagement">
+  <div class="modal-dialog">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title">Update Program Information</h5>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table>
+            <tr>
+              <!--Left modal column-->
 
+              <td class="cellSpacing">
+                <form id="updateProgramForm" action="" method="POST"> <!--action given in userManagement.js-->
+                  <div class="mb-3">
+                    <label for="programName" class="form-label">Program Name</label>
+                    <input type="text" class="form-control" id="programName" name="programName"></input>
+                  </div>
+                  <div class="mb-3">
+                    <label for="programDescription" class="form-label">Program Description</label>
+                    <textarea type="text" rows="4" class="form-control" id="programDescription" name="programDescription"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for='programImage'><strong>Add File</strong></label>
+                    <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" multiple accept= ".png, .jpg, .jpeg"/>
+                  </div>
+                  </td>
+                  <!--Right modal column-->
+                  <td class="cellSpacing">
+                  <div class="mb-3">
+                    <label for="partner" class="form-label">Program Partner</label>
+                    <input type="text" class="form-control" id="partner" name="partner" ></input>
+                  </div>
+                  <div class="mb-3">
+                    <label for="contactEmail" class="form-label">Contact Email</label>
+                    <input type="email" class="form-control" id="contactEmail" name="contactEmail"></input>
+                  </div>
+                  <div class="mb-3">
+                    <label for="contactName" class="form-label">Contact Name</label>
+                    <input type="text" class="form-control" id="contactName" name="contactName"></input>
+                  </div>
+                  <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location"></input>
+                  </div> 
+
+              </td>
+            </tr> 
+          </table>  
+      </div>
+      <br>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success me auto" style="position: absolute; right: 10;" role="button">Save changes</button>
+           </form>
+            <button type="button"
+            class="btn btn-secondary me-auto"
+            data-bs-dismiss="modal"
+            name="cancelModalView"
+            id="cancelModalView">Cancel</button>
+          </div>
+       </div>
+   </div>
+</div>
+
+
+<!--modal end here-->
 {% endblock %}

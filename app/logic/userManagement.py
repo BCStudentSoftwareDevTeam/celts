@@ -38,14 +38,23 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-
-def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
-    """Updates the program info with a new sender and email."""
+def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId):       
+    """Updates the program info and logs that change"""
     program = Program.get_by_id(programId)
-    updatedProgram = Program.update({Program.programName:newProgramName, Program.contactEmail: newContactEmail, Program.contactName:newContactName, Program.defaultLocation:newLocation}).where(Program.id==programId)
+    updatedProgram = Program.update(
+        {Program.programName:newProgramName,
+        Program.programDescription: newProgramDescription, 
+        Program.partner: newProgramPartner, 
+        Program.contactEmail: newContactEmail, 
+        Program.contactName:newContactName, 
+        Program.defaultLocation:newLocation}).where(Program.id==programId)    
     updatedProgram.execute()
     if newProgramName != program.programName:
         createActivityLog(f"{program.programName} Program Name was changed to: {newProgramName}")
+    if newProgramDescription != program.programDescription:
+        createActivityLog(f"{program.programName} Description was changed to: {newProgramDescription}")
+    if newProgramPartner != program.partner:
+        createActivityLog(f"{program.programName} Program Partner was changed to: {newProgramPartner}")
     if newContactEmail != program.contactEmail:
         createActivityLog(f"{program.programName} Contact Email was changed to: {newContactEmail}")
     if newContactName != program.contactName:

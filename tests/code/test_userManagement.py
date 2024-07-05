@@ -84,23 +84,29 @@ def test_changeProgramInfo():
 
         programId = 3
         eventName = "Test Event Name"
+        eventDescription = "This is a test Description"
+        eventPartner = "Test Partner"
         contactName = "New Test Name"
         contactEmail = 'newtest@email'
         location = "Danforth Tech"
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
+        assert currentProgramInfo.programDescription == ""
+        assert currentProgramInfo.partner == ""
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
-
+       
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, contactEmail, contactName, location, programId)
+            changeProgramInfo(eventName, eventDescription, eventPartner, contactEmail, contactName, location, programId)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
         assert currentProgramInfo.programName == eventName
+        assert currentProgramInfo.programDescription == eventDescription
+        assert currentProgramInfo.partner == eventPartner
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
         assert currentProgramInfo.defaultLocation == location

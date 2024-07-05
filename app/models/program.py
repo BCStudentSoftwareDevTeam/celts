@@ -16,6 +16,7 @@ class Program(baseModel):
     contactName = CharField(null=True,default='')
     contactEmail = CharField(null=True,default='')
     defaultLocation = CharField(null=True,default='')
+    coverImage = CharField(null=True,default='')
 
     @property
     def url(self):

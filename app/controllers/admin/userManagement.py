@@ -74,8 +74,19 @@ def updateProgramInfo(programID):
     programInfo = request.form # grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
+            if 'coverImage' in request.files:
+                file = request.files['coverImage']
+                if file.filename != '':
+                    # Read file data
+                    image_data = file.read()
+
+                    # Update program with image data
+                    Program.update(coverImage=image_data).where(Program.id == programID).execute()
+
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
                               programInfo["contactEmail"],
+                              programInfo["programDescription"], 
+                              programInfo["partner"],
                               programInfo["contactName"],
                               programInfo["location"],
                               programID)

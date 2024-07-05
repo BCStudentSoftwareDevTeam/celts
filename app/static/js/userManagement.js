@@ -63,7 +63,38 @@ function submitRequest(method, username){
     }
   })
 }
+//################UPDATE THE MODAL##################
+export function populateModal(programName, programDescription, modalprogramImage, partner, contactEmail, contactName, location, programId) {
+  /* Update modal fields with program information*/
 
+  document.getElementById('programName').value = programName;
+  document.getElementById('programDescription').value = programDescription;
+  document.getElementById('modalProgramImage').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if (file){
+      msgFlash("Image added!", "success");
+      document.getElementById('modalProgramImage').setAttribute('data-selected-file', file.name);
+      console.log("New file ", file);
+    }
+  });
+  document.getElementById('partner').value = partner;
+  document.getElementById('contactEmail').value = contactEmail;
+  document.getElementById('contactName').value = contactName;
+  document.getElementById('location').value = location;
+  //console.log(modalprogramImage);
+
+  //update the form action URL based on the program selected
+  let updateForm = document.getElementById('updateProgramForm')
+  updateForm.action = "/admin/updateProgramInfo/" + programId;
+}
+// Ensure all modals close when clicking outside of them 
+document.addEventListener('click', function(event) {
+  var isClickInside = document.getElementById('adminProgramManagement').contains(event.target);
+  if (!isClickInside) {
+     document.getElementById('adminProgramManagement').classList.remove('show');
+  }
+});
+//################SUBMIT TERM##################
 function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
   var termInfo = {id: selectedTerm.val()};
