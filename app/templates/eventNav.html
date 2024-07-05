@@ -18,17 +18,13 @@
         {% if g.current_user.isAdmin %}
             {{ eventheader(page_title, event, 'large', isNewEvent) }}
         {% endif %}
-        indicate_Event_In_Prog
-        {% set isCurrentDate = current_date == event.startDate %}
-        {% set isCurrentTime = current_time < event.timeEnd and current_time > event.timeStart %}
-        {% set display = "" if eventPast or event.isCanceled or isCurrentDate or isCurrentTime else "d-none"%}
+        {% set display = "" if eventPast or event.isCanceled else "d-none"%}
         {% set alertClass = ("alert-success" if isCurrentTime else ( "alert-danger" if eventPast else "alert-warning")) %}
+
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
-        {% if isPastEnd and event.isCanceled %}
+        {% if eventPast and event.isCanceled %}
             This is a past event and it was canceled.
-        indicate_Event_In_Prog
-        {% elif isCurrentDate and isCurrentTime %}
-            This event is happening right now 
+        
         {% elif eventPast %}
             This is a past event and ended on {{ event.endDate }} at {{ event.timeEnd }}
         {% elif event.isCanceled %}
