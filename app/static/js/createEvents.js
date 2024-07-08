@@ -2,11 +2,10 @@ import searchUser from './searchUser.js';
 
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
-  var selectedDate = $(obj).val(); // No need for / for Firefox compatiblity 
-  var dateToChange = new Date(selectedDate);
-  var newMonth = dateToChange.getMonth();
-  var newYear = dateToChange.getFullYear();
-  var newDay = dateToChange.getDate();
+  var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatiblity 
+  var newMonth = selectedDate.getMonth();
+  var newYear = selectedDate.getFullYear();
+  var newDay = selectedDate.getDate();
 
   if (obj.className.includes("startDatePicker")) {
     $("#endDatePicker-" + $(obj).data("page-location")).datepicker("option", "minDate", new Date(newYear, newMonth, newDay));
@@ -62,11 +61,24 @@ function calculateRecurringEventFrequency(){
 $(document).ready(function () {
   // Initialize datepicker with proper options
   $.datepicker.setDefaults({
-    dateFormat: 'yy-mm-dd', // Ensures compatibility across browsers
+    dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
     minDate: new Date()
   });
 
-  $(".datePicker").datepicker();
+  $(".datePicker").datepicker({
+    dateFormat: 'mm/dd/yy',
+    minDate: new Date() 
+  });
+
+    $(".datePicker").each(function() {
+    var dateStr = $(this).val();
+    if (dateStr) {
+      var dateObj = new Date(dateStr);
+      if (!isNaN(dateObj.getTime())) {
+        $(this).datepicker("setDate", dateObj);
+      }
+    }
+  });
 
   // Update datepicker min and max dates on change
   $(".startDatePicker, .endDatePicker").change(function () {
@@ -113,7 +125,7 @@ $(document).ready(function () {
     } else {
       $.datepicker.setDefaults({
         minDate: new Date(),
-        dateFormat: 'yy-mm-dd' // Ensures compatibility across browsers
+        dateFormat: 'yy/mm/dd' // Ensures compatibility across browsers
       });
     }
   });
