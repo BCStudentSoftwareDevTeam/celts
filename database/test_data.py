@@ -429,11 +429,13 @@ programs = [
         "facebookUrl": None,
         "bereaUrl": None,
         "programDescription": "Each year 200 people stand in line to get into Woods-Penniman for the Annual Empty Bowls Event sponsored by the Berea College ceramics students and CELTS. Students, faculty, staff and community members each pay $10 for a beautiful bowl, soup and the privilege of helping those in need in our community.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 2,
@@ -442,11 +444,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaBuddies",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-buddies",
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "bereabuddies@berea.edu",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
 
     },
     {
@@ -456,11 +460,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/profile.php?id=100085958053273",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/adopt-a-grandparent",
         "programDescription": "Adopt-a-Grandparent (AGP) is an outreach program for Berea elders. The program matches college student volunteers with residents of local long-term care centers. Volunteers visit with residents for at least an hour per week, and participate in special monthly programs.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 4,
@@ -469,11 +475,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/peoplewhocareBC",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/people-who-care-program",
         "programDescription":"People Who Care (PWC) helps to connect Berea College students with organizations and opportunities that promote change through advocacy, education, action, and direct community service. Volunteers may serve at local shelters, work with the Fair Trade University Campaign, or help to raise awareness about local issues like domestic violence, homelessness, fair trade, and AIDS awareness education. Students are welcome to participate as volunteers in PWC’s projects.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 5,
@@ -482,11 +490,13 @@ programs = [
         "facebookUrl": None,
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/bonner-scholars-program",
         "programDescription": "The Bonner Scholars Program is a unique opportunity for students who want to combine a strong commitment to service with personal growth, teamwork, leadership development, and scholarship. Students who have completed an application for the Berea College class of 2026 may apply to be a Bonner Scholar.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": True,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 6,
@@ -495,11 +505,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/profile.php?id=100068874352425",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/habitat-for-humanity",
         "programDescription": "Through the work of Habitat for Humanity International, thousands of low-income families have found hope through affordable housing. Hard work and volunteering have resulted in the organization sheltering more than two million people worldwide.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 7,
@@ -508,11 +520,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaTeenMentoring",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-teen-mentoring",
         "programDescription": "Berea Teen Mentoring (BTM) brings Berea community youth, from ages 13-18, into a group setting for mentorship and enrichment programs. Staff members are assisted during the weekly program by Berea College student volunteers, who act as mentors for these program participants. The mission of the program is to stimulate and cultivate personal growth for young adults in the Berea community.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 8,
@@ -521,11 +535,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/HOPBerea",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/hispanic-outreach-program",
         "programDescription": "The Hispanic Outreach Program (HOP) is a service-learning effort which brings together CELTS, several community organizations, and the Department of Foreign Languages at Berea College. HOP aims to build bridges among the Spanish-speaking and English-speaking residents of Madison County.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 9,
@@ -534,11 +550,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaCollegeCELTS",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
         "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": True,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     },
     {
         "id": 10,
@@ -547,11 +565,13 @@ programs = [
         "facebookUrl": "https://www.facebook.com/CELTSbereatutoring",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-tutoring",
         "programDescription": "Berea Tutoring provides an encouraging atmosphere for local students who need help in achieving academic success, and for college volunteers who want to learn more about teaching or volunteering. Our mission is to increase conceptual understanding in academic subject areas, enrich educational experiences, and build self-confidence by providing college-aged tutors to local school children.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
+        "coverImage": None
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()

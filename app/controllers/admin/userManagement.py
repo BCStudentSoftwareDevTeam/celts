@@ -5,8 +5,11 @@ from app.models.user import User
 from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo, save_file
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.term import addNextTerm, changeCurrentTerm
+from app.logic.fileHandler import FileHandler
+from app.models.attachmentUpload import AttachmentUpload
+
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
@@ -68,34 +71,36 @@ def removeProgramManagers():
         flash('Error while removing a manager.','warning')
         abort(500,"Error while trying to remove a manager.")
 
+@admin_bp.route('/deleteProgramFile', methods=['POST'])
+def deleteProgramFile():
+    fileData= request.form
+    programFile=FileHandler(programId=fileData["databaseId"])
+    programFile.deleteFile(fileData["fileId"])
+    return ""
+
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
+            uploadedFile = request.files.get('modalProgramImage')
+            # associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.program == programID)
+            # filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments)
             changeProgramInfo(programInfo["programName"],  #calls logic function to add text data to database
                               programInfo["programDescription"], 
                               programInfo["partner"],
                               programInfo["contactEmail"],
                               programInfo["contactName"],
                               programInfo["location"],
-                              programID)
-            #File handling for uploaded images
-            if 'modalProgramImage' in request.files:
-                file = request.files['modalProgramImage']
-                if file.filename != '':
-                   filepath = save_file(file)
-                # Read file data as binary
-                with open(filepath, 'rb') as f:
-                        image_data = f.read()
-                        # Update program with image data
-                Program.update(coverImage=image_data).where(Program.id == programID).execute()
-
+                              programID,
+                              uploadedFile
+                              )           
+            
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
-            print(e)
+            print("error: ", e)
             flash('Error while updating program info.','warning') #THIS IS THE ERROR WE KEEP GETTING || DELETE THIS COMMENT LATER
             abort(500,'Error while updating program.')
     abort(403)

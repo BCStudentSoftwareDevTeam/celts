@@ -53,10 +53,10 @@ class FileHandler:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                         #ADDED THIS################################
-                elif self.courseId:
-                    isFileInProgram = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
+                elif self.programId:
+                    isFileInProgram = AttachmentUpload.select().where(AttachmentUpload.program == self.programId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInProgram:
-                        AttachmentUpload.create(course=self.courseId, fileName=file.filename)
+                        AttachmentUpload.create(program=self.programId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                         #ADDED ABOVE################################
                 else:

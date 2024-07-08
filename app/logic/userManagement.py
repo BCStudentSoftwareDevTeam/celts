@@ -6,8 +6,7 @@ from app.models.eventTemplate import EventTemplate
 from flask import g, session
 from app.logic.createLogs import createActivityLog
 from playhouse.shortcuts import model_to_dict
-import os
-from werkzeug.utils import secure_filename
+from app.logic.fileHandler import FileHandler
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -40,17 +39,26 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId):       
+def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId, attachment):       
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId)
+    if attachment:
+        addFile: FileHandler = FileHandler(attachment, programId=programId)
+        addFile.saveFiles()
+        coverImage = addFile.retrievePath()
     updatedProgram = Program.update(
         {Program.programName:newProgramName,
         Program.programDescription: newProgramDescription, 
         Program.partner: newProgramPartner, 
         Program.contactEmail: newContactEmail, 
-        Program.contactName:newContactName, 
-        Program.defaultLocation:newLocation}).where(Program.id==programId)    
+        Program.contactName:newContactName,
+        Program.defaultLocation:newLocation,
+        Program.coverImage: coverImage
+        }
+        ).where(Program.id==programId)    
     updatedProgram.execute()
+    print("image: ")
+    print(attachment)
     if newProgramName != program.programName:
         createActivityLog(f"{program.programName} Program Name was changed to: {newProgramName}")
     if newProgramDescription != program.programDescription:

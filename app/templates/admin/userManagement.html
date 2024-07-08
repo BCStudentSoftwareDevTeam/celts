@@ -148,11 +148,11 @@
                     role="button" id="programManagementButton{{ loop.index }}" 
                     data-bs-toggle="modal" 
                     data-bs-target="#adminProgramManagement"
-                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.coverImage }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}')">Update Program Information</button>
+                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}')">Update Program Information</button>
                     <script 
                       type="module"> import { populateModal } from "/static/js/userManagement.js";
-                      window.programModal = function(programName, programDescription, modalProgramImage, partner, contactEmail, contactName, location, programId){
-                      populateModal(programName, programDescription, modalProgramImage, partner, contactEmail, contactName, location, programId)
+                      window.programModal = function(programName, programDescription, partner, contactEmail, contactName, location, programId){
+                      populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId)
                       }
                       //This script imports the populateModal function set the input boxes in the modals to program information
                       //The program info is gotten from the programs list in userManagement.py and is passed using jinja on button click
@@ -193,6 +193,12 @@
                     <label for='modalProgramImage'><strong>Add Image</strong></label>
                     <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" accept= ".png, .jpg, .jpeg"/>
                   </div>
+                  {% if filePaths %}
+                  <div class="form-group mb-5">
+                    {% from 'displayFilesMacro.html' import displayFiles %}
+                    {{ displayFiles(filePaths, 'Program Attachments', '/deleteProgramFile', program.id) }}
+                  </div>
+                  {% endif %}
                   </td>
                   <!--Right modal column-->
                   <td class="cellSpacing">
