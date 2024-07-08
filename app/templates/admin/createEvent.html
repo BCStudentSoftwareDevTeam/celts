@@ -29,7 +29,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/createEvents.js"></script>
+  <script type="module" src="../../static/js/createEvents.js"></script>
   <script type="module" src="/static/js/displayFilesMacro.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 {% endblock %}
@@ -70,7 +70,7 @@
       <div class="form-group col-md-6">
           <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
+              <input autocomplete="off" type='date' class="form-control datePicker startDatePicker readonly" 
                 value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
                 name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
               <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
