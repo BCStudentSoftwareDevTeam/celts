@@ -47,7 +47,7 @@
         <div id="maincontent" class="main-content container">
           <div class="flash_container" id="flash_container">
             {% with messages = get_flashed_messages(with_categories=true) %}
-              <script> var flashMessages = {{messages}} </script>
+              <script> var flashMessages = {{messages | tojson}} </script>
               {# <script> var flashMessages = {{messages | tojson}} </script> #}  {#FIXME: SHOULD BE THIS, WHY??#}
             {% endwith %}
           </div>

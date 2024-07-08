@@ -32,7 +32,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewCustomId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -101,27 +101,9 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         eventData.update(request.form.copy())
-        print(eventData.get('isCustom'))
-        print('################################################################################')
-        print(eventData)
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        print(eventData.get('customEventsData'))
-        # print(type(eventData['customEventsData'][0]))
         if eventData.get('isCustom'):
-            customEventsList = []
-
-            # print(rsvp_limit)
-
+            customEventId = calculateNewCustomId()
             for event in ast.literal_eval(eventData.get('customEventsData')):
-                print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-                print(type(event['startTime']))
-                print(type(event['endTime']))
-                print(type(event['eventDate']))
-                print(type(eventData['endDate']))
-                print(eventData['rsvpLimit'])
-                print(type(eventData['rsvpLimit']))
-                print(eventData.get("rsvpLimit") != "")
-                # event = dict(event)
                 customDict = {
                     'program':  eventData['program'],
                     'name': event['eventName'],
@@ -139,7 +121,8 @@ def createEvent(templateid, programid):
                     'rsvpLimit': None if eventData.get("rsvpLimit") == "" else int(eventData.get("rsvpLimit")),
                     'isFoodProvided': eventData.get('isFoodProvided'),
                     'isService': eventData.get('isService'),
-                    'attachmentObject': eventData.get('attachmentObject')
+                    'attachmentObject': eventData.get('attachmentObject'),
+                    'customEventId': customEventId
                     }
                 try:
                     savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
@@ -147,15 +130,7 @@ def createEvent(templateid, programid):
                     
                 except Exception as e:
                     print("Failed saving multi event", e)
-                # customEventsList.append(customDict)
-        
-            print('################################################################')
-            print(customDict)
-             
-        # try:
-        #     if eventData.get('isCustom'):
-        #         for customEvent in customEventsList:
-        #             savedEvents, validationErrorMessage = attemptSaveEvent(customEvent, getFilesFromRequest(request))
+
         else:
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
@@ -172,10 +147,11 @@ def createEvent(templateid, programid):
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
-            noun = ((eventData.get('isRecurring') == 'on' or eventData.get('isCustom') == 'on') and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRecurring') or eventData.get('isCustom')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
-            print(type(eventData['startDate']))
+            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+            print('data is:', ((eventData.get('isRecurring') or eventData.get('isCustom')) and "Events" or "Event"))
            
            
             if program:
@@ -195,9 +171,9 @@ def createEvent(templateid, programid):
                         event_list = ', '.join(event_list.split(', ')[:-1]) + f', and {last_event}'
                         #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
                         last_event_date = event_dates[-1]
-                        event_date_list = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
 
-                    createAdminLog(f"Created events {event_list} for {program.programName}, with start dates of {event_date_list}.")
+                    createAdminLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
                     
                 else:
                     createAdminLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
