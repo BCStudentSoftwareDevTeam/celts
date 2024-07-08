@@ -104,26 +104,14 @@ def createEvent(templateid, programid):
         if eventData.get('isCustom'):
             customEventId = calculateNewCustomId()
             for event in ast.literal_eval(eventData.get('customEventsData')):
-                customDict = {
-                    'program':  eventData['program'],
+                customDict = eventData
+                customDict.update({
                     'name': event['eventName'],
-                    'term': eventData['term'],
-                    'isCustom': eventData['isCustom'],
-                    'location': eventData['location'],
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
                     'timeEnd': event['endTime'],
-                    'description': eventData['description'],
-                    'contactName':eventData['contactName'],
-                    'contactEmail': eventData['contactEmail'],
-                    'isRsvpRequired': eventData.get('isRsvpRequired'),
-                    'isTraining': eventData.get('isTraining'),
-                    'rsvpLimit': None if eventData.get("rsvpLimit") == "" else int(eventData.get("rsvpLimit")),
-                    'isFoodProvided': eventData.get('isFoodProvided'),
-                    'isService': eventData.get('isService'),
-                    'attachmentObject': eventData.get('attachmentObject'),
                     'customEventId': customEventId
-                    }
+                    })
                 try:
                     savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
                     savedEventsList.append(savedEvents)
@@ -136,11 +124,6 @@ def createEvent(templateid, programid):
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
                     print("Failed saving regular event", e)
-        # except Exception as e:
-        #     print("Error saving event:", e)
-        #     savedEvents = False
-            
-        #     validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
