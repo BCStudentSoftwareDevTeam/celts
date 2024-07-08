@@ -21,7 +21,7 @@
         {% set isInProg = not event.isPastEnd and event.isPastStart %}
         {% set display = "" if eventPast or event.isCanceled or isInProg else "d-none"%}
         {% set alertClass = ("alert-success" if isInProg else ( "alert-danger" if eventPast else "alert-warning")) %}
-        {{eventPast}}
+        
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
         {% if eventPast and event.isCanceled %}
             This is a past event and it was canceled.
