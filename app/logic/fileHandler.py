@@ -4,14 +4,17 @@ from app import app
 from app.models.attachmentUpload import AttachmentUpload
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None):
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None):
         self.files = files
         self.path = app.config['files']['base_path']
         self.courseId = courseId
         self.eventId = eventId
+        self.programId = programId
         if courseId:
             self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
+            self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
+        elif programId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
     
     def makeDirectory(self):
@@ -49,6 +52,13 @@ class FileHandler:
                     if not isFileInCourse:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
+                        #ADDED THIS################################
+                elif self.courseId:
+                    isFileInProgram = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
+                    if not isFileInProgram:
+                        AttachmentUpload.create(course=self.courseId, fileName=file.filename)
+                        saveFileToFilesystem = file.filename
+                        #ADDED ABOVE################################
                 else:
                     saveFileToFilesystem = file.filename
                 if saveFileToFilesystem:

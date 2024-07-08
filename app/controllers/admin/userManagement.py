@@ -4,7 +4,7 @@ from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
-from app.logic.userManagement import changeProgramInfo
+from app.logic.userManagement import changeProgramInfo, save_file
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 
@@ -74,20 +74,23 @@ def updateProgramInfo(programID):
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
-            if 'modalProgramImage' in request.files:
-                file = request.files['modalProgramImage']
-                if file.filename != '':
-                    image_data = file.read()
-                    # Update program with image data
-                    Program.update(coverImage=image_data).where(Program.id == programID).execute()
-
-            changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
+            changeProgramInfo(programInfo["programName"],  #calls logic function to add text data to database
                               programInfo["programDescription"], 
                               programInfo["partner"],
                               programInfo["contactEmail"],
                               programInfo["contactName"],
                               programInfo["location"],
                               programID)
+            #File handling for uploaded images
+            if 'modalProgramImage' in request.files:
+                file = request.files['modalProgramImage']
+                if file.filename != '':
+                   filepath = save_file(file)
+                # Read file data as binary
+                with open(filepath, 'rb') as f:
+                        image_data = f.read()
+                        # Update program with image data
+                Program.update(coverImage=image_data).where(Program.id == programID).execute()
 
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))

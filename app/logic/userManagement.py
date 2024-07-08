@@ -6,6 +6,8 @@ from app.models.eventTemplate import EventTemplate
 from flask import g, session
 from app.logic.createLogs import createActivityLog
 from playhouse.shortcuts import model_to_dict
+import os
+from werkzeug.utils import secure_filename
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -79,3 +81,12 @@ def getAllowedTemplates(currentUser):
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []
+    
+def save_file(file):
+    UPLOAD_FOLDER = '/app/static/images/programImages'
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(filepath)
+    return filepath
