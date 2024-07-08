@@ -68,29 +68,31 @@
     <!-- Start and End Datepickers -->
     <div class="row col-md-12">
       <div class="form-group col-md-6">
-          <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
-          <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
-                value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
-                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
-              <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
-                  <span><i class="bi bi-calendar-plus-fill"></i></span>
-              </div>
-          </div>
+        <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
+        <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+          <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
+          value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
+          name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+          <div class="input-group-text" id="calendarIconStart-{{pageLocation}}" onclick="$('#startDatePicker-{{pageLocation}}').datepicker('show')">  
+            <span>
+            <i class="bi bi-calendar-plus-fill"></i>
+            </span> 
+          </div> 
+        </div> 
       </div>
 
       <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
       <!--datePicker for End date-->
-              <span><i class="bi bi-calendar-plus-fill"></i></span>
-          <label class="form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
-          <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-            <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
-              value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
-              name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
-            <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}">
-              <span><i class="bi bi-calendar-plus-fill"></i></span>
-            </div>
-          </div>
+          <span><i class="bi bi-calendar-plus-fill"></i></span>
+        <label class="form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
+        <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+        <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
+          value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
+          name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
+        <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}" onclick="$('#endDatePicker-{{pageLocation}}').datepicker('show')">
+          <span><i class="bi bi-calendar-plus-fill"></i></span>
+        </div>
+        </div>
       </div>
     
     </div>
@@ -394,11 +396,5 @@
   </div>
   </div>
 </form>
-
-
-
-
-
-
 
 {% endblock %}

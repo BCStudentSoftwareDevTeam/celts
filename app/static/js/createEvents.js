@@ -1,8 +1,9 @@
 import searchUser from './searchUser.js';
 
 // updates max and min dates of the datepickers as the other datepicker changes
+// updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
-  var selectedDate = $(obj).val(); // No need for / for Firefox compatiblity 
+  var selectedDate = $(obj).val(); // No need for / for Firefox compatibility 
   var dateToChange = new Date(selectedDate);
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
@@ -15,8 +16,8 @@ function updateDate(obj) {
   }
 
   if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(newYear, newMonth, newDay)});
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
+    $("#startDatePicker-" + $(obj).data("page-location")).datepicker({ maxDate: new Date(newYear, newMonth, newDay) });
+    $("#startDatePicker-" + $(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
 }
 
@@ -62,7 +63,7 @@ function calculateRecurringEventFrequency(){
 $(document).ready(function () {
   // Initialize datepicker with proper options
   $.datepicker.setDefaults({
-    dateFormat: 'yy-mm-dd', // Ensures compatibility across browsers
+    dateFormat: 'mm-dd-yy', // Ensures compatibility across browsers
     minDate: new Date()
   });
 
@@ -108,15 +109,17 @@ $(document).ready(function () {
     if (allowPast == 'on') {
       $.datepicker.setDefaults({
         minDate: new Date('1999/10/25'),
-        dateFormat: 'yy-mm-dd' // Ensures compatibility across browsers
+        dateFormat: 'mm-dd-yy' // Ensures compatibility across browsers
       });
     } else {
       $.datepicker.setDefaults({
         minDate: new Date(),
-        dateFormat: 'yy-mm-dd' // Ensures compatibility across browsers
+        dateFormat: 'mm-dd-yy' // Ensures compatibility across browsers
       });
     }
+
   });
+
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
@@ -149,9 +152,10 @@ $(document).ready(function () {
       e.preventDefault();
   });
 
-  $(".startDate").click(function () {
+
+  $(".startDate").click(function () { 
     $("#startDatePicker-" + $(this).data("page-location")).datepicker("show");
-  });
+  });    
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
@@ -216,3 +220,5 @@ $(document).ready(function () {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });
+
+
