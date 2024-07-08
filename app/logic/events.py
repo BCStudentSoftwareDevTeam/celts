@@ -176,6 +176,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
+        customSeriesId = newEventData['customEventId']
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -427,6 +428,15 @@ def calculateNewrecurringId():
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
+    else:
+        return 1
+def calculateNewCustomId():
+    """
+    Gets the highest recurring Id so that a new recurring Id can be assigned
+    """
+    customEventId = Event.select(fn.MAX(Event.customEventId)).scalar()
+    if customEventId:
+        return customEventId + 1
     else:
         return 1
 
