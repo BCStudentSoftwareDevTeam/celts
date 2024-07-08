@@ -217,6 +217,7 @@ def eventDisplay(eventId):
         viewer = g.current_user
         event = Event.get_by_id(eventId)
         addEventView(viewer,event) 
+        eventCountdown = getCountdownToEvent(event)
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
@@ -299,7 +300,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
         eventCountdown = getCountdownToEvent(event)
-
+ 
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -324,7 +325,8 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
-                                eventCountdown=eventCountdown)
+                                eventCountdown=eventCountdown
+                                )
                                 
 
 

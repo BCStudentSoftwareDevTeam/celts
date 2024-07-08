@@ -3,6 +3,7 @@
 {% set isPastEnd = event.isPastEnd %} 
 {% set tabName = 'view' %}
 {% extends "eventNav.html"%}
+{% set eventPast = event.isPastStart if not isNewEvent else False %}
 
 {% block scripts %}
     {{super()}}
@@ -128,7 +129,7 @@
                     {% endif %}
                     <br>
                 </div>
-                <div class="col-md-6">
+                                <div class="col-md-6">
                     {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
                             <h3>Program Trainings:</h3>
