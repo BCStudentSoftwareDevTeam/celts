@@ -6,6 +6,7 @@ from app.models.term import Term
 from app.models.course import Course
 from app.models.program import Program
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.summerExperience import SummerExperience
 
 
 class IndividualRequirement(baseModel):
@@ -17,6 +18,7 @@ class IndividualRequirement(baseModel):
     requirement = ForeignKeyField(CertificationRequirement)
     addedBy = ForeignKeyField(User)
     addedOn = DateTimeField(default=datetime.now)
+    # summer_experience = ForeignKeyField(SummerExperience, null=True)
 
     class Meta:
         constraints = [SQL('UNIQUE (username_id, requirement_id)')]

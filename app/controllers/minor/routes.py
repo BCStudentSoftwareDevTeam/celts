@@ -2,50 +2,17 @@ from flask import g, render_template, request, abort, flash, redirect, url_for
 from peewee import DoesNotExist
 
 from app.controllers.minor import minor_bp
-from app.models.summerExperience import SummerExperience
 from app.models.user import User
-from app.logic.summerExperienceUtils import saveSummerExperience
 from app.models.term import Term
 from app.models.attachmentUpload import AttachmentUpload
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience
 
 
-# ##################################################################################
-@minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    user = User.get(User.username == username)
-    summer_experience_data = {
-        'user': user,
-        'fullName': request.form['studentName'],
-        'email': request.form['studentEmail'],
-        # Add all other fields from the form
-        'roleDescription': request.form['roleDescription'],
-        'experienceType': request.form['experienceType'],
-        'contentArea': request.form.getlist('contentArea'),
-        'experienceHoursOver300': request.form['experienceHoursOver300'] == 'Yes',
-        'experienceHoursBelow300': request.form['experienceHoursBelow300'],
-        'dateCreated': request.form['dateCreated'],
-        'company': request.form['company'],
-        'companyAddress': request.form['companyAddress'],
-        'companyPhone': request.form['companyPhone'],
-        'companyWebsite': request.form['companyWebsite'],
-        'supervisorPhone': request.form['supervisorPhone'],
-        'supervisorEmail': request.form['supervisorEmail'],
-        'totalHours': request.form['totalHours'],
-        'weeks': request.form['weeks'],
-        'description': request.form['description'],
-        'filename': request.form['filename'],
-        'status': 'Pending'  # or however you want to set the initial status
-    }
-    
-    saveSummerExperience(summer_experience_data)
-    
-    return redirect(url_for('minor_bp.viewCceMinor', username=username))
-#######################################################################################
+
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -66,6 +33,49 @@ def viewCceMinor(username):
                             selectedSummerTerm = selectedSummerTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
                             summerTerms = getSummerTerms(), terms=terms) 
+
+
+# ########################################################################################
+from flask import request, redirect, url_for, flash
+from app.models.summerExperience import SummerExperience
+from app.models.user import User
+from app.models.term import Term
+from app.controllers.minor import minor_bp
+
+@minor_bp.route('/profile/<username>/addSummerExperience', methods=['POST'])
+def addSummerExperience(username):
+    try:
+        user = User.get(User.username == username)
+        term = Term.get(Term.id == request.form['term'])
+        
+        experience_type = request.form['experienceType']
+        if experience_type == 'Other':
+            experience_type = request.form.get('otherExperienceDescription', '')
+
+        SummerExperience.create(
+            user=user,
+            term=term,
+            roleDescription=request.form['roleDescription'],
+            experienceType=experience_type,
+            CceMinorContentArea=', '.join(request.form.getlist('contentArea')),
+            experienceHoursOver300=request.form['experienceHoursOver300'] == 'Yes',
+            experienceHoursBelow300=request.form.get('experienceHoursBelow300', ''),
+            status='Pending',
+            company=request.form['company'],
+            companyAddress=request.form['companyAddress'],
+            companyPhone=request.form['companyPhone'],
+            companyWebsite=request.form['companyWebsite'],
+            supervisorPhone=request.form['supervisorPhone'],
+            supervisorEmail=request.form['supervisorEmail'],
+            created_at=datetime.datetime.now()
+        )
+        flash('Summer Experience added successfully!', 'success')
+    except Exception as e:
+        flash(f'An error occurred while adding the summer experience: {e}', 'danger')
+    return redirect(url_for('minor.viewCceMinor', username=username))
+
+# ########################################################################################
+
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):

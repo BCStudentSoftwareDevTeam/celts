@@ -15,6 +15,53 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
+from app.models.summerExperience import SummerExperience # Added
+
+
+
+# ###################################################################
+import logging
+
+def createSummerExperience(username, form_data):
+    try:
+        user = User.get(User.username == username)
+        term = Term.get(Term.id == form_data['term'])
+        content_area = ','.join(form_data.getlist('contentArea'))  # Combine multiple content areas
+
+        # Determine the experience type
+        experience_type = form_data['experienceType']
+        if experience_type == 'Other':
+            other_experience_description = form_data.get('otherExperienceDescription', '')
+            if not other_experience_description:
+                raise ValueError("Other experience description is required.")
+            experience_type = other_experience_description
+
+        SummerExperience.create(
+            user=user,
+            term=term,
+            roleDescription=form_data['roleDescription'],
+            experienceType=experience_type,
+            contentArea=content_area,
+            experienceHoursOver300=form_data['experienceHoursOver300'] == 'Yes',
+            experienceHoursBelow300=form_data.get('experienceHoursBelow300'),
+            status='Pending',
+            company=form_data['company'],
+            companyAddress=form_data['companyAddress'],
+            companyPhone=form_data['companyPhone'],
+            companyWebsite=form_data['companyWebsite'],
+            supervisorPhone=form_data['supervisorPhone'],
+            supervisorEmail=form_data['supervisorEmail']
+        )
+        logging.info("Summer experience successfully saved.")
+    except DoesNotExist as e:
+        logging.error(f"Error saving summer experience: User or Term not found - {e}")
+        raise
+    except Exception as e:
+        logging.error(f"Error saving summer experience: {e}")
+        raise
+
+
+# ###################################################################
 
 def getEngagementTotal(engagementData):
     """ 

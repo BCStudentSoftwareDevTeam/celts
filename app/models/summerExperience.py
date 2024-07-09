@@ -1,38 +1,21 @@
+import datetime
 from app.models import *
-from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.models.term import Term
 from app.models.user import User
-from app.logic.minor import getMinorProgress # might need it
 
 class SummerExperience(baseModel):
-    # Imported from User
     user = ForeignKeyField(User)
-    fullName = User.fullName
-    bnumber = User.bnumber
-    email = User.email
-    dateCreated = DateField()
-  
-
-    # Imported from CommunityEngagementRequest.py
-    company = CommunityEngagementRequest.company
-    companyAddress = CommunityEngagementRequest.companyAddress
-    companyPhone = CommunityEngagementRequest.companyPhone
-    companyWebsite = CommunityEngagementRequest.companyWebsite
-    supervisorPhone = CommunityEngagementRequest.supervisorPhone
-    supervisorEmail = CommunityEngagementRequest.supervisorEmail
-    totalHours = CommunityEngagementRequest.totalHours
-    weeks = CommunityEngagementRequest.weeks
-    description = CommunityEngagementRequest.description
-    filename = CommunityEngagementRequest.filename
-    status = CommunityEngagementRequest.status
-
-    # Added fields
-    roleDescription = CharField()
+    term = ForeignKeyField(Term)
+    roleDescription = TextField()
     experienceType = CharField()
-    contentArea = CharField()  # Verify if the content area(s) needs to be recorded to the database as they are named or just their count
+    CceMinorContentArea = TextField()  # Store as comma-separated values or use a related table if needed
     experienceHoursOver300 = BooleanField()
-    experienceHoursBelow300 = CharField()
-    status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])
-
-
-
+    experienceHoursBelow300 = CharField(null=True)  # Optional for hours if less than 300
+    status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")], default='Pending') # To be checked later. We might need to create a function that validates that status can only be 'Approved' if experienceType is not null.
+    company = CharField()
+    companyAddress = CharField()
+    companyPhone = CharField()
+    companyWebsite = CharField()
+    supervisorPhone = CharField()
+    supervisorEmail = CharField()
+    created_at = DateTimeField(default=datetime.datetime.now)

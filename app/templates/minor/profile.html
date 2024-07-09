@@ -5,6 +5,7 @@
   {{ super() }}
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/cceMinorProfilePage.js') }}?u={{ lastStaticUpdate }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
 {% endblock %}
 
 {% block styles %}
@@ -87,295 +88,288 @@
       </div>
       <div class="tab-pane fade {{ 'active' if activeTab == 'trainingEvents' else '' }}" id="pills-training" role="tabpanel" aria-labelledby="trainingEvents">
         <div name="Community-Engaged Summer Experience" class="pt-4">
-          <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{ url_for('minor_bp.addSummerExperience', username=user.username) }}" method="POST">
+          <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{ url_for('minor.addSummerExperience', username=user.username) }}" method="POST">
             <div class='row'>
               <div class="container">
                 <div class='form-group mb-4 text-center'>
-                  <h3 class='form-label' for='studentUser' style="color: #000000;">COMMUNITY AND CIVIC ENGAGEMENT MINOR (CCE)</h3>
+                  <h3 class='form-label' style="color: #000000;">COMMUNITY AND CIVIC ENGAGEMENT MINOR (CCE)</h3>
                   <h4>Proposal for Community-Engaged Summer Experience</h4>
                   <p>
                     The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills. Please fill out the following form and return to your CCE Minor Advisor for approval.
                   </p>
                 </div>
-      
+          
                 <div class="form-group">
                   <br>
                   <h4> Student Information </h4>
                   <hr>
                 </div>
-      
+          
                 <div class="row">
                   <div class="form-group col-6">
-                    <label class="form-label" for="studentName"> <strong>Student Name</strong> </label>
-                    <input class="form-control name-input" id="studentName" name="studentName" value="{{ user.fullName }}" />
+                    <label class="form-label"><strong>Student Name</strong></label>
+                    <div class="input-group">
+                      <input type="text" id="searchStudentsInput" name="studentName" class="form-control" placeholder="Student's Name" autocomplete="off" />
+                    </div>
                   </div>
                   <div class="form-group col-6">
-                    <label class="form-label" for="studentEmail"> <strong>Email</strong> </label>
-                    <input class="form-control email-input" id="studentEmail" name="studentEmail" value="{{ user.email }}" />
+                    <label class="form-label"><strong>Email</strong></label>
+                    <input class="form-control" id="studentEmail" placeholder="Student's email" name="studentEmail" value="" />
                     <br>
                   </div>
                 </div>
-      
+          
                 <div class="row">
                   <div class="form-group col-md-6">
                     <label class="form-label me-2" for="date"><strong>Today's Date</strong></label>
                     <br>
-                    <input type="date" id="date" name="date">
+                    <input type="date" id="date" name="date" required>
                   </div>
                 </div>
-      
+          
                 <div class="form-group">
                   <br>
                   <h4> Company/Organization Information </h4>
                   <hr>
                 </div>
-      
+          
                 <div class="form-group">
-                  <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
-                  <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company" />
+                  <label class="form-label" for="company"><strong>Name</strong></label>
+                  <input class="form-control" id="company" placeholder="Company or organization's name" name="company" required/>
                 </div>
-      
+          
                 <br>
-      
+          
                 <div class="form-group">
-                  <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
-                  <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress" />
+                  <label class="form-label" for="companyAddress"><strong>Address</strong></label>
+                  <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress" required/>
                 </div>
-      
+          
                 <br>
-      
+          
                 <div class="row">
                   <div class="form-group col-6">
-                    <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
-                    <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone" />
+                    <label class="form-label" for="companyPhone"><strong>Phone Number</strong></label>
+                    <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone" required/>
                   </div>
                   <div class="form-group col-6">
-                    <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
-                    <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite" />
+                    <label class="form-label" for="companyWebsite"><strong>Website</strong></label>
+                    <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite" required/>
                   </div>
                 </div>
-      
+          
                 <br> 
-      
+          
                 <div class="form-group">
                   <br>
                   <h4> Supervisor Information </h4>
                   <hr>
                 </div>
-      
+          
                 <div class="row">
                   <div class="form-group col-6">
-                    <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
-                    <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone" />
+                    <label class="form-label" for="supervisorPhone"><strong>Phone Number</strong></label>
+                    <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone" required/>
                   </div>
                   <div class="form-group col-6">
-                    <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
-                    <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail" />
+                    <label class="form-label" for="supervisorEmail"><strong>Email</strong></label>
+                    <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail" required/>
                     <br>
                   </div>
                 </div>
-      
+          
                 <div class="form-group">
                   <br>
-                  <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector) that is responsive to community-identified initiatives or needs:</strong></label> <br>
-                  <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Please describe your experience" required></textarea>
+                  <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
+                    Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector)
+                    that is responsive to community-identified initiatives or needs:</strong></label>
+                  <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Enter your role description" required></textarea><br>
+                </div>
                 
-                  <br><br>
-                
+                <div class="form-group">
                   <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please check one.</strong></label><br>
-                  <input type="checkbox" id="internship" name="experienceType" value="Internship">
+                  <input type="radio" id="internship" name="experienceType" value="Internship" required>
                   <label for="internship">Internship</label><br>
-                
-                  <input type="checkbox" id="cbr" name="experienceType" value="Community-based research">
+                  <input type="radio" id="cbr" name="experienceType" value="Community-based research">
                   <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
-                
-                  <input type="checkbox" id="communityLabor" name="experienceType" value="Community-Based Labor Position">
+                  <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position">
                   <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
-                
-                  <input type="checkbox" id="epgInternship" name="experienceType" value="EPG Summer Internship">
+                  <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship">
                   <label for="epgInternship">EPG Summer Internship</label><br>
-                
-                  <input type="checkbox" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service">
-                  <label for="bonnerService">Bonner Scholar Summer of Service</label><br>
-                
-                  <input type="checkbox" id="otherExperience" name="experienceType" value="Other">
+                  <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service">
+                  <label for="bonnerService">Bonner Scholar Summer of Service</label>
+                  <br>
+                  <input type="radio" id="otherExperience" name="experienceType" value="Other" required>
                   <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
-                  <textarea class="form-control" rows="2" cols="72" id="experienceDescription" name="experienceDescription" placeholder="Please describe your summer experience" required></textarea>
+                  <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" placeholder="Enter your summer experience" style="display:none;"></textarea><br>
+                </div>
                 
-                  <br><br>
-                
+                <div class="form-group">
                   <label><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please check all that apply.</strong></label><br>
                   <input type="checkbox" id="powerInequality" name="contentArea" value="Power and inequality">
                   <label for="powerInequality">Power and inequality</label><br>
-                
                   <input type="checkbox" id="communityIdentity" name="contentArea" value="Community and identity">
                   <label for="communityIdentity">Community and identity</label><br>
-                
                   <input type="checkbox" id="civicLiteracy" name="contentArea" value="Civic literacy">
                   <label for="civicLiteracy">Civic literacy</label><br>
-                
                   <input type="checkbox" id="civicSkills" name="contentArea" value="Civic skills">
-                  <label for="civicSkills">Civic skills</label>
+                  <label for="civicSkills">Civic skills</label><br><br>
+                </div>
                 
-                  <br><br>
-                
-                  <label><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks with a public-facing organization?</strong></label><br>
-                  <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes">
-                  <label for="yes300hours">Yes</label>
-                
-                  <input type="radio" id="no300hours" name="experienceHoursOver300" value="No">
+                <div class="form-group">
+                  <label for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
+                  <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" onclick="toggleTextarea()">
+                  <label for="yes300hours">Yes</label><br>
+                  <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" onclick="toggleTextarea()">
                   <label for="no300hours">No</label>
-                
-                  <br><br>
-                
-                  <label for="experienceHoursBelow300"><strong>If no, how many hours over how many weeks will you spend engaged in this summer experience?</strong></label>
-                  <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks" required></textarea>
-                
-                  <br><br>
-                
-                  {% if filepaths %}
-                  <div class="form-group col-md-4 mb-4">
-                    {% from 'displayFilesMacro.html' import displayFiles %}
-                    {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
-                    {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+                  <div id="hoursBelow300Container" style="display:none;">
+                    <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks if less than 300" required></textarea>
                   </div>
-                  {% endif %}
-    
+                </div>
+                
+                
+                <br><br>
+                
+                {% if filepaths %}
+                <div class="form-group col-md-4 mb-4">
+                  {% from 'displayFilesMacro.html' import displayFiles %}
+                  {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+                </div>
+                {% endif %}
+          
                 <div class="text-center">
                   <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
                 </div>
               </div>
             </div>
-          </div>
-        </form> 
-      </div>
-    </div>
-    <div class="tab-pane fade {{ 'active' if activetab == 'bonnerscholarsevents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerscholarsevents">
-      <form id='requestothercommeng' enctype="multipart/form-data" role='form' action="{{request.path}}" method="post">
-        <div class='row'>
-          <div class="container text-center">
-            <div class='form-group mb-4'>
-              <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
-              <input type="hidden" value="{{user}}" name="user"/>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
-            <select class="form-select" name="term" id="inputTerm" required>
-              {% for term in terms %}   
-              <option value="{{term}}">{{term.description}}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <br><br><br><br>
-
-          <div class="from-group">
-            <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
-            <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
-          </div>
-
-          <br><br><br><br>
-
-          <div class="form-group">
-            <br>
-            <h4> Company/Organization Information </h4>
-            <hr>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
-            <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company"/>
-          </div>
-
-          <br>
-
-          <div class="form-group">
-            <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
-            <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress"/>
-          </div>
-
-          <br>
-
-          <div class="row">
-            <div class="form-group col-6">
-              <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
-              <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone"/>
-            </div>
-
-            <div class="form-group col-6">
-              <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
-              <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite"/>
-            </div>
-          </div>
-
-          <br> 
-
-          <div class="form-group">
-            <br>
-            <h4> Supervisor Information </h4>
-            <hr>
-          </div>
-
-          <div class="row">
-            <div class="form-group col-6">
-              <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
-              <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone"/>
-            </div>
-
-            <div class="form-group col-6">
-              <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
-              <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail"/>
-            </div>
-          </div>
-
-          <br>
-
-          <div class="form-group">
-            <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
-            <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
-          </div>
-
-          <br>
-
-          <div class="form-group">
-            <br>
-            <h4> Experience Information </h4>
-            <hr>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="totalHours"><strong> Total Hours </strong></label>
-            <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours"/>
-          </div>
-
-          <br>
-
-          <div class="form-group">
-            <label class="form-label" for="totalWeeks"><strong> Weeks Worked </strong></label>
-            <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks"/>
-          </div>
-
-          <br>
-
-          <div class="form-group">
-            <label class="form-label" for="experienceDescription"><strong> Experience Description </strong></label>
-            <textarea class="form-control" rows="5" cols="72" id="experienceDescription" name="description" placeholder="Please describe your experience" required></textarea>
-            <br>
-          </div>
-
-          {% if filepaths %}
-          <div class="form-group col-md-4 mb-4">
-            {% from 'displayFilesMacro.html' import displayFiles %}
-            {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
-            {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
-          </div>
-          {% endif %}
-
-          <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+          </form>
+           
         </div>
-      </form>
+      </div>
+      <div class="tab-pane fade {{ 'active' if activeTab == 'bonnerscholarsevents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerscholarsevents">
+        <form id='requestothercommeng' enctype="multipart/form-data" role='form' action="{{ request.path }}" method="post">
+          <div class='row'>
+            <div class="container text-center">
+              <div class='form-group mb-4'>
+                <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
+                <input type="hidden" value="{{ user }}" name="user"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
+              <select class="form-select" name="term" id="inputTerm" required>
+                {% for term in terms %}   
+                <option value="{{ term }}">{{ term.description }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <br><br><br><br>
+
+            <div class="form-group">
+              <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
+              <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
+            </div>
+
+            <br><br><br><br>
+
+            <div class="form-group">
+              <br>
+              <h4> Company/Organization Information </h4>
+              <hr>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
+              <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company"/>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+              <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+              <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress"/>
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="form-group col-6">
+                <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+                <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone"/>
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+                <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite"/>
+              </div>
+            </div>
+
+            <br> 
+
+            <div class="form-group">
+              <br>
+              <h4> Supervisor Information </h4>
+              <hr>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-6">
+                <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
+                <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone"/>
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
+                <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail"/>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+              <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
+              <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+              <br>
+              <h4> Experience Information </h4>
+              <hr>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="totalHours"><strong> Total Hours </strong></label>
+              <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours"/>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+              <label class="form-label" for="totalWeeks"><strong> Weeks Worked </strong></label>
+              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks"/>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+              <label class="form-label" for="experienceDescription"><strong> Experience Description </strong></label>
+              <textarea class="form-control" rows="5" cols="72" id="experienceDescription" type="text" placeholder="Please describe your experience" name="description" required></textarea>
+              <br>
+            </div>
+
+            {% if filepaths %}
+            <div class="form-group col-md-4 mb-4">
+              {% from 'displayFilesMacro.html' import displayFiles %}
+              {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+            </div>
+            {% endif %}
+
+            <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 {% endblock %}
