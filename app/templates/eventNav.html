@@ -23,17 +23,15 @@
         {% set alertClass = ("alert-success" if isInProg else ( "alert-danger" if eventPast else "alert-warning")) %}
         {% set event_year = event.endDate.strftime("%Y") | int %}
         {% set currentYear = g.currentTime.year | int %}
-        {{ g.currentTime.year }}
+        {% set formatted_date = event.endDate.strftime("%B %d %Y") if currentYear > event_year else event.endDate.strftime("%B %d") %}
 
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
         {% if eventPast and event.isCanceled %}
             This is a past event and it was canceled.
         {% elif isInProg %}
             This event is happening right now 
-        {% elif eventPast and currentYear > event_year%}
-            This event ended on {{ event.endDate.strftime("%B %d %Y") }} at {{ event.timeEnd.strftime("%I:%M %p") }}
-        {% elif currentYear == event_year %}
-            This event ended on {{ event.endDate.strftime("%B %d ") }} at {{ event.timeEnd.strftime("%I:%M %p") }}
+        {% elif eventPast %}
+            This event ended on {{ formatted_date }} at {{ event.timeEnd.strftime("%I:%M %p") }}
         {% elif event.isCanceled %}
             This event has been canceled.
         {% endif %}
