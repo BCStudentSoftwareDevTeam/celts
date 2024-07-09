@@ -84,6 +84,11 @@ def load_currentTerm():
         session['current_term'] = model_to_dict(term)
         g.current_term = term
 
+import datetime
+@app.before_request
+def load_currentDateTime():
+    g.currentTime = datetime.datetime.now()
+
 from flask import request
 @app.context_processor
 def load_visibleAccordion():
