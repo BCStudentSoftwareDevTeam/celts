@@ -67,11 +67,11 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
-    """Deleting an event for custom events"""
+    """Deleting an event for Multiple Offering events"""
     if event:
-        if event.customEventId:
-            customEventId = event.customEventId
-            customEvents = list(Event.select().where(Event.customEventId==customEventId).order_by(Event.id)) # orders for tests
+        if event.multipleOfferingId:
+            multipleOfferingId = event.multipleOfferingId
+            multipleOfferingEvents = list(Event.select().where(Event.multipleOfferingId== multipleOfferingId).order_by(Event.id)) # orders for tests
             eventDeleted = False
 
             # once the deleted event is detected, change all other names to the previous event's name
@@ -101,10 +101,10 @@ def deleteEventAndAllFollowing(eventId):
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId or event.customEventId:
+            if event.recurringId or event.multipleOfferingId:
                 recurringId = event.recurringId
-                customEventId = event.customEventId
-                recurringSeries = list(Event.select().where((Event.recurringId == recurringId or Event.customEventId==customEventId) & (Event.startDate >= event.startDate)))
+                multipleOfferingId = event.multipleOfferingId
+                recurringSeries = list(Event.select().where((Event.recurringId == recurringId or Event.multipleOfferingId== multipleOfferingId) & (Event.startDate >= event.startDate)))
         for seriesEvent in recurringSeries:
             seriesEvent.delete_instance(recursive = True)
 
@@ -115,9 +115,9 @@ def deleteAllRecurringEvents(eventId):
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId or event.customEventId:
-                recurringOrCustomId = event.recurringId or event.customEventId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringOrCustomId or Event.customEventId == recurringOrCustomId))
+            if event.recurringId or event.multipleOfferingId:
+                recurringOrMultipleOfferingId = event.recurringId or event.multipleOfferingId
+                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringOrMultipleOfferingId or Event.multipleOfferingId == recurringOrMultipleOfferingId))
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
 
@@ -137,6 +137,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
+        
     newEventData = preprocessEventData(eventData)
     
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -166,17 +167,17 @@ def saveEventToDb(newEventData, renewedEvent = False):
     
     eventsToCreate = []
     recurringSeriesId = None
-    customSeriesId = None
+    multipleSeriesId = None
     if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
         
     #temporarily applying the append for single events for now to tests  
-    elif(isNewEvent and newEventData['isCustom']) and not renewedEvent:
+    elif(isNewEvent and newEventData['isMultipleOffering']) and not renewedEvent:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-        customSeriesId = newEventData['customEventId']
+        multipleSeriesId = newEventData['multipleOfferingId']
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -211,7 +212,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
             if isNewEvent:
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
-                eventData['customEventId'] = customSeriesId
+                eventData['multipleOfferingId'] = multipleSeriesId
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
@@ -336,18 +337,18 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     events_list = []
     shown_recurring_event_list = []
-    shown_custom_event_list = []
+    shown_multiple_offering_event_list = []
 
     # removes all recurring events except for the next upcoming one
     for event in events:
-        if event.recurringId or event.customEventId:
+        if event.recurringId or event.mulitpleOfferingId:
             if not event.isCanceled:
                 if event.recurringId not in shown_recurring_event_list:
                     events_list.append(event)
                     shown_recurring_event_list.append(event.recurringId)
-                if event.customEventId not in shown_custom_event_list:
+                if event.multipleOfferingId not in shown_multiple_offering_event_list:
                     events_list.append(event)
-                    shown_custom_event_list.append(event.customEventId)
+                    shown_multiple_offering_event_list.append(event.multipleOfferingId)
         else:
             if not event.isCanceled:
                 events_list.append(event)
@@ -388,7 +389,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isCustom']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
@@ -430,13 +431,13 @@ def calculateNewrecurringId():
         return recurringId + 1
     else:
         return 1
-def calculateNewCustomId():
+def calculateNewMultipleOfferingId():
     """
     Gets the highest recurring Id so that a new recurring Id can be assigned
     """
-    customEventId = Event.select(fn.MAX(Event.customEventId)).scalar()
-    if customEventId:
-        return customEventId + 1
+    multipleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
+    if multipleOfferingId:
+        return multipleOfferingId + 1
     else:
         return 1
 
@@ -481,28 +482,13 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isCustom', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isMultipleOffering', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
-
-    # if eventData['isCustom']:
-    #     if 'customEventsData' in eventData: #this should not exist anymore if the list of dictionaries have been processed once already
-    #         customEventsList = []
-    #         for event in eventData['customEventsData']:
-    #             customDict = {
-    #                 'name': event['eventName'],
-    #                 'startDate': event['eventDate'],
-    #                 'timeStart': event['startTime'],
-    #                 'timeEnd': event['endTime']
-    #         }
-    #             customEventsList.append(customDict)
-    #         for customEvents in customEventsList:
-    #             processedCustomEvents = preprocessEventData(customEvents)
-
 
     ## Process dates
     eventDates = ['startDate', 'endDate']

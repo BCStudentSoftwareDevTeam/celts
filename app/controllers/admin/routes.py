@@ -32,7 +32,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewCustomId
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -101,19 +101,19 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         eventData.update(request.form.copy())
-        if eventData.get('isCustom'):
-            customEventId = calculateNewCustomId()
-            for event in ast.literal_eval(eventData.get('customEventsData')):
-                customDict = eventData
-                customDict.update({
+        if eventData.get('isMultipleOffering'):
+            multipleOfferingId = calculateNewMultipleOfferingId()
+            for event in ast.literal_eval(eventData.get('multipleOfferingData')):
+                multipleOfferingDict = eventData
+                multipleOfferingDict.update({
                     'name': event['eventName'],
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
                     'timeEnd': event['endTime'],
-                    'customEventId': customEventId
+                    'multipleOfferingId': multipleOfferingId
                     })
                 try:
-                    savedEvents, validationErrorMessage = attemptSaveEvent(customDict, getFilesFromRequest(request))
+                    savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
                     savedEventsList.append(savedEvents)
                     
                 except Exception as e:
@@ -132,21 +132,18 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = ((eventData.get('isRecurring') or eventData.get('isCustom')) and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
-            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-            print('data is:', ((eventData.get('isRecurring') or eventData.get('isCustom')) and "Events" or "Event"))
-           
            
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
-                elif len(savedEventsList) >= 1 and eventData.get('isCustom'):
+                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
-                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in ast.literal_eval(eventData.get('customEventsData'))]
+                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in ast.literal_eval(eventData.get('multipleOfferingData'))]
 
                     event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
 
@@ -229,7 +226,7 @@ def renewEvent(eventId):
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
                     'isRecurring': bool(priorEvent['recurringId']),
-                    'isCustom': bool(priorEvent['customEventId']),
+                    'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
@@ -417,12 +414,6 @@ def deleteAllRecurringEventsRoute(eventId):
 def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
-
-# @admin_bp.route('/makeCustomEvents', methods=['POST'])
-# def addCustomEvents():
-#     customEvents = preprocessEventData(request.form.copy())
-#     return json.dumps(customEvents, default=str)
-
 
 
 @admin_bp.route('/userProfile', methods=['POST'])

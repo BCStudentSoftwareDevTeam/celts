@@ -60,14 +60,14 @@ function calculateRecurringEventFrequency(){
   }
 
   document.getElementById('submitParticipant').addEventListener('click', function() {
-    // Call the function storingCustomEventAttributes() when the button is clicked
-    storingCustomEventAttributes();
-    $("#checkIsCustom").prop('checked', true);
+    // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
+    storingMultipleOfferingEventAttributes();
+    $("#checkIsMultipleOffering").prop('checked', true);
     // Remove the modal and overlay from the DOM
-    $('#modalCustom').modal('hide');
+    $('#modalMultipleOffering').modal('hide');
 });
 
-function storingCustomEventAttributes() {
+function storingMultipleOfferingEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
@@ -81,141 +81,18 @@ function storingCustomEventAttributes() {
         });
     });
 
-    console.log(entries);
-    console.log(typeof entires)
-
     let entriesJson = JSON.stringify(entries);
-    document.getElementById("customEventsDataId").value = entriesJson
+    document.getElementById("multipleOfferingDataId").value = entriesJson
 
-  var customTable = $("#customEventsTable");
-  customTable.find("tbody tr").remove(); // Clear existing rows
+  var multipleOfferingTable = $("#multipleOfferingEventsTable");
+  multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
     //fromat to 12hr time for display
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
-    customTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
+    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
-
-// $.ajax({
-//   type: "POST",
-//   url: "/makeCustomEvents",
-//   data: { events: entries }, // Send data as an object
-//   success: function(jsonData) {
-//       console.log("success AJAX call");
-//       console.log(jsonData);
-
-//       var customEvents = JSON.parse(jsonData);
-//       var customTable = $("#customEventsTable");
-//       customTable.find("tbody tr").remove(); // Clear existing rows
-
-//       console.log("Data Type of", typeof customEvents);
-//       console.log(customEvents);
-
-//       // Check if customEvents is an object
-//       if (typeof customEvents === 'object' && !Array.isArray(customEvents)) {
-//           // Iterate over the properties of the object using for...in
-//           for (var key in customEvents) {
-//               console.log(key)
-//               if (customEvents.hasOwnProperty(key)) {
-//                   var event = customEvents[key];
-//                   console.log(event)
-//                   var eventDate = new Date(event.date).toLocaleDateString();
-//                   var startTime = event.startTime;
-//                   var endTime = event.endTime;
-
-//                   customTable.append("<tr><td>" + event.name + "</td><td><input name='eventdate" + eventDate + "' type='hidden' value='" + eventDate + "'>" + eventDate + "</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
-//               }
-//           }
-//       } else {
-//           console.error("customEvents is not an object:", customEvents);
-//       }
-//   },
-//   error: function(error) {
-//       console.log(error);
-//   }
-// });
-    // var customDatesAndTimes = {
-    //   name: $("#inputEventName").val(),
-    //   isCustom: true,
-    //   customDate: $("#customDatePicker" + pageLocation).val(),
-    //   startTime: $("#customstartTime-" + pageLocation).val(),
-    //   endTime: $("#customendTime-" + pageLocation).val()
-    // };
-
-    // console.log('customDatesAndTime:' , customDatesAndTimes);
-      
-    //   $.ajax({
-    //   type:"POST",
-    //   url: "/makeCustomEvents",
-    //   data: customDatesAndTimes, //get the customDate, startTime, endTime as a dictionary
-    //   success: function(jsonData){
-    //   var customEvents = JSON.parse(jsonData)
-    //   console.log('customEvents:', customEvents)
-    //   var customTable = $("#customEventsTable")
-    //   $("#customEventsTable tbody tr").remove();
-
-    //   for (var event of customEvents){
-    //   var eventdate = new Date(event.date).toLocaleDateString()
-    //   customTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-    //   }
-    //   },
-    //   error: function(error){
-    //   console.log(error)
-    //   }
-    //   });
-    // }
-  
-
-    
-    /*while (index < num.length || index < color.length || index < value.length) {
-    // Retrieve elements from arrays if they exist at current index
-    a = index < num.length ? num[index] : null;
-    b = index < color.length ? color[index] : null;
-    c = index < value.length ? value[index] : null;
-    console.log(a, b, c);
-    index++;
-    }
-    let customDate=[];
-    let customStartTime=[];
-    let customEndTime=[];
-    for (let i = 1; i = $(".add_customevent").length; i++){
-      customDate.append($(".add_customevent"+i).children("input#customDatePicker").value);
-      customStartTime.append($(".add_customevent"+i).children("input.customstartTime").value);
-      customEndTime.append($(".add_customevent"+i).children("input.customendTime").value);
-    }
-    var customDatesAndName = {name:$("#inputEventName").val(),
-                              isRecurring: true,
-                              startDate:$(".startDatePicker")[0].value,
-                              endDate:$(".endDatePicker")[0].value}
-    let index = 0;
-    while (index < customDate.length || index < customStartTime.length || index < customEndTime){
-
-    }
-    var eventDatesAndName = {name:$("#inputEventName").val(),
-      isCustom: true,
-      startDate:$(".startDatePicker")[0].value,
-      endDate:$(".endDatePicker")[0].value}   
-    $.ajax({
-      type:"POST",
-      url: "/makeRecurringEvents",
-      data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
-      success: function(jsonData){
-        var recurringEvents = JSON.parse(jsonData)
-        var recurringTable = $("#recurringEventsTable")
-        $("#recurringEventsTable tbody tr").remove();
-
-        for (var event of recurringEvents){
-          var eventdate = new Date(event.date).toLocaleDateString()
-          recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-          }
-      },
-      error: function(error){
-        console.log(error)
-      }
-    });
-
-}*/
 
 /*
  * Run when the webpage is ready for javascript
@@ -240,8 +117,9 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring").click(function () {
-    var recurringStatus = $("input[name='isRecurring']:checked").val();
+  $("#checkIsRecurring, #checkIsMultipleOffering").click(function() { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
+    var multipeOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
       $(".endDatePicker").prop('required', true);
@@ -249,56 +127,42 @@ $(document).ready(function() {
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
     }
-    if (customStatus == 'on') {
-      $('#modalCustom').modal('show');// this line pop up the modal for the custom event
-      $('#nonCustomTime, #nonCustomDate').addClass('d-none'); // this line disappear the non custom tims and dates and replace them with recurring table div for custom events to show
-      $("#customTableDiv").removeClass('d-none');
-      $("#checkIsCustom").prop('checked', true);
+    if (multipeOfferingStatus == 'on') {
+      $('#modalMultipleOffering').modal('show');// this line pop up the modal for the multiple offering event
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line disappear the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
+      $("#multipleOfferingTableDiv").removeClass('d-none');
+      $("#checkIsMultipleOffering").prop('checked', true);
     }
-    else if (customStatus == undefined){
-      $("#customTableDiv").addClass('d-none');
-      $('#modalCustom').modal('hide');
+    else if (multipeOfferingStatus == undefined){
+      $("#multipleOfferingTableDiv").addClass('d-none');
+      $('#modalMultipleOffering').modal('hide');
     }
   });
   
   $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
-    $("#checkIsCustom").prop('checked', false);
-    $('#nonCustomTime, #nonCustomDate').removeClass('d-none');
-    $("#customTableDiv").addClass('d-none');
-    $('#modalCustom').modal('hide');
+    $("#checkIsMultipleOffering").prop('checked', false);
+    $('#nonMultipleOfferingTime, #nonMultiplOfferingDate').removeClass('d-none');
+    $("#multipleOfferingTableDiv").addClass('d-none');
+    $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
-    //$('.extraSlots').empty();//this line remove the added custom event slots from appearing if the custom modal is toggle again
+    //$('.extraSlots').empty();//this line remove the added multiple offering event slots from appearing if the multiple offering modal is toggle again
   });
   
-  /*cloning the div with ID customEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the delete_customEvent so that when the trash icon is clicked, 
+  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
   that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
-  $(".add_customevent").click(function(){
+  $(".addMultipleOfferingEvent").click(function(){
     counterAdd += 1
-    let clonedCustom = $("#customEvent").clone();// this line clones the customEvent id div in the custom event modal on createEvent.html line 403
-    clonedCustom.attr("id", "customEvent" + counterAdd)
-    clonedCustom.find("#delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
-    $(".extraSlots").append(clonedCustom)
-    $("#customEvent" + counterAdd).children("div#delete_customevent").attr("id", "delete_customevent" + counterAdd) //this line finds the id delete_customevent within the parent customevent and change the id attribute
-    $("#delete_customevent" + counterAdd).removeClass('d-none');
-    clonedCustom.find(".delete_customevent").attr("id", "delete_customevent" + counterAdd).removeClass('d-none');
+    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
+    clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
+    clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
+    $(".extraSlots").append(clonedMultipleOffering)
 
-  
-    deleteId.push({id: "#delete_customevent" + counterAdd})
-    console.log("#delete_customevent" + counterAdd)
-    console.log(deleteId)
-  });
-
-      // $(".extraSlots").children().each(function(index, element) {
-      //     let rowData = $.map($(element).find("input"), (el) =>  $(el).val())
-      //     console.log("Data in row " + (index + 1) + ": " + rowData)
-      //     // Modify this to display or manipulate your data as needed
-      // });
-
-  $(".delete_row").click(function(){ // delete function for the added row, it is still not working
-    console.log("here in delete")
-    let numbers= $(".delete_row").length
-    console.log(numbers)
+    //this is so that the trash icon can be used to delete the event
+    clonedMultipleOffering.on("click", "[id^=deleteMultipleOfferingEvent]", function() {
+      var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id
+      $("#multipleOfferingEvent" + id).remove(); 
+    });
   });
 
   $("#allowPastStart").click(function() {
@@ -371,8 +235,8 @@ $(document).ready(function() {
     }
   });
 
-  // $(".customDate").click(function() {
-  //   $("#customDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  // $(".multipleOfferingDate").click(function() {
+  //   $(#multipleOfferingDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   // });
 
   $("#checkRSVP").click(function () {
@@ -418,9 +282,13 @@ $(document).ready(function() {
     updateDate(this);
   });
 
-  $(".startDatePicker").change(function () {
-    updateDate(this);
+  $(".startDatePicker").change(function(){
+     updateDate(this)
   });
+
+//   $(".multipleOfferingDatePicker").change(function(){ //multiple offering data calender function
+//     updateDate(this)
+//  });
 
   $("#inputCharacters").keyup(function (event) {
     setCharacterLimit(this, "#remainingCharacters");

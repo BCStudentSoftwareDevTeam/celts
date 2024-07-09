@@ -65,7 +65,7 @@
         {% endif %}
     </div>
     <!-- Start and End Datepickers -->
-    <div class="row col-md-12" id="nonCustomDate">
+    <div class="row col-md-12" id="nonMultipleOfferingDate">
       <div class="form-group col-md-6">
           <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
@@ -93,7 +93,7 @@
     </div>
     <br>
     <!-- Start and End Time -->
-    <div class="mb-4" id="nonCustomTime">
+    <div class="mb-4" id="nonMultipleOfferingTime">
       <div class="row col-md-12" >
         <div class="form-group col-md-6">
           <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
@@ -160,8 +160,8 @@
               <fieldset>
                 <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
                 <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if eventData.isCheckRecurring}}/>
-                <label class="custom-control-label" for='checkIsCustom'><strong>This is an event with multiple time offerings.</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkIsCustom" name="isCustom" {{"checked" if eventData.isCheckCustom}}/>
+                <label class="custom-control-label" for='checkIsMultipleOffering'><strong>This is an event with multiple time offerings.</strong></label>
+                <input class="form-check-input" type="checkbox" id="checkIsMultipleOffering" name="isMultipleOffering" {{"checked" if eventData.isCheckIsMultipleOffering}}/>
               </fieldset>
             </div>                 
           {% endif %}
@@ -171,14 +171,14 @@
 
       {% if eventData.isRecurring == True and isNewEvent %}
         {% set hideDate = "" %}
-        {% set hideCustom = "d-none" %}
-      {% elif eventData.isCustom == True and isNewEvent %}
+        {% set hideMultipleOffering = "d-none" %}
+      {% elif eventData.isMultipleOffering == True and isNewEvent %}
         {% set hideDate = "d-none" %}
-        {% set hideCustom = "" %}
+        {% set hideMultipleOffering = "" %}
       
       {% else %}
         {% set hideDate = "d-none" %}
-        {% set hideCustom = "d-none" %}
+        {% set hideMultipleOffering = "d-none" %}
       {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
@@ -189,13 +189,13 @@
           <tbody></tbody>
         </table>
       </div>
-      <div class="{{hideCustom}}" id="customTableDiv">
-        <table class="table" id="customEventsTable">
+      <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
+        <table class="table" id="multipleOfferingEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>End Time</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
-      <input type = "hidden" name = "customEventsData" value = "hidden value here" id = "customEventsDataId">
+      <input type = "hidden" name = "multipleOfferingData" value = "hidden value here" id = "multipleOfferingDataId">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
         <div class="row col-md-12 mb-4" >
           <div class="form-group">
@@ -468,8 +468,8 @@
   </div>
   </div>
 </form>
-<!--custom event modal-->
-<div class="modal modalCustomEvent fade float-start col" data-bs-backdrop='static' id="modalCustom">
+<!--multiple offering event modal-->
+<div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
@@ -481,25 +481,25 @@
           <br>
           </div>
           <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="row mb-2" id ="customEvent">
+          <div class="row mb-2" id ="multipleOfferingEvent">
             <br>
             <div class="form-group mb-3">
               <label class="form-label" for="eventName"><strong>Event Name</strong></label>
               <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Enter event name" required>
           </div>
             <div class="form-group col-md-5">
-              <label class="form-label me-2" for="customDatePicker"><strong>Custom Date</strong></label>
-              <div class='input-group date customDate' id="customDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-                  <input autocomplete="off" type='date' class="form-control datePicker customDatePicker readonly" 
-                    value="{{ eventData.customDate.strftime('%m-%d-%Y') if eventData.customDate and eventData.customDate.strftime else eventData.customDate}}" 
-                    name="customDate" placeholder="Pick a start date" id='customDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
-                  <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
-                   <!-- <span><i class="bi bi-calendar-plus-fill"></i></span> -->
-                  </div>
+              <label class="form-label me-2" for="multipleOfferingDatePicker"><strong>Event Date</strong></label>
+              <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
+                  <input autocomplete="off" type='date' class="form-control datePicker multipleOfferingDatePicker readonly" 
+                    value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}" 
+                    name="multipleOfferingDate" placeholder="Pick a start date" id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+                  <!-- <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
+                    <span><i class="bi bi-calendar-plus-fill"></i></span>
+                  </div> -->
               </div>
             </div>
             <div class="form-group col-md-3">
-              <label class="form-label me-2" for="customstartTime-{{pageLocation}}"><strong>Start Time</strong></label>
+              <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start Time</strong></label>
               <div class="input-group">
                 {% if eventData.timeStart %}
                   {% set startTime = eventData.timeStart %}
@@ -508,7 +508,7 @@
                 {% endif %}
                 <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
                   aria-describedby="timeIcon1" placeholder="Pick a start time"  
-                  id="customstartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                  id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                 <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
@@ -522,25 +522,25 @@
                 {% endif %}
                   <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
                     aria-describedby="timeIcon2" placeholder="Pick an end time" 
-                    id="customendTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                    id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                   <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
-            <div class="delete_row d-none col-md-1" id="delete_customevent"> <!--delete div icon-->
+            <div class="delete_row d-none col-md-1" id="deleteMultipleOfferingEvent"> <!--delete div icon-->
               <br/>
               <i class="bi bi-trash3"></i>
             </div>
           </div>
           </div>
         </div>
-        <div class="add_customevent"> <!--add button for the slots-->
+        <div class="addMultipleOfferingEvent"> <!--add button for the slots-->
             <i class="bi bi-plus-square col-md-12 mt-2 mb-2 d-flex flex-row justify-content-center"></i>
         </div>
         <br>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
           {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-          <button type="submit" name="submitParticipant" class="btn btn-primary customSave" {{disableSave}} id="submitParticipant">Save</button>
+          <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}} id="submitParticipant">Save</button>
         </div>
       </div>
     </div>
