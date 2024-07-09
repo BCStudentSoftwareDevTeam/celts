@@ -211,13 +211,10 @@ def renewEvent(eventId):
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
-    current_time = datetime.now().time()
-    current_date = datetime.now().date()
     if request.method == 'GET' and request.path == f'/event/{eventId}/view':
         viewer = g.current_user
         event = Event.get_by_id(eventId)
         addEventView(viewer,event) 
-        eventCountdown = getCountdownToEvent(event)
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
@@ -283,8 +280,6 @@ def eventDisplay(eventId):
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
-                                current_time = current_time,
-                                current_date = current_date,
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 event = event,

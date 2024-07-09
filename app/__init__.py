@@ -87,7 +87,7 @@ def load_currentTerm():
 import datetime
 @app.before_request
 def load_currentDateTime():
-    g.currentTime = datetime.datetime.now()
+    g.currentDateTime = datetime.datetime.now()
 
 from flask import request
 @app.context_processor

@@ -22,7 +22,7 @@
         {% set display = "" if eventPast or event.isCanceled or isInProg else "d-none"%}
         {% set alertClass = ("alert-success" if isInProg else ( "alert-danger" if eventPast else "alert-warning")) %}
         {% set event_year = event.endDate.strftime("%Y") | int %}
-        {% set currentYear = g.currentTime.year | int %}
+        {% set currentYear = g.currentDateTime.year | int %}
         {% set formatted_date = event.endDate.strftime("%B %d %Y") if currentYear > event_year else event.endDate.strftime("%B %d") %}
 
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">

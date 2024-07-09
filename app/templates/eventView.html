@@ -67,7 +67,7 @@
                     <br>
                     <div>
                         {% if eventData.isRsvpRequired %}
-                            {% if not eventPast %}
+                            {% if eventPast != event.isPastEnd %}
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
