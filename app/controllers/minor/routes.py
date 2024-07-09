@@ -13,6 +13,51 @@ from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementFo
 
 
 
+<<<<<<< HEAD
+=======
+# ##################################################################################
+# /profile/<username>/cceMinor
+@minor_bp.route('/profile/<username>/cceMinorr', methods=['POST', 'GET']) 
+def addSummerExperience(username):
+    user = User.get(User.username == username)
+    summer_experience_data = {
+        'user': user,
+        'fullName': request.form['fullName'],
+        'email': request.form['studentEmail'],
+        # All other fields from the form
+        'roleDescription': request.form['roleDescription'],
+        'experienceType': request.form['experienceType'],
+        'contentArea': request.form.getlist('contentArea'),
+        'experienceHoursOver300': request.form['experienceHoursOver300'] == 'Yes',
+        'experienceHoursBelow300': request.form['experienceHoursBelow300'],
+        'dateCreated': request.form['dateCreated'],
+        'company': request.form['company'],
+        'companyAddress': request.form['companyAddress'],
+        'companyPhone': request.form['companyPhone'],
+        'companyWebsite': request.form['companyWebsite'],
+        'supervisorPhone': request.form['supervisorPhone'],
+        'supervisorEmail': request.form['supervisorEmail'],
+        'totalHours': request.form['totalHours'],
+        'weeks': request.form['weeks'],
+        'description': request.form['description'],
+        'filename': request.form['filename'],
+        'status': 'Pending'  # or however you want to set the initial status
+    }
+    print("test", summer_experience_data)
+    
+    saveSummerExperience(summer_experience_data)
+
+    return render_template("minor/profile.html")
+    
+    # return redirect(url_for('minor_bp.viewCceMinor', username=username))
+
+
+def addSummerExperience(username):
+    saveSummerExperience(username, request.form, g.current_user)
+
+    return ""
+#######################################################################################
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -105,11 +150,6 @@ def modifyCommunityEngagement(username):
     
     return ""
 
-# @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    saveSummerExperience(username, request.form, g.current_user)
-
-    return ""
 
 @minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
 def deleteSummerExperience(username):        

@@ -107,6 +107,7 @@
           
                 <div class="row">
                   <div class="form-group col-6">
+<<<<<<< HEAD
                     <label class="form-label"><strong>Student Name</strong></label>
                     <div class="input-group">
                       <input type="text" id="searchStudentsInput" name="studentName" class="form-control" placeholder="Student's Name" autocomplete="off" />
@@ -115,15 +116,27 @@
                   <div class="form-group col-6">
                     <label class="form-label"><strong>Email</strong></label>
                     <input class="form-control" id="studentEmail" placeholder="Student's email" name="studentEmail" value="" />
+=======
+                    <label class="form-label" for="fullName"> <strong>Student Name</strong> </label>
+                    <input class="form-control name-input" id="fullName" name="fullName" value="{{ user.fullName }}" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="email"> <strong>Email</strong> </label>
+                    <input class="form-control email-input" id="email" name="email" value="{{ user.email }}" />
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                     <br>
                   </div>
                 </div>
           
                 <div class="row">
                   <div class="form-group col-md-6">
-                    <label class="form-label me-2" for="date"><strong>Today's Date</strong></label>
+                    <label class="form-label me-2" for="dateCreated"><strong>Today's Date</strong></label>
                     <br>
+<<<<<<< HEAD
                     <input type="date" id="date" name="date" required>
+=======
+                    <input type="date" id="dateCreated" name="dateCreated">
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                   </div>
                 </div>
           
@@ -134,27 +147,46 @@
                 </div>
           
                 <div class="form-group">
+<<<<<<< HEAD
                   <label class="form-label" for="company"><strong>Name</strong></label>
                   <input class="form-control" id="company" placeholder="Company or organization's name" name="company" required/>
+=======
+                  <label class="form-label" for="company"> <strong>Name</strong> </label>
+                  <input class="form-control" id="company" name="company" placeholder="Company or organization's name" />
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                 </div>
           
                 <br>
           
                 <div class="form-group">
+<<<<<<< HEAD
                   <label class="form-label" for="companyAddress"><strong>Address</strong></label>
                   <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress" required/>
+=======
+                  <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+                  <input class="form-control" id="companyAddress" name="companyAddress" placeholder="Company or organization's physical address" />
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                 </div>
           
                 <br>
           
                 <div class="row">
                   <div class="form-group col-6">
+<<<<<<< HEAD
                     <label class="form-label" for="companyPhone"><strong>Phone Number</strong></label>
                     <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone" required/>
                   </div>
                   <div class="form-group col-6">
                     <label class="form-label" for="companyWebsite"><strong>Website</strong></label>
                     <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite" required/>
+=======
+                    <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+                    <input class="form-control phone-input" id="companyPhone" name="companyPhone" placeholder="Company or organization's phone number" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+                    <input class="form-control" id="companyWebsite" name="companyWebsite" placeholder="Company or organization's website" />
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                   </div>
                 </div>
           
@@ -168,12 +200,21 @@
           
                 <div class="row">
                   <div class="form-group col-6">
+<<<<<<< HEAD
                     <label class="form-label" for="supervisorPhone"><strong>Phone Number</strong></label>
                     <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone" required/>
                   </div>
                   <div class="form-group col-6">
                     <label class="form-label" for="supervisorEmail"><strong>Email</strong></label>
                     <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail" required/>
+=======
+                    <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
+                    <input class="form-control phone-input" id="supervisorPhone" name="supervisorPhone" placeholder="Supervisor's phone number" />
+                  </div>
+                  <div class="form-group col-6">
+                    <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
+                    <input class="form-control email-input" id="supervisorEmail" name="supervisorEmail" placeholder="Supervisor's email" />
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
                     <br>
                   </div>
                 </div>
@@ -242,6 +283,7 @@
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
           </form>
            
         </div>
@@ -370,6 +412,96 @@
           </div>
         </form>
       </div>
+=======
+          </div>
+        </form> 
+      </div>
+    </div>
+    <div class="tab-pane fade {{ 'active' if activeTab == 'bonnerscholarsevents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerscholarsevents">
+      <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{ url_for('minor_bp.addSummerExperience', username=user.username) }}" method="POST">
+        <!-- Form fields here -->
+        <div class="form-group">
+            <label class="form-label" for="fullName"> <strong>Student Name</strong> </label>
+            <input class="form-control name-input" id="fullName" name="fullName" value="{{ user.fullName }}" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="email"> <strong>Email</strong> </label>
+            <input class="form-control email-input" id="email" name="email" value="{{ user.email }}" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="dateCreated"><strong>Today's Date</strong></label>
+            <input type="date" id="dateCreated" name="dateCreated">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="company"> <strong>Name</strong> </label>
+            <input class="form-control" id="company" name="company" placeholder="Company or organization's name" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+            <input class="form-control" id="companyAddress" name="companyAddress" placeholder="Company or organization's physical address" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+            <input class="form-control phone-input" id="companyPhone" name="companyPhone" placeholder="Company or organization's phone number" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+            <input class="form-control" id="companyWebsite" name="companyWebsite" placeholder="Company or organization's website" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="supervisorPhone"> <strong>Supervisor Phone Number</strong> </label>
+            <input class="form-control phone-input" id="supervisorPhone" name="supervisorPhone" placeholder="Supervisor's phone number" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="supervisorEmail"> <strong>Supervisor Email</strong> </label>
+            <input class="form-control email-input" id="supervisorEmail" name="supervisorEmail" placeholder="Supervisor's email" />
+        </div>
+        <div class="form-group">
+            <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience:</strong></label>
+            <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Please describe your experience" required></textarea>
+        </div>
+        <div class="form-group">
+            <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please check one.</strong></label><br>
+            <input type="checkbox" id="internship" name="experienceType" value="Internship">
+            <label for="internship">Internship</label><br>
+            <input type="checkbox" id="cbr" name="experienceType" value="Community-based research">
+            <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
+            <input type="checkbox" id="communityLabor" name="experienceType" value="Community-Based Labor Position">
+            <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
+            <input type="checkbox" id="epgInternship" name="experienceType" value="EPG Summer Internship">
+            <label for="epgInternship">EPG Summer Internship</label><br>
+            <input type="checkbox" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service">
+            <label for="bonnerService">Bonner Scholar Summer of Service</label><br>
+            <input type="checkbox" id="otherExperience" name="experienceType" value="Other">
+            <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+            <textarea class="form-control" rows="2" cols="72" id="experienceDescription" name="experienceDescription" placeholder="Please describe your summer experience" required></textarea>
+        </div>
+        <div class="form-group">
+            <label><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please check all that apply.</strong></label><br>
+            <input type="checkbox" id="powerInequality" name="contentArea" value="Power and inequality">
+            <label for="powerInequality">Power and inequality</label><br>
+            <input type="checkbox" id="communityIdentity" name="contentArea" value="Community and identity">
+            <label for="communityIdentity">Community and identity</label><br>
+            <input type="checkbox" id="civicLiteracy" name="contentArea" value="Civic literacy">
+            <label for="civicLiteracy">Civic literacy</label><br>
+            <input type="checkbox" id="civicSkills" name="contentArea" value="Civic skills">
+            <label for="civicSkills">Civic skills</label>
+        </div>
+        <div class="form-group">
+            <label><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks with a public-facing organization?</strong></label><br>
+            <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes">
+            <label for="yes300hours">Yes</label>
+            <input type="radio" id="no300hours" name="experienceHoursOver300" value="No">
+            <label for="no300hours">No</label>
+        </div>
+        <div class="form-group">
+            <label for="experienceHoursBelow300"><strong>If no, how many hours over how many weeks will you spend engaged in this summer experience?</strong></label>
+            <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks" required></textarea>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Send Request for Approval" />
+    </form>
+    
+>>>>>>> a311d3562b18384d885f5791fe67cfb8d4a59e33
     </div>
   </div>
 {% endblock %}
