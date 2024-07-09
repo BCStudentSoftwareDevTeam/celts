@@ -5,6 +5,9 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
+    $('#undoButton').click(function(){
+        undoButton($('#undoButton').val())
+    })
     var viewPastEventsToggle = $("#viewPastEventsToggle");
     viewPastEventsToggle.prop("checked", g_isPastTerm);
     toggleRows(g_isPastTerm);
@@ -62,5 +65,23 @@ function removeRsvpForEvent(eventID){
   })
 }
 
+// ########################################################
+function undoButton(eventID){
+  undoButton = {id: eventID,
+                from: 'ajax'}
+  $.ajax({
+    url: "/event/<eventId>/delete",
+    type: "POST",
+    success: function(){
+      alert("Successfully undone!")
+    },
+    error: function(error, status){
+      console.log(error, status)
+    }
+  })
+}
 
 
+
+
+// ###########################################################
