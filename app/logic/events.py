@@ -67,32 +67,6 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
-    """Deleting an event for Multiple Offering events"""
-    if event:
-        if event.multipleOfferingId:
-            multipleOfferingId = event.multipleOfferingId
-            multipleOfferingEvents = list(Event.select().where(Event.multipleOfferingId== multipleOfferingId).order_by(Event.id)) # orders for tests
-            eventDeleted = False
-
-            # once the deleted event is detected, change all other names to the previous event's name
-            #commenting this part out for now since it is not relevant to the new ID
-            ''' for recurringEvent in recurringEvents:
-                if eventDeleted:
-                    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
-                    newEventName = recurringEvent.name
-
-                if recurringEvent == event:
-                    newEventName = recurringEvent.name
-                    eventDeleted = True'''
-
-        program = event.program
-
-        if program:
-            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
-        else:
-            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
-
-        event.delete_instance(recursive = True, delete_nullable = True)
 
 def deleteEventAndAllFollowing(eventId):
         """
@@ -341,7 +315,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     # removes all recurring events except for the next upcoming one
     for event in events:
-        if event.recurringId or event.mulitpleOfferingId:
+        if event.recurringId or event.multipleOfferingId:
             if not event.isCanceled:
                 if event.recurringId not in shown_recurring_event_list:
                     events_list.append(event)
