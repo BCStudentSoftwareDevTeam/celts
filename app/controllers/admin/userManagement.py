@@ -4,7 +4,7 @@ from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
-from app.logic.userManagement import changeProgramInfo, save_file
+from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.fileHandler import FileHandler
@@ -84,9 +84,17 @@ def updateProgramInfo(programID):
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
-            uploadedFile = request.files.get('modalProgramImage')
-            # associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.program == programID)
-            # filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments)
+            #uploadedFile = request.files.get('modalProgramImage')
+            associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.program == programID) # returns as: SELECT `t1`.`id`, `t1`.`event_id`, `t1`.`course_id`, `t1`.`program_id`, `t1`.`isDisplayed`, `t1`.`fileName` 
+                                                                                                                         #FROM `attachmentupload` AS `t1` WHERE (`t1`.`program_id` = 1)
+            print("These are attachments: ")
+            print(associatedAttachments)
+            filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) #This line might be worth looking into, currently returns empty {}
+            file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} #currently returns empty {}
+            print("This is file_paths: ")
+            print(file_paths)
+            print("This is filePaths: ")
+            print(filePaths)
             changeProgramInfo(programInfo["programName"],  #calls logic function to add text data to database
                               programInfo["programDescription"], 
                               programInfo["partner"],
@@ -94,7 +102,7 @@ def updateProgramInfo(programID):
                               programInfo["contactName"],
                               programInfo["location"],
                               programID,
-                              uploadedFile
+                              file_paths
                               )           
             
             flash("Program updated", "success")

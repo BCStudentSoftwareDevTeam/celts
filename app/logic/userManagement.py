@@ -42,10 +42,16 @@ def removeCeltsStudentStaff(user):
 def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId, attachment):       
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId)
+    coverImage = program.coverImage  # Default to current cover image if not updated
     if attachment:
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
-        coverImage = addFile.retrievePath()
+        coverImage = addFile.retrievePath([attachment]) #this does not work, attachment referrred to as a bytes object
+
+        # attachment_name = attachment.filename
+        # attachment_paths = addFile.retrievePath([attachment_name])
+        # coverImage = attachment_paths.get(attachment_name, None)
+
     updatedProgram = Program.update(
         {Program.programName:newProgramName,
         Program.programDescription: newProgramDescription, 
@@ -89,12 +95,3 @@ def getAllowedTemplates(currentUser):
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []
-    
-def save_file(file):
-    UPLOAD_FOLDER = '/app/static/images/programImages'
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
-    return filepath
