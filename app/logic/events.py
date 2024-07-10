@@ -425,6 +425,16 @@ def getPreviousRecurringEventData(recurringId):
                                    .where(Event.recurringId==recurringId))
     return previousEventVolunteers
 
+def getPreviousMultipleOfferingEventData(multipleOfferingId):
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
+    """
+    previousEventVolunteers = (User.select(User).distinct()
+                                   .join(EventParticipant)
+                                   .join(Event)
+                                   .where(Event.multipleOfferingId == multipleOfferingId))
+    return previousEventVolunteers
+
 def calculateRecurringEventFrequency(event):
     """
         Calculate the events to create based on a recurring event start and end date. Takes a

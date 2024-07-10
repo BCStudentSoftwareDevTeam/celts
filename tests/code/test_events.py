@@ -24,7 +24,7 @@ from app.models.note import Note
 
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
-from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId
+from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
@@ -662,6 +662,15 @@ def test_upcomingEvents():
                                            contactEmail = "test@email",
                                            contactName = "testName")
         
+        programForMultiple = Program.create(id = 16,
+                                        programName = "TestMultiple",
+                                        isStudentLed = False,
+                                        isBonnerScholars = False,
+                                        contactEmail = "test@email",
+                                        contactName = "testName")
+        
+
+        
         
         
         # Create a Program Event to show up when the user marks interest in a
@@ -708,17 +717,28 @@ def test_upcomingEvents():
                                                endDate = date(2021,12,13),
                                                recurringId = 2,
                                                program= programForInterest)
+        
+        multipleOfferingEvent = Event.create(name = "Mltiple Offering Id",
+                                            term = 2,
+                                            description = "Test multiple offering event",
+                                            location = "The moon",
+                                            startDate = date(2021,12,13),
+                                            endDate = date(2021,12,13),
+                                            multipleOfferingId = 2,
+                                            program= programForMultiple)
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForInterest2.id, user)
         addUserInterest(programForBanning.id, user)
+        addUserInterest(programForMultiple.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
         assert newRecurringDifferentId in eventsInUserInterestedProgram
         assert newRecurringEvent in eventsInUserInterestedProgram
         assert newRecurringSecond not in eventsInUserInterestedProgram
+        assert multipleOfferingEvent in eventsInUserInterestedProgram
 
         # Programs the user is banned from do not have their events showing up in
         # their upcoming events
@@ -751,6 +771,8 @@ def test_upcomingEvents():
         removeUserInterest(programForInterest.id, user)
         removeUserInterest(programForInterest2.id, user)
         removeUserInterest(programForBanning.id, user)
+        removeUserInterest(programForMultiple.id, user)
+
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
         assert eventsInUserRsvp == [noProgram]
 
@@ -758,6 +780,8 @@ def test_upcomingEvents():
         # we would have multiples with interests in both programs, but we specify only one
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForInterest2.id, user)
+        addUserInterest(programForMultiple.id, user)
+
         eventsInProgram = getUpcomingEventsForUser(user, program = programForInterest2.id, asOf = testDate)
 
         assert eventsInProgram == [newProgramEvent]
@@ -862,6 +886,17 @@ def test_calculateNewrecurringId():
         maxRecurringId += 1
     assert calculateNewrecurringId() == maxRecurringId
 
+
+@pytest.mark.integration
+def test_calculateNewMultipleOfferingId():
+
+    maxMulitpleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
+    if maxMulitpleOfferingId == None:
+        maxMulitpleOfferingId = 1
+    else:
+        maxMulitpleOfferingId += 1
+    assert calculateNewMultipleOfferingId() == maxMulitpleOfferingId
+
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
@@ -921,6 +956,56 @@ def test_getPreviousRecurringEventData():
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
         transaction.rollback()
+
+
+
+@pytest.mark.integration
+def test_getPreviousMultipleOfferingEventData():
+    with mainDB.atomic() as transaction:
+
+        testingEvent1 = Event.create(name = "Testing delete event",
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-12",
+                                     endDate = "2022-12-12",
+                                     multipleOfferingId = 3,
+                                     program = 9)
+        testingEvent2 = Event.create(name = "Testing delete event",
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     multipleOfferingId = 3,
+                                     program = 9)
+
+        EventParticipant.create(user = User.get_by_id("neillz"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("ramsayb2"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("khatts"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+
+        val = getPreviousMultipleOfferingEventData(testingEvent2.multipleOfferingId)
+        assert val[0].username == "neillz"
+        assert val[1].username == "ramsayb2"
+        assert val[2].username == "khatts"
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_getEventRsvpCountsForTerm():
