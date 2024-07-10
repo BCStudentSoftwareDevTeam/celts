@@ -15,7 +15,7 @@ class FileHandler:
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
-            self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
+            self.path = os.path.join(self.path, app.config['files']['event_attachment_path']) #change this path#########################################
     
     def makeDirectory(self):
         try:

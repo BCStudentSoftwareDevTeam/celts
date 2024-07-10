@@ -43,7 +43,10 @@ pem add app.models.eventParticipant.EventParticipant
 pem add app.models.interest.Interest
 pem add app.models.note.Note
 pem add app.models.outsideParticipant.OutsideParticipant
+<<<<<<< HEAD
 
+=======
+>>>>>>> 874a913576a1783ad730576403f1c6d17f773222
 pem add app.models.program.Program
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
