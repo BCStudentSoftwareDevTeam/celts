@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import date
-from peewee import IntegrityError, SQL
+from peewee import IntegrityError, SQL, fn
 
 import xlsxwriter
 
@@ -8,6 +8,7 @@ from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.logic.createLogs import createRsvpLog
 
 def makeBonnerXls():
     """
@@ -72,8 +73,21 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
 
     return cohorts
 
+
+
 def rsvpForBonnerCohort(year, event):
     """
     Adds an EventRsvp record to the given event for each user in the given Bonner year.
     """
-    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()')).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()'))
+                                      .where(BonnerCohort.year == year),
+                                      [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    
+def addBonnerCohortToRsvpLog(year, event):
+    """ This method adds the table information in the RSVP Log page"""
+    bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
+                                    .join(User, on=(User.username == BonnerCohort.user))
+                                    .where(BonnerCohort.year == year))
+    for bonner in bonnerCohort:
+        fullName = bonner.fullName
+        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")

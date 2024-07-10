@@ -18,7 +18,7 @@ from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventTemplate import EventTemplate
-from app.models.adminLog import AdminLog
+from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
@@ -29,14 +29,14 @@ from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
@@ -129,6 +129,8 @@ def createEvent(templateid, programid):
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), savedEvents[0].id)
+                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
+
 
             noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
@@ -158,7 +160,7 @@ def createEvent(templateid, programid):
                 else:
                     createAdminLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
-                createAdminLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -187,7 +189,7 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
@@ -232,7 +234,7 @@ def renewEvent(eventId):
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
         copyRsvpToNewEvent(priorEvent, newEvent[0])
-        createAdminLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        createActivityLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
 
@@ -292,6 +294,7 @@ def eventDisplay(eventId):
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), event.id)
+                addBonnerCohortToRsvpLog(int(year), event.id)
 
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
@@ -437,11 +440,11 @@ def addParticipants():
     return render_template('addParticipants.html',
                             title="Add Participants")
 
-@admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
-def adminLogs():
+@admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
+def activityLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLog.select(AdminLog, User).join(User).order_by(AdminLog.createdOn.desc())
-        return render_template("/admin/adminLogs.html",
+        allLogs = ActivityLog.select(ActivityLog, User).join(User).order_by(ActivityLog.createdOn.desc())
+        return render_template("/admin/activityLogs.html",
                                 allLogs = allLogs)
     else:
         abort(403)
@@ -627,7 +630,8 @@ def saveRequirements(certid):
 
 @admin_bp.route("/displayEventFile", methods=["POST"])
 def displayEventFile():
-    fileData= request.form
-    eventfile=FileHandler(eventId=fileData["id"])
-    eventfile.changeDisplay(fileData['id'])
+    fileData = request.form
+    eventfile = FileHandler(eventId=fileData["id"])
+    isChecked = fileData.get('checked') == 'true'
+    eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
