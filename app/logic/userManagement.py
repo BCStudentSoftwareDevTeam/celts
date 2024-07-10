@@ -45,7 +45,7 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
     if attachment:
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
-        coverImage = addFile.retrievePath()
+        # program.coverImage = list(coverImage.keys())[0]
     updatedProgram = Program.update(
         {Program.programName:newProgramName,
         Program.programDescription: newProgramDescription, 
@@ -53,7 +53,7 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
         Program.contactEmail: newContactEmail, 
         Program.contactName:newContactName,
         Program.defaultLocation:newLocation,
-        Program.coverImage: coverImage
+        Program.coverImage: attachment
         }
         ).where(Program.id==programId)    
     updatedProgram.execute()
@@ -71,6 +71,7 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
         createActivityLog(f"{program.programName} Contact Name was changed to: {newContactName}")
     if newLocation != program.defaultLocation:
         createActivityLog(f"{program.programName} Location was changed to: {newLocation}")
+    
 
     return (f'Program email info updated')
 
