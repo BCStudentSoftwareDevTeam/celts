@@ -36,9 +36,14 @@ class FileHandler:
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
+      
         try:
+
             for file in self.files:
                 saveFileToFilesystem = None
+                print("########################################")  
+                print(saveOriginalFile.id)
+
                 if self.eventId:
                     attachmentName = str(saveOriginalFile.id) + "/" + file.filename
                     isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,

@@ -84,17 +84,14 @@ def updateProgramInfo(programID):
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
-            #uploadedFile = request.files.get('modalProgramImage')
-            associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.program == programID) # returns as: SELECT `t1`.`id`, `t1`.`event_id`, `t1`.`course_id`, `t1`.`program_id`, `t1`.`isDisplayed`, `t1`.`fileName` 
-                                                                                                                         #FROM `attachmentupload` AS `t1` WHERE (`t1`.`program_id` = 1)
-            print("These are attachments: ")
-            print(associatedAttachments)
-            filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) #This line might be worth looking into, currently returns empty {}
-            file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} #currently returns empty {}
-            print("This is file_paths: ")
-            print(file_paths)
-            print("This is filePaths: ")
-            print(filePaths)
+            uploadedFile = request.files.get('modalProgramImage')
+            
+            print(uploadedFile)
+            
+           
+            #This line might be worth looking into, currently returns empty {}
+            #currently returns empty {}
+            
             changeProgramInfo(programInfo["programName"],  #calls logic function to add text data to database
                               programInfo["programDescription"], 
                               programInfo["partner"],
@@ -102,9 +99,18 @@ def updateProgramInfo(programID):
                               programInfo["contactName"],
                               programInfo["location"],
                               programID,
-                              file_paths
+                              uploadedFile
                               )           
             
+
+
+            associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) # returns as: SELECT `t1`.`id`, `t1`.`event_id`, `t1`.`course_id`, `t1`.`program_id`, `t1`.`isDisplayed`, `t1`.`fileName` 
+                                                                                                                         #FROM `attachmentupload` AS `t1` WHERE (`t1`.`program_id` = 1)
+           
+            filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) 
+          
+            print(filePaths)
+            file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} 
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
