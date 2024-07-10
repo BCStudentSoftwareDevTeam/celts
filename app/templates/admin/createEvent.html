@@ -37,6 +37,7 @@
 {% block styles %}
     {{super()}}
     <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/createEvent.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -528,13 +529,13 @@
             </div>
             <div class="delete_row d-none col-md-1" id="deleteMultipleOfferingEvent"> <!--delete div icon-->
               <br/>
-              <i class="bi bi-trash btn-danger btn-lg px-2 py-1" style="border-radius: 5px;  position:relative; top: 12px;"></i>
+              <i class="bi bi-trash btn-danger btn-lg px-2 py-1 deleteRow"></i>
             </div>
           </div>
           </div>
         </div>
         <div class="addMultipleOfferingEvent"> <!--add button for the slots-->
-            <i class="bi bi-plus-square col-md-1 py-2 d-flex flex-row justify-content-center btn-success btn-lg" style="border-radius: 5px; margin-left: auto; margin-right: auto;"></i>
+            <i class="bi bi-plus-square col-md-1 py-2 d-flex flex-row justify-content-center btn-success btn-lg addMultipleBtn"></i>
         </div>
         <br>
         <div class="modal-footer">
