@@ -363,6 +363,48 @@ def test_saveEventToDb_recurring():
             transaction.rollback()
 
 @pytest.mark.integration
+def test_saveEventToDb_multipleOffering():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+
+            eventInfo_1['valid'] = True
+            eventInfo_2['valid'] = True
+            eventInfo_3['valid'] = True
+            eventInfo_1['program'] = Program.get_by_id(1)
+            eventInfo_2['program'] = Program.get_by_id(1)
+            eventInfo_3['program'] = Program.get_by_id(1)
+
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = [
+                saveEventToDb(eventInfo_1),
+                saveEventToDb(eventInfo_2),
+                saveEventToDb(eventInfo_3)
+            ]
+            assert len(createdEvents) == 3
+            assert eventInfo_1['multipleOfferingId'] == 1
+            assert eventInfo_2['multipleOfferingId'] == 1
+            assert eventInfo_3['multipleOfferingId'] == 1
+
+            transaction.rollback()
+
+@pytest.mark.integration
 def test_saveEventToDb_update():
     with mainDB.atomic() as transaction:
 
