@@ -65,7 +65,7 @@ def deleteEvent(eventId):
         else:
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
-        Event.update({Event.pendingDeletion: True}).where(Event.id == event.id).execute()\
+        Event.update({Event.pendingDeletion: True}).where(Event.id == event.id).execute()
         # Commented out, but is the command used for deleteing event instance
         # event.delete_instance(recursive = True, delete_nullable = True)
 

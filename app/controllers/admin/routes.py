@@ -339,6 +339,8 @@ def cancelRoute(eventId):
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
+        print('####################################')
+        print(eventId)
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
