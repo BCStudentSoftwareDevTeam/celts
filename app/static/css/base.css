@@ -103,3 +103,11 @@ select.empty {
 .rsvp-btn{
     padding-top: 4em;
 }
+.required::after {
+  content: " *";
+  color: red;
+  font-size: 1.3em; /* Adjust the font size as needed */
+  font-weight: bolder; /* Or use bolder for even thicker text */
+  vertical-align: middle; /* Align vertically with the text */
+  line-height: 1; /* Match the line height of the parent text */
+}
