@@ -1,8 +1,16 @@
+const deleteEvent = function(j){
+  if (j == "Event successfully deleted."){
+    return `<button type="button" class="btn btn-link" style="color:grey;"> I am here </button>` 
+  }
+  return '';
+}
+
 function msgFlash(flash_message, status){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
-      <div class="alert alert-${status} alert-dismissible" role="alert">${flash_message}
-        <button type="button" class="btn-close kiosk-hide" data-bs-dismiss="alert" aria-label="Close"></button>
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
+        ${deleteEvent(flash_message)}
+        <button type="button" class="btn-close kiosk-hide" aria-label="Close"></button>
       </div>`);
     $(".alert").delay(5000).fadeOut();
 }
