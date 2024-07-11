@@ -55,7 +55,7 @@ def manageUsers():
 def addProgramManagers():
     eventData = request.form
     try:
-        return addProgramManager(eventData['username'],int(eventData['programID']))
+        return addProgramManagers(eventData['username'],int(eventData['programID']))
     except Exception as e:
         print(e)
         flash('Error while trying to add a manager.','warning')
@@ -65,7 +65,7 @@ def addProgramManagers():
 def removeProgramManagers():
     eventData = request.form
     try:
-        return removeProgramManager(eventData['username'],int(eventData['programID']))
+        return removeProgramManagers(eventData['username'],int(eventData['programID']))
     except Exception as e:
         print(e)
         flash('Error while removing a manager.','warning')
@@ -80,19 +80,13 @@ def deleteProgramFile():
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
-    """Grabs info and then outputs it to logic function"""
+    
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
             
-            print(uploadedFile)
-            
-           
-            #This line might be worth looking into, currently returns empty {}
-            #currently returns empty {}
-            
-            changeProgramInfo(programInfo["programName"],  #calls logic function to add text data to database
+            changeProgramInfo(programInfo["programName"],  
                               programInfo["programDescription"], 
                               programInfo["partner"],
                               programInfo["contactEmail"],
@@ -101,21 +95,17 @@ def updateProgramInfo(programID):
                               programID,
                               uploadedFile
                               )           
-            
 
-
-            associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) # returns as: SELECT `t1`.`id`, `t1`.`event_id`, `t1`.`course_id`, `t1`.`program_id`, `t1`.`isDisplayed`, `t1`.`fileName` 
-                                                                                                                         #FROM `attachmentupload` AS `t1` WHERE (`t1`.`program_id` = 1)
+            associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) 
            
             filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) 
           
-            print(filePaths)
             file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} 
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
             print("error: ", e)
-            flash('Error while updating program info.','warning') #THIS IS THE ERROR WE KEEP GETTING || DELETE THIS COMMENT LATER
+            flash('Error while updating program info.','warning') 
             abort(500,'Error while updating program.')
     abort(403)
 

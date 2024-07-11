@@ -46,6 +46,7 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
     program = Program.get_by_id(programId)
     coverImage = program.coverImage  # Default to current cover image if not updated
     if attachment:
+        print(attachment)
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
         # program.coverImage = list(coverImage.keys())[0]

@@ -1,7 +1,6 @@
 $(document).ready(function(){
   $('#descriptionModal').on('show.bs.modal', function(event){
     $("#modalTitle").text('About '+ event.relatedTarget.getAttribute('data-bs-program'))
-    $("#modalImage").attr("src", event.relatedTarget.getAttribute('data-bs-image'))
     $("#modalLearnMoreInstagram").attr("href", event.relatedTarget.getAttribute('data-bs-instagram-url'))
     $("#modalLearnMoreFacebook").attr("href", event.relatedTarget.getAttribute('data-bs-facebook-url'))
     $("#modalLearnMoreWebLink").attr("href", event.relatedTarget.getAttribute('data-bs-website-url'))

@@ -63,9 +63,8 @@ function submitRequest(method, username){
     }
   })
 }
-//################UPDATE THE MODAL##################
 export function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId) {
-  /* Update modal fields with program information*/
+
 
   document.getElementById('programName').value = programName;
   document.getElementById('programDescription').value = programDescription;
@@ -75,18 +74,16 @@ export function populateModal(programName, programDescription, partner, contactE
   document.getElementById('contactName').value = contactName;
   document.getElementById('location').value = location;
 
-  //update the form action URL based on the program selected
   let updateForm = document.getElementById('updateProgramForm')
   updateForm.action = "/admin/updateProgramInfo/" + programId;
 }
-// Ensure all modals close when clicking outside of them 
+
 document.addEventListener('click', function(event) {
   var isClickInside = document.getElementById('adminProgramManagement').contains(event.target);
   if (!isClickInside) {
      document.getElementById('adminProgramManagement').classList.remove('show');
   }
 });
-//################SUBMIT TERM##################
 function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
   var termInfo = {id: selectedTerm.val()};

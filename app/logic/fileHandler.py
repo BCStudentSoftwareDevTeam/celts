@@ -2,11 +2,13 @@ import os
 from flask import redirect, url_for
 from app import app
 from app.models.attachmentUpload import AttachmentUpload
+from app.models.program import Program
 
 class FileHandler:
     def __init__(self, files=None, courseId=None, eventId=None, programId=None):
         self.files = [files] 
         self.path = app.config['files']['base_path']
+        self.path1 = app.config['files']['image_path']    
         self.courseId = courseId
         self.eventId = eventId
         self.programId = programId
@@ -15,8 +17,7 @@ class FileHandler:
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
-            self.path = os.path.join(self.path, app.config['files']['event_attachment_path']) #change this path#########################################
-    
+            self.path1 = os.path.join(self.path1, app.config['files']['landing_page_path']) 
     def makeDirectory(self):
         try:
             extraDir = str(self.eventId) if self.eventId else ""
@@ -28,7 +29,7 @@ class FileHandler:
     
     def getFileFullPath(self, newfilename=''):
         try:
-            filePath = (os.path.join(self.path, newfilename))
+            filePath = (os.path.join(self.path1, newfilename))
         except AttributeError:
             pass
         except FileExistsError:
@@ -37,19 +38,12 @@ class FileHandler:
 
     def saveFiles(self, saveOriginalFile=None):
       
-        try:
-
-          
-            
+        try:           
             for file in self.files:
 
-                print('++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-                print(self.files)
                 saveFileToFilesystem = None
-                
 
                 if self.eventId:
-                    print(self.eventId)
                     attachmentName = str(saveOriginalFile.id) + "/" + file.filename
                     isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
                                                                     AttachmentUpload.fileName == attachmentName).exists()
@@ -58,26 +52,21 @@ class FileHandler:
                         if saveOriginalFile and saveOriginalFile.id == self.eventId:
                             saveFileToFilesystem = attachmentName
                 elif self.courseId:
-                    print(self.courseId)
                     isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInCourse:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
-                        #ADDED THIS################################
                 elif self.programId:
-                    print(self.programId)
                     isFileInProgram = AttachmentUpload.select().where(AttachmentUpload.program == self.programId, AttachmentUpload.fileName == file.filename).exists()
-                    
-                    
                     if not isFileInProgram:
-                        AttachmentUpload.create(program=self.programId, fileName=file.filename)
-                        saveFileToFilesystem = file.filename
-                        #ADDED ABOVE################################
+                        AttachmentUpload.create(program=self.programId, fileName=file.filename)                      
+                        name = Program.get(Program.id == self.programId)
+                        file_type = file.filname.split('.')[1] 
+                        current_programName = str(name.programName) + str(file_type)
+                        saveFileToFilesystem = current_programName
                 else:
-                    print('####################################################################################################################################################')
                     saveFileToFilesystem = file.filename
                 if saveFileToFilesystem:
-                    print('-----------------------------------------------------------')
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
         except AttributeError:
