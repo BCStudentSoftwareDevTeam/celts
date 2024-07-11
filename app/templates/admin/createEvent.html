@@ -81,7 +81,7 @@
       <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
       <!--datePicker for End date-->
               <span><i class="bi bi-calendar-plus-fill"></i></span>
-          <label class="form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
+          <label class="required form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
           <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
             <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
               value="{{eventData.endDate.strftime('%m/%d/%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
