@@ -3,7 +3,7 @@
 {% set isNewEvent = 'create' in request.path %}
 {% if isNewEvent %}          
   {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
-    {% set page_title = 'Create A ' + eventData["program"].programName %}
+    {% set page_title = 'Create a ' + eventData["program"].programName %}
 
   {% elif template.tag == 'single-program' %}
     {%set page_title = 'Create Event for ' + eventData["program"].programName %}
