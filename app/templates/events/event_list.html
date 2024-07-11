@@ -195,6 +195,6 @@
 </div>
 {% include 'emailModal.html' %}
 <script>
-  var g_isPastTerm ={{"false" if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm else "true" }};
-</script>
+   var g_isPastTerm = {{ "false" if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm else "true" }};
+ </script>
 {% endblock %}
