@@ -47,7 +47,7 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
     coverImage = program.coverImage  # Default to current cover image if not updated
     if attachment:
         addFile: FileHandler = FileHandler(attachment, programId=programId)
-        addFile.saveFiles(attachment)
+        addFile.saveFiles()
         # program.coverImage = list(coverImage.keys())[0]
     updatedProgram = Program.update(
         {Program.programName:newProgramName,
@@ -60,8 +60,8 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
         }
         ).where(Program.id==programId)    
     updatedProgram.execute()
-    print("image: ")
-    print(attachment)
+  
+   
     if newProgramName != program.programName:
         createActivityLog(f"{program.programName} Program Name was changed to: {newProgramName}")
     if newProgramDescription != program.programDescription:
