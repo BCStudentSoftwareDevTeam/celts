@@ -1,4 +1,5 @@
-import searchUser from './searchUser.js';
+import searchUser from './searchUser.js'
+
 
 
 // updates max and min dates of the datepickers as the other datepicker changes
@@ -101,8 +102,7 @@ $(document).ready(function() {
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
-
-  handleFileSelection("attachmentObject");
+    handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
     if ($("#checkRSVP").is(":checked")) {
@@ -123,8 +123,9 @@ $(document).ready(function() {
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
       $(".endDatePicker").prop('required', true);
-    } else {
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+    } 
+    else if (recurringStatus == undefined){
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
       $(".endDatePicker").prop('required', false);
     }
     if (multipeOfferingStatus == 'on') {
@@ -178,8 +179,8 @@ $(document).ready(function() {
         dateFormat: 'yy/mm/dd' // Ensures compatibility across browsers
       });
     }
-    
   });
+
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
@@ -212,21 +213,16 @@ $(document).ready(function() {
       e.preventDefault();
   });
 
-  $.datepicker.setDefaults({
-    minDate:  new Date($.now()),
-    dateFormat:'mm-dd-yy'
+  $(".startDate").click(function () {
+    $("#startDatePicker-" + $(this).data("page-location")).datepicker("show");
   });
 
-  $(".startDate").click(function() {
-    $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
+  $(".endDate").click(function () {
+    $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
   });
 
-  $(".endDate").click(function() {
-    $("#endDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  });
-
-  $(".startDatePicker, .endDatePicker").change(function(){
-    if ( $(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()){
+  $(".startDatePicker, .endDatePicker").change(function () {
+    if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
       calculateRecurringEventFrequency();
     }
   });
@@ -235,15 +231,15 @@ $(document).ready(function() {
   //   $(#multipleOfferingDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   // });
 
-  $("#checkRSVP").click(function () {
-    if ($("input[name='isRsvpRequired']:checked").val() == 'on') {
+  $("#checkRSVP").click(function(){
+    if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
       $("#checkFood").prop('checked', true);
     } else {
       $("#checkFood").prop('disabled', false);
     }
   });
 
-  var facilitatorArray = [];
+  var facilitatorArray = []
   function callback(selectedFacilitator) {
     let facilitator = (selectedFacilitator["firstName"] + " " + selectedFacilitator["lastName"] + " (" + selectedFacilitator["username"] + ")");
     let username = selectedFacilitator["username"];

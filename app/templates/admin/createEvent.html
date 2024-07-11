@@ -37,7 +37,6 @@
 {% block styles %}
     {{super()}}
     <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{url_for('static', filename ='css/createEvent.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -67,14 +66,10 @@
     </div>
     <!-- Start and End Datepickers -->
     <div class="row col-md-12" id="nonMultipleOfferingDate">
-    <div class="row col-md-12" id="nonMultipleOfferingDate">
       <div class="form-group col-md-6">
           <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
               <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
-                value= "{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
-                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
-              <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
                 value= "{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
                 name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
               <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
@@ -98,7 +93,6 @@
     </div>
     <br>
     <!-- Start and End Time -->
-    <div class="mb-4" id="nonMultipleOfferingTime">
     <div class="mb-4" id="nonMultipleOfferingTime">
       <div class="row col-md-12" >
         <div class="form-group col-md-6">
@@ -174,57 +168,7 @@
         </div>
       </div>
       {% endif %}
-  <div class="row p-2">
-    <div class="col-md-6">
-      {% if eventData.id %}
-          <input type="hidden" name="id" value="{{eventData.id}}">
-      {% endif %}
-      <div class="form-group mb-4">
-        <label class="form-label" for='inputEventName'><strong>Event Name</strong></label>
-        <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
-          <select class="form-select" name='term' id='inputEventTerm' required>
-            {% for term in futureTerms %}
-              <option value='{{term}}' {{"selected" }} if term == eventData.term}}>{{term.description}}</option>
-            {% endfor %}
-          </select>
-      </div>
-      {% if isNewEvent %}
-      <div class="row col-md-12">
-        <div class="form-group col-md-6">
-          <div class="form-check form-switch pb-1">
-            <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the past.</strong></label>
-            <input class="form-check-input" type="checkbox" id="allowPastStart"/>
-          </div>
-        </div>
-        <div class="form-group col-md-6">
-          {% if template.tag != 'all-volunteer' %}
-            <div class="form-check form-switch pb-1">
-              <fieldset>
-                <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if eventData.isCheckRecurring}}/>
-                <label class="custom-control-label" for='checkIsMultipleOffering'><strong>This is an event with multiple time offerings.</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkIsMultipleOffering" name="isMultipleOffering" {{"checked" if eventData.isCheckIsMultipleOffering}}/>
-              </fieldset>
-            </div>                 
-          {% endif %}
-        </div>
-      </div>
-      {% endif %}
 
-      {% if eventData.isRecurring == True and isNewEvent %}
-        {% set hideDate = "" %}
-        {% set hideMultipleOffering = "d-none" %}
-      {% elif eventData.isMultipleOffering == True and isNewEvent %}
-        {% set hideDate = "d-none" %}
-        {% set hideMultipleOffering = "" %}
-      
-      {% else %}
-        {% set hideDate = "d-none" %}
-        {% set hideMultipleOffering = "d-none" %}
-      {% endif %}
       {% if eventData.isRecurring == True and isNewEvent %}
         {% set hideDate = "" %}
         {% set hideMultipleOffering = "d-none" %}
@@ -238,48 +182,7 @@
       {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
-      {{locationTimeMacro(eventData, hideDate, 'main')}}
 
-      <div class="{{hideDate}}" id="recurringTableDiv">
-        <table class="table" id="recurringEventsTable">
-          <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
-        <table class="table" id="multipleOfferingEventsTable">
-          <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>End Time</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <input type = "hidden" name = "multipleOfferingData" value = "hidden value here" id = "multipleOfferingDataId">
-      {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
-        <div class="row col-md-12 mb-4" >
-          <div class="form-group">
-            <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
-            <select class="form-select" name="certRequirement">
-                <option>None</option>
-            {% for req in requirements %}
-                {% set selected = "selected" if eventData['certRequirement'] == req else "" %}
-                <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
-            {% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="row col-md-12 mb-4" >
-          <div class="form-group">
-            <label class="form-label fw-bold">Invite Cohort(s)</label>
-            {% for year,students in bonnerCohorts.items()|reverse %}
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="{{year}}" name="cohorts[]" id="cohort-{{year}}">
-                  <label class="form-check-label text-truncate w-100" for="cohort-{{year}}">{{year}}-{{year+1}}
-                      <span class="text-muted" >({{students|map(attribute='fullName')|join(", ")}})</span>
-                  </label>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
       <div class="{{hideDate}}" id="recurringTableDiv">
         <table class="table" id="recurringEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
@@ -524,22 +427,6 @@
           </div>
         </div>
     <div class="row justify-content-left mt-2">
-      <div class="col-md-6 offset-md-3">
-        <div class="text-center">
-          <!--DELETE BUTTON BELOW-->
-          {% if event %}
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
-          {% endif %}
-          {% if event and not (event.isCanceled or eventPast) %}
-            <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
-          {% elif event and (event.isCanceled) %}
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew Event</button>
-          {% endif %}
-          <input type="submit" class="btn btn-primary" value="Save" />
-        </div>
-      </div>
-    </div>
-  </div>
       <div class="col-md-6 offset-md-3">
         <div class="text-center">
           <!--DELETE BUTTON BELOW-->
