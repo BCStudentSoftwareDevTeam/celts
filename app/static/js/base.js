@@ -1,6 +1,6 @@
-const deleteEvent = function(j){
-  if (j == "Event successfully deleted."){
-    return `<button type="button" class="btn btn-link" style="color:grey;"> I am here </button>` 
+const deleteEvent = function(message){
+  if (message == "Event successfully deleted."){
+    return `<button type="button" class="btn btn-link" id="undoButton" style="color:grey;"> I am here </button>` 
   }
   return '';
 }

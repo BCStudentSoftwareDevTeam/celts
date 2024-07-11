@@ -334,13 +334,24 @@ def cancelRoute(eventId):
         
     else:
         abort(403)
+
+@admin_bp.route('/event/undo', methods=['POST'])
+def undoRoute():
+    try:
+        eventId = session['lastDeletedEvent']
+        Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
+        flash("Deletion successfully undone.", "success")
+        return "weed"
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+    
     
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
-        print('####################################')
-        print(eventId)
+        session['lastDeletedEvent'] = eventId
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 

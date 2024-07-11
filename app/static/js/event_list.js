@@ -65,13 +65,12 @@ function removeRsvpForEvent(eventID){
   })
 }
 
-// ########################################################
-function undoButton(eventID){
-  undoButton = {id: eventID,
-                from: 'ajax'}
+function undoButton(){
+  undoButton = {from: 'ajax'}
   $.ajax({
-    url: "/event/<eventId>/delete",
+    url: "/event/undo",
     type: "POST",
+    data: undoButton,
     success: function(){
       alert("Successfully undone!")
     },
@@ -80,5 +79,3 @@ function undoButton(eventID){
     }
   })
 }
-
-// ###########################################################
