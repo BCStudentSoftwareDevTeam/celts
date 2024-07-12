@@ -418,7 +418,7 @@
               <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
                   <input autocomplete="off" type='date' class="form-control datePicker multipleOfferingDatePicker readonly" 
                     value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}" 
-                    name="multipleOfferingDate" placeholder="Pick a start date" id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+                    name="multipleOfferingDate" placeholder="Pick a start date" id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}"/>
                   <!-- <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div> -->
@@ -466,7 +466,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
           {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-          <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}} id="submitParticipant">Save</button>
+          <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}} id="submitParticipant" onkeypress="if(value<0) value=0;">Save</button> <!--check if text box empty upon save-->
         </div>
       </div>
     </div>

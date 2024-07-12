@@ -60,13 +60,25 @@ function calculateRecurringEventFrequency(){
       });
   }
 
-  document.getElementById('submitParticipant').addEventListener('click', function() {
+  document.getElementById('submitParticipant').addEventListener('click', function() {   //WORKING ON THIS*****************************************************************
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
-    storingMultipleOfferingEventAttributes();
-    $("#checkIsMultipleOffering").prop('checked', true);
-    // Remove the modal and overlay from the DOM
-    $('#modalMultipleOffering').modal('hide');
-});
+    //Requires that modal info updated before it can be saved
+    const eventName = document.getElementById("eventName").value;
+    const multipleOfferingDatePicker = document.getElementById("multipleOfferingDatePicker-").value;
+    console.log(eventName);
+    console.log(multipleOfferingDatePicker);
+        if (eventName === "") {
+            msgFlash("Event Name is invalid (Empty)", "danger");
+        } else if (multipleOfferingDatePicker === ""){
+            msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
+        } else {
+            storingMultipleOfferingEventAttributes();
+            $("#checkIsMultipleOffering").prop('checked', true);
+            // Remove the modal and overlay from the DOM
+            $('#modalMultipleOffering').modal('hide');
+            msgFlash("Multiple time offering events saved!", "success");
+        }
+    });
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
