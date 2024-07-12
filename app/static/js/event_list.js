@@ -5,29 +5,39 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
-   var storedToggleState = localStorage.getItem("toggleState");
-  var isChecked = storedToggleState === "checked";
-  // Initialize toggle based on retrieved state
-  var viewPastEventsToggle = $("#viewPastEventsToggle");
-  viewPastEventsToggle.prop("checked", isChecked);
-  toggleRows(isChecked);
-  // Handle toggle change
-  viewPastEventsToggle.on("change", function() {
-    isChecked = $(this).prop("checked");
+    var storedToggleState = localStorage.getItem("toggleState");
+    var isChecked = storedToggleState === "checked";
+    
+    // Initialize toggle based on retrieved state
+    var viewPastEventsToggle = $("#viewPastEventsToggle");
+    viewPastEventsToggle.prop("checked", isChecked);
     toggleRows(isChecked);
-    // Update localStorage with new toggle state
-    localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked");
-  });
-  // Function to toggle rows visibility
-  function toggleRows(isChecked) {
-    var tableRows = $(".showlist");
-    if (isChecked) {
-      tableRows.show();
-    } else {
-      tableRows.hide();
+    
+    // Handle toggle change
+    viewPastEventsToggle.on("change", function() {
+      isChecked = $(this).prop("checked");
+      toggleRows(isChecked);
+      // Update localStorage with new toggle state
+      localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked");
+    });
+    
+    // Function to toggle rows visibility
+    function toggleRows(isChecked) {
+      var tableRows = $(".showlist");
+      if (isChecked) {
+        tableRows.show();
+      } else {
+        tableRows.hide();
+      }
     }
-  }
-  });
+    
+    // Disable toggle if we are in a past term; stuck on "on"
+    if (g_isPastTerm) {
+      viewPastEventsToggle.prop("disabled", true);
+    } else {
+      viewPastEventsToggle.prop("disabled", false);
+    }
+});
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
