@@ -68,11 +68,15 @@ function calculateRecurringEventFrequency(){
     var textNotifier = document.getElementById('textNotifier');
     console.log(eventName);
     console.log(multipleOfferingDatePicker);
-        if (eventName === "") {
-          textNotifier.textContent = "YO MAMA";
+        if (eventName === "" && multipleOfferingDatePicker === ""){
+          textNotifier.textContent = "Event name and date feild is empty";
+          textNotifier.style.display = 'block';
+        } else if (eventName === "") {
+          textNotifier.textContent = "Event name is empty";
           textNotifier.style.display = 'block';
           msgFlash("Event Name is invalid (Empty)", "danger");
         } else if (multipleOfferingDatePicker === ""){
+            textNotifier.textContent = "Date feild is empty";
             textNotifier.style.display = 'block';
             msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
         } else {
