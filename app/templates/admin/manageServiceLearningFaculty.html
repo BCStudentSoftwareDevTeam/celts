@@ -22,6 +22,7 @@
 {{super()}}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 <link rel="stylesheet" href="{{url_for('static', filename ='css/manageServiceLearningFaculty.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
 
 {% block app_content %}
@@ -71,7 +72,14 @@
           <td>{{ course.instructors }}</td>
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-              title="Status" data-content="{{course.status.status}}">{{course.status.status}}</a>
+          title="Status Key" data-content="{{ course.status.status }}">
+          {{course.status.status}}
+          {% if course.status.status == 'In Progress' %}
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          {% elif course.status.status == 'Submitted' %}
+            <i class="fa-solid fa-circle"></i>
+          {% endif %}
+        </a>
           </td>
           <td>
             <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
@@ -86,8 +94,6 @@
       </tbody>
     </table>
   {% endif %}
-  
-  
   {########################### Approved Table #################################}
     <h2>Approved</h2>
     {% if approvedCourses | length == 0 %}
@@ -109,7 +115,9 @@
           <td>{{ course.instructors }}</td>
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-              title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+          title="Status Key" data-content="{{ course.status.status }}">
+          {{ course.status.status }} <i class="fa-solid fa-circle-check"></i>
+        </a>
           </td>
           <td>
             <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
