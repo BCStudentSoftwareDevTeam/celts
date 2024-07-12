@@ -59,17 +59,18 @@
 
     <div class="form-group mb-4">
       <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
-      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required>
+      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required
         {% if eventData.location %}
           value="{{eventData.location}}"
         {% endif %}
+        />
     </div>
     <!-- Start and End Datepickers -->
     <div class="row col-md-12" id="nonMultipleOfferingDate">
       <div class="form-group col-md-6">
           <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-              <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
+              <input autocomplete="off" type='date' class="form-control datePicker startDatePicker readonly" 
                 value= "{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
                 name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
           </div>
@@ -79,7 +80,7 @@
               <span><i class="bi bi-calendar-plus-fill"></i></span>
           <label class="required form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
           <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-            <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
+            <input autocomplete="off" type='date' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
               value="{{eventData.endDate.strftime('%m/%d/%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
               name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
           </div>
@@ -218,73 +219,71 @@
         </div>
       {% endif %}
     </div>
-    <div class="col-md-6 form-group">
-      <div class="form-group mb-4">
-        <label class="form-label" for='inputCharacters'><strong>Description</strong></label>
-        <textarea rows="5" cols="72" class="form-control" id="inputCharacters" type="text" placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
-        <label class="form-label" id ="remainingCharacters"></label>
-      </div>
-      <div class="mb-4">
-        <div class="row col-md-12" >
-          <div class="form-group col-md-6">
-              <label class="form-label" for='inputContactName'><strong>Contact Name</strong></label>
-              <input class="form-control" id='inputContactName' value="{{eventData.contactName}}"  placeholder="Enter name"name="contactName">
+        <div class="col-md-6 form-group">
+          <div class="form-group mb-4">
+            <label class="required form-label" for='inputCharacters'><strong>Description</strong></label>
+            <textarea rows="5" cols="72" class="form-control" id="inputCharacters" type="text" placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
+            <label class="form-label" id ="remainingCharacters"></label>
           </div>
-          <div class="form-group col-md-6">
-              <label class="form-label" for='inputContactEmail'><strong>Contact Email</strong></label>
-              <input class="form-control" id='inputContactEmail' value="{{eventData.contactEmail}}" placeholder="Enter email" name="contactEmail">
-          </div>
-        </div>
-      </div>
-      {% if page_title != 'Create All Volunteer Training' %}
-      <div class="pt-4 mb-4">
-        <div class="row col-md-12">
-          <div class="form-group col-md-6">
-            <div class="form-check form-switch mb-2">
-              <label class="custom-control-label" for='checkRSVP'><strong>This event requires RSVP.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
-            </div>
-          </div>
-          <div class="form-group col-md-6">
-            <div class="form-check form-switch ">
-              <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
-            </div>
-          </div>
-          <div class="form-group col-md-6 mb-3">
-            <div class="form-check form-switch">
-              {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-              <div class="form-group" id="limitGroup" style= "{{hide}}">
-                <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-                <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+          <div class="mb-4">
+              <div class="row col-md-12" >
+                <div class="form-group col-md-6">
+                    <label class="form-label" for='inputContactName'><strong>Contact Name</strong></label>
+                    <input class="form-control" id='inputContactName' value="{{eventData.contactName}}"  placeholder="Enter name"name="contactName">
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label" for='inputContactEmail'><strong>Contact Email</strong></label>
+                    <input class="form-control" id='inputContactEmail' value="{{eventData.contactEmail}}" placeholder="Enter email" name="contactEmail">
+                </div>
               </div>
-              <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
-            </div>
           </div>
-          <div class="form-group col-md-6">
-            <div class="form-check form-switch">
-              <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service hours.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}}/>
+            {% if page_title != 'Create All Volunteer Training' %}
+            <div class="pt-4 mb-4">
+              <div class="row col-md-12">
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch mb-2">
+                    <label class="custom-control-label" for='checkRSVP'><strong>This event requires RSVP.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch ">
+                    <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6 mb-3">
+                  <div class="form-check form-switch">
+                    {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+                    <div class="form-group" id="limitGroup" style= "{{hide}}">
+                      <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+                      <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                    </div>
+                    <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch">
+                    <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service hours.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}}/>
+                  </div>
+                </div>
+              </div>
+           {% endif %}
+            <div class="form-group mb-5">
+              <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
+              <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
             </div>
+          {% if filepaths %}
+          <div class="form-group mb-5">
+            {% from 'displayFilesMacro.html' import displayFiles %}
+            <!-- {{eventData.id}} -->
+            {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}  
+          </div>
+            {% endif %}
           </div>
         </div>
-      </div>
-      {% endif %}
-      <div class="form-group mb-5">
-        <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
-        <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
-      </div>
-      <div>
-        {% if filepaths %}
-        <div class="form-group mb-5">
-          {% from 'displayFilesMacro.html' import displayFiles %}
-          <!-- {{eventData.id}} -->
-          {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}  
-        </div>
-          {% endif %}
-      </div>
-    </div>
     <div class="row justify-content-left mt-2">
       <div class="col-md-6 offset-md-3">
         <div class="text-center">
@@ -411,15 +410,15 @@
           <div class="row mb-2" id ="multipleOfferingEvent">
             <br>
             <div class="form-group mb-3">
-              <label class="form-label" for="eventName"><strong>Event Name</strong></label>
-              <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Enter event name" required>
+              <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
+              <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Enter event name" required> <!--MAKE THIS AND DATE ACTUALLY REQUIRED*******************************-->
           </div>
             <div class="form-group col-md-5">
-              <label class="form-label me-2" for="multipleOfferingDatePicker"><strong>Event Date</strong></label>
+              <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event Date</strong></label>
               <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
                   <input autocomplete="off" type='date' class="form-control datePicker multipleOfferingDatePicker readonly" 
                     value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}" 
-                    name="multipleOfferingDate" placeholder="Pick a start date" id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
+                    name="multipleOfferingDate" placeholder="Pick a start date" id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}"/>
                   <!-- <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div> -->
@@ -467,7 +466,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
           {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-          <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}} id="submitParticipant">Save</button>
+          <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}} id="submitParticipant" onkeypress="if(value<0) value=0;">Save</button> <!--check if text box empty upon save-->
         </div>
       </div>
     </div>
