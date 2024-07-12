@@ -33,6 +33,8 @@ $(document).ready(function(){
     
     // Disable toggle if we are in a past term; stuck on "on"
     if (g_isPastTerm) {
+      viewPastEventsToggle.prop("checked", g_isPastTerm);
+      toggleRows(g_isPastTerm);
       viewPastEventsToggle.prop("disabled", true);
     } else {
       viewPastEventsToggle.prop("disabled", false);
