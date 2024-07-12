@@ -65,11 +65,15 @@ function calculateRecurringEventFrequency(){
     //Requires that modal info updated before it can be saved
     const eventName = document.getElementById("eventName").value;
     const multipleOfferingDatePicker = document.getElementById("multipleOfferingDatePicker-").value;
+    var textNotifier = document.getElementById('textNotifier');
     console.log(eventName);
     console.log(multipleOfferingDatePicker);
         if (eventName === "") {
-            msgFlash("Event Name is invalid (Empty)", "danger");
+          textNotifier.textContent = "YO MAMA";
+          textNotifier.style.display = 'block';
+          msgFlash("Event Name is invalid (Empty)", "danger");
         } else if (multipleOfferingDatePicker === ""){
+            textNotifier.style.display = 'block';
             msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
         } else {
             storingMultipleOfferingEventAttributes();

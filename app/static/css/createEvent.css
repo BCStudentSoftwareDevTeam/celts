@@ -9,3 +9,9 @@
     position:relative; 
     top: 12px;
 }
+.invalidFeedback {
+    display: none; 
+    color: #dc3545; 
+    font-size: 0.875rem; 
+    border: darkred;
+}
