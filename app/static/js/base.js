@@ -1,15 +1,11 @@
-const deleteEvent = function(message){
-  if (message == "Event successfully deleted."){
-    return `<button type="button" class="btn btn-link" id="undoButton" style="color:grey;"> I am here </button>` 
-  }
-  return '';
-}
+const eventMessage = import("../../../../app/static/js/event_list");
+
 
 function msgFlash(flash_message, status){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${deleteEvent(flash_message)}
+        ${eventMessage.deleteEventMessage(flash_message)}
         <button type="button" class="btn-close kiosk-hide" aria-label="Close"></button>
       </div>`);
     $(".alert").delay(5000).fadeOut();
