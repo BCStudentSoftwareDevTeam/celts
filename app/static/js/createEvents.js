@@ -175,6 +175,8 @@ $(document).ready(function() {
   $(".addMultipleOfferingEvent").click(function(){
     counterAdd += 1
     let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
+    //increment the Id for event name and date and then use a for loop to check when displaying msgFlash
+    
     clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
