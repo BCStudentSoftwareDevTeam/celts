@@ -79,11 +79,3 @@ function undoButton(){
     }
   })
 }
-
-export function deleteEventMessage(message){
-  if (message == "Event successfully deleted."){
-    console.log("inhere")
-    return `<button type="button" class="btn btn-link" id="undoButton" style="color:grey;"> I am here </button>` 
-  }
-  return '';
-}

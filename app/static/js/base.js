@@ -1,20 +1,42 @@
-const eventMessage = import("../../../../app/static/js/event_list");
+const flashMessageResponse = function flashEventResponse(message){
+  if (message.slice(-8) == "deleted."){
+    return `<a href="/admin/undo" id="restoreDeleted">Undo</a>` 
+  }
+  return '';
+}
 
+function undoGeneralEvent(){
+  undoEvent = {from: 'ajax'}
+  $.ajax({
+    url: "/admin/undo",
+    type: "POST",
+    data: undoEvent,
+    success: function(){
+      alert("Successfully undone!")
+    },
+    error: function(error, status){
+      console.log(error, status)
+    }
+  })
+}
 
 function msgFlash(flash_message, status){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${eventMessage.deleteEventMessage(flash_message)}
+        ${flashMessageResponse(flash_message)}
         <button type="button" class="btn-close kiosk-hide" aria-label="Close"></button>
       </div>`);
     $(".alert").delay(5000).fadeOut();
 }
+
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {
         $(e.target).parent().submit();
     });
-
+    $('#restoredDeleted').click(function(){
+      undoGeneralEvent($('#restoredDeleted').attr("href"))
+    });
     $(flashMessages).each((i, messageData) => {msgFlash(messageData[1], messageData[0])})
 
     toastElementList = [].slice.call(document.querySelectorAll('.toast'))
