@@ -1,4 +1,4 @@
-from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort
+from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session
 from datetime import datetime
 from peewee import DoesNotExist
 
@@ -19,6 +19,17 @@ def loadKiosk(eventid):
     return render_template("/events/eventKiosk.html",
                             event = event,
                             eventid = eventid)
+
+@events_bp.route('/event/undo', methods=['GET'])
+def undoEvent():
+    try:
+        eventId = session['lastDeletedEvent']
+        Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
+        flash("Deletion successfully undone.", "success")
+        return redirect('/eventsList/' + str(g.current_term))
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def kioskSignin():

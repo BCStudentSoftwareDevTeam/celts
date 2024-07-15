@@ -80,7 +80,7 @@
     </thead>
     <tbody>
       {% for event in events %}
-          {% if event.isPastEnd %}
+          {% if event.isPastEnd or event.pendingDeletion %}
             <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
             <tr height = '50' class="">
