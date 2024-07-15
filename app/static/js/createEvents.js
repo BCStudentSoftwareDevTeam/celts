@@ -74,7 +74,8 @@ function calculateRecurringEventFrequency(){
           isEmpty = true;
           textNotifier.textContent = "Event name or date field is empty";
           textNotifier.style.display = 'block';  
-      }
+          $('#textNotifierPadding').addClass('pt-5')      
+        }
   });  
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
@@ -82,12 +83,14 @@ function calculateRecurringEventFrequency(){
           isEmpty = true;
           textNotifier.textContent = "Event name or date field is empty";
           textNotifier.style.display = 'block';  
+          $('#textNotifierPadding').addClass('pt-5')
       }
 });  
 
   if (!isEmpty){
     textNotifier.textContent = "";
     textNotifier.style.display = 'none';
+    $('#textNotifierPadding').removeClass('pt-5')
     storingMultipleOfferingEventAttributes();
     $("#checkIsMultipleOffering").prop('checked', true);
 
