@@ -115,7 +115,6 @@ function calculateRecurringEventFrequency(){
         } else if (multipleOfferingDatePicker === ""){
             textNotifier.textContent = "Date field is empty!";
             textNotifier.style.display = 'block';
-            msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
         } else {
             storingMultipleOfferingEventAttributes();
             $("#checkIsMultipleOffering").prop('checked', true);
@@ -125,6 +124,24 @@ function calculateRecurringEventFrequency(){
         }
     });
 >>>>>>> 0961f1cc (Corrected spelling and centered text for the)
+
+function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
+    // Get the original date from the HTML content
+    var originalDateElement = document.getElementById('originalDate');
+    var originalDate = originalDateElement.textContent.trim();
+    
+    // Convert the date to a Date object
+    var dateObj = new Date(originalDate);
+    
+    // Get day, month, and year
+    var day = dateObj.getDate();
+    var month = dateObj.getMonth(); // Month index (0-11)
+    var year = dateObj.getFullYear();
+    
+    var formattedDate = day + ' ' + month + ' ' + year;   
+    // Replace the original content with the formatted date
+    originalDateElement.textContent = formattedDate;
+}
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
@@ -152,7 +169,6 @@ function storingMultipleOfferingEventAttributes() {
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
-
 /*
  * Run when the webpage is ready for javascript
  */
@@ -176,29 +192,40 @@ $(document).ready(function() {
   });
 
   $("#checkIsRecurring, #checkIsMultipleOffering").click(function() { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+    if(!(document.getElementById('inputEventName').value === '')){
+      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
+    }
+    else{
+      document.getElementById('eventName').value = '';
+    }
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
-    var multipeOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
     if (recurringStatus == 'on') {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');// this line removes the display none button of bootstrap so that the end-date div appears for recurring event
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE */
+      $("#checkIsMultipleOffering").prop('checked', false);
+      multipleOfferingStatus = undefined;
+      $('#multipleOfferingEventsTable').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
-    else if (recurringStatus == undefined){
+    else{
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
       $(".endDatePicker").prop('required', false);
     }
-    if (multipeOfferingStatus == 'on') {
-      $('#modalMultipleOffering').modal('show');// this line pop up the modal for the multiple offering event
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line disappear the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
+    if (multipleOfferingStatus == 'on') {
       $("#multipleOfferingTableDiv").removeClass('d-none');
-      $("#checkIsMultipleOffering").prop('checked', true);
+      $("#checkIsRecurring").prop('checked', false);
+      recurringStatus = undefined;
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+      $('#modalMultipleOffering').modal('show');
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line hides the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
     }
-    else if (multipeOfferingStatus == undefined){
+    else{
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
     }
   });
   
-  $(".btn-close, #cancelModalPreview").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsMultipleOffering").prop('checked', false);
     $('#nonMultipleOfferingTime, #nonMultiplOfferingDate').removeClass('d-none');
     $("#multipleOfferingTableDiv").addClass('d-none');
@@ -344,5 +371,5 @@ $(document).ready(function() {
     setCharacterLimit(this, "#remainingCharacters");
   });
 
-  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
