@@ -201,10 +201,13 @@ $(document).ready(function() {
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
     if (recurringStatus == 'on') {
+      if (multipleOfferingStatus == 'on'){
+        msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
+      }
+      multipleOfferingStatus = undefined;
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE */
       $("#checkIsMultipleOffering").prop('checked', false);
-      multipleOfferingStatus = undefined;
-      $('#multipleOfferingEventsTable').addClass('d-none');
+      $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
     else{
@@ -212,9 +215,12 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
     if (multipleOfferingStatus == 'on') {
+      if (recurringStatus == 'on'){
+        msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
+      }
+      recurringStatus = undefined;
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRecurring").prop('checked', false);
-      recurringStatus = undefined;
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
       $('#modalMultipleOffering').modal('show');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line hides the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
@@ -222,6 +228,7 @@ $(document).ready(function() {
     else{
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
     }
   });
   
