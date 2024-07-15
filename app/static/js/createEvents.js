@@ -64,6 +64,7 @@ function calculateRecurringEventFrequency(){
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
     var textNotifier = document.getElementById('textNotifier');
+<<<<<<< HEAD
     let eventNameInputs = document.querySelectorAll('.form-control.eventName');
     let datePickerInputs = document.querySelectorAll('.form-control.datePicker');
 
@@ -101,6 +102,29 @@ function calculateRecurringEventFrequency(){
   }
     
 });
+=======
+    console.log(eventName);
+    console.log(multipleOfferingDatePicker);
+        if (eventName === "" && multipleOfferingDatePicker === ""){
+          textNotifier.textContent = "Event name and date fields are empty!";
+          textNotifier.style.display = 'block';
+        } else if (eventName === "") {
+          textNotifier.textContent = "Event name is empty!";
+          textNotifier.style.display = 'block';
+          msgFlash("Event Name is invalid (Empty)", "danger");
+        } else if (multipleOfferingDatePicker === ""){
+            textNotifier.textContent = "Date field is empty!";
+            textNotifier.style.display = 'block';
+            msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
+        } else {
+            storingMultipleOfferingEventAttributes();
+            $("#checkIsMultipleOffering").prop('checked', true);
+            // Remove the modal and overlay from the DOM
+            $('#modalMultipleOffering').modal('hide');
+            msgFlash("Multiple time offering events saved!", "success");
+        }
+    });
+>>>>>>> 0961f1cc (Corrected spelling and centered text for the)
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
