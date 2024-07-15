@@ -63,30 +63,44 @@ function calculateRecurringEventFrequency(){
   document.getElementById('submitParticipant').addEventListener('click', function() {   //WORKING ON THIS*****************************************************************
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
-    const eventName = document.getElementById("eventName").value;
-    const multipleOfferingDatePicker = document.getElementById("multipleOfferingDatePicker-").value;
     var textNotifier = document.getElementById('textNotifier');
-    console.log(eventName);
-    console.log(multipleOfferingDatePicker);
-        if (eventName === "" && multipleOfferingDatePicker === ""){
-          textNotifier.textContent = "Event name and date feild is empty";
-          textNotifier.style.display = 'block';
-        } else if (eventName === "") {
-          textNotifier.textContent = "Event name is empty";
-          textNotifier.style.display = 'block';
-          msgFlash("Event Name is invalid (Empty)", "danger");
-        } else if (multipleOfferingDatePicker === ""){
-            textNotifier.textContent = "Date feild is empty";
-            textNotifier.style.display = 'block';
-            msgFlash("Multiple Offering Date is invalid (Empty)", "danger");
-        } else {
-            storingMultipleOfferingEventAttributes();
-            $("#checkIsMultipleOffering").prop('checked', true);
-            // Remove the modal and overlay from the DOM
-            $('#modalMultipleOffering').modal('hide');
-            msgFlash("Multiple time offering events saved!", "success");
-        }
-    });
+    let eventNameInputs = document.querySelectorAll('.form-control.eventName');
+    let datePickerInputs = document.querySelectorAll('.form-control.datePicker');
+
+    let isEmpty = false;
+    eventNameInputs.forEach(eventNameInput => {
+      // Check if the input field is empty
+      if (eventNameInput.value.trim() === '') {
+          isEmpty = true;
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
+      }
+
+  });  
+
+  datePickerInputs.forEach(datePickerInput => {
+    // Check if the input field is empty
+    if (datePickerInput.value.trim() === '') {
+        isEmpty = true;
+        textNotifier.textContent = "Event name or date field is empty";
+        textNotifier.style.display = 'block';  
+    }
+
+});  
+
+  
+  if (!isEmpty){
+    textNotifier.textContent = "";
+    textNotifier.style.display = 'none';
+    storingMultipleOfferingEventAttributes();
+    $("#checkIsMultipleOffering").prop('checked', true);
+
+    // Remove the modal and overlay from the DOM
+    $('#modalMultipleOffering').modal('hide');
+    msgFlash("Multiple time offering events saved!", "success");
+  }
+    
+});
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
@@ -175,8 +189,6 @@ $(document).ready(function() {
   $(".addMultipleOfferingEvent").click(function(){
     counterAdd += 1
     let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
-    //increment the Id for event name and date and then use a for loop to check when displaying msgFlash
-    
     clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
