@@ -64,9 +64,8 @@ function calculateRecurringEventFrequency(){
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
     var textNotifier = document.getElementById('textNotifier');
-<<<<<<< HEAD
-    let eventNameInputs = document.querySelectorAll('.form-control.eventName');
-    let datePickerInputs = document.querySelectorAll('.form-control.datePicker');
+    let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
+    let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
     let isEmpty = false;
     eventNameInputs.forEach(eventNameInput => {
@@ -76,20 +75,16 @@ function calculateRecurringEventFrequency(){
           textNotifier.textContent = "Event name or date field is empty";
           textNotifier.style.display = 'block';  
       }
-
   });  
-
-  datePickerInputs.forEach(datePickerInput => {
+    datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
-    if (datePickerInput.value.trim() === '') {
-        isEmpty = true;
-        textNotifier.textContent = "Event name or date field is empty";
-        textNotifier.style.display = 'block';  
-    }
-
+      if (datePickerInput.value.trim() === '') {
+          isEmpty = true;
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
+      }
 });  
 
-  
   if (!isEmpty){
     textNotifier.textContent = "";
     textNotifier.style.display = 'none';
@@ -100,30 +95,7 @@ function calculateRecurringEventFrequency(){
     $('#modalMultipleOffering').modal('hide');
     msgFlash("Multiple time offering events saved!", "success");
   }
-    
 });
-=======
-    console.log(eventName);
-    console.log(multipleOfferingDatePicker);
-        if (eventName === "" && multipleOfferingDatePicker === ""){
-          textNotifier.textContent = "Event name and date fields are empty!";
-          textNotifier.style.display = 'block';
-        } else if (eventName === "") {
-          textNotifier.textContent = "Event name is empty!";
-          textNotifier.style.display = 'block';
-          msgFlash("Event Name is invalid (Empty)", "danger");
-        } else if (multipleOfferingDatePicker === ""){
-            textNotifier.textContent = "Date field is empty!";
-            textNotifier.style.display = 'block';
-        } else {
-            storingMultipleOfferingEventAttributes();
-            $("#checkIsMultipleOffering").prop('checked', true);
-            // Remove the modal and overlay from the DOM
-            $('#modalMultipleOffering').modal('hide');
-            msgFlash("Multiple time offering events saved!", "success");
-        }
-    });
->>>>>>> 0961f1cc (Corrected spelling and centered text for the)
 
 function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
     // Get the original date from the HTML content
