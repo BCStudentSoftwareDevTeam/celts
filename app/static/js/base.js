@@ -1,6 +1,6 @@
 const flashMessageResponse = function flashEventResponse(message){
   if (message.slice(-8) == "deleted."){
-    return `<a href="/admin/undo" id="restoreDeleted">Undo</a>` 
+    return `<a href="/event/undo" id="restoreDeleted">Undo</a>` 
   }
   return '';
 }

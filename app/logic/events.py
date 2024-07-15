@@ -77,9 +77,7 @@ def deleteEventAndAllFollowing(eventId):
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
-                recurringSeries = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
-        for seriesEvent in recurringSeries:
-            seriesEvent.delete_instance(recursive = True)
+                Event.update({Event.pendingDeletion: True}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
 
 def deleteAllRecurringEvents(eventId):
         """
@@ -89,9 +87,7 @@ def deleteAllRecurringEvents(eventId):
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId))
-            for aRecurringEvent in allRecurringEvents:
-                aRecurringEvent.delete_instance(recursive = True)
+                Event.update().where(Event.recurringId == recurringId).execute()
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
@@ -211,7 +207,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .where(Program.isStudentLed,
                                     Event.term == term,
                                     (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
-                                    Event.isCanceled == False)
+                                    Event.isCanceled == False, Event.pendingDeletion == False)
                             .group_by(Program.id))
     
     programCountDict = {}
