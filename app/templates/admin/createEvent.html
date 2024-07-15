@@ -105,9 +105,9 @@
             {% else %}
               {% set startTime = "12:00" %}
             {% endif %}
-            <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+            <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}" name="timeStart" 
               aria-describedby="timeIcon1" placeholder="Pick a start time"  
-              class = "startTime" id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+              id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
             <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
           </div>
         </div>
@@ -119,7 +119,7 @@
             {%else%}
               {% set endTime = "13:00" %}
             {% endif %}
-              <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+              <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd" 
                 aria-describedby="timeIcon2" placeholder="Pick an end time" 
                 class = "startTime" id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
               <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
