@@ -72,7 +72,7 @@
           <td>{{ course.instructors }}</td>
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-          title="Status Key" data-content="{{ course.status.status }}">
+          title="status key" data-content="{{ course.status.status }}">
           {{course.status.status}}
           {% if course.status.status == 'In Progress' %}
             <i class="fa-solid fa-circle-half-stroke"></i>
@@ -114,8 +114,8 @@
           <td>{{course.courseName}}</td>
           <td>{{ course.instructors }}</td>
           <td>
-            <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-          title="Status Key" data-content="{{ course.status.status }}">
+            <a class="status-key text-dark" id="statuskey" href="javascript:void(0);" data-toggle="popover"
+          title="status key" data-content="{{ course.status.status }}">
           {{ course.status.status }} <i class="fa-solid fa-circle-check"></i>
         </a>
           </td>
