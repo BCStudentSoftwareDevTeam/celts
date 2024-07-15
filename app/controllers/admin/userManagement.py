@@ -76,7 +76,7 @@ def deleteProgramFile():
     fileData= request.form
     programFile=FileHandler(programId=fileData["databaseId"])
     programFile.deleteFile(fileData["fileId"])
-    return redirect(url_for("updateProgramInfo.html", accordion="program"))
+    return ""
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):

@@ -78,12 +78,6 @@ export function populateModal(programName, programDescription, partner, contactE
   updateForm.action = "/admin/updateProgramInfo/" + programId;
 }
 
-document.addEventListener('click', function(event) {
-  var isClickInside = document.getElementById('adminProgramManagement').contains(event.target);
-  if (!isClickInside) {
-     document.getElementById('adminProgramManagement').classList.remove('show');
-  }
-});
 function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
   var termInfo = {id: selectedTerm.val()};
