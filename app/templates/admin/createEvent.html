@@ -2,13 +2,13 @@
 
 {% set isNewEvent = 'create' in request.path %}
 {% if isNewEvent %}          
-  {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+  {% if eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == '' %}
     {% set page_title = 'Create a ' + eventData["program"].programName %}
 
   {% elif template.tag == 'single-program' %}
     {%set page_title = 'Create Event for ' + eventData["program"].programName %}
 
-  {% elif template.tag == 'all-volunteer' %}
+  {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
 
   {% elif template.tag == 'no-program' %}
