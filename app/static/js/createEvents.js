@@ -69,7 +69,7 @@ function calculateRecurringEventFrequency(){
 
     let isEmpty = false;
     eventNameInputs.forEach(eventNameInput => {
-      // Check if the input field is empty
+      // Check if name input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
           textNotifier.textContent = "Event name or date field is empty";
@@ -77,14 +77,13 @@ function calculateRecurringEventFrequency(){
       }
   });  
     datePickerInputs.forEach(datePickerInput => {
-    // Check if the input field is empty
+    // Check if date input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
           textNotifier.textContent = "Event name or date field is empty";
           textNotifier.style.display = 'block';  
       }
 });  
-
   if (!isEmpty){
     textNotifier.textContent = "";
     textNotifier.style.display = 'none';
@@ -96,25 +95,7 @@ function calculateRecurringEventFrequency(){
     msgFlash("Multiple time offering events saved!", "success");
   }
 });
-
-function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
-    // Get the original date from the HTML content
-    var originalDateElement = document.getElementById('originalDate');
-    var originalDate = originalDateElement.textContent.trim();
-    
-    // Convert the date to a Date object
-    var dateObj = new Date(originalDate);
-    
-    // Get day, month, and year
-    var day = dateObj.getDate();
-    var month = dateObj.getMonth(); // Month index (0-11)
-    var year = dateObj.getFullYear();
-    
-    var formattedDate = day + ' ' + month + ' ' + year;   
-    // Replace the original content with the formatted date
-    originalDateElement.textContent = formattedDate;
-}
-
+//build multi-event table
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
@@ -142,10 +123,7 @@ function storingMultipleOfferingEventAttributes() {
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
-/*
- * Run when the webpage is ready for javascript
- */
-
+//visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
   var month = dateObj.toLocaleString('default', { month: 'short' });
@@ -153,7 +131,9 @@ function formatDate(originalDate) {
   var year = dateObj.getFullYear();
   return month + " " + day + ", " + year;
 }
-
+/*
+ * Run when the webpage is ready for javascript
+ */
 $(document).ready(function() {
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
@@ -173,27 +153,27 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring, #checkIsMultipleOffering").click(function() { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+  $("#checkIsRecurring, #checkIsMultipleOffering").click(function() {
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
     else{
       document.getElementById('eventName').value = '';
     }
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //retrieve current toggle information: 'on' or undefined
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     if (recurringStatus == 'on') {
       if (multipleOfferingStatus == 'on'){
         msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
       }
       multipleOfferingStatus = undefined;
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE */
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE FOR TOGGLING*/
       $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
     else{
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
     }
     if (multipleOfferingStatus == 'on') {
@@ -205,7 +185,7 @@ $(document).ready(function() {
       $("#checkIsRecurring").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
       $('#modalMultipleOffering').modal('show');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line hides the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
     }
     else{
       $("#multipleOfferingTableDiv").addClass('d-none');
@@ -214,21 +194,20 @@ $(document).ready(function() {
     }
   });
   
-  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the modal upon the cancel or close button being clicked
     $("#checkIsMultipleOffering").prop('checked', false);
     $('#nonMultipleOfferingTime, #nonMultiplOfferingDate').removeClass('d-none');
     $("#multipleOfferingTableDiv").addClass('d-none');
     $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
-    //$('.extraSlots').empty();//this line remove the added multiple offering event slots from appearing if the multiple offering modal is toggle again
   });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
   that specific row will be deleted*/
-  let counterAdd = 0 // counter to add customized ids into the newly created slots
+  let counterAdd = 0 // counter to add customized ids
   $(".addMultipleOfferingEvent").click(function(){
     counterAdd += 1
-    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
+    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
     clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
@@ -301,10 +280,6 @@ $(document).ready(function() {
     }
   });
 
-  // $(".multipleOfferingDate").click(function() {
-  //   $(#multipleOfferingDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  // });
-
   $("#checkRSVP").click(function(){
     if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
       $("#checkFood").prop('checked', true);
@@ -351,10 +326,6 @@ $(document).ready(function() {
   $(".startDatePicker").change(function(){
      updateDate(this)
   });
-
-//   $(".multipleOfferingDatePicker").change(function(){ //multiple offering data calender function
-//     updateDate(this)
-//  });
 
   $("#inputCharacters").keyup(function (event) {
     setCharacterLimit(this, "#remainingCharacters");
