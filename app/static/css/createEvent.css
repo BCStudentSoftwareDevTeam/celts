@@ -15,10 +15,23 @@
     font-size: 0.875rem;
     border: 1px solid darkred;
     padding: 0.75rem 1.25rem;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
     border-radius: 0.25rem;
     background-color: #f8d7da;
     margin-top: 25px;
+    left: 50%; /* Position the header at 50% of the viewport width */
+    transform: translateX(-50%);
     text-align: center;
+    position: fixed;
+    z-index: 10;
+    animation: flash 6s forwards;
 }
 
+@keyframes flash {
+    0%, 89.9% {
+        opacity: 1;
+    }
+    90%, 100% {
+        opacity: 0;
+    }
+}
