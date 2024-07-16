@@ -63,6 +63,7 @@ function calculateRecurringEventFrequency(){
   document.getElementById('submitParticipant').addEventListener('click', function() {   
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
+    var textNotifier = document.getElementById('textNotifier');
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -71,34 +72,48 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-        }
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
+      }
   });  
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
       }
 });  
-    if (isEmpty){
-      $('#textNotifierPadding').addClass('pt-5');
-      $('.invalidFeedback').text("Event name or date field is empty");
-      $('.invalidFeedback').css('display', 'block');  
-      $('.invalidFeedback').on('animationend', function() {
-        $('.invalidFeedback').css('display', 'none');
-        $('#textNotifierPadding').removeClass('pt-5')
-      });
-      isEmpty = false;
-    }
 
-    else {
-      storingMultipleOfferingEventAttributes();
-      $("#checkIsMultipleOffering").prop('checked', true);
+  if (!isEmpty){
+    textNotifier.textContent = "";
+    textNotifier.style.display = 'none';
+    storingMultipleOfferingEventAttributes();
+    $("#checkIsMultipleOffering").prop('checked', true);
 
-      // Remove the modal and overlay from the DOM
-      $('#modalMultipleOffering').modal('hide');
-      msgFlash("Multiple time offering events saved!", "success");
-    }
-  });
+    // Remove the modal and overlay from the DOM
+    $('#modalMultipleOffering').modal('hide');
+    msgFlash("Multiple time offering events saved!", "success");
+  }
+});
+
+function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
+    // Get the original date from the HTML content
+    var originalDateElement = document.getElementById('originalDate');
+    var originalDate = originalDateElement.textContent.trim();
+    
+    // Convert the date to a Date object
+    var dateObj = new Date(originalDate);
+    
+    // Get day, month, and year
+    var day = dateObj.getDate();
+    var month = dateObj.getMonth(); // Month index (0-11)
+    var year = dateObj.getFullYear();
+    
+    var formattedDate = day + ' ' + month + ' ' + year;   
+    // Replace the original content with the formatted date
+    originalDateElement.textContent = formattedDate;
+}
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
@@ -114,23 +129,31 @@ function storingMultipleOfferingEventAttributes() {
         });
     });
 
-    console.log(entries[eventDate])
     let entriesJson = JSON.stringify(entries);
     document.getElementById("multipleOfferingDataId").value = entriesJson
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
-    
     //fromat to 12hr time for display
+    var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
-    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + entry.eventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
+    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
 /*
  * Run when the webpage is ready for javascript
  */
+
+function formatDate(originalDate) {
+  var dateObj = new Date(originalDate);
+  var month = dateObj.toLocaleString('default', { month: 'short' });
+  var day = dateObj.getDate();
+  var year = dateObj.getFullYear();
+  return month + " " + day + ", " + year;
+}
+
 $(document).ready(function() {
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
