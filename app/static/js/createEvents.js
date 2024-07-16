@@ -160,18 +160,15 @@ $(document).ready(function() {
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
-    else{
-      document.getElementById('eventName').value = '';
-    }
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //retrieve current toggle information: 'on' or undefined
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     if (recurringStatus == 'on') {
       if (multipleOfferingStatus == 'on'){
         msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
+        $("#checkIsMultipleOffering").prop('checked', false);
+        multipleOfferingStatus = undefined;
       }
-      multipleOfferingStatus = undefined;
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE FOR TOGGLING*/
-      $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
@@ -182,10 +179,10 @@ $(document).ready(function() {
     if (multipleOfferingStatus == 'on') {
       if (recurringStatus == 'on'){
         msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
+        $("#checkIsRecurring").prop('checked', false);
+        recurringStatus = undefined;
       }
-      recurringStatus = undefined;
       $("#multipleOfferingTableDiv").removeClass('d-none');
-      $("#checkIsRecurring").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none')
       $('#modalMultipleOffering').modal('show');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
