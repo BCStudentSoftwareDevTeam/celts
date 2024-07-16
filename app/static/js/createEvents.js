@@ -131,26 +131,46 @@ $(document).ready(function () {
   });
 
   // everything except Chrome
-  if (navigator.userAgent.indexOf("Chrome") == -1) {
-    $('input.timepicker').timepicker({
-      timeFormat: 'hh:mm p',
-      scrollbar: true,
-      dropdown: true,
-      dynamic: true,
-      minTime: "08:00am",
-      maxTime: "10:00pm"
-    });
-    $(".timepicker").prop("type", "text");
-    $(".timeIcons").prop("hidden", false);
+  // if (navigator.userAgent.indexOf("Chrome") == -1) {
+  //   $('input.timepicker').timepicker({
+  //     timeFormat: 'hh:mm p',
+  //     scrollbar: true,
+  //     dropdown: true,
+  //     dynamic: true,
+  //     minTime: "08:00am",
+  //     maxTime: "10:00pm"
+  //   });
+  //   $(".timepicker").prop("type", "text");
+  //   $(".timeIcons").prop("hidden", false);
 
-    var formattedStartTime = format24to12HourTime($(".startTime").prop("defaultValue"));
-    var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
-    $(".startTime").val(formattedStartTime);
-    $(".endTime").val(formattedEndTime);
-  } else {
-    $(".timepicker").prop("type", "time");
-    $(".timeIcons").prop("hidden", true);
-  }
+  //   $(".timeIcons").click(function() {
+  //     $(".timepicker").timepicker("show");
+  //     alert("yes")
+  //   })
+
+  //   var formattedStartTime = format24to12HourTime($(".startTime").prop("defaultValue"));
+  //   var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
+  //   $(".startTime").val(formattedStartTime);
+  //   $(".endTime").val(formattedEndTime);
+  // } else {
+  //   $(".timepicker").prop("type", "time");
+  //   $(".timeIcons").prop("hidden", false);
+  //   $(".timeIcons").click(() => {
+  //     $(".timepicker").timepicker("hide")
+  //   })
+  // }
+
+  $("input.timepicker").timepicker({
+    timeFormat: 'HH:mm',
+    scrollbar: true,
+    dropdown: true,
+    dynamic: true, 
+    minTime: "8:00am",
+    maxtime: "10:00pm"
+  })
+
+  $(".timepicker").prop("type", "text")
+  $(".timeIcons").prop("hidden", false)
 
   if ($(".datePicker").is("readonly")) {
     $(".datePicker").datepicker("option", "disabled", true);
