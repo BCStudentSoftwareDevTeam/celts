@@ -29,9 +29,9 @@
         {% if eventPast and event.isCanceled %}
             This is a past event and it was canceled.
         {% elif isInProg %}
-            This event is happening right now 
+            This event is in-progress! It started at {{event.timeStart.strftime("%I:%M %p")}}.
         {% elif eventPast %}
-            This event ended on {{ formatted_date }} at {{ event.timeEnd.strftime("%I:%M %p") }}
+            This event ended on {{ formatted_date }} at {{ event.timeEnd.strftime("%I:%M %p") }}.
         {% elif event.isCanceled %}
             This event has been canceled.
         {% endif %}

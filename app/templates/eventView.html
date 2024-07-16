@@ -3,6 +3,7 @@
 {% set isPastEnd = event.isPastEnd %} 
 {% set tabName = 'view' %}
 {% extends "eventNav.html"%}
+<!-- Without eventPast view event cannot use it when called through eventNav -->
 {% set eventPast = event.isPastStart if not isNewEvent else False %}
 
 {% block scripts %}
@@ -67,7 +68,7 @@
                     <br>
                     <div>
                         {% if eventData.isRsvpRequired %}
-                            {% if eventPast != event.isPastEnd %}
+                            {% if not event.isPastStart %}
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
