@@ -63,7 +63,6 @@ function calculateRecurringEventFrequency(){
   document.getElementById('submitParticipant').addEventListener('click', function() {   //WORKING ON THIS*****************************************************************
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
-    var textNotifier = document.getElementById('textNotifier');
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -100,24 +99,6 @@ function calculateRecurringEventFrequency(){
       msgFlash("Multiple time offering events saved!", "success");
     }
   });
-
-function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
-    // Get the original date from the HTML content
-    var originalDateElement = document.getElementById('originalDate');
-    var originalDate = originalDateElement.textContent.trim();
-    
-    // Convert the date to a Date object
-    var dateObj = new Date(originalDate);
-    
-    // Get day, month, and year
-    var day = dateObj.getDate();
-    var month = dateObj.getMonth(); // Month index (0-11)
-    var year = dateObj.getFullYear();
-    
-    var formattedDate = day + ' ' + month + ' ' + year;   
-    // Replace the original content with the formatted date
-    originalDateElement.textContent = formattedDate;
-}
 
 function storingMultipleOfferingEventAttributes() {
     let entries = [];
