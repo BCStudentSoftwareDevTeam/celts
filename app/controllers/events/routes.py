@@ -24,7 +24,12 @@ def loadKiosk(eventid):
 def undoEvent():
     try:
         eventId = session['lastDeletedEvent']
-        Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
+        if type(eventId) is list:
+            events = eventId
+            for event in events: 
+                Event.update({Event.pendingDeletion: False}).where(Event.id == event).execute()
+        else:
+            Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:

@@ -1,4 +1,4 @@
-from flask import  url_for
+from flask import  url_for, session
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date, datetime
@@ -66,6 +66,7 @@ def deleteEvent(eventId):
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         Event.update({Event.pendingDeletion: True}).where(Event.id == event.id).execute()
+        
         # Commented out, but is the command used for deleteing event instance
         # event.delete_instance(recursive = True, delete_nullable = True)
 
@@ -77,6 +78,10 @@ def deleteEventAndAllFollowing(eventId):
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
+                recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+                session['lastDeletedEvent'] = []
+                for recurringEvent in recurringSeries:
+                    session['lastDeletedEvent'].append(recurringEvent.id)
                 Event.update({Event.pendingDeletion: True}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
 
 def deleteAllRecurringEvents(eventId):
@@ -87,7 +92,12 @@ def deleteAllRecurringEvents(eventId):
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
-                Event.update().where(Event.recurringId == recurringId).execute()
+                allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId))
+                session['lastDeletedEvent'] = []
+                for allRecurringEvent in allRecurringEvents:
+                    session['lastDeletedEvent'].append(allRecurringEvent.id)
+                Event.update({Event.pendingDeletion: True}).where(Event.recurringId == recurringId)
+
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
