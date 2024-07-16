@@ -72,33 +72,34 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-          textNotifier.textContent = "Event name or date field is empty";
-          textNotifier.style.display = 'block';  
-          $('#textNotifierPadding').addClass('pt-5')      
         }
   });  
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
-          textNotifier.textContent = "Event name or date field is empty";
-          textNotifier.style.display = 'block';  
-          $('#textNotifierPadding').addClass('pt-5')
       }
 });  
+    if (isEmpty){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("Event name or date field is empty");
+      $('.invalidFeedback').css('display', 'block');  
+      $('.invalidFeedback').on('animationend', function() {
+        $('.invalidFeedback').css('display', 'none');
+        $('#textNotifierPadding').removeClass('pt-5')
+      });
+      isEmpty = false;
+    }
 
-  if (!isEmpty){
-    textNotifier.textContent = "";
-    textNotifier.style.display = 'none';
-    $('#textNotifierPadding').removeClass('pt-5')
-    storingMultipleOfferingEventAttributes();
-    $("#checkIsMultipleOffering").prop('checked', true);
+    else {
+      storingMultipleOfferingEventAttributes();
+      $("#checkIsMultipleOffering").prop('checked', true);
 
-    // Remove the modal and overlay from the DOM
-    $('#modalMultipleOffering').modal('hide');
-    msgFlash("Multiple time offering events saved!", "success");
-  }
-});
+      // Remove the modal and overlay from the DOM
+      $('#modalMultipleOffering').modal('hide');
+      msgFlash("Multiple time offering events saved!", "success");
+    }
+  });
 
 function dateFormatting(){                                                  //MEANT TO CORRECTLY FORMAT THE EVENT DATE FOR THE USER*****************************************************************
     // Get the original date from the HTML content

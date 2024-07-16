@@ -24,5 +24,14 @@
     text-align: center;
     position: fixed;
     z-index: 10;
+    animation: flash 6s forwards;
 }
 
+@keyframes flash {
+    0%, 89.9% {
+        opacity: 1;
+    }
+    90%, 100% {
+        opacity: 0;
+    }
+}
