@@ -1,6 +1,7 @@
 const flashMessageResponse = function flashEventResponse(message){
   if (message.slice(-8) == "deleted."){
-    return `<a href="/event/undo" id="restoreDeleted">Undo</a>`;
+
+    return `<strong><a href="/event/undo" style="color: dark-green;" id="restoreDeleted">Undo</a></strong>` 
   }
   return '';
 }
@@ -25,10 +26,9 @@ function msgFlash(flash_message, status){
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
         ${flashMessageResponse(flash_message)}
-        <button type="button" class="btn-close close.bs.alert kiosk-hide" id="flashResponse" aria-label="Close"></button>
+        <button type="button" class="btn-close kiosk-hide"  id="flashResponded"  aria-label="Close"></button>
       </div>`);
-    $("#flashResponse").click(function(){
-      console.log("in close")
+    $("#flashResponded").click(function(){
       $(".alert").delay(1000).fadeOut();
     })
 }
