@@ -60,7 +60,7 @@ function calculateRecurringEventFrequency(){
       });
   }
 
-  document.getElementById('submitParticipant').addEventListener('click', function() {   //WORKING ON THIS*****************************************************************
+  document.getElementById('submitParticipant').addEventListener('click', function() {   
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
@@ -114,12 +114,14 @@ function storingMultipleOfferingEventAttributes() {
         });
     });
 
+    console.log(entries[eventDate])
     let entriesJson = JSON.stringify(entries);
     document.getElementById("multipleOfferingDataId").value = entriesJson
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
+    
     //fromat to 12hr time for display
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
