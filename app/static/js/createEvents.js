@@ -60,8 +60,15 @@ function calculateRecurringEventFrequency(){
       });
   }
 
+<<<<<<< HEAD
   document.getElementById('submitParticipant').addEventListener('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
+=======
+  document.getElementById('submitParticipant').addEventListener('click', function() {   
+    // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
+    //Requires that modal info updated before it can be saved
+    var textNotifier = document.getElementById('textNotifier');
+>>>>>>> c9b21ab0 (date formating in process)
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -113,12 +120,14 @@ function storingMultipleOfferingEventAttributes() {
         });
     });
 
+    console.log(entries[eventDate])
     let entriesJson = JSON.stringify(entries);
     document.getElementById("multipleOfferingDataId").value = entriesJson
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
+    
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
