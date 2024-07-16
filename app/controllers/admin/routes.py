@@ -295,7 +295,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
         eventCountdown = getCountdownToEvent(event)
-
+ 
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -320,7 +320,8 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
-                                eventCountdown=eventCountdown)
+                                eventCountdown=eventCountdown
+                                )
                                 
 
 
