@@ -173,7 +173,7 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring, #checkIsMultipleOffering").click(function() { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+  $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
@@ -182,11 +182,25 @@ $(document).ready(function() {
     }
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    
+    if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
+      console.log("Both recurring and multiple offering are on. Showing message...");
+      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
+      $(event.target).prop('checked', false);
+      $('#modalMultipleOffering').modal('hide'); // Ensure modal is hidden if both are on
+      $('#multipleOfferingTableDiv').addClass('d-none');
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+      
+      // Adjust other UI elements or actions as needed
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+      $(".endDatePicker").prop('required', false);
+
+      return; 
+    }
+    
     if (recurringStatus == 'on') {
-      if (multipleOfferingStatus == 'on'){
-        msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
-      }
-      multipleOfferingStatus = undefined;
+      
+      console.log("changed Multiple Offering status")
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE */
       $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -197,13 +211,11 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
     if (multipleOfferingStatus == 'on') {
-      if (recurringStatus == 'on'){
-        msgFlash("You may not toggle recurring event and multiple time offering event!", "danger");
-      }
-      recurringStatus = undefined;
+
+      console.log("changed recurring status")
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRecurring").prop('checked', false);
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none')
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line hides the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
     }
