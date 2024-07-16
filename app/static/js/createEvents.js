@@ -77,28 +77,24 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-        }
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
+      }
   });  
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
+          textNotifier.textContent = "Event name or date field is empty";
+          textNotifier.style.display = 'block';  
       }
 });  
-    if (isEmpty){
-      $('#textNotifierPadding').addClass('pt-5');
-      $('.invalidFeedback').text("Event name or date field is empty");
-      $('.invalidFeedback').css('display', 'block');  
-      $('.invalidFeedback').on('animationend', function() {
-        $('.invalidFeedback').css('display', 'none');
-        $('#textNotifierPadding').removeClass('pt-5')
-      });
-      isEmpty = false;
-    }
 
-    else {
-      storingMultipleOfferingEventAttributes();
-      $("#checkIsMultipleOffering").prop('checked', true);
+  if (!isEmpty){
+    textNotifier.textContent = "";
+    textNotifier.style.display = 'none';
+    storingMultipleOfferingEventAttributes();
+    $("#checkIsMultipleOffering").prop('checked', true);
 
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
@@ -120,18 +116,18 @@ function storingMultipleOfferingEventAttributes() {
         });
     });
 
-    console.log(entries[eventDate])
     let entriesJson = JSON.stringify(entries);
     document.getElementById("multipleOfferingDataId").value = entriesJson
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
-    
     //fromat to 12hr time for display
+    var formattedEventDate = formatDate(entry.eventDate);
     var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
+    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
@@ -146,6 +142,15 @@ function formatDate(originalDate) {
 /*
  * Run when the webpage is ready for javascript
  */
+
+function formatDate(originalDate) {
+  var dateObj = new Date(originalDate);
+  var month = dateObj.toLocaleString('default', { month: 'short' });
+  var day = dateObj.getDate();
+  var year = dateObj.getFullYear();
+  return month + " " + day + ", " + year;
+}
+
 $(document).ready(function() {
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
