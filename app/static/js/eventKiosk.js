@@ -89,6 +89,12 @@ $(document).ready(function(e) {
             submitData();
         }
     });
+    
+    // Click event for the Enter button
+    $("#enter-button").click(function() {
+        submitData();
+    });
+
 
     // Opens the camera to scan the ID
     $('.qr-reader-button').on("click", function() {
