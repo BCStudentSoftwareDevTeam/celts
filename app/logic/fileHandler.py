@@ -9,7 +9,7 @@ class FileHandler:
     def __init__(self, files=None, courseId=None, eventId=None, programId=None):
         self.files = files 
         self.path = app.config['files']['base_path']
-        self.path1 = app.config['files']['image_path']    
+        self.image_path = app.config['files']['image_path']    
         self.courseId = courseId
         self.eventId = eventId
         self.programId = programId
@@ -18,7 +18,7 @@ class FileHandler:
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
-            self.path1 = os.path.join(self.path1, app.config['files']['landing_page_path']) 
+            self.image_path = os.path.join(self.image_path, app.config['files']['landing_page_path']) 
     def makeDirectory(self):
         try:
             extraDir = str(self.eventId) if self.eventId else ""
@@ -30,7 +30,10 @@ class FileHandler:
     
     def getFileFullPath(self, newfilename=''):
         try:
-            filePath = (os.path.join(self.path1, newfilename))
+            if self.eventId or self.courseId:
+                filePath = (os.path.join(self.path, newfilename))
+            elif self.programId:
+                filePath = (os.path.join(self.image_path, newfilename))
         except AttributeError:
             pass
         except FileExistsError:
@@ -68,7 +71,7 @@ class FileHandler:
                         current_programName = f"{str(name.programName)}.{file_type}"
                         pattern = '*' + str(name.programName) + '*'
                         
-                        full_pattern = os.path.join(self.path1, pattern)
+                        full_pattern = os.path.join(self.image_path, pattern)
                         files_to_delete = glob.glob(full_pattern)
                        
 

@@ -81,7 +81,6 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
-
         programId = 3
         eventName = "Test Event Name"
         eventDescription = "This is a test Description"
@@ -89,18 +88,27 @@ def test_changeProgramInfo():
         contactName = "New Test Name"
         contactEmail = 'newtest@email'
         location = "Danforth Tech"
+        coverImage = 
+        newInstagramUrl = "www.instagram.com"
+        newBereaUrl = "www.berea.edu"
+        newFacebookUrl = "www.facebook.com" 
+
+
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
-        assert currentProgramInfo.programDescription == ""
+        assert currentProgramInfo.programDescription != eventDescription
         assert currentProgramInfo.partner == ""
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
+        assert currentProgramInfo.newInstagramUrl != None
+        assert currentProgramInfo.newBereaUrl != None
+        assert currentProgramInfo.newFacebookUrl != None
        
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, eventDescription, eventPartner, contactEmail, contactName, location, programId)
+            changeProgramInfo(eventName, eventDescription, eventPartner, contactEmail, contactName, location, programId, coverImage, newInstagramUrl, newFacebookUrl, newBereaUrl)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
@@ -110,6 +118,10 @@ def test_changeProgramInfo():
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
         assert currentProgramInfo.defaultLocation == location
+        assert currentProgramInfo.instagramUrl == newInstagramUrl
+        assert currentProgramInfo.facebookUrl == newFacebookUrl
+        assert currentProgramInfo.bereaUrl == newBereaUrl
+        assert currentProgramInfo.coverImage == 
 
         transaction.rollback()
 

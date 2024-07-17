@@ -80,12 +80,12 @@ def deleteProgramFile():
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
-    
     if g.current_user.isCeltsAdmin:
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
-            
+            print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7")
+            print(programInfo)
             changeProgramInfo(programInfo["programName"],  
                               programInfo["programDescription"], 
                               programInfo["partner"],

@@ -64,8 +64,6 @@ function submitRequest(method, username){
   })
 }
 export function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
-
-
   document.getElementById('programName').value = programName;
   document.getElementById('programDescription').value = programDescription;
   handleFileSelection('modalProgramImage')
@@ -76,8 +74,6 @@ export function populateModal(programName, programDescription, partner, contactE
   document.getElementById('instagramUrl').value = instagramUrl;
   document.getElementById('facebookUrl').value = facebookUrl;
   document.getElementById('bereaUrl').value = bereaUrl;
-
-
   let updateForm = document.getElementById('updateProgramForm')
   updateForm.action = "/admin/updateProgramInfo/" + programId;
 }
