@@ -61,7 +61,6 @@ function calculateRecurringEventFrequency(){
   }
 
   document.getElementById('submitParticipant').addEventListener('click', function() {   
-    // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
@@ -155,28 +154,13 @@ $(document).ready(function() {
   $("#saveEvent").on('submit', function (event) {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
-
   
   $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
-    else{
-      document.getElementById('eventName').value = '';
-    }
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
-    
-    if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
-      console.log("Both recurring and multiple offering are on. Showing message...");
-      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
-      $(event.target).prop('checked', false);
-
-      return; 
-    }
-    
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
@@ -219,7 +203,6 @@ $(document).ready(function() {
     $("#multipleOfferingTableDiv").addClass('d-none');
     $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
-    //$('.extraSlots').empty();//this line remove the added multiple offering event slots from appearing if the multiple offering modal is toggle again
   });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
@@ -253,7 +236,6 @@ $(document).ready(function() {
       });
     }
   });
-
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
@@ -299,10 +281,6 @@ $(document).ready(function() {
       calculateRecurringEventFrequency();
     }
   });
-
-  // $(".multipleOfferingDate").click(function() {
-  //   $(#multipleOfferingDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
-  // });
 
   $("#checkRSVP").click(function(){
     if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
