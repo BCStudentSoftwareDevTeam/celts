@@ -137,11 +137,24 @@ function storingMultipleOfferingEventAttributes() {
   entries.forEach(function(entry){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(entry.eventDate);
+    var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
+/*
+ * Run when the webpage is ready for javascript
+ */
+
+function formatDate(originalDate) {
+  var dateObj = new Date(originalDate);
+  var month = dateObj.toLocaleString('default', { month: 'short' });
+  var day = dateObj.getDate();
+  var year = dateObj.getFullYear();
+  return month + " " + day + ", " + year;
+}
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -174,6 +187,7 @@ $(document).ready(function() {
   });
 
   $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+  $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
@@ -191,10 +205,20 @@ $(document).ready(function() {
       return; 
     }
     
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
+    
+    if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
+      console.log("Both recurring and multiple offering are on. Showing message...");
+      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
+      $(event.target).prop('checked', false);
+
+      return; 
+    }
+    
     if (recurringStatus == 'on') {
-      
       console.log("changed Multiple Offering status")
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none'); //**********************************************************************************HERE */
+      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
@@ -356,10 +380,6 @@ $(document).ready(function() {
   $(".startDatePicker").change(function(){
      updateDate(this)
   });
-
-//   $(".multipleOfferingDatePicker").change(function(){ //multiple offering data calender function
-//     updateDate(this)
-//  });
 
   $("#inputCharacters").keyup(function (event) {
     setCharacterLimit(this, "#remainingCharacters");
