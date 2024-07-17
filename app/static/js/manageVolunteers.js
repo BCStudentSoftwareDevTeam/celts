@@ -91,7 +91,8 @@ $(document).ready(function() {
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
           data: {"selectedVolunteers": selectedVolunteers, "ajax": true},
-          success: function(s){
+          success:
+          function(s){
               location.reload()
           },
           error: function(request, status, error){
