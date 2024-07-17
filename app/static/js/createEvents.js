@@ -154,6 +154,7 @@ $(document).ready(function() {
   $("#saveEvent").on('submit', function (event) {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
+<<<<<<< HEAD
 
   $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
     if(!(document.getElementById('inputEventName').value === '')){
@@ -162,6 +163,18 @@ $(document).ready(function() {
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     
+=======
+  
+  var modalOpenedByEditButton = false;
+
+  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
+    if(!(document.getElementById('inputEventName').value === '')){
+      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
+    }
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
+>>>>>>> 53f14791 (fixed the functionality of edit button)
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
@@ -196,11 +209,13 @@ $(document).ready(function() {
   });
   
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+    if (modalOpenedByEditButton == false) {
     $("#checkIsMultipleOffering").prop('checked', false);
     $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
     $("#multipleOfferingTableDiv").addClass('d-none');
     $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
+  }
   });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
@@ -341,6 +356,9 @@ $(document).ready(function() {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
+<<<<<<< HEAD
 $("#edit_modal").click(function(){
   $('#modalMultipleOffering').modal('show');
 })
+=======
+>>>>>>> 53f14791 (fixed the functionality of edit button)
