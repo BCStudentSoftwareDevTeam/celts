@@ -216,19 +216,8 @@ $(document).ready(function() {
   $(".addMultipleOfferingEvent").click(function(){
     let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
     let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
-    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
-    let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
-    
-    if(counterAdd % 2 == 0)
-      {
-        newMultipleID.css('background-color', '#f2f2f2');  
-      }
-      else{
-        newMultipleID.css('background-color', '#fff');  
-      }
-      counterAdd += 1
     
     if(counterAdd % 2 == 0)
       {
