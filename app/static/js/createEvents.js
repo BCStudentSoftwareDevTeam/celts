@@ -193,7 +193,6 @@ $(document).ready(function() {
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     
->>>>>>> 55c94ffd (merged branch changes)
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
 >>>>>>> 53f14791 (fixed the functionality of edit button)
