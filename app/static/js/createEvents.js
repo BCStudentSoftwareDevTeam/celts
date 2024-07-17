@@ -181,18 +181,9 @@ $(document).ready(function() {
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
-    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
-=======
-
-  $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-    if(!(document.getElementById('inputEventName').value === '')){
-      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
-    }
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
-    
+    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
 >>>>>>> 53f14791 (fixed the functionality of edit button)
