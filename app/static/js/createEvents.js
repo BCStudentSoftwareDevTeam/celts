@@ -166,12 +166,10 @@ $(document).ready(function() {
       console.log("Both recurring and multiple offering are on. Showing message...");
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
-
       return; 
     }
     
     if (recurringStatus == 'on') {
-      console.log("changed Multiple Offering status")
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -182,8 +180,7 @@ $(document).ready(function() {
       $(".endDatePicker").prop('required', false);
     }
     if (multipleOfferingStatus == 'on') {
-
-      console.log("changed recurring status")
+      $(".startDatePicker").prop('required', false);
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRecurring").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
@@ -194,12 +191,13 @@ $(document).ready(function() {
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+      $(".startDatePicker").prop('required', true);
     }
   });
   
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
     $("#checkIsMultipleOffering").prop('checked', false);
-    $('#nonMultipleOfferingTime, #nonMultiplOfferingDate').removeClass('d-none');
+    $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
     $("#multipleOfferingTableDiv").addClass('d-none');
     $('#modalMultipleOffering').modal('hide');
     $('.extraSlots').children().not(':first').remove();
