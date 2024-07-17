@@ -186,8 +186,11 @@
       <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
         <table class="table" id="multipleOfferingEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>End Time</th></tr></thead>
+          
           <tbody></tbody>
+         
         </table>
+        <div><button type="button" class="btn btn-secondary" id = "edit_modal">Edit</button></div>
       </div>
       <input type = "hidden" name = "multipleOfferingData" value = "hidden value here" id = "multipleOfferingDataId">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}

@@ -333,3 +333,9 @@ $(document).ready(function() {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
+
+$("#edit_modal").click(function(){
+  $('#modalMultipleOffering').modal('show');
+
+
+})
