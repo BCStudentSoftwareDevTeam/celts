@@ -80,7 +80,7 @@
           <label class="required form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
           <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
             <input autocomplete="off" type='date' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
-              value="{{eventData.endDate.strftime('%m/%d/%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
+              value="{{eventData.endDate.strftime('%Y-%m-%d') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
               name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
           </div>
       </div>
