@@ -60,10 +60,8 @@ function calculateRecurringEventFrequency(){
       });
   }
 
-  document.getElementById('submitParticipant').addEventListener('click', function() {   
-    // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
-    //Requires that modal info updated before it can be saved
-    var textNotifier = document.getElementById('textNotifier');
+  document.getElementById('submitParticipant').addEventListener('click', function() {
+    //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -72,24 +70,28 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-          textNotifier.textContent = "Event name or date field is empty";
-          textNotifier.style.display = 'block';  
-      }
+        }
   });  
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
-          textNotifier.textContent = "Event name or date field is empty";
-          textNotifier.style.display = 'block';  
       }
 });  
+    if (isEmpty){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("Event name or date field is empty");
+      $('.invalidFeedback').css('display', 'block');  
+      $('.invalidFeedback').on('animationend', function() {
+        $('.invalidFeedback').css('display', 'none');
+        $('#textNotifierPadding').removeClass('pt-5')
+      });
+      isEmpty = false;
+    }
 
-  if (!isEmpty){
-    textNotifier.textContent = "";
-    textNotifier.style.display = 'none';
-    storingMultipleOfferingEventAttributes();
-    $("#checkIsMultipleOffering").prop('checked', true);
+    else {
+      storingMultipleOfferingEventAttributes();
+      $("#checkIsMultipleOffering").prop('checked', true);
 
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
@@ -338,7 +340,7 @@ $(document).ready(function() {
   $(".startDatePicker").change(function(){
      updateDate(this)
   });
-  
+
   $("#inputCharacters").keyup(function (event) {
     setCharacterLimit(this, "#remainingCharacters");
   });
