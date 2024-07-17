@@ -127,9 +127,10 @@ function storingMultipleOfferingEventAttributes() {
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
+  dateObj.setUTCHours(0, 0, 0, 0);
   var month = dateObj.toLocaleString('default', { month: 'short' });
-  var day = dateObj.getDate();
-  var year = dateObj.getFullYear();
+  var day = dateObj.getUTCDate();
+  var year = dateObj.getUTCFullYear();
   return month + " " + day + ", " + year;
 }
 /*
