@@ -72,7 +72,7 @@
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
               <input autocomplete="off" type='date' class="form-control datePicker startDatePicker readonly" 
                 value= "{{ eventData.startDate.strftime('%Y-%m-%d') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
-                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}">
+                name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
           </div>
       </div>
       <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
