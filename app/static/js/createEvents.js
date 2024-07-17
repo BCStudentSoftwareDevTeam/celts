@@ -120,7 +120,6 @@ function storingMultipleOfferingEventAttributes() {
   entries.forEach(function(entry){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(entry.eventDate);
-    var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
@@ -237,7 +236,6 @@ $(document).ready(function() {
       });
     }
   });
-
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
