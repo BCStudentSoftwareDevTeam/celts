@@ -92,7 +92,6 @@ function calculateRecurringEventFrequency(){
     else {
       storingMultipleOfferingEventAttributes();
       $("#checkIsMultipleOffering").prop('checked', true);
-
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
       msgFlash("Multiple time offering events saved!", "success");
@@ -138,15 +137,6 @@ function formatDate(originalDate) {
 /*
  * Run when the webpage is ready for javascript
  */
-
-function formatDate(originalDate) {
-  var dateObj = new Date(originalDate);
-  var month = dateObj.toLocaleString('default', { month: 'short' });
-  var day = dateObj.getDate();
-  var year = dateObj.getFullYear();
-  return month + " " + day + ", " + year;
-}
-
 $(document).ready(function() {
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
