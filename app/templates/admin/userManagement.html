@@ -135,7 +135,7 @@
               <tr>
                  <th class="programHeader">Program</th>
               </tr>
-              <!--Populates the Acordian dropdown with the table of programs and their buttons-->
+              
               {% for program in programs %}
               <tr>
                  <td>
@@ -148,11 +148,11 @@
                     role="button" id="programManagementButton{{ loop.index }}" 
                     data-bs-toggle="modal" 
                     data-bs-target="#adminProgramManagement"
-                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}')">Update Program Information</button>
+                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}', '{{ program.instagramUrl }}','{{ program.facebookUrl }}', '{{ program.bereaUrl }}')">Update Program Information</button>
                     <script 
                       type="module"> import { populateModal } from "/static/js/userManagement.js";
-                      window.programModal = function(programName, programDescription, partner, contactEmail, contactName, location, programId){
-                      populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId)
+                      window.programModal = function(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl){
+                      populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl)
                       }
                       //This script imports the populateModal function set the input boxes in the modals to program information
                       //The program info is gotten from the programs list in userManagement.py and is passed using jinja on button click
@@ -193,6 +193,14 @@
                     <label for='modalProgramImage'><strong>Add Image</strong></label>
                     <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" accept= ".png, .jpg, .jpeg"/>
                   </div>
+                  <div class="mb-3">
+                    <label for='instagramUrl' class="form-label">Instagram URl</label>
+                    <textarea type="text" class="form-control" id="instagramUrl" name="instagramUrl"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for='facebookUrl' class="form-label">Facebook URl</label>
+                    <textarea type="text" class="form-control" id="facebookUrl" name="facebookUrl"></textarea>
+                  </div>
                   {% if filePaths %}
                   <div class="form-group mb-5">
                     {% from 'displayFilesMacro.html' import displayFiles %}
@@ -220,7 +228,10 @@
                     <label for="location" class="form-label">Location</label>
                     <input type="text" class="form-control" id="location" name="location"></input>
                   </div> 
-
+                  <div class="mb-3">
+                    <label for="bereaUrl" class="form-label">Berea URL</label>
+                    <textarea type="text" class="form-control" id="bereaUrl" name="bereaUrl"></textarea>
+                  </div> 
               </td>
             </tr> 
           </table>  

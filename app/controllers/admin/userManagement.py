@@ -93,7 +93,10 @@ def updateProgramInfo(programID):
                               programInfo["contactName"],
                               programInfo["location"],
                               programID,
-                              uploadedFile
+                              uploadedFile,
+                              programInfo["instagramUrl"],
+                              programInfo["facebookUrl"],
+                              programInfo["bereaUrl"]
                               )           
 
             associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) 

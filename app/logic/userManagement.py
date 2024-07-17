@@ -39,9 +39,9 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId, attachment): 
+def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId, attachment, newInstagramUrl, newFacebookUrl, newbereaUrl): 
   
-       
+    
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId)
     coverImage = program.coverImage 
@@ -56,7 +56,10 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
         Program.contactEmail: newContactEmail, 
         Program.contactName:newContactName,
         Program.defaultLocation:newLocation,
-        Program.coverImage: attachment
+        Program.coverImage: attachment,
+        Program.instagramUrl: newInstagramUrl,
+        Program.facebookUrl: newFacebookUrl,
+        Program.bereaUrl: newbereaUrl
         }
         ).where(Program.id==programId)    
     updatedProgram.execute()
