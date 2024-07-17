@@ -1,5 +1,6 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
+let pendingmultipleEvents = []
 
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
@@ -95,6 +96,7 @@ function calculateRecurringEventFrequency(){
 
     else {
       storeMultipleOfferingEventAttributes();
+      pendingmultipleEvents = []
       pendingmultipleEvents = []
       $("#checkIsMultipleOffering").prop('checked', true);
       // Remove the modal and overlay from the DOM
@@ -218,17 +220,11 @@ $(document).ready(function() {
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }
-    
-    console.log(typeof pendingmultipleEvents[0])
-    pendingmultipleEvents.forEach(function(element){
-      element.remove();
-      console.log(element)
-
-    });
-    
-
-});
-
+      pendingmultipleEvents.forEach(function(element){
+        element.remove();
+      }); 
+  });
+  
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
@@ -240,10 +236,10 @@ $(document).ready(function() {
     pendingmultipleEvents.push(newMultipleID);
     //stripes event sections in event modal
     if(counterAdd % 2 == 0){
-        newMultipleID.css('background-color', '#f2f2f2');  
+        newMultipleObject.css('background-color', '#f2f2f2');  
       }
       else{
-        newMultipleID.css('background-color', '#fff');  
+        newMultipleObject.css('background-color', '#fff');  
       }
       counterAdd += 1
     //this is so that the trash icon can be used to delete the event
