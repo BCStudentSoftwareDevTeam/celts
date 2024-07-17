@@ -63,7 +63,6 @@ function calculateRecurringEventFrequency(){
   document.getElementById('submitParticipant').addEventListener('click', function() {   
     // Call the function storingMultipleOfferingEventAttributes() when the button is clicked
     //Requires that modal info updated before it can be saved
-    var textNotifier = document.getElementById('textNotifier');
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -72,8 +71,6 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-          textNotifier.textContent = "Event name or date field is empty";
-          textNotifier.style.display = 'block';  
       }
   });  
     datePickerInputs.forEach(datePickerInput => {
@@ -124,7 +121,6 @@ function storingMultipleOfferingEventAttributes() {
   entries.forEach(function(entry){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(entry.eventDate);
-    var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
     multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
@@ -160,7 +156,7 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
 
-  $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page  createEvent.html line 157-160
+  
   $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
