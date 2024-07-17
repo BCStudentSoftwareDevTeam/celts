@@ -207,12 +207,19 @@ $(document).ready(function() {
   that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".addMultipleOfferingEvent").click(function(){
-    counterAdd += 1
     let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal on createEvent.html line 403
-    clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
+    let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
-
+    
+    if(counterAdd % 2 == 0)
+      {
+        newMultipleID.css('background-color', '#f2f2f2');  
+      }
+      else{
+        newMultipleID.css('background-color', '#fff');  
+      }
+      counterAdd += 1
     //this is so that the trash icon can be used to delete the event
     clonedMultipleOffering.on("click", "[id^=deleteMultipleOfferingEvent]", function() {
       var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id

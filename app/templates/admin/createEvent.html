@@ -178,13 +178,13 @@
       {{locationTimeMacro(eventData, hideDate, 'main')}}
 
       <div class="{{hideDate}}" id="recurringTableDiv">
-        <table class="table" id="recurringEventsTable">
+        <table class="table table-striped" id="recurringEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
       <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
-        <table class="table" id="multipleOfferingEventsTable">
+        <table class="table table-striped" id="multipleOfferingEventsTable">
           <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>End Time</th></tr></thead>
           
           <tbody></tbody>
@@ -404,13 +404,13 @@
           <h5 class="modal-title">This is an event with multiple time offerings.</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="multipleOfferingXbutton"></button>
         </div>
-        <div class="modal-body  py-0">
+        <div class="modal-body py-0">
           <div id="textNotifier" class="invalidFeedback"></div>
           <div class="form-group" id="textNotifierPadding">
           <br>
           </div>
           <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="row mb-2" id ="multipleOfferingEvent">
+          <div class="row mb-2 divStripes" id ="multipleOfferingEvent">
             <br>
             <div class="form-group mb-3">
               <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
@@ -440,7 +440,7 @@
             </div>
             <div class='form-group col-md-3'>
               <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-              <div class="input-group">
+              <div class="input-group pb-5">
                 {% if eventData.timeEnd %}
                   {% set endTime = eventData.timeEnd %}
                 {%else%}
