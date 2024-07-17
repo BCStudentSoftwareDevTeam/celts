@@ -61,6 +61,8 @@ function calculateRecurringEventFrequency(){
 
   document.getElementById('submitParticipant').addEventListener('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
+  document.getElementById('submitParticipant').addEventListener('click', function() {
+    //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
 
@@ -69,6 +71,7 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
+        }
         }
   });  
     datePickerInputs.forEach(datePickerInput => {
@@ -154,16 +157,6 @@ $(document).ready(function() {
   $("#saveEvent").on('submit', function (event) {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
-<<<<<<< HEAD
-
-  $("#checkIsRecurring, #checkIsMultipleOffering").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-    if(!(document.getElementById('inputEventName').value === '')){
-      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
-    }
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
-    
-=======
   
   var modalOpenedByEditButton = false;
 
@@ -171,10 +164,9 @@ $(document).ready(function() {
     if(!(document.getElementById('inputEventName').value === '')){
       document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
     }
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
->>>>>>> 53f14791 (fixed the functionality of edit button)
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
@@ -224,8 +216,19 @@ $(document).ready(function() {
   $(".addMultipleOfferingEvent").click(function(){
     let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
     let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
+    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
+    let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
+    
+    if(counterAdd % 2 == 0)
+      {
+        newMultipleID.css('background-color', '#f2f2f2');  
+      }
+      else{
+        newMultipleID.css('background-color', '#fff');  
+      }
+      counterAdd += 1
     
     if(counterAdd % 2 == 0)
       {
@@ -356,9 +359,6 @@ $(document).ready(function() {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
-<<<<<<< HEAD
 $("#edit_modal").click(function(){
   $('#modalMultipleOffering').modal('show');
 })
-=======
->>>>>>> 53f14791 (fixed the functionality of edit button)
