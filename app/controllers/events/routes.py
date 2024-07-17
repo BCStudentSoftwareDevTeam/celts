@@ -24,6 +24,12 @@ def loadKiosk(eventid):
 def undoEvent():
     try:
         eventId = session['lastDeletedEvent']
+        #if type(eventId) is list:
+        #    events = eventId
+        #    for event in events: 
+        #        Event.update({Event.pendingDeletion: False}).where(Event.id == event).execute()
+        #else:
+        #    Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
         if type(eventId) is list:
             events = eventId
             for event in events: 
@@ -31,21 +37,20 @@ def undoEvent():
 
             
         else:
+            event = Event.get_or_none(Event.id == eventId)
             Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
-            recurringId = Event.select(Event.recurringId).where(Event.id == eventId)
-            recurringEventName = list(Event.select(Event.name).where(Event.recurringId == recurringId))
-            if recurringId is not None: 
-                var = 0
-                for idx, val in enumerate(recurringEventName):
-                    if val[-1] == str(var):
-                        val[-1] = str(var + 1)
-                        print("vale is" + val)
-                        recurringEventName[idx] = val
-                        Event.update( {Event.name: recurringEventName[idx]} ).where(Event.id == idx)
-                    var = val[-1]
-                
+            recurringid = event.recurringId
+            recurringEvents = list(Event.select().where(Event.recurringId==recurringid).order_by(Event.id)) # orders for tests
+            if recurringid is not None: 
+                eventUpdated = False
+                for recurringEvent in recurringEvents:
+                    if eventUpdated:
+                        Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
+                        newEventName = recurringEvent.name
 
-        
+                    if recurringEvent == event:
+                        newEventName = recurringEvent.name
+                        eventUpdated= True
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:
