@@ -156,6 +156,7 @@ $(document).ready(function() {
   });
   
   var modalOpenedByEditButton = false;
+<<<<<<< HEAD
   
   //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
   $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
@@ -169,6 +170,18 @@ $(document).ready(function() {
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (multipleOfferingStatus == true && recurringStatus == true){
+=======
+
+  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
+    if(!(document.getElementById('inputEventName').value === '')){
+      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
+    }
+    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); //this line function is to retrive ON when its toggle for recurring event on createEvent.html line 158
+    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();// this line function is to retrive ON when toggle for multiple offering event button createEvent.html line 160
+    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
+    if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
+      console.log("Both recurring and multiple offering are on. Showing message...");
+>>>>>>> 53f14791 (fixed the functionality of edit button)
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
       return; 
@@ -202,6 +215,7 @@ $(document).ready(function() {
     }
   });
   
+<<<<<<< HEAD
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
@@ -211,6 +225,16 @@ $(document).ready(function() {
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }
+=======
+  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+    if (modalOpenedByEditButton == false) {
+    $("#checkIsMultipleOffering").prop('checked', false);
+    $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+    $("#multipleOfferingTableDiv").addClass('d-none');
+    $('#modalMultipleOffering').modal('hide');
+    $('.extraSlots').children().not(':first').remove();
+  }
+>>>>>>> 53f14791 (fixed the functionality of edit button)
   });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
@@ -351,6 +375,9 @@ $(document).ready(function() {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
+<<<<<<< HEAD
 $("#edit_modal").click(function(){
   $('#modalMultipleOffering').modal('show');
 })
+=======
+>>>>>>> 53f14791 (fixed the functionality of edit button)
