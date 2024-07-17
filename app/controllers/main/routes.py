@@ -94,7 +94,7 @@ def events(selectedTerm, activeTab, programID):
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Read the cookie value from the request
-    toggle_state = request.cookies.get('toggleState')
+    toggle_state = request.cookies.get('toggleState', 'unchecked')
 
     return render_template("/events/event_list.html",
                             selectedTerm = term,
