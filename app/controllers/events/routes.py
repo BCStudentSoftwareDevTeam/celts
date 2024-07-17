@@ -28,8 +28,24 @@ def undoEvent():
             events = eventId
             for event in events: 
                 Event.update({Event.pendingDeletion: False}).where(Event.id == event).execute()
+
+            
         else:
             Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
+            recurringId = Event.select(Event.recurringId).where(Event.id == eventId)
+            recurringEventName = list(Event.select(Event.name).where(Event.recurringId == recurringId))
+            if recurringId is not None: 
+                var = 0
+                for idx, val in enumerate(recurringEventName):
+                    if val[-1] == str(var):
+                        val[-1] = str(var + 1)
+                        print("vale is" + val)
+                        recurringEventName[idx] = val
+                        Event.update( {Event.name: recurringEventName[idx]} ).where(Event.id == idx)
+                    var = val[-1]
+                
+
+        
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:
