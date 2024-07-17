@@ -35,13 +35,9 @@
         opacity: 0;
     }
 }
-
 .border-red {
-
-    border: 2px solid red;
-    
+    border: 2px solid red;  
 }
-
 .divStripes {
     background-color: #fff
   }
