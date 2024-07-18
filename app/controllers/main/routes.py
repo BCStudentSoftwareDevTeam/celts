@@ -3,7 +3,7 @@ import datetime
 from peewee import JOIN
 from http import cookies
 from playhouse.shortcuts import model_to_dict
-from flask import request, render_template, g, abort, flash, redirect, url_for, make_response
+from flask import request, render_template, g, abort, flash, redirect, url_for, make_response, session
 
 from app.controllers.main import main_bp
 from app import app
@@ -93,8 +93,8 @@ def events(selectedTerm, activeTab, programID):
     
     managersProgramDict = getManagerProgramDict(g.current_user)
 
-    # Read the cookie value from the request
-    toggle_state = request.cookies.get('toggleState', 'unchecked')
+    # Fetch toggle state from session
+    toggle_state = session.get('toggleState', 'unchecked')
 
     return render_template("/events/event_list.html",
                             selectedTerm = term,
@@ -116,18 +116,16 @@ def events(selectedTerm, activeTab, programID):
 
 @main_bp.route('/updateToggleState', methods=['POST'])
 def update_toggle_state():
-   
-    # Get the checkbox state from the form
-    toggle_state = 'checked' if request.form.get('toggleState') == 'checked' else 'unchecked'
-        
-    # Read the next URL to redirect to
-    next_url = request.form.get('next_url', '/eventsList')
+    toggle_state = request.form.get('toggleState')
     
-    # Create a response object to set the cookie
-    resp = make_response(redirect(next_url))  # Redirect back to the referring page or specified URL
-    resp.set_cookie('toggleState', toggle_state, max_age=60*60*24*7)  # Store for 7 days
+    # Update session with toggle state
+    session['toggleState'] = toggle_state
+    
+    # Continue with setting the cookie as before
+    next_url = request.form.get('next_url', '/eventsList')
+    resp = make_response(redirect(next_url))
+    resp.set_cookie('toggleState', toggle_state, max_age=60*60*24*7)
     return resp
-
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
