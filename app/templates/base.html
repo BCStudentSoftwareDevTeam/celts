@@ -48,7 +48,6 @@
           <div class="flash_container" id="flash_container">
             {% with messages = get_flashed_messages(with_categories=true) %}
               <script> var flashMessages = {{messages | tojson}} </script>
-              {# <script> var flashMessages = {{messages | tojson}} </script> #}  {#FIXME: SHOULD BE THIS, WHY??#}
             {% endwith %}
           </div>
           <div class="sidebar-icon d-lg-none position-fixed top-0 start-0 d-print-none">

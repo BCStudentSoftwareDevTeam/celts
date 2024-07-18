@@ -1,10 +1,10 @@
 import searchUser from './searchUser.js'
 
 
-
 // updates max and min dates of the datepickers as the other datepicker changes
+// No need for / for Firefox compatiblity 
 function updateDate(obj) {
-  var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatiblity 
+  var selectedDate = $(obj).datepicker("getDate"); 
   var newMonth = selectedDate.getMonth();
   var newYear = selectedDate.getFullYear();
   var newDay = selectedDate.getDate();
@@ -43,7 +43,8 @@ function calculateRecurringEventFrequency(){
       $.ajax({
         type:"POST",
         url: "/makeRecurringEvents",
-        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+        //get the startDate, endDate and name as a dictionary
+        data: eventDatesAndName,
         success: function(jsonData){
           var recurringEvents = JSON.parse(jsonData)
           var recurringTable = $("#recurringEventsTable")
@@ -58,7 +59,6 @@ function calculateRecurringEventFrequency(){
         }
       });
   }
-    //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   document.getElementById('submitParticipant').addEventListener('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
@@ -101,7 +101,6 @@ function storingMultipleOfferingEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
-        console.log("Data in row " + (index + 1) + ": " + rowData);
 
         entries.push({
             eventName: rowData[0],
@@ -156,40 +155,45 @@ $(document).ready(function() {
   });
   
   var modalOpenedByEditButton = false;
-
-  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
+  
+  //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
+  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
     if(!(document.getElementById('inputEventName').value === '')){
-      document.getElementById('eventName').value = document.getElementById('inputEventName').value; //keeps main page event name for multiple event modal
+      //keeps main page event name for multiple event modal
+      document.getElementById('eventName').value = document.getElementById('inputEventName').value; 
     }
-    var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
-    var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
+    // retrieves toggle status, 'on' or undefined
+    var recurringStatus = $("#checkIsRecurring").is(":checked")
+    var multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-    if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
-      console.log("Both recurring and multiple offering are on. Showing message...");
+    if (multipleOfferingStatus == true && recurringStatus == true){
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
       return; 
     }
-    if (recurringStatus == 'on') {
+    if (recurringStatus == true) {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $("#checkIsMultipleOffering").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
     else{
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');// this line add the display none button of bootstrap so that the end-date div disappears for recurring event
+      //adds the display none button of bootstrap so that the end-date div disappears for recurring event
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
     }
-    if (multipleOfferingStatus == 'on') {
+    if (multipleOfferingStatus == true) {
       $(".startDatePicker").prop('required', false);
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRecurring").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); // this line hides the non multiple offering time and dates and replace them with recurring table div for multiple offering events to show
+      //hides the non multiple offering time and dates and replace
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
     }
-    else{
+    else{ 
+      //set page UI back to default
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
@@ -197,25 +201,26 @@ $(document).ready(function() {
     }
   });
   
-  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
+  //untoggles the button when the modal cancel or close button is clicked
+  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-    $("#checkIsMultipleOffering").prop('checked', false);
-    $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-    $("#multipleOfferingTableDiv").addClass('d-none');
-    $('#modalMultipleOffering').modal('hide');
-    $('.extraSlots').children().not(':first').remove();
-  }
+      $("#checkIsMultipleOffering").prop('checked', false);
+      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+      $("#multipleOfferingTableDiv").addClass('d-none');
+      $('#modalMultipleOffering').modal('hide');
+      $('.extraSlots').children().not(':first').remove();
+    }
   });
   
-  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, 
-  that specific row will be deleted*/
+  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
+  the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".addMultipleOfferingEvent").click(function(){
-    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();// this line clones the multipleOfferingEvent id div in the multiple offering event modal
+    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();
     let newMultipleID = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
-    
+    //stripes event sections in event modal
     if(counterAdd % 2 == 0){
         newMultipleID.css('background-color', '#f2f2f2');  
       }
@@ -225,7 +230,8 @@ $(document).ready(function() {
       counterAdd += 1
     //this is so that the trash icon can be used to delete the event
     clonedMultipleOffering.on("click", "[id^=deleteMultipleOfferingEvent]", function() {
-      var id = $(this).attr('id').match(/\d+/)[0]; // Extract the numeric part from the id
+      // Extract the numeric part from the id
+      var id = $(this).attr('id').match(/\d+/)[0]; 
       $("#multipleOfferingEvent" + id).remove(); 
     });
   });
