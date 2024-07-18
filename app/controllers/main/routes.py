@@ -197,7 +197,8 @@ def emergencyContactInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
 
-
+    user = User.get(User.username == username)
+    
     if request.method == 'GET':
         readOnly = g.current_user.username != username
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
@@ -214,7 +215,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -229,6 +230,8 @@ def insuranceInfo(username):
     """
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
+    
+    user = User.get(User.username == username)
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
@@ -247,7 +250,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
