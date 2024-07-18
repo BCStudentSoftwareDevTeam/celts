@@ -58,8 +58,6 @@ function calculateRecurringEventFrequency(){
         }
       });
   }
-
-  document.getElementById('submitParticipant').addEventListener('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   document.getElementById('submitParticipant').addEventListener('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
@@ -71,15 +69,14 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
-        }
-        }
-  });  
+      }
+    }); 
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
       }
-});  
+    });  
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event name or date field is empty");
@@ -167,13 +164,13 @@ $(document).ready(function() {
     var recurringStatus = $("input[id='checkIsRecurring']:checked").val(); // retrieves toggle status, 'on' or undefined
     var multipleOfferingStatus = $("input[id='checkIsMultipleOffering']:checked").val();
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
+
     if (multipleOfferingStatus == 'on' && recurringStatus == 'on'){
       console.log("Both recurring and multiple offering are on. Showing message...");
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
       return; 
     }
-    
     if (recurringStatus == 'on') {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $("#checkIsMultipleOffering").prop('checked', false);
@@ -219,8 +216,7 @@ $(document).ready(function() {
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering)
     
-    if(counterAdd % 2 == 0)
-      {
+    if(counterAdd % 2 == 0){
         newMultipleID.css('background-color', '#f2f2f2');  
       }
       else{
