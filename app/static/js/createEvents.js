@@ -59,7 +59,7 @@ function calculateRecurringEventFrequency(){
         }
       });
   }
-  document.getElementById('submitParticipant').addEventListener('click', function() {
+  $('#submitParticipant').on('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
@@ -111,7 +111,7 @@ function storingMultipleOfferingEventAttributes() {
     });
 
     let entriesJson = JSON.stringify(entries);
-    document.getElementById("multipleOfferingDataId").value = entriesJson
+    $("#multipleOfferingDataId").val(entriesJson);
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
@@ -126,6 +126,7 @@ function storingMultipleOfferingEventAttributes() {
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
+  //ensures that time zone is not inconsistent, keeping the date consistent with what the user selects
   dateObj.setUTCHours(0, 0, 0, 0);
   var month = dateObj.toLocaleString('default', { month: 'short' });
   var day = dateObj.getUTCDate();
@@ -158,9 +159,9 @@ $(document).ready(function() {
   
   //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
   $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
-    if(!(document.getElementById('inputEventName').value === '')){
+    if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
-      document.getElementById('eventName').value = document.getElementById('inputEventName').value; 
+      $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
     var recurringStatus = $("#checkIsRecurring").is(":checked")
