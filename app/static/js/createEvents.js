@@ -160,8 +160,7 @@ $(document).ready(function() {
     $(this).find("input[type=submit]").prop("disabled", true);
   });
   
-  var modalOpenedByEditButton = false;
-<<<<<<< HEAD
+  let modalOpenedByEditButton = false;
   
   //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
   $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
@@ -170,8 +169,8 @@ $(document).ready(function() {
       $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
-    var recurringStatus = $("#checkIsRecurring").is(":checked")
-    var multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
+    let recurringStatus = $("#checkIsRecurring").is(":checked")
+    let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
 
@@ -218,7 +217,7 @@ $(document).ready(function() {
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }
-  } else {
+    else {
     console.log($("#multipleOfferingTableDiv").html())
     let tableRows = $("#multipleOfferingTableDiv").find("tr").map(function() {
       let rowData = $(this).find("td").map(function() {
@@ -395,9 +394,6 @@ $(document).ready(function() {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
-<<<<<<< HEAD
 $("#edit_modal").click(function(){
   $('#modalMultipleOffering').modal('show');
 })
-=======
->>>>>>> 53f14791 (fixed the functionality of edit button)
