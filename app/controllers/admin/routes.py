@@ -7,9 +7,6 @@ from datetime import datetime
 import os
 import ast
 from dateutil.parser import parse
-import ast
-from dateutil.parser import parse
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
