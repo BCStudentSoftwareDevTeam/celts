@@ -2,7 +2,7 @@ import searchUser from './searchUser.js';
 
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
-  var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatiblity 
+  var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatibility 
   var newMonth = selectedDate.getMonth();
   var newYear = selectedDate.getFullYear();
   var newDay = selectedDate.getDate();
@@ -19,7 +19,6 @@ function updateDate(obj) {
   }
 }
 
-
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr) {
@@ -35,28 +34,30 @@ function format24to12HourTime(timeStr) {
 }
 
 function calculateRecurringEventFrequency(){
-      var eventDatesAndName = {name:$("#inputEventName").val(),
-                               isRecurring: true,
-                               startDate:$(".startDatePicker")[0].value,
-                               endDate:$(".endDatePicker")[0].value}
-      $.ajax({
-        type:"POST",
-        url: "/makeRecurringEvents",
-        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
-        success: function(jsonData){
-          var recurringEvents = JSON.parse(jsonData)
-          var recurringTable = $("#recurringEventsTable")
-          $("#recurringEventsTable tbody tr").remove();
-          for (var event of recurringEvents){
-            var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            }
-        },
-        error: function(error){
-          console.log(error)
-        }
-      });
+  var eventDatesAndName = {
+    name: $("#inputEventName").val(),
+    isRecurring: true,
+    startDate: $(".startDatePicker")[0].value,
+    endDate: $(".endDatePicker")[0].value
   }
+  $.ajax({
+    type: "POST",
+    url: "/makeRecurringEvents",
+    data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+    success: function(jsonData){
+      var recurringEvents = JSON.parse(jsonData)
+      var recurringTable = $("#recurringEventsTable")
+      $("#recurringEventsTable tbody tr").remove();
+      for (var event of recurringEvents){
+        var eventdate = new Date(event.date).toLocaleDateString()
+        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+      }
+    },
+    error: function(error){
+      console.log(error)
+    }
+  });
+}
   
 $(document).ready(function () {
   // Initialize datepicker with proper options
@@ -70,7 +71,7 @@ $(document).ready(function () {
     minDate: new Date() 
   });
 
-    $(".datePicker").each(function() {
+  $(".datePicker").each(function() {
     var dateStr = $(this).val();
     if (dateStr) {
       var dateObj = new Date(dateStr);
@@ -78,6 +79,19 @@ $(document).ready(function () {
         $(this).datepicker("setDate", dateObj);
       }
     }
+  });
+
+  // Initialize timepicker
+  $('.timepicker').timepicker({
+    timeFormat: 'h:mm p',
+    interval: 60,
+    minTime: '8:00am',
+    maxTime: '10:00pm',
+    defaultTime: '11:00am',
+    startTime: '8:00am',
+    dynamic: false,
+    dropdown: true,
+    scrollbar: true
   });
 
   // Update datepicker min and max dates on change
@@ -129,52 +143,6 @@ $(document).ready(function () {
       });
     }
   });
-
-  // everything except Chrome
-  // if (navigator.userAgent.indexOf("Chrome") == -1) {
-  //   $('input.timepicker').timepicker({
-  //     timeFormat: 'hh:mm p',
-  //     scrollbar: true,
-  //     dropdown: true,
-  //     dynamic: true,
-  //     minTime: "08:00am",
-  //     maxTime: "10:00pm"
-  //   });
-  //   $(".timepicker").prop("type", "text");
-  //   $(".timeIcons").prop("hidden", false);
-
-  //   $(".timeIcons").click(function() {
-  //     $(".timepicker").timepicker("show");
-  //     alert("yes")
-  //   })
-
-  //   var formattedStartTime = format24to12HourTime($(".startTime").prop("defaultValue"));
-  //   var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
-  //   $(".startTime").val(formattedStartTime);
-  //   $(".endTime").val(formattedEndTime);
-  // } else {
-  //   $(".timepicker").prop("type", "time");
-  //   $(".timeIcons").prop("hidden", false);
-  //   $(".timeIcons").click(() => {
-  //     $(".timepicker").timepicker("hide")
-  //   })
-  // }
-
-  $("input.timepicker").timepicker({
-    timeFormat: 'HH:mm',
-    scrollbar: true,
-    dropdown: true,
-    dynamic: true, 
-    minTime: "8:00am",
-    maxtime: "10:00pm"
-  })
-
-  $(".timepicker").prop("type", "text")
-  $(".timeIcons").prop("hidden", false)
-
-  if ($(".datePicker").is("readonly")) {
-    $(".datePicker").datepicker("option", "disabled", true);
-  }
 
   $(".readonly").on('keydown paste', function (e) {
     if (e.keyCode != 9) // ignore tab
