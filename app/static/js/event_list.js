@@ -6,26 +6,35 @@ $(document).ready(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
     var viewPastEventsToggle = $("#viewPastEventsToggle");
-    // viewPastEventsToggle.prop("checked", g_isPastTerm);
-    toggleRows(g_isPastTerm);
-    // viewPastEventsToggle.prop("disabled", g_isPastTerm);    
-      
-    viewPastEventsToggle.on("change", function(){
-      var isChecked = $(this).prop("checked");
-      toggleRows(isChecked);
+    var isChecked = viewPastEventsToggle.data("initial-state") === "checked";
+    viewPastEventsToggle.prop("checked", isChecked);
+    toggleRows(isChecked);
 
-      localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked")
-    });
-
-    function toggleRows(isChecked) {
-      var tableRows = $(".showlist");
-      if (isChecked){
-        tableRows.show();
-      } else {
-        tableRows.hide();
-      }
+    if (!g_isPastTerm) {
+      viewPastEventsToggle.on("change", function(){
+        isChecked = $(this).prop("checked");
+        toggleRows(isChecked);
+    
+        // Update server state via AJAX POST
+        $.post("/updateToggleState", {
+          toggleState: isChecked ? "checked" : "unchecked",
+        });
+    
+      });
+    } else {
+      viewPastEventsToggle.prop("checked", g_isPastTerm);
+      toggleRows(g_isPastTerm);
     }
-  });
+
+  function toggleRows(isChecked) {
+    var tableRows = $(".showlist");
+    if (isChecked) {
+      tableRows.show();
+    } else {
+      tableRows.hide();
+    }
+  }
+});
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
@@ -58,7 +67,6 @@ function removeRsvpForEvent(eventID){
     error: function(error, status){
         console.log(error, status)
     }
-
   })
 }
 
