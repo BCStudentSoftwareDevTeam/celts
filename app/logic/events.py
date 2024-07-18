@@ -90,8 +90,9 @@ def deleteAllRecurringEvents(eventId):
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId or event.multipleOfferingId:
-                recurringOrMultipleOfferingId = event.recurringId or event.multipleOfferingId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringOrMultipleOfferingId or Event.multipleOfferingId == recurringOrMultipleOfferingId))
+                recurringId = event.recurringId
+                MultipleOfferingId = event.multipleOfferingId
+                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId or Event.multipleOfferingId == MultipleOfferingId))
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
 
