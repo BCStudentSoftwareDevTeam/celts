@@ -58,7 +58,7 @@ def deleteEvent(eventId):
                     newEventName = recurringEvent.name
                     eventDeleted = True
 
-        program = event.program
+        program = event.program 
 
         if program:
             createActivityLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
@@ -67,6 +67,7 @@ def deleteEvent(eventId):
 
         Event.update({Event.pendingDeletion: True}).where(Event.id == event.id).execute()
         
+
         # Commented out, but is the command used for deleteing event instance
         # event.delete_instance(recursive = True, delete_nullable = True)
 
