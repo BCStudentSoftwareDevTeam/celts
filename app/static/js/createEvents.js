@@ -69,12 +69,17 @@ function calculateRecurringEventFrequency(){
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
           isEmpty = true;
+          $(eventNameInput).addClass('border-red');
+      } else{
+        $(eventNameInput).removeClass('border-red');
       }
     }); 
     datePickerInputs.forEach(datePickerInput => {
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
+      } else {
+        $(datePickerInput).removeClass('border-red');
       }
     });  
     if (isEmpty){
@@ -89,7 +94,7 @@ function calculateRecurringEventFrequency(){
     }
 
     else {
-      storingMultipleOfferingEventAttributes();
+      storeMultipleOfferingEventAttributes();
       $("#checkIsMultipleOffering").prop('checked', true);
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
@@ -97,7 +102,7 @@ function calculateRecurringEventFrequency(){
     }
   });
 //build multi-event table
-function storingMultipleOfferingEventAttributes() {
+function storeMultipleOfferingEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
@@ -214,8 +219,7 @@ $(document).ready(function() {
       $(".startDatePicker").prop('required', true);
     }
   });
-  
-<<<<<<< HEAD
+
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
@@ -225,17 +229,44 @@ $(document).ready(function() {
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }
-=======
-  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ //this function is to untoggle the button when the modal has cancel or close button being clicked
-    if (modalOpenedByEditButton == false) {
-    $("#checkIsMultipleOffering").prop('checked', false);
-    $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-    $("#multipleOfferingTableDiv").addClass('d-none');
-    $('#modalMultipleOffering').modal('hide');
-    $('.extraSlots').children().not(':first').remove();
-  }
->>>>>>> 53f14791 (fixed the functionality of edit button)
+  } else {
+    console.log($("#multipleOfferingTableDiv").html())
+    let tableRows = $("#multipleOfferingTableDiv").find("tr").map(function() {
+      let rowData = $(this).find("td").map(function() {
+          return $(this).text();
+      }).get();
+      console.log(typeof rowData)
+      console.log(rowData)
+      return rowData;
+
+  }).get();
+
+    console.log(tableRows)
+    console.log(typeof tableRows)
+    console.log(typeof tableRows[0])
+
+    $(".extraSlots").children().each(function(index, element) {
+      let rowData = $.map($(element).find("input"), function(el) {
+        return $(el).val();
+      });
+
+      console.log("Data in row" +(index + 1) + ": " + rowData);
+      console.log(typeof rowData)
+      let foundInTable = tableRows.some(function(tableRow) {
+        return JSON.stringify(tableRow) === JSON.stringify(rowData);
+      });
+
+      console.log(foundInTable)
+
+      // If not found in tableRows, remove the child element
+      if (!foundInTable) {
+        $(element).remove();
+      }
+     
   });
+  }
+
+});
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, that specific row will be deleted*/
