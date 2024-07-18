@@ -97,26 +97,27 @@
     </div>
 
     <!-- Start and End Time -->
-    <div class="mb-4">
-      <div class="row col-md-12">
-        <div class="form-group col-md-6">
-          <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
-          <div class="input-group">
-            <input autocomplete="off" type="text" class="form-control timepicker startTime" value="{{eventData.timeStart if eventData.timeStart else '12:00'}}" name="timeStart" 
-              aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-{{pageLocation}}" data-id="start-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-            <div class="input-group-text timeIcons" data-id="start-{{pageLocation}}" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></div>
-          </div>
-        </div>
-        <div class="form-group col-md-6">
-          <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-          <div class="input-group">
-            <input autocomplete="off" type="text" class="form-control timepicker endTime" value="{{eventData.timeEnd if eventData.timeEnd else '13:00'}}" name="timeEnd" 
-              aria-describedby="timeIcon2" placeholder="Pick an end time" id="endTime-{{pageLocation}}" data-id="end-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-            <div class="input-group-text timeIcons" data-id="end-{{pageLocation}}" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></div>
-          </div>
-        </div>
+<div class="mb-4">
+  <div class="row col-md-12">
+    <div class="form-group col-md-6">
+      <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
+      <div class="input-group">
+        <input autocomplete="off" type="text" class="form-control timepicker startTime" value="{{eventData.timeStart if eventData.timeStart else '12:00'}}" name="timeStart" 
+          aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-{{pageLocation}}" data-id="start-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+        <span class="input-group-text timeIcons" data-id="start-{{pageLocation}}" id="timeIcon1-{{pageLocation}}"><i class="bi bi-clock"></i></span>
       </div>
     </div>
+    <div class="form-group col-md-6">
+      <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+      <div class="input-group">
+        <input autocomplete="off" type="text" class="form-control timepicker endTime" value="{{eventData.timeEnd if eventData.timeEnd else '13:00'}}" name="timeEnd" 
+          aria-describedby="timeIcon2" placeholder="Pick an end time" id="endTime-{{pageLocation}}" data-id="end-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+        <span class="input-group-text timeIcons" data-id="end-{{pageLocation}}" id="timeIcon2-{{pageLocation}}"><i class="bi bi-clock"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
+
   {% endmacro %}
 
 <form enctype="multipart/form-data" id="saveEvent" data-toggle="validator" role="form" action="{{request.path}}" method="POST">

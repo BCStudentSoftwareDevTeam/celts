@@ -94,6 +94,8 @@ $(document).ready(function () {
     scrollbar: true
   });
 
+
+
   // Update datepicker min and max dates on change
   $(".startDatePicker, .endDatePicker").change(function () {
     updateDate(this);
@@ -161,6 +163,11 @@ $(document).ready(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
       calculateRecurringEventFrequency();
     }
+  });
+
+$(".timeIcons").click(function() {
+    var inputId = $(this).data("id");
+    $("#start" + inputId).timepicker("show");
   });
 
   $("#checkRSVP").click(function () {
