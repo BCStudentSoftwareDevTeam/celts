@@ -5,8 +5,7 @@ from playhouse.shortcuts import model_to_dict
 import json
 from datetime import datetime
 import os
-import ast
-from dateutil.parser import parse
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -103,8 +102,10 @@ def createEvent(templateid, programid):
         eventData.update(request.form.copy())
         if eventData.get('isMultipleOffering'):
             multipleOfferingId = calculateNewMultipleOfferingId()
-            for event in ast.literal_eval(eventData.get('multipleOfferingData')):
-                multipleOfferingDict = eventData
+
+            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
+            for event in multipleOfferingData:
+                multipleOfferingDict = eventData.copy()
                 multipleOfferingDict.update({
                     'name': event['eventName'],
                     'startDate': event['eventDate'],
@@ -143,7 +144,7 @@ def createEvent(templateid, programid):
                 elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
-                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in ast.literal_eval(eventData.get('multipleOfferingData'))]
+                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in json.loads(eventData.get('multipleOfferingData'))]
 
                     event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
 
