@@ -24,12 +24,6 @@ def loadKiosk(eventid):
 def undoEvent():
     try:
         eventId = session['lastDeletedEvent']
-        #if type(eventId) is list:
-        #    events = eventId
-        #    for event in events: 
-        #        Event.update({Event.pendingDeletion: False}).where(Event.id == event).execute()
-        #else:
-        #    Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
         if type(eventId) is list:
             events = eventId
             for event in events: 
@@ -38,49 +32,18 @@ def undoEvent():
             
         else:
             event = Event.get_or_none(Event.id == eventId)
-            print("####################")
-            print(event)
-            print("####################")
             Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
             recurringid = event.recurringId
-            print("####################")
-            print(recurringid)
-            print("####################")
-            recurringEvents = list(Event.select().where(Event.recurringId==recurringid).order_by(Event.id)) # orders for tests
-            print("####################")
-            print(recurringEvents)
-            print("####################")
+            recurringEvents = list(Event.select().where((Event.recurringId==recurringid) & (Event.pendingDeletion == False)).order_by(Event.id)) # orders for tests
             if recurringid is not None: 
                 eventUpdated = False
-                print("####################")
-                print(recurringEvents[0])
-                print("####################")
-                print("####################")
-                print(recurringEvents[0].name)
-                print("####################")
                 nameCounter = 1
                 for recurringEvent in recurringEvents:
-                    print("####################")
-                    print(nameCounter)
                     newEventNameList = recurringEvent.name.split()
                     newEventNameList[-1] = f"{nameCounter}"
                     newEventNameList = " ".join(newEventNameList)
                     Event.update({Event.name:newEventNameList}).where(Event.id==recurringEvent.id).execute()
                     nameCounter += 1 
-                    print("####################")
-                    #if eventUpdated:
-                    #    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
-                    #    newEventName = recurringEvent.name
-                    #    print("#################### update event")
-                    #    print(newEventName)
-                    #    print("####################")
-                    #
-                    #if recurringEvent == event:
-                    #    newEventName = recurringEvent.name
-                    #    print("#################### recurring event")
-                    #    print(newEventName)
-                    #    print("####################")
-                    #    eventUpdated= True
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:
