@@ -124,11 +124,11 @@ def update_toggle_state():
     # Continue with setting the cookie as before
     next_url = request.form.get('next_url', '/eventsList')
     resp = make_response(redirect(next_url))
-    resp.set_cookie('toggleState', toggle_state, max_age=60*60*24*7)
+    resp.set_cookie('toggleState', toggle_state)
     return resp
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewUsersProfile(username):
+def viewUsersProfile(username):   
     """
     This function displays the information of a volunteer to the user
     """
@@ -141,7 +141,7 @@ def viewUsersProfile(username):
         else:
             abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
-    if (g.current_user == volunteer) or g.current_user.isAdmin:
+    if (g.current_user == volunteer) or g.current_user.isAdmin: 
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
