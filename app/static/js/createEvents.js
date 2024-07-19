@@ -367,4 +367,3 @@ $(document).ready(function() {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
-
