@@ -224,6 +224,7 @@ $(document).ready(function() {
       element.remove();
 
     });
+  });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, that specific row will be deleted*/
