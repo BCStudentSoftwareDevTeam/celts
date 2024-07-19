@@ -1,4 +1,5 @@
 import pytest
+import io
 from flask import g
 from app import app
 from app.logic.userManagement import *
@@ -8,6 +9,7 @@ from app.models.programManager import ProgramManager
 from app.logic.volunteers import setProgramManager
 from peewee import DoesNotExist
 from app.models import mainDB
+from werkzeug.datastructures import FileStorage
 
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
@@ -88,23 +90,25 @@ def test_changeProgramInfo():
         contactName = "New Test Name"
         contactEmail = 'newtest@email'
         location = "Danforth Tech"
-        coverImage = 
         newInstagramUrl = "www.instagram.com"
         newBereaUrl = "www.berea.edu"
         newFacebookUrl = "www.facebook.com" 
-
-
+        coverImageFile = io.BytesIO(b"this is a test image") 
+        coverImage = FileStorage(stream=coverImageFile, filename="test_image.jpg", content_type="image/jpeg")
+        
+        
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.programDescription != eventDescription
-        assert currentProgramInfo.partner == ""
+        assert currentProgramInfo.partner != eventPartner
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
-        assert currentProgramInfo.newInstagramUrl != None
-        assert currentProgramInfo.newBereaUrl != None
-        assert currentProgramInfo.newFacebookUrl != None
+        assert currentProgramInfo.instagramUrl != None
+        assert currentProgramInfo.bereaUrl != None
+        assert currentProgramInfo.facebookUrl != None
+        assert currentProgramInfo.coverImage == None
        
         with app.test_request_context():
             g.current_user = "ramsayb2"
@@ -121,7 +125,12 @@ def test_changeProgramInfo():
         assert currentProgramInfo.instagramUrl == newInstagramUrl
         assert currentProgramInfo.facebookUrl == newFacebookUrl
         assert currentProgramInfo.bereaUrl == newBereaUrl
-        assert currentProgramInfo.coverImage == 
+        image = currentProgramInfo.coverImage
+        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        print(image.filename)
+        assert image.filename == 'test_image.jpg'
+    
+        
 
         transaction.rollback()
 

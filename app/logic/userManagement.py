@@ -39,7 +39,7 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, newContactEmail, newContactName, newLocation, programId, attachment, newInstagramUrl, newFacebookUrl, newbereaUrl): 
+def changeProgramInfo(programId, attachment, programName= None, programDescription = None, partner = None, contactEmail=None, contactName= None, location = None,instagramUrl = None, facebookUrl = None, bereaUrl = None): 
   
     
     """Updates the program info and logs that change"""
@@ -50,33 +50,33 @@ def changeProgramInfo(newProgramName, newProgramDescription, newProgramPartner, 
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
     updatedProgram = Program.update(
-        {Program.programName:newProgramName,
-        Program.programDescription: newProgramDescription, 
-        Program.partner: newProgramPartner, 
-        Program.contactEmail: newContactEmail, 
-        Program.contactName:newContactName,
-        Program.defaultLocation:newLocation,
+        {Program.programName:programName,
+        Program.programDescription: programDescription, 
+        Program.partner: partner, 
+        Program.contactEmail: contactEmail, 
+        Program.contactName: contactName,
+    Program.defaultLocation: location,
         Program.coverImage: attachment,
-        Program.instagramUrl: newInstagramUrl,
-        Program.facebookUrl: newFacebookUrl,
-        Program.bereaUrl: newbereaUrl
+        Program.instagramUrl:instagramUrl,
+        Program.facebookUrl: facebookUrl,
+    Program.bereaUrl: bereaUrl
         }
         ).where(Program.id==programId)    
     updatedProgram.execute()
   
    
-    if newProgramName != program.programName:
-        createActivityLog(f"{program.programName} Program Name was changed to: {newProgramName}")
-    if newProgramDescription != program.programDescription:
-        createActivityLog(f"{program.programName} Description was changed to: {newProgramDescription}")
-    if newProgramPartner != program.partner:
-        createActivityLog(f"{program.programName} Program Partner was changed to: {newProgramPartner}")
-    if newContactEmail != program.contactEmail:
-        createActivityLog(f"{program.programName} Contact Email was changed to: {newContactEmail}")
-    if newContactName != program.contactName:
-        createActivityLog(f"{program.programName} Contact Name was changed to: {newContactName}")
-    if newLocation != program.defaultLocation:
-        createActivityLog(f"{program.programName} Location was changed to: {newLocation}")
+    if programName != program.programName:
+        createActivityLog(f"{program.programName} Program Name was changed to: {programName}")
+    if programDescription != program.programDescription:
+        createActivityLog(f"{program.programName} Description was changed to: {programDescription}")
+    if partner != program.partner:
+        createActivityLog(f"{program.programName} Program Partner was changed to: {partner}")
+    if contactEmail != program.contactEmail:
+        createActivityLog(f"{program.programName} Contact Email was changed to: {contactEmail}")
+    if contactName != program.contactName:
+        createActivityLog(f"{program.programName} Contact Name was changed to: {contactName}")
+    if location != program.defaultLocation:
+        createActivityLog(f"{program.programName} Location was changed to: {location}")
     
 
     return (f'Program email info updated')

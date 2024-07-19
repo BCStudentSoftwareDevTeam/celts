@@ -40,3 +40,10 @@
       height:10px;
     }
   }
+
+.table-container{
+
+  max-height: 400px;
+  overflow-y: auto;
+
+}
