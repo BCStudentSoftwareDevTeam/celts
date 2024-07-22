@@ -5,14 +5,14 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
+
     var viewPastEventsToggle = $("#viewPastEventsToggle");
-    var isChecked = viewPastEventsToggle.data("initial-state") === "checked";
-    viewPastEventsToggle.prop("checked", isChecked);
+    var isChecked = viewPastEventsToggle.prop("checked");
     toggleRows(isChecked);
 
     if (!g_isPastTerm) {
       viewPastEventsToggle.on("change", function(){
-        isChecked = $(this).prop("checked");
+        let isChecked = $(this).prop("checked");
         toggleRows(isChecked);
     
         // Update server state via AJAX POST
@@ -21,9 +21,6 @@ $(document).ready(function(){
         });
     
       });
-    } else {
-      viewPastEventsToggle.prop("checked", g_isPastTerm);
-      toggleRows(g_isPastTerm);
     }
 
   function toggleRows(isChecked) {

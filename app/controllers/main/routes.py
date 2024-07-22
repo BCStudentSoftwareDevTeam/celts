@@ -121,11 +121,7 @@ def update_toggle_state():
     # Update session with toggle state
     session['toggleState'] = toggle_state
     
-    # Continue with setting the cookie as before
-    next_url = request.form.get('next_url', '/eventsList')
-    resp = make_response(redirect(next_url))
-    resp.set_cookie('toggleState', toggle_state)
-    return resp
+    return "", 200
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):   

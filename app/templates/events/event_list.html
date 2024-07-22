@@ -36,8 +36,7 @@
       <div class="form-check form-switch mb-2 col-auto">
         <label class="form-check-label" for="viewPastEventsToggle">View Past Events</label>
         {% if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm %}
-            <input type="hidden" name="next_url" value="{{ request.url }}">
-            <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off" data-initial-state="{{ toggle_state }}" autocomplete="off" name="toggleState" {% if toggle_state == 'checked' %}checked{% endif %}>
+            <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off" name="toggleState" {% if toggle_state == 'checked' %}checked{% endif %}>
         {% else %}  
           <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off" name="toggleState" checked disabled>
         {% endif %}
