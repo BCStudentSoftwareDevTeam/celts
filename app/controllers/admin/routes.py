@@ -34,7 +34,7 @@ from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preproc
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
@@ -125,6 +125,8 @@ def createEvent(templateid, programid):
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), savedEvents[0].id)
+                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
+
 
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
@@ -164,7 +166,7 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
@@ -268,6 +270,7 @@ def eventDisplay(eventId):
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), event.id)
+                addBonnerCohortToRsvpLog(int(year), event.id)
 
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
@@ -307,7 +310,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
         eventCountdown = getCountdownToEvent(event)
-
+ 
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -332,7 +335,8 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
-                                eventCountdown=eventCountdown)
+                                eventCountdown=eventCountdown
+                                )
                                 
 
 
