@@ -1,6 +1,5 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
-let pendingmultipleEvents = []
 
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
@@ -234,7 +233,7 @@ $(document).ready(function() {
     let newMultipleObject = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
     clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering);
-    pendingmultipleEvents.push(newMultipleID);
+    pendingmultipleEvents.push(newMultipleObject);
     //stripes event sections in event modal
     if(counterAdd % 2 == 0){
         newMultipleObject.css('background-color', '#f2f2f2');  
