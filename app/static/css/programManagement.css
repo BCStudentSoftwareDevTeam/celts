@@ -1,4 +1,5 @@
 .modal {
+  
     position: absolute;
     float: left;
     left: 50%;
@@ -40,10 +41,3 @@
       height:10px;
     }
   }
-
-.table-container{
-
-  max-height: 400px;
-  overflow-y: auto;
-
-}

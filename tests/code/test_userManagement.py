@@ -83,25 +83,26 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
+        coverImage = FileStorage(filename="test_image.jpg", content_type="image/jpeg")
         programId = 3
-        eventName = "Test Event Name"
-        eventDescription = "This is a test Description"
-        eventPartner = "Test Partner"
-        contactName = "New Test Name"
-        contactEmail = 'newtest@email'
-        location = "Danforth Tech"
-        newInstagramUrl = "www.instagram.com"
-        newBereaUrl = "www.berea.edu"
-        newFacebookUrl = "www.facebook.com" 
-        coverImageFile = io.BytesIO(b"this is a test image") 
-        coverImage = FileStorage(stream=coverImageFile, filename="test_image.jpg", content_type="image/jpeg")
+        add = {
+        "programName" : "Test Event Name",
+        "programDescription" : "This is a test Description",
+        "partner" : "Test Partner",
+        "contactName" : "New Test Name",
+        "contactEmail" : 'newtest@email',
+        "location" : "Danforth Tech",
+        "instagramUrl" : "www.instagram.com",
+        "bereaUrl" : "www.berea.edu",
+        "facebookUrl" : "www.facebook.com"}
+        
         
         
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
-        assert currentProgramInfo.programDescription != eventDescription
-        assert currentProgramInfo.partner != eventPartner
+        assert currentProgramInfo.programDescription != add['programDescription']
+        assert currentProgramInfo.partner != add['partner']
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
@@ -112,26 +113,21 @@ def test_changeProgramInfo():
        
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, eventDescription, eventPartner, contactEmail, contactName, location, programId, coverImage, newInstagramUrl, newFacebookUrl, newBereaUrl)
+            changeProgramInfo(programId, coverImage, **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
-
-        assert currentProgramInfo.programName == eventName
-        assert currentProgramInfo.programDescription == eventDescription
-        assert currentProgramInfo.partner == eventPartner
-        assert currentProgramInfo.contactName == contactName
-        assert currentProgramInfo.contactEmail == contactEmail
-        assert currentProgramInfo.defaultLocation == location
-        assert currentProgramInfo.instagramUrl == newInstagramUrl
-        assert currentProgramInfo.facebookUrl == newFacebookUrl
-        assert currentProgramInfo.bereaUrl == newBereaUrl
-        image = currentProgramInfo.coverImage
-        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-        print(image.filename)
-        assert image.filename == 'test_image.jpg'
-    
         
-
+        assert currentProgramInfo.programName == add["programName"]
+        assert currentProgramInfo.programDescription == add["programDescription"]
+        assert currentProgramInfo.partner == add["partner"]
+        assert currentProgramInfo.contactName == add["contactName"]
+        assert currentProgramInfo.contactEmail == add["contactEmail"]
+        assert currentProgramInfo.defaultLocation == add["location"]
+        assert currentProgramInfo.instagramUrl == add["instagramUrl"]
+        assert currentProgramInfo.facebookUrl == add["facebookUrl"]
+        assert currentProgramInfo.bereaUrl == add["bereaUrl"]
+        assert currentProgramInfo.coverImage.filename == 'test_image.jpg'
+    
         transaction.rollback()
 
 @pytest.mark.integration

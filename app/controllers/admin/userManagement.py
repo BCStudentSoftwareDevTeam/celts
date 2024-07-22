@@ -84,10 +84,7 @@ def updateProgramInfo(programID):
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
-            changeProgramInfo(programID, uploadedFile, **programInfo)
-            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-
-                 
+            changeProgramInfo(programID, uploadedFile, **programInfo) 
 
             associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) 
            
