@@ -1,4 +1,4 @@
-from flask import  url_for, session
+from flask import  url_for, g, session
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date, datetime
@@ -65,11 +65,8 @@ def deleteEvent(eventId):
         else:
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
-        Event.update({Event.pendingDeletion: True}).where(Event.id == event.id).execute()
-        
-
-        # Commented out, but is the command used for deleteing event instance
-        # event.delete_instance(recursive = True, delete_nullable = True)
+        Event.update({Event.deletionDate: datetime.now()}).where(Event.id == event.id).execute()
+        Event.update({Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
 
 def deleteEventAndAllFollowing(eventId):
         """
@@ -83,7 +80,8 @@ def deleteEventAndAllFollowing(eventId):
                 session['lastDeletedEvent'] = []
                 for recurringEvent in recurringSeries:
                     session['lastDeletedEvent'].append(recurringEvent.id)
-                Event.update({Event.pendingDeletion: True}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
 
 def deleteAllRecurringEvents(eventId):
         """
@@ -97,7 +95,8 @@ def deleteAllRecurringEvents(eventId):
                 session['lastDeletedEvent'] = []
                 for allRecurringEvent in allRecurringEvents:
                     session['lastDeletedEvent'].append(allRecurringEvent.id)
-                Event.update({Event.pendingDeletion: True}).where(Event.recurringId == recurringId)
+                Event.update({Event.deletionDate: datetime.now()}).where(Event.recurringId == recurringId)
+                Event.update({Event.deletedBy: g.current_user}).where(Event.recurringId == recurringId)  
 
 
 
@@ -218,7 +217,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .where(Program.isStudentLed,
                                     Event.term == term,
                                     (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
-                                    Event.isCanceled == False, Event.pendingDeletion == False)
+                                    Event.isCanceled == False, Event.deletionDate == None)
                             .group_by(Program.id))
     
     programCountDict = {}
@@ -272,6 +271,7 @@ def getOtherEvents(term):
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
+                                   Event.deletionDate == None,
                                    ((Program.isOtherCeltsSponsored) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))

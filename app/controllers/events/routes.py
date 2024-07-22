@@ -27,22 +27,23 @@ def undoEvent():
         if type(eventId) is list:
             events = eventId
             for event in events: 
-                Event.update({Event.pendingDeletion: False}).where(Event.id == event).execute()
+                Event.update({Event.deletionDate: None}).where(Event.id == event).execute()
+                Event.update({Event.deletedBy: None}).where(Event.id == event).execute()
 
             
         else:
             event = Event.get_or_none(Event.id == eventId)
-            Event.update({Event.pendingDeletion: False}).where(Event.id == eventId).execute()
+            Event.update({Event.deletionDate: None}).where(Event.id == eventId).execute()
+            Event.update({Event.deletedBy: None}).where(Event.id == event).execute()
             recurringid = event.recurringId
-            recurringEvents = list(Event.select().where((Event.recurringId==recurringid) & (Event.pendingDeletion == False)).order_by(Event.id)) # orders for tests
-            if recurringid is not None: 
-                eventUpdated = False
+            recurringEvents = list(Event.select().where((Event.recurringId==recurringid) & (Event.deletionDate == None)).order_by(Event.id)) # orders for tests
+            if recurringid is not None:
                 nameCounter = 1
                 for recurringEvent in recurringEvents:
                     newEventNameList = recurringEvent.name.split()
                     newEventNameList[-1] = f"{nameCounter}"
                     newEventNameList = " ".join(newEventNameList)
-                    Event.update({Event.name:newEventNameList}).where(Event.id==recurringEvent.id).execute()
+                    Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
                     nameCounter += 1 
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))

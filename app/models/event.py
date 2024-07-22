@@ -23,7 +23,8 @@ class Event(baseModel):
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
     isCanceled = BooleanField(default=False)
-    pendingDeletion = BooleanField(default=False)
+    deletionDate = DateTimeField()
+    deletedBy = TextField()
 
     _spCache = "Empty"
 
