@@ -38,6 +38,21 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
+from app.logic.spreadsheet import createSpreadsheet
+
+
+@admin_bp.route('/admin/reports')
+def reports():
+    academicYears = Term.select(Term.academicYear).distinct().order_by(Term.academicYear.desc())
+    academicYears = list(map(lambda t: t.academicYear, academicYears))
+    return render_template("/admin/reports.html", academicYears=academicYears)
+
+@admin_bp.route('/admin/reports/download', methods=['POST'])
+def downloadFile():
+    academicYear = request.form.get('academicYear')
+    filepath = os.path.abspath(createSpreadsheet(academicYear))
+    return send_file(filepath, as_attachment=True)
+
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
