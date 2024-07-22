@@ -144,14 +144,13 @@ def createEvent(templateid, programid):
                 elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
-                    event_dates = [datetime.strptime(event_data['eventDate'], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in json.loads(eventData.get('multipleOfferingData'))]
+                    event_dates = [datetime.strptime(str(event_data[0].startDate)[:10], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in savedEventsList]
 
                     event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
 
                     if len(modifiedSavedEvents) > 1:
-                        #get last event name and stick at the end before 'and' so that it reads like a sentence in admin log
-                        last_event = f"<a href=\"{url_for('admin.eventDisplay', eventId=modifiedSavedEvents[-1].id)}\">{modifiedSavedEvents[-1].name}</a>"
-                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and {last_event}'
+                        #creates list of events created in a multiple series to display in the logs
+                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
                         #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
                         last_event_date = event_dates[-1]
                         event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
