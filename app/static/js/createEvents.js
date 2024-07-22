@@ -163,12 +163,11 @@ $(document).ready(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
       calculateRecurringEventFrequency();
     }
-  });
+  })
 
-$(".timeIcons").click(function() {
-    var inputId = $(this).data("id");
-    $("#start" + inputId).timepicker("show");
-  });
+  $(".timeIcons").on("click", function() {
+    $(this).siblings(".timepicker"),timepicker("show"); 
+  })
 
   $("#checkRSVP").click(function () {
     if ($("input[name='isRsvpRequired']:checked").val() == 'on') {
