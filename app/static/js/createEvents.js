@@ -163,11 +163,14 @@ $(document).ready(function () {
       calculateRecurringEventFrequency();
     }
   })
-// /////////////////////////////////////////////////////
+  // Time picker click events
   $(".timeIcons").on("click", function(e) {
     e.stopPropagation()
-    console.log($(this).siblings(".timepicker"))
-    $(this).siblings(".timepicker").timepicker("open"); 
+    console.log($(this).siblings(".timepicker").timepicker("closed") );
+    if ($(this).siblings(".timepicker").timepicker("closed"))
+      $(this).siblings(".timepicker").timepicker("open"); 
+    else 
+    $(this).siblings(".timepicker").timepicker("close")
   })
 
   $("#checkRSVP").click(function () {
