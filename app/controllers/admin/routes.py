@@ -47,9 +47,9 @@ def reports():
     academicYears = list(map(lambda t: t.academicYear, academicYears))
     return render_template("/admin/reports.html", academicYears=academicYears)
 
-@admin_bp.route('/admin/reports/download')
+@admin_bp.route('/admin/reports/download', methods=['POST'])
 def downloadFile():
-    academicYear = request.args.get('academicYear')
+    academicYear = request.form.get('academicYear')
     filepath = os.path.abspath(createSpreadsheet(academicYear))
     return send_file(filepath, as_attachment=True)
 
