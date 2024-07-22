@@ -144,7 +144,7 @@ def createEvent(templateid, programid):
                 elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
-                    event_dates = [datetime.strptime(str(event_data[0].startDate)[:10], '%Y-%m-%d').date().strftime('%m/%d/%Y') for event_data in savedEventsList]
+                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
 
                     event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
 
