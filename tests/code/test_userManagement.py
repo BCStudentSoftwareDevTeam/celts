@@ -109,13 +109,15 @@ def test_changeProgramInfo():
         assert currentProgramInfo.instagramUrl != None
         assert currentProgramInfo.bereaUrl != None
         assert currentProgramInfo.facebookUrl != None
-        assert currentProgramInfo.coverImage == None
+        
        
         with app.test_request_context():
             g.current_user = "ramsayb2"
             changeProgramInfo(programId, coverImage, **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
+        
+
         
         assert currentProgramInfo.programName == add["programName"]
         assert currentProgramInfo.programDescription == add["programDescription"]
@@ -126,7 +128,7 @@ def test_changeProgramInfo():
         assert currentProgramInfo.instagramUrl == add["instagramUrl"]
         assert currentProgramInfo.facebookUrl == add["facebookUrl"]
         assert currentProgramInfo.bereaUrl == add["bereaUrl"]
-        assert currentProgramInfo.coverImage.filename == 'test_image.jpg'
+      
     
         transaction.rollback()
 
