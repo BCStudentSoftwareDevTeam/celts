@@ -175,7 +175,6 @@
         <h5 class="modal-title">Update Program Information</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-<<<<<<< HEAD
       <form id="updateProgramForm" class="info" action="" method="POST" enctype="multipart/form-data">
         <div class="modal-body">
             <tr>
@@ -235,67 +234,6 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-success" role="button">Save changes</button>
-=======
-      <form id="updateProgramForm" class ="info" action="" method="POST" enctype="multipart/form-data">
-        <div class="modal-body">
-              <tr>
-                <!-- Left modal column -->
-                <td class="cellSpacing">
-                  <div class="mb-3">
-                    <label for="programName" class="form-label">Program Name</label>
-                    <input type="text" class="form-control" id="programName" name="programName">
-                  </div>
-                  <div class="mb-3">
-                    <label for="programDescription" class="form-label">Program Description</label>
-                    <textarea type="text" rows="4" class="form-control" id="programDescription" name="programDescription"></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label for='modalProgramImage'><strong>Add Image</strong></label>
-                    <input type="file" class="form-control" id="modalProgramImage" name="modalProgramImage" accept=".png, .jpg, .jpeg"/>
-                  </div>
-                  <div class="mb-3">
-                    <label for='instagramUrl' class="form-label">Instagram URL</label>
-                    <textarea type="text" class="form-control" id="instagramUrl" name="instagramUrl"></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label for='facebookUrl' class="form-label">Facebook URL</label>
-                    <textarea type="text" class="form-control" id="facebookUrl" name="facebookUrl"></textarea>
-                  </div>
-                  {% if filePaths %}
-                  <div class="form-group mb-5">
-                    {% from 'displayFilesMacro.html' import displayFiles %}
-                    {{ displayFiles(filePaths, 'Program Attachments', '/deleteProgramFile', program.id) }}
-                  </div>
-                  {% endif %}
-                </td>
-                <!-- Right modal column -->
-                <td class="cellSpacing">
-                  <div class="mb-3">
-                    <label for="partner" class="form-label">Program Partner</label>
-                    <input type="text" class="form-control" id="partner" name="partner">
-                  </div>
-                  <div class="mb-3">
-                    <label for="contactEmail" class="form-label">Contact Email</label>
-                    <input type="email" class="form-control" id="contactEmail" name="contactEmail">
-                  </div>
-                  <div class="mb-3">
-                    <label for="contactName" class="form-label">Contact Name</label>
-                    <input type="text" class="form-control" id="contactName" name="contactName">
-                  </div>
-                  <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" name="location">
-                  </div>
-                  <div class="mb-3">
-                    <label for="bereaUrl" class="form-label">Berea URL</label>
-                    <textarea type="text" class="form-control" id="bereaUrl" name="bereaUrl"></textarea>
-                  </div>
-                </td>
-              </tr>
-        </div>
-        <div class="info">
-          <button type="submit" class="btn btn-success rightJustify" role="button">Save changes</button>
->>>>>>> ddcae6fbe38710d84b6ff992c19bb0dfe4f34c6e
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalView" id="cancelModalView">Cancel</button>
         </div>
       </form>
