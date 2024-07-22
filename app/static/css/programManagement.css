@@ -1,54 +1,57 @@
 .modal {
-    position: absolute;
-    float: left;
-    left: 50%;
-    top: 60%;
-    transform: translate(-50%, -50%);
-    translate: -50px 0px;
-  }
-
-  .info
-  {
-    overflow-y: auto;
-  }
-
-
-  .info {
-    overflow-y:auto;
-    translate: 0 -20px;
-  }
-  .cellSpacing {
-    margin:5px;
-    padding:10px;
-  }
-.programHeader {
-    border-bottom:1px solid black;
-    font-weight:bold; 
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* Removed incorrect translate */
+  overflow: hidden;
 }
-.borderless{
+
+.modal-dialog-scrollable .modal-body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.info {
+  overflow-y: auto;
+  margin-top: -20px;
+}
+
+.cellSpacing {
+  margin: 5px;
+  padding: 10px;
+}
+
+.programHeader {
+  border-bottom: 1px solid black;
+  font-weight: bold;
+}
+
+.borderless {
   border: 0;
 }
-.rightJustify{
-    position: absolute; 
-    right: 10;
+
+.rightJustify {
+  position: absolute;
+  right: 10px; /* Added px to right */
 }
 
-  @media (max-width: 1500px){
-    .btn{
-      height:60px;
-    }
-    .step{
-      width: 13px;
-      height:13px;
-    }
+@media (max-width: 1500px) {
+  .btn {
+    height: 60px;
   }
-  
-  @media (max-width: 1100px){
-    .btn{
-      height:80px;
-    }
-    .step{
-      width: 10px;
-      height:10px;
-    }
+  .step {
+    width: 13px;
+    height: 13px;
   }
+}
+
+@media (max-width: 1100px) {
+  .btn {
+    height: 80px;
+  }
+  .step {
+    width: 10px;
+    height: 10px;
+  }
+}
