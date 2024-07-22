@@ -84,9 +84,9 @@ $(document).ready(function () {
   // Initialize timepicker
   $('.timepicker').timepicker({
     timeFormat: 'h:mm p',
-    interval: 60,
-    minTime: '8:00am',
-    maxTime: '10:00pm',
+    interval: 15,
+    minTime: '12:00am',
+    maxTime: '11:45pm',
     defaultTime: '11:00am',
     startTime: '8:00am',
     dynamic: false,
