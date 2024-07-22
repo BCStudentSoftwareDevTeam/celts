@@ -66,18 +66,23 @@ def onlyCompletedAllVolunteer(academicYear):
 
     return onlyAllVolunteer.tuples()
 
-def volunteerHoursByProgram():
+def volunteerHoursByProgram(academicYear):
     query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
                      .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
+                     .join(Term, on=(Term.id == Event.term))
+                     .where(Term.academicYear == academicYear)
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
 
     return query.tuples()
 
-def volunteerMajorAndClass(column, reorderClassLevel=False):
+def volunteerMajorAndClass(academicYear, column, reorderClassLevel=False):
 
     majorAndClass = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                         .join(Event)
+                         .join(Term, on=(Term.id == Event.term))
+                         .where(Term.academicYear == academicYear)
                          .group_by(column))
 
     if reorderClassLevel:
@@ -283,7 +288,7 @@ def createSpreadsheet(academicYear):
     volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
 
   
-    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
+    makeDataXls(volunteerHoursByProgram(academicYear), hoursByProgramColumns, "Total Hours By Program", workbook)
     makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
     makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
     makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
