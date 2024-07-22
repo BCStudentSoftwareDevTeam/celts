@@ -6,6 +6,12 @@
     top: 60%;
     transform: translate(-50%, -50%);
   }
+
+
+  .info {
+    overflow-y:auto;
+    translate: 0 -20px;
+  }
   .cellSpacing {
     margin:5px;
     padding:10px;
