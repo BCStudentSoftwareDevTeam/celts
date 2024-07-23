@@ -166,13 +166,16 @@ $(document).ready(function () {
   // Time picker click events
   $(".timeIcons").on("click", function(e) {
     e.stopPropagation()
+
     if ($(this).siblings(".timepicker").timepicker("closed")) {
       $(this).siblings(".timepicker").timepicker("open"); 
     }
+
     else {
       $(this).siblings(".timepicker").timepicker("close");
     }
   })
+  
   $("#checkRSVP").click(function () {
     if ($("input[name='isRsvpRequired']:checked").val() == 'on') {
       $("#checkFood").prop('checked', true);
