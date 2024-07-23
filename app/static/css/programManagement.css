@@ -4,7 +4,6 @@
   top: 50%;
   transform: translate(-50%, -50%);
   /* Removed incorrect translate */
-  overflow: hidden;
 }
 
 .modal-dialog-scrollable {
