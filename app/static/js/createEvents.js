@@ -99,9 +99,41 @@ $(document).ready(function () {
     }
   });
 
+  $("#checkIsTraining, #checkServiceHours, #checkBonners").on('submit', function () {
+    let trainingStatus = $("#checkIsTraining").is(":checked")
+    let serviceHourStatus = $("#checkServiceHours").is(":checked")
+    let bonnersStatus = $("#checkBonners").is(":checked")
+
+    if (trainingStatus){
+
+    }
+    else if (serviceHourStatus){
+
+    }
+    else if (bonnersStatus){
+
+    }
+    else{
+
+    }
+  });
+
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit', function (event) {
-    $(this).find("input[type=submit]").prop("disabled", true);
+    let toggleSelected = false;
+    let trainingStatus = $("#checkIsTraining").is(":checked")
+    let serviceHourStatus = $("#checkServiceHours").is(":checked")
+    let bonnersStatus = $("#checkBonners").is(":checked")
+
+    if(trainingStatus || serviceHourStatus || bonnersStatus){
+      toggleSelected = true;
+    }
+    if (!toggleSelected){
+      msgFlash("You must toggle event is training or event earns service or is Bonners Scholars event!", "danger");
+      event.preventDefault();
+    } else {
+      $(this).find("input[type=submit]").prop("disabled", true);
+    }
   });
 
   $("#checkIsRecurring").click(function () {
