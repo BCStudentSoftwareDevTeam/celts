@@ -4,10 +4,9 @@
   top: 50%;
   transform: translate(-50%, -50%);
   /* Removed incorrect translate */
-  overflow: hidden;
 }
 
-.modal-dialog-scrollable .modal-body {
+.modal-dialog-scrollable {
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }

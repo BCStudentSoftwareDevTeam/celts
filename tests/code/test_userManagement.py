@@ -109,16 +109,16 @@ def test_changeProgramInfo():
         assert currentProgramInfo.instagramUrl != None
         assert currentProgramInfo.bereaUrl != None
         assert currentProgramInfo.facebookUrl != None
-        
        
+
         with app.test_request_context():
             g.current_user = "ramsayb2"
             changeProgramInfo(programId, coverImage, **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
         
+    
 
-        
         assert currentProgramInfo.programName == add["programName"]
         assert currentProgramInfo.programDescription == add["programDescription"]
         assert currentProgramInfo.partner == add["partner"]
@@ -128,8 +128,8 @@ def test_changeProgramInfo():
         assert currentProgramInfo.instagramUrl == add["instagramUrl"]
         assert currentProgramInfo.facebookUrl == add["facebookUrl"]
         assert currentProgramInfo.bereaUrl == add["bereaUrl"]
-      
-    
+
+
         transaction.rollback()
 
 @pytest.mark.integration
@@ -155,7 +155,7 @@ def test_updatedProgramManager():
         # Remove the user that was added as a Program Manager
         setProgramManager(user, program, "remove")
         assert ProgramManager.get_or_none(program = program, user = user) is None
-
+    
         transaction.rollback()
 
 @pytest.mark.integration
