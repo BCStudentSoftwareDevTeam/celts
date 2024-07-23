@@ -95,8 +95,8 @@ def deleteAllRecurringEvents(eventId):
                 session['lastDeletedEvent'] = []
                 for allRecurringEvent in allRecurringEvents:
                     session['lastDeletedEvent'].append(allRecurringEvent.id)
-                Event.update({Event.deletionDate: datetime.now()}).where(Event.recurringId == recurringId)
-                Event.update({Event.deletedBy: g.current_user}).where(Event.recurringId == recurringId)  
+                Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId)).execute()
+                Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId)).execute()
 
 
 

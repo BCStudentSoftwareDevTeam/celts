@@ -1,5 +1,5 @@
 import pytest
-from flask import g
+from flask import g, session
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
 from playhouse.shortcuts import model_to_dict
@@ -503,7 +503,7 @@ def test_deleteEvent():
                                     isTraining = 0,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
+                                    endDate = " ",
                                     recurringId = None,
                                     program = 9)
 
@@ -514,12 +514,9 @@ def test_deleteEvent():
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(eventId)
-        assert Event.get_or_none(Event.id == eventId) is None
+            event = Event.get_or_none(Event.id == eventId) 
+        assert event is not None and event.deletionDate != "0000-00-00 00:00:00"
 
-        with app.app_context():
-            g.current_user = User.get_by_id("ramsayb2")
-            deleteEvent(eventId)
-        assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
 
         # creates a recurring event
@@ -558,14 +555,14 @@ def test_deleteEvent():
             deleteEvent(createdEvents[0])
 
         # check how many events exist after event deletion and make sure they are linear
-        recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
-
+        recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")).order_by(Event.recurringId))
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
         transaction.rollback()
 
         #creating recurring event again to test def deleteRecurringSeries()
+        print("1")
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
         recurringEvents = saveEventToDb(eventInfo)
@@ -575,14 +572,19 @@ def test_deleteEvent():
         totalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         #checks the number of all recurring events that will take place after a recurring event plus the event itself.
         eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= eventIdToDelete.startDate)))
-
+        print("2")
         with app.app_context():
+            print("21")
             g.current_user = User.get_by_id("ramsayb2")
-            deleteEventAndAllFollowing(eventIdToDelete)
+            print("22")
+            print(deleteEventAndAllFollowing(eventIdToDelete))
+            print("23")
             totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
+            print("24")
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
+        print("25")
         transaction.rollback()
-
+        print("3")
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteAllRecurringEvents(eventIdToDelete)
