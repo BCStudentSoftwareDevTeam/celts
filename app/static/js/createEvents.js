@@ -63,9 +63,15 @@ function calculateRecurringEventFrequency(){
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
+<<<<<<< HEAD
     let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime');
     let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime');
 
+=======
+    let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime')
+    let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime')
+    let timeCheck = false;
+>>>>>>> 8d765da1cdcf823fe638678a2c675f5cb4c30bc4
     let isEmpty = false;
     let timeCheck = false;
     eventNameInputs.forEach(eventNameInput => {
@@ -85,6 +91,7 @@ function calculateRecurringEventFrequency(){
       } else {
         $(datePickerInput).removeClass('border-red');
       }
+<<<<<<< HEAD
     });  
 
     for(let i = 0; i < startTimeInputs.length; i++){
@@ -95,6 +102,19 @@ function calculateRecurringEventFrequency(){
       }
       console.log(timeCheck);
     }
+=======
+    }); 
+
+    for(let i = 0; i < startTimeInputs.length; i++)
+    {
+      if (startTimeInputs[i] >= endTimeInputs[i])
+      {timeCheck = true;}
+      
+    }
+    
+
+
+>>>>>>> 8d765da1cdcf823fe638678a2c675f5cb4c30bc4
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event name or date field is empty");
@@ -105,16 +125,29 @@ function calculateRecurringEventFrequency(){
       });
       isEmpty = false;
     }
+<<<<<<< HEAD
     else if(timeCheck){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event end time must be after start time");
+=======
+
+    else if(timeCheck){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("End time must be after start time.");
+>>>>>>> 8d765da1cdcf823fe638678a2c675f5cb4c30bc4
       $('.invalidFeedback').css('display', 'block');  
       $('.invalidFeedback').on('animationend', function() {
         $('.invalidFeedback').css('display', 'none');
         $('#textNotifierPadding').removeClass('pt-5')
       });
+<<<<<<< HEAD
       timeCheck= false;
     }
+=======
+      timeCheck = false;  
+    }
+
+>>>>>>> 8d765da1cdcf823fe638678a2c675f5cb4c30bc4
     else {
       storeMultipleOfferingEventAttributes();
       pendingmultipleEvents = []
