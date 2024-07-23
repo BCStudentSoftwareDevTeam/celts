@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import List, Dict
+from flask import flash
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 
@@ -15,18 +16,17 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.models.summerExperience import SummerExperience # Added
-
-
-
-# ###################################################################
+from app.models.summerExperience import SummerExperience
+from app.models.otherExperience import OtherExperience
 import logging
+
 
 def createSummerExperience(username, form_data):
     try:
+        logging.info(f"Form data received: {form_data}")
+
         user = User.get(User.username == username)
-        term = Term.get(Term.id == form_data['term'])
-        content_area = ','.join(form_data.getlist('contentArea'))  # Combine multiple content areas
+        content_area = ', '.join(form_data.getlist('contentArea'))  # Combine multiple content areas
 
         # Determine the experience type
         experience_type = form_data['experienceType']
@@ -38,10 +38,11 @@ def createSummerExperience(username, form_data):
 
         SummerExperience.create(
             user=user,
-            term=term,
+            studentName=form_data['studentName'],
+            summerYear=form_data['summerYear'],
             roleDescription=form_data['roleDescription'],
             experienceType=experience_type,
-            contentArea=content_area,
+            CceMinorContentArea=content_area,
             experienceHoursOver300=form_data['experienceHoursOver300'] == 'Yes',
             experienceHoursBelow300=form_data.get('experienceHoursBelow300'),
             status='Pending',
@@ -49,20 +50,38 @@ def createSummerExperience(username, form_data):
             companyAddress=form_data['companyAddress'],
             companyPhone=form_data['companyPhone'],
             companyWebsite=form_data['companyWebsite'],
+            supervisorName=form_data['directSupervisor'],
             supervisorPhone=form_data['supervisorPhone'],
-            supervisorEmail=form_data['supervisorEmail']
+            supervisorEmail=form_data['supervisorEmail'],
+            created_at=form_data['date']
         )
         logging.info("Summer experience successfully saved.")
-    except DoesNotExist as e:
-        logging.error(f"Error saving summer experience: User or Term not found - {e}")
-        raise
     except Exception as e:
         logging.error(f"Error saving summer experience: {e}")
         raise
 
 
-# ###################################################################
 
+def createOtherEngagement(username, form_data):
+    try:
+        logging.info(f"Form data received: {form_data}")
+        user = User.get(User.username == username)
+        term = Term.get(Term.id == form_data['term'])
+
+        OtherExperience.create(
+            activity=form_data['experienceName'],
+            term=term,
+            hours=form_data['totalHours'],
+            weeks=form_data['weeks'],
+            service=form_data['description'],
+            company=form_data['companyOrOrg']
+        )
+        logging.info("Engagement successfully saved.")
+    except Exception as e:
+        logging.error(f"Error saving engagement: {e}", exc_info=True)
+        raise
+
+# ################################################
 def getEngagementTotal(engagementData):
     """ 
         Count the number of engagements (from all terms) that have matched with a requirement 

@@ -71,6 +71,7 @@ pem add app.models.celtsLabor.CeltsLabor
 pem add app.models.communityEngagementRequest.CommunityEngagementRequest
 pem add app.models.individualRequirement.IndividualRequirement
 pem add app.models.summerExperience.SummerExperience
+pem add app.models.otherExperience.OtherExperience
 
 
 pem watch
