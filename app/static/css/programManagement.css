@@ -7,10 +7,11 @@
   overflow: hidden;
 }
 
-.modal-dialog-scrollable .modal-body {
+.modal-dialog-scrollable {
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }
+
 
 .info {
   overflow-y: auto;
