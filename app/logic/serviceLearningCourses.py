@@ -17,7 +17,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
 
@@ -43,11 +43,27 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name":course.courseName if course.courseName else course.courseAbbreviation,
+                                 "name": course.courseName,
+                                 "abbr": course.courseAbbreviation,
+                                 "courseDisplayName": createCourseDisplayName(course.courseName, course.courseAbbreviation),                             
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}
     return courseDict
+
+def createCourseDisplayName(name, abbreviation):
+        '''
+        This function combines course name and numbers with conditions
+        inputs: course name, course abbreviation
+        '''
+        if name and abbreviation:
+            return f"{abbreviation} - {name}"
+        elif not name and not abbreviation:
+            return ''
+        elif not name:
+            return abbreviation
+        elif not abbreviation:
+            return name
 
 def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():
@@ -201,7 +217,7 @@ def withdrawProposal(courseID) -> None:
     for note in notes:
         note.delete_instance()
 
-    createAdminLog(f"Withdrew SLC proposal: {courseName}")
+    createActivityLog(f"Withdrew SLC proposal: {courseName}")
 
 def createCourse(creator: str="No user provided") -> Course:
     """
@@ -257,7 +273,7 @@ def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
                 addFile: FileHandler = FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
 
-            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+            createActivityLog(f"Saved SLC proposal: {courseData['courseName']}")
 
             return Course.get_by_id(course.id)
         
