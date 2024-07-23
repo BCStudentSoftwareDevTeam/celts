@@ -432,7 +432,7 @@
                 {% else %}
                   {% set startTime = "12:00" %}
                 {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+                <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime" value="{{startTime}}" name="timeStart" 
                   aria-describedby="timeIcon1" placeholder="Pick a start time"  
                   id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                 <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
@@ -446,7 +446,7 @@
                 {%else%}
                   {% set endTime = "13:00" %}
                 {% endif %}
-                  <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+                  <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingEndTime" value="{{endTime}}" name="timeEnd" 
                     aria-describedby="timeIcon2" placeholder="Pick an end time" 
                     id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                   <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>

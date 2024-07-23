@@ -63,8 +63,11 @@ function calculateRecurringEventFrequency(){
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
+    let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime');
+    let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime');
 
     let isEmpty = false;
+    let timeCheck = false;
     eventNameInputs.forEach(eventNameInput => {
       // Check if the input field is empty
       if (eventNameInput.value.trim() === '') {
@@ -78,10 +81,20 @@ function calculateRecurringEventFrequency(){
     // Check if the input field is empty
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
+          $(datePickerInput).addClass('border-red');
       } else {
         $(datePickerInput).removeClass('border-red');
       }
     });  
+
+    for(let i = 0; i < startTimeInputs.length; i++){
+      if(startTimeInputs[i].value >= endTimeInputs[i].value){
+        console.log(startTimeInputs[i]);
+        console.log(endTimeInputs[i]);
+        timeCheck = true;
+      }
+      console.log(timeCheck);
+    }
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event name or date field is empty");
@@ -92,7 +105,16 @@ function calculateRecurringEventFrequency(){
       });
       isEmpty = false;
     }
-
+    else if(timeCheck){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("Event end time must be after start time");
+      $('.invalidFeedback').css('display', 'block');  
+      $('.invalidFeedback').on('animationend', function() {
+        $('.invalidFeedback').css('display', 'none');
+        $('#textNotifierPadding').removeClass('pt-5')
+      });
+      timeCheck= false;
+    }
     else {
       storeMultipleOfferingEventAttributes();
       pendingmultipleEvents = []
@@ -187,12 +209,8 @@ $(document).ready(function() {
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
-    else{
-      //adds the display none button of bootstrap so that the end-date div disappears for recurring event
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDatePicker").prop('required', false);
-    }
-    if (multipleOfferingStatus == true) {
+
+    else if (multipleOfferingStatus == true) {
       $(".startDatePicker").prop('required', false);
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRecurring").prop('checked', false);
@@ -201,7 +219,10 @@ $(document).ready(function() {
       //hides the non multiple offering time and dates and replace
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
     }
-    else{ 
+    else { 
+      //adds the display none button of bootstrap so that the end-date div disappears for recurring even
+      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+      $(".endDatePicker").prop('required', false);
       //set page UI back to default
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
