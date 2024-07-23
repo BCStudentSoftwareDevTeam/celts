@@ -1,0 +1,14 @@
+.columnDivide{
+    flex: 1;
+    border-left: 2px solid grey;
+    padding-left: 20px;
+}
+.toggleHeader{
+    padding-bottom: 10px;
+    font-weight: bold;  
+    text-align: center;
+    margin-left: 50%; /* Position the header at 50% of the viewport width */
+    transform: translateX(-50%);
+    text-decoration-line: underline;
+    text-underline-offset: 5px;    
+}
