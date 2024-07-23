@@ -63,7 +63,9 @@ function calculateRecurringEventFrequency(){
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
     let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
-
+    let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime')
+    let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime')
+    let timeCheck = false;
     let isEmpty = false;
     eventNameInputs.forEach(eventNameInput => {
       // Check if the input field is empty
@@ -81,7 +83,17 @@ function calculateRecurringEventFrequency(){
       } else {
         $(datePickerInput).removeClass('border-red');
       }
-    });  
+    }); 
+
+    for(let i = 0; i < startTimeInputs.length; i++)
+    {
+      if (startTimeInputs[i] >= endTimeInputs[i])
+      {timeCheck = true;}
+      
+    }
+    
+
+
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event name or date field is empty");
@@ -91,6 +103,17 @@ function calculateRecurringEventFrequency(){
         $('#textNotifierPadding').removeClass('pt-5')
       });
       isEmpty = false;
+    }
+
+    else if(timeCheck){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("End time must be after start time.");
+      $('.invalidFeedback').css('display', 'block');  
+      $('.invalidFeedback').on('animationend', function() {
+        $('.invalidFeedback').css('display', 'none');
+        $('#textNotifierPadding').removeClass('pt-5')
+      });
+      timeCheck = false;  
     }
 
     else {
