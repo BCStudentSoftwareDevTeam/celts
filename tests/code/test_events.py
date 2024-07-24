@@ -488,7 +488,6 @@ def test_cancelEvent():
         assert event.isCanceled
         transaction.rollback()
 
-
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
@@ -546,7 +545,7 @@ def test_deleteEvent():
         recurringId = event.recurringId
 
         # check how many events exist before event deletion
-        recurringEventsBefore = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        recurringEventsBefore = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")).order_by(Event.recurringId))
         for counter, recurring in enumerate(recurringEventsBefore):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
 
@@ -554,7 +553,8 @@ def test_deleteEvent():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(createdEvents[0])
 
-        # check how many events exist after event deletion and make sure they are linear
+        # check how many events exist after event deletion
+        #event that got deleted now have a deletion date which is != 0000-00-00 00:00:00
         recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")).order_by(Event.recurringId))
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
@@ -562,7 +562,6 @@ def test_deleteEvent():
         transaction.rollback()
 
         #creating recurring event again to test def deleteRecurringSeries()
-        print("1")
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
         recurringEvents = saveEventToDb(eventInfo)
@@ -572,24 +571,19 @@ def test_deleteEvent():
         totalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         #checks the number of all recurring events that will take place after a recurring event plus the event itself.
         eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= eventIdToDelete.startDate)))
-        print("2")
         with app.app_context():
-            print("21")
             g.current_user = User.get_by_id("ramsayb2")
-            print("22")
-            print(deleteEventAndAllFollowing(eventIdToDelete))
-            print("23")
-            totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
-            print("24")
+            deleteEventAndAllFollowing(eventIdToDelete)
+            totalRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
-        print("25")
         transaction.rollback()
-        print("3")
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteAllRecurringEvents(eventIdToDelete)
-            newTotalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
+            newTotalRecurringEvents = len(Event.select().where((Event.recurringId == recurringId)& (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRecurringEvents == 0
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_upcomingEvents():

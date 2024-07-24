@@ -20,37 +20,6 @@ def loadKiosk(eventid):
                             event = event,
                             eventid = eventid)
 
-# @events_bp.route('/event/undo', methods=['GET'])
-# def undoEvent():
-#     try:
-#         eventId = session['lastDeletedEvent']
-#         if type(eventId) is list:
-#             events = eventId
-#             for event in events: 
-#                 Event.update({Event.deletionDate: None}).where(Event.id == event).execute()
-#                 Event.update({Event.deletedBy: None}).where(Event.id == event).execute()
-
-            
-#         else:
-#             event = Event.get_or_none(Event.id == eventId)
-#             Event.update({Event.deletionDate: None}).where(Event.id == eventId).execute()
-#             Event.update({Event.deletedBy: None}).where(Event.id == event).execute()
-#             recurringid = event.recurringId
-#             recurringEvents = list(Event.select().where((Event.recurringId==recurringid) & (Event.deletionDate == None)).order_by(Event.id)) # orders for tests
-#             if recurringid is not None:
-#                 nameCounter = 1
-#                 for recurringEvent in recurringEvents:
-#                     newEventNameList = recurringEvent.name.split()
-#                     newEventNameList[-1] = f"{nameCounter}"
-#                     newEventNameList = " ".join(newEventNameList)
-#                     Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
-#                     nameCounter += 1 
-#         flash("Deletion successfully undone.", "success")
-#         return redirect('/eventsList/' + str(g.current_term))
-#     except Exception as e:
-#         print('Error while canceling event:', e)
-#         return "", 500
-
 @events_bp.route('/signintoEvent', methods=['POST'])
 def kioskSignin():
     """Utilizes form data and sign in function. Returns correct flasher message."""

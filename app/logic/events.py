@@ -77,11 +77,13 @@ def deleteEventAndAllFollowing(eventId):
             if event.recurringId:
                 recurringId = event.recurringId
                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
-                session['lastDeletedEvent'] = []
+                #session['lastDeletedEvent'] = []
+                deletedEventList = []                
                 for recurringEvent in recurringSeries:
-                    session['lastDeletedEvent'].append(recurringEvent.id)
+                    deletedEventList.append(recurringEvent.id)
                 Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
                 Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                return deletedEventList
 
 def deleteAllRecurringEvents(eventId):
         """
@@ -92,11 +94,12 @@ def deleteAllRecurringEvents(eventId):
             if event.recurringId:
                 recurringId = event.recurringId
                 allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId))
-                session['lastDeletedEvent'] = []
+                deletedEventList = []                
                 for allRecurringEvent in allRecurringEvents:
-                    session['lastDeletedEvent'].append(allRecurringEvent.id)
+                    deletedEventList.append(allRecurringEvent.id)
                 Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId)).execute()
                 Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId)).execute()
+                return deletedEventList
 
 
 
