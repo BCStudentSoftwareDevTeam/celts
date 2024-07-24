@@ -59,6 +59,12 @@ function calculateRecurringEventFrequency(){
   }
   
 $(document).ready(function () {
+  //makes sure bonners toggle will stay on between event pages
+  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+    if (!$("#checkIsTraining").is(":checked") && !$("#checkServiceHours").is(":checked")){
+      $("#checkBonners").prop('checked', true);
+    }
+  }
   // Initialize datepicker with proper options
   $.datepicker.setDefaults({
     dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
