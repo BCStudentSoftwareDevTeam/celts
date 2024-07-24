@@ -60,10 +60,7 @@
 
     <div class="form-group mb-4">
       <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
-      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required>
-        {% if eventData.location %}
-          value="{{eventData.location}}"
-        {% endif %}
+      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" value="{{eventData.location}}" required>
     </div>
     <!-- Start and End Datepickers -->
     <div class="row col-md-12">
