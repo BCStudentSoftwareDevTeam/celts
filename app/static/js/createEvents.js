@@ -98,40 +98,33 @@ $(document).ready(function () {
       $("#limitGroup").hide();
     }
   });
-
-  $("#checkIsTraining, #checkServiceHours, #checkBonners").on('submit', function () {
+  //Ensure only one toggle will be selected in the select one section
+  $("#checkIsTraining, #checkServiceHours, #checkBonners").on('click', function (event) {
     let trainingStatus = $("#checkIsTraining").is(":checked")
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
 
-    if (trainingStatus){
-
-    }
-    else if (serviceHourStatus){
-
-    }
-    else if (bonnersStatus){
-
-    }
-    else{
-
+    if (trainingStatus && serviceHourStatus || serviceHourStatus && bonnersStatus || trainingStatus && bonnersStatus){
+      msgFlash("You may only toggle one selection from event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
+      $(event.target).prop('checked', false);
+      return;
     }
   });
 
-  // Disable button when we are ready to submit
   $("#saveEvent").on('submit', function (event) {
     let toggleSelected = false;
     let trainingStatus = $("#checkIsTraining").is(":checked")
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
-
+    //check if user has selected a toggle, cancel form submission if not
     if(trainingStatus || serviceHourStatus || bonnersStatus){
       toggleSelected = true;
     }
     if (!toggleSelected){
-      msgFlash("You must toggle event is training or event earns service or is Bonners Scholars event!", "danger");
+      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
       event.preventDefault();
     } else {
+      // Disable button when we are ready to submit
       $(this).find("input[type=submit]").prop("disabled", true);
     }
   });

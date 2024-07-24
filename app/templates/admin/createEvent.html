@@ -239,34 +239,34 @@
                   <label class="label toggleHeader">(Optional)</label>
                 </div>
                 <div class="col-md-6">
-                  <label class="label required toggleHeader">(Select At Least One)</label>
+                  <label class="label required toggleHeader">(Must Select One)</label>
                 </div>
               </div>
               <div class="row col-md-12">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-6 wideText">
                   <div class="form-check form-switch mb-2">
                     <label class="custom-control-label" for='checkRSVP'><strong>This event requires RSVP.</strong></label>
                     <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
                   </div>
-                </div>
-                <div class="form-group col-md-6 columnDivide">
-                  <div class="form-check form-switch">
-                    <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
-                  </div>
-                </div>
-                <div class="form-group col-md-6 mb-3">
-                  <div class="form-check form-switch">
-                    {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-                    <div class="form-group" id="limitGroup" style= "{{hide}}">
-                      <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-                      <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                  <div class="form-group col-md-6 mb-3 wideText">
+                    <div class="form-check form-switch">
+                      {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+                      <div class="form-group" id="limitGroup" style= "{{hide}}">
+                        <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+                        <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                      </div>
+                      <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
+                      <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
                     </div>
-                    <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
                   </div>
                 </div>
                 <div class="form-group col-md-6 columnDivide">
+                  <div class="form-group col-md-6 wideText">
+                    <div class="form-check form-switch">
+                      <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+                      <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
+                    </div>
+                  </div>
                   <div class="form-check form-switch">
                     <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service hours.</strong></label>
                     <input class="form-check-input" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}}/>
