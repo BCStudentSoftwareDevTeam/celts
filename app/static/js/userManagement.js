@@ -63,7 +63,21 @@ function submitRequest(method, username){
     }
   })
 }
-export function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
+function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
+  $("#programName").val(programName)
+  $("#programName").val(programDescription)
+  
+  $("#programName").val(partner)
+  $("#programName").val(contactEmail)
+  $("#programName").val(contactName)
+  $("#programName").val(location)
+  $("#programName").val(programId)
+  $("#programName").val(instagramUrl)
+  $("#programName").val(faceboolUrl)
+  $("#programName").val(bereaUrl)
+  
+
+  $("#programName").val(programName)
   document.getElementById('programName').value = programName;
   document.getElementById('programDescription').value = programDescription;
   handleFileSelection('modalProgramImage')

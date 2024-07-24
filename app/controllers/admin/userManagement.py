@@ -61,21 +61,12 @@ def addProgramManagers():
         flash('Error while trying to add a manager.','warning')
         abort(500,"'Error while trying to add a manager.'")
 
-@admin_bp.route('/removeProgramManagers', methods=['POST'])
-def removeProgramManagers():
-    eventData = request.form
-    try:
-        return removeProgramManagers(eventData['username'],int(eventData['programID']))
-    except Exception as e:
-        print(e)
-        flash('Error while removing a manager.','warning')
-        abort(500,"Error while trying to remove a manager.")
+
 
 @admin_bp.route('/deleteProgramFile', methods=['POST'])
 def deleteProgramFile():
-    fileData= request.form
-    programFile=FileHandler(programId=fileData["databaseId"])
-    programFile.deleteFile(fileData["fileId"])
+    programFile=FileHandler(programId=request.form["programID"])
+    programFile.deleteFile(request.form["fileId"])
     return ""
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
