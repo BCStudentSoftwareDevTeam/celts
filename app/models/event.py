@@ -23,13 +23,17 @@ class Event(baseModel):
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
     isCanceled = BooleanField(default=False)
-    deletionDate = DateTimeField()
-    deletedBy = TextField()
+    deletionDate = DateTimeField(null=True)
+    deletedBy = TextField(null=True)
 
     _spCache = "Empty"
 
     def __str__(self):
         return f"{self.id}: {self.description}"
+
+    @property
+    def isDeleted(self):
+        return bool(self.deletionDate)
 
     @property
     def noProgram(self):
