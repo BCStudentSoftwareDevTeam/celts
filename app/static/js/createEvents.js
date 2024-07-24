@@ -112,21 +112,18 @@ $(document).ready(function () {
   });
 
   $("#saveEvent").on('submit', function (event) {
-    let toggleSelected = false;
     let trainingStatus = $("#checkIsTraining").is(":checked")
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
     //check if user has selected a toggle, cancel form submission if not
     if(trainingStatus || serviceHourStatus || bonnersStatus){
-      toggleSelected = true;
-    }
-    if (!toggleSelected){
-      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
-      event.preventDefault();
-    } else {
       // Disable button when we are ready to submit
       $(this).find("input[type=submit]").prop("disabled", true);
     }
+    else {
+      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
+      event.preventDefault();
+    } 
   });
 
   $("#checkIsRecurring").click(function () {
