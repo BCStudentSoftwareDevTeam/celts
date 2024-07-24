@@ -10,7 +10,6 @@ from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 
-
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
     eventData = request.form
