@@ -90,7 +90,12 @@ function calculateRecurringEventFrequency(){
       if(startTimeInputs[i].value >= endTimeInputs[i].value){
         console.log(startTimeInputs[i]);
         console.log(endTimeInputs[i]);
+        $(startTimeInputs[i]).addClass('border-red');
+        $(endTimeInputs[i]).addClass('border-red');
         timeCheck = true;
+      }else{
+        $(startTimeInputs[i]).removeClass('border-red');
+        $(endTimeInputs[i]).removeClass('border-red');
       }
       console.log(timeCheck);
     }
@@ -102,7 +107,7 @@ function calculateRecurringEventFrequency(){
         $('.invalidFeedback').css('display', 'none');
         $('#textNotifierPadding').removeClass('pt-5')
       });
-      isEmpty = false;
+      isEmpty = false;  
     }
     else if(timeCheck){
       $('#textNotifierPadding').addClass('pt-5');
@@ -113,14 +118,16 @@ function calculateRecurringEventFrequency(){
         $('#textNotifierPadding').removeClass('pt-5')
       });
       timeCheck= false;
+        
     }
     else {
       storeMultipleOfferingEventAttributes();
-      pendingmultipleEvents = []
-      pendingmultipleEvents = []
+      pendingmultipleEvents = [];
       $("#checkIsMultipleOffering").prop('checked', true);
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
+      $('.invalidFeedback').css('display', 'none');
+      $('#textNotifierPadding').removeClass('pt-5');
       msgFlash("Multiple time offering events saved!", "success");
     }
   });
