@@ -53,6 +53,21 @@ def downloadFile():
     filepath = os.path.abspath(createSpreadsheet(academicYear))
     return send_file(filepath, as_attachment=True)
 
+from app.logic.spreadsheet import createSpreadsheet
+
+
+@admin_bp.route('/admin/reports')
+def reports():
+    academicYears = Term.select(Term.academicYear).distinct().order_by(Term.academicYear.desc())
+    academicYears = list(map(lambda t: t.academicYear, academicYears))
+    return render_template("/admin/reports.html", academicYears=academicYears)
+
+@admin_bp.route('/admin/reports/download', methods=['POST'])
+def downloadFile():
+    academicYear = request.form.get('academicYear')
+    filepath = os.path.abspath(createSpreadsheet(academicYear))
+    return send_file(filepath, as_attachment=True)
+
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
