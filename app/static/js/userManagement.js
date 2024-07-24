@@ -66,6 +66,20 @@ function submitRequest(method, username){
 function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
   $("#programName").val(programName)
   $("#programName").val(programDescription)
+  $("#programName").val(partner)
+  $("#programName").val(contactEmail)
+  $("#programName").val(contactName)
+  $("#programName").val(location)
+  $("#programName").val(programId)
+  $("#programName").val(instagramUrl)
+  $("#programName").val(faceboolUrl)
+  $("#programName").val(bereaUrl)
+  
+
+  $("#programName").val(programName)
+function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
+  $("#programName").val(programName)
+  $("#programName").val(programDescription)
   
   $("#programName").val(partner)
   $("#programName").val(contactEmail)
