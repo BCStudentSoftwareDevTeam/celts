@@ -15,7 +15,6 @@ class Event(baseModel):
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     isAllVolunteerTraining = BooleanField(default=False)
-    isBonners = BooleanField(default=False)
     rsvpLimit = IntegerField(null=True)
     startDate = DateField()
     endDate = DateField(null=True)
