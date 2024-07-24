@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 from app.models import mainDB
 from app.models.user import User
@@ -9,43 +10,216 @@ from app.logic.spreadsheet import *
 
 @pytest.mark.integration 
 @pytest.fixture
-def user():
-    userData = User.create(
-        username = "ramazanim",
-        bnumber = "B00800",
-        email = "ramazzanim@berea.edu",
-        phoneNumber = 8599796449,
-        firstName = "Ali",
-        lastName  = "Ramazani",
-        cpoNumber = 9999,   
-        isStudent = True,
-        major = "Nursing",
-        classLevel = "Freshman",
-        isFaculty = False,
-        isStaff = False,
-        isCeltsAdmin = False, 
-        isCeltsStudentStaff = False,
-        dietRestriction = False, 
-        minorInterest = "English Literature" 
-    )
-    yield userData
-    userData.delete_instance() 
+def fixture_users():
+    with mainDB.atomic() as transaction:
+        test_usersData = [
+        {
+            "username" : "ramazanim",
+            "bnumber" : "B808080",
+            "email": "ramazanim@berea.edu",
+            "phoneNumber": "(555)555-5555",
+            "firstName" : "Ali",
+            "lastName" : "Ramazani",
+            "isStudent": True,
+            "isFaculty": False,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": False,
+            "major": "Computer Science",
+            "classLevel": "Senior",
+            "minorInterest": 0,
+        },
+        {
+            "username": "einsteina",
+            "bnumber": "B00739547",
+            "email": "einsteina@berea.edu",
+            "phoneNumber": "(555)985-1233",
+            "firstName": "Albert",
+            "lastName": "Einstein",
+            "isStudent": True,
+            "isFaculty": False,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": True,
+            "major": "Physics",
+            "classLevel": "Sophomore",
+            "minorInterest": 0,
+        },
+
+        {
+            "username" : "lintelmannaders",
+            "bnumber": "B00345678",
+            "email": "lintelmannaders@berea.edu",
+            "phoneNumber": "(555)555-5555",
+            "firstName": "Steven",
+            "lastName":"Lintelman-Nader",
+            "isStudent": True,
+            "isFaculty": False,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": False,
+            "major": "Computer Science",
+            "classLevel": "Junior",
+            "minorInterest": 0,
+        },
+        {
+            "username" : "hamiltonm",
+            "bnumber": "B00902854",
+            "email": "hamiltonm@berea.edu",
+            "phoneNumber": "(220)290-3939",
+            "firstName": "Margaret",
+            "lastName":"Hamilton",
+            "isStudent": True,
+            "isFaculty": False,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": False,
+            "major": "Mathematics",
+            "classLevel": "Junior",
+            "minorInterest": 1,
+        },
+        {
+            "username": "Curiem",
+            "bnumber": "B00751180",
+            "email": "curiem@berea.edu",
+            "firstName": "Marie",
+            "lastName": "Curie",
+            "isStudent": True,
+            "phoneNumber": "(859)433-1559",
+            "major": "Chemistry",
+            "classLevel": "Senior",
+            "minorInterest": 1,
+
+        }]
+        User.insert_many(test_usersData).on_conflict_replace().execute()
+        yield test_usersData
+        transaction.rollback()
+
+
+@pytest.fixture
+def test_eventParticipants():
+    with mainDB.atomic() as transaction:
+        test_eventParticipantsData = [
+        {
+            "user": "lintelmannaders",
+            "event": 31,
+            "hoursEarned": 2
+        },
+        {
+            "user": "Curiem",
+            "event": 32,
+            "hoursEarned": 2
+        },
+        {
+            "user": "ramazanim",
+            "event": 33,
+            "hoursEarned": 1
+        },
+        {
+            "user" : "einsteina",
+            "event" : 31,
+            "hoursEarned" : None,
+        },
+        {
+            "user": "ramazanim",
+            "event": 32,
+            "hoursEarned": 5
+        },
+        {
+            "user": "hamiltonm",
+            "event": 33,
+            "hoursEarned": 2,
+        },
+        {
+            "user": "hamiltonm",
+            "event": 31,
+            "hoursEarned": 3,
+        }]
+        User.insert_many(test_eventParticipantsData).on_conflict_replace().execute()
+        yield test_eventParticipantsData
+        transaction.rollback()
+
+
 
 @pytest.mark.integration
 @pytest.fixture
-def UserParticipant():
-    pass 
+def fixture_eventData():
+    with mainDB.atomic() as transaction:
+        test_eventsData = [
+        {
+            "id": 31,
+            "term": 2,
+            "name": "Empty Bowls Spring Event 1",
+            "description": "Empty Bowls Spring 2021",
+            "isTraining": True,
+            "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+            "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+            "location": "Seabury Center",
+            "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
+            "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+            "contactEmail": "testEmail",
+            "contactName": "testName",
+            "program": 1
+            
+        },
+        {
+            "id": 32,
+            "term": 2,
+            "name": "Hunger Hurts",
+            "description": "Will donate Food to Community",
+            "isTraining": False,
+            "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+            "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+            "location": "Berea Community School",
+            "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
+            "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+            "contactEmail": "testEmail",
+            "contactName": "testName",
+            "program": 1
+            
+        },
+        {
+            "id": 33,
+            "term": 1,
+            "name": "Adoption 101",
+            "description": "Lecture on adoption",
+            "isTraining": True,
+            "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+            "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+            "location": "Alumni Patio",
+            "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+            "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+            "contactEmail": "testEmail",
+            "contactName": "testName",
+            "program": 3
+        }]
+        User.insert_many(test_eventsData).on_conflict_replace().execute()
+        yield test_eventsData
+        transaction.rollback()
 
 
 @pytest.mark.integration
 @pytest.fixture
-def term():
-    termTestData = Term.create(
-        id = 20,
-        academicYear = "2020-2021")
-
-    yield termTestData
-    termTestData.delete_instance() 
+def fixture_term():
+        with mainDB.atomic() as transaction:
+            test_termData = [
+            {
+            "id": 1,
+            "description": "Fall 2020",
+            "year": 2020,
+            "academicYear": "2020-2021",
+            "isSummer": False,
+            "isCurrentTerm": False,
+            "termOrder": "2020-3"
+            },
+            {
+            "id": 2,
+            "description": "Spring 2021",
+            "year": 2021,
+            "academicYear": "2020-2021",
+            "isSummer": False,
+            "isCurrentTerm": False,
+            "termOrder": "2021-1"
+            }]
+            User.insert_many(test_termData).on_conflict_replace().execute()
+            yield test_termData
+            transaction.rollback()
 
 
 @pytest.mark.integration
@@ -55,7 +229,7 @@ def test_createSpreadsheet():
 @pytest.mark.integration
 def test_calculateRetentionRate():
     # Takes 2 dictionaries, a fall and spring dictionary and see who has returned in the spring from the fall term
-    fallDict = ({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
+    fallDict = ({'Adopt-a-Grandparent': ['ramazanim'], 'CELTS-Sponsored Event': [None]})
     springDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
     assert calculateRetentionRate(fallDict, springDict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
 
@@ -232,7 +406,7 @@ def test_volunteerMajorAndClass(term, user):
 
         print("tsst", list(volunteerMajorAndClass(term.academicYear, User.classLevel)))
         assert list(volunteerMajorAndClass(term.academicYear, User.major)) == list([('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)])
-        assert list(volunteerMajorAndClass(term.academicYear, User.classLevel)) == [('Junior', 1), ('Senior', 3), ('Sophomore', 1)]
+        assert list(volunteerMajorAndClass(term.academicYear, User.classLevel)) == [('Junior', 1), ('Senior', 2), ('Sophomore', 1)]
         assert list(volunteerMajorAndClass(term.academicYear, User.classLevel, True)) == [('Sophomore', 1), ('Junior', 1), ('Senior', 3)]
 
         User.create(username = 'solijonovam',
@@ -352,17 +526,25 @@ def test_totalVolunteerHours(term):
     #Returns the total amount of volunteer hours in the database
     with mainDB.atomic() as transaction:
         EventParticipant.delete().execute()
-        assert list(totalVolunteerHours()) == [(None,)]
-        # Adding 1 volunteer hour
+        Event.delete().execute()
+        Term.delete().execute()
+
+        Term.create(id = 1,
+                    academicYear = '2021-2022',)
+        
+        assert list(totalVolunteerHours(term)) == [(None,)]
+        # Adding 1 volunteer hour to one event
+        Event.create(id = 2, 
+                     term_id = 1,)
         EventParticipant.create(user = 'qasema',
                                 event = 2,
                                 hoursEarned = 1)
         # Checking that the total volunteer hours has increased by 1
-        assert list(totalVolunteerHours()) == [(1.0,)]
+        assert list(totalVolunteerHours(term)) == [(1.0,)]
         EventParticipant.create(user = 'ayisie',
                                 event = 3,
                                 hoursEarned = 6)
-        assert list(totalVolunteerHours()) == [(7.0,)]
+        assert list(totalVolunteerHours(term)) == [(7.0,)]
         transaction.rollback()
 
 @pytest.mark.integration
