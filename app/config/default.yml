@@ -30,7 +30,7 @@ files:
   email_attachment_path: 'emailattachments'
   event_attachment_path: 'eventattachments'
   course_attachment_path: 'courseattachments'
-  program_image_path: 'programimages'
+
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
