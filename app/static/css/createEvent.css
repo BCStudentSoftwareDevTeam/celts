@@ -7,9 +7,9 @@
     width: 200px
 }
 .widthFormatting{
-    min-width: 200px;
+    min-width: 150px;
 }
-@media screen and (min-width: 1342px) {
+@media screen and (min-width: 1080px) {
     .columnDivide{
         flex: 1;
         border-left: 2px solid grey;
