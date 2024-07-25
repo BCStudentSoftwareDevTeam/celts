@@ -1,4 +1,5 @@
 import searchUser from './searchUser.js'
+import { populateModal } from "/static/js/userManagement.js";
 
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
@@ -63,48 +64,33 @@ function submitRequest(method, username){
     }
   })
 }
-function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
-  $("#programName").val(programName)
-  $("#programName").val(programDescription)
-  $("#programName").val(partner)
-  $("#programName").val(contactEmail)
-  $("#programName").val(contactName)
-  $("#programName").val(location)
-  $("#programName").val(programId)
-  $("#programName").val(instagramUrl)
-  $("#programName").val(faceboolUrl)
-  $("#programName").val(bereaUrl)
-  
 
-  $("#programName").val(programName)
-function populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
-  $("#programName").val(programName)
-  $("#programName").val(programDescription)
-  
-  $("#programName").val(partner)
-  $("#programName").val(contactEmail)
-  $("#programName").val(contactName)
-  $("#programName").val(location)
-  $("#programName").val(programId)
-  $("#programName").val(instagramUrl)
-  $("#programName").val(faceboolUrl)
-  $("#programName").val(bereaUrl)
-  
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+      button.addEventListener('click', function(event) {
+          // Retrieve and parse the programInfo data
+          const programInfo = JSON.parse(event.currentTarget.getAttribute('data-programinfo'));
+          populateModal(programInfo);
+      });
+  });
+});
 
-  $("#programName").val(programName)
-  document.getElementById('programName').value = programName;
-  document.getElementById('programDescription').value = programDescription;
-  handleFileSelection('modalProgramImage')
-  document.getElementById('partner').value = partner;
-  document.getElementById('contactEmail').value = contactEmail;
-  document.getElementById('contactName').value = contactName;
-  document.getElementById('location').value = location;
-  document.getElementById('instagramUrl').value = instagramUrl;
-  document.getElementById('facebookUrl').value = facebookUrl;
-  document.getElementById('bereaUrl').value = bereaUrl;
-  let updateForm = document.getElementById('updateProgramForm')
-  updateForm.action = "/admin/updateProgramInfo/" + programId;
+function populateModal(programInfo) {
+  // Assuming your modal fields have IDs matching the keys
+  document.getElementById('programName').value = programInfo.programName || '';
+  document.getElementById('programDescription').value = programInfo.programDescription || '';
+  document.getElementById('partner').value = programInfo.partner || '';
+  document.getElementById('contactEmail').value = programInfo.contactEmail || '';
+  document.getElementById('contactName').value = programInfo.contactName || '';
+  document.getElementById('defaultLocation').value = programInfo.defaultLocation || '';
+  document.getElementById('programId').value = programInfo.id || '';
+  document.getElementById('instagramUrl').value = programInfo.instagramUrl || '';
+  document.getElementById('facebookUrl').value = programInfo.facebookUrl || '';
+  document.getElementById('bereaUrl').value = programInfo.bereaUrl || '';
 }
+
+
+  
 
 function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
