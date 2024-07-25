@@ -61,8 +61,8 @@ function calculateRecurringEventFrequency(){
 $(document).ready(function () {
   //makes sure bonners toggle will stay on between event pages
   if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
-    if (!$("#checkIsTraining").is(":checked") && !$("#checkServiceHours").is(":checked")){
-      $("#checkBonners").prop('checked', true);
+      if ($("#checkBonners")) {
+        $("#checkBonners").prop('checked', true);
     }
   }
   // Initialize datepicker with proper options
@@ -104,17 +104,10 @@ $(document).ready(function () {
       $("#limitGroup").hide();
     }
   });
-  //Ensure only one toggle will be selected in the select one section
+  // Determine which checkbox was clicked and its current checked status, uncheck others
   $("#checkIsTraining, #checkServiceHours, #checkBonners").on('click', function (event) {
-    let trainingStatus = $("#checkIsTraining").is(":checked")
-    let serviceHourStatus = $("#checkServiceHours").is(":checked")
-    let bonnersStatus = $("#checkBonners").is(":checked")
-
-    if (trainingStatus && serviceHourStatus || serviceHourStatus && bonnersStatus || trainingStatus && bonnersStatus){
-      msgFlash("You may only toggle one selection from event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
-      $(event.target).prop('checked', false);
-      return;
-    }
+    let $target = $(event.target);
+    $("#checkIsTraining, #checkServiceHours, #checkBonners").not($target).prop('checked', false);
   });
 
   $("#saveEvent").on('submit', function (event) {

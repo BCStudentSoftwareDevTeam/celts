@@ -11,6 +11,6 @@
     transform: translateX(-50%);  
     width: 200px
 }
-.wideText{
-    width: 250px;
+.widthFormatting{
+    min-width: 100px;
 }
