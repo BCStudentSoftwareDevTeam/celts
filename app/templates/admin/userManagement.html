@@ -121,72 +121,71 @@
   </div>
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      <!--Program managment acordian and modal-->
+      <!--Program management accordion and modal-->
       {% set focus = "open" if visibleAccordion == "program" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
         Program Management
-        </button>
-      </h3>
-      {% set show = "show" if visibleAccordion == "program" else "" %}
-      <div id="collapseThree" class="accordion-collapse collapse {{ show }}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
-        <div class="accordion-body ml-5">
-          <div class="d-flex justify-content-center">
-           <table>
-              <tr>
-                 <th class="programHeader">Program</th>
-              </tr>
-              
-              {% for program in programs %}
-              <tr>
-                 <td>
-                  <input class="form-label borderless" 
-                    name="programName" 
-                    type="text" readonly 
-                    value="{{ program.programName }}"></td>
-                 <td>
-                    <button class="btn btn-success test" 
-                    role="button" id="programManagementButton{{ loop.index }}" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#adminProgramManagement"
-                    onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}', '{{ program.instagramUrl }}','{{ program.facebookUrl }}', '{{ program.bereaUrl }}')">Update Program Information</button>
-                    <script 
-                      type="module"> import { populateModal } from "/static/js/userManagement.js";
-                      window.programModal = function(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl){
-                      populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl)
-                      }
-                      //This script imports the populateModal function set the input boxes in the modals to program information
-                      //The program info is gotten from the programs list in userManagement.py and is passed using jinja on button click
-                    </script>
-                 </td>
-              </tr>
-              {% endfor %}
-           </table>
+      </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "program" else "" %}
+    <div id="collapseThree" class="accordion-collapse collapse {{ show }}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
+      <div class="accordion-body">
+        <div class="d-flex justify-content-center">
+          <div class="container">
+            <div class="row">
+              <div class="col text-center programHeader">
+                Program
+              </div>
+              <div class="col"></div>
+            </div>
+            {% for program in programs %}
+            <div class="row mb-2">
+              <div class="col text-center">
+                <span class="form-label borderless">{{ program.programName }}</span>
+              </div>
+              <div class="col text-center">
+                <button class="btn btn-success test" 
+                  role="button" id="programManagementButton{{ loop.index }}" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#adminProgramManagement"
+                  onclick="programModal('{{ program.programName }}', '{{ program.programDescription }}', '{{ program.partner }}', '{{ program.contactEmail }}', '{{ program.contactName }}', '{{ program.defaultLocation }}', '{{ program.id }}', '{{ program.instagramUrl }}','{{ program.facebookUrl }}', '{{ program.bereaUrl }}')">Edit Details</button>
+                <script type="module">
+                  import { populateModal } from "/static/js/userManagement.js";
+                  window.programModal = function(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl) {
+                    populateModal(programName, programDescription, partner, contactEmail, contactName, location, programId, instagramUrl, facebookUrl, bereaUrl)
+                  }
+                  //This script imports the populateModal function to set the input boxes in the modals to program information
+                  //The program info is gotten from the programs list in userManagement.py and is passed using jinja on button click
+                </script>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         </div>
-     </div>
-  </div>
-</div>
-</div>
-<div>
-<!--modal begins here-->
-<div class="modal fade" id="adminProgramManagement">
-  <div class="modal-dialog modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Update Program Information</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form id="updateProgramForm" class="info" action="" method="POST" enctype="multipart/form-data">
-        <div class="modal-body">
-            <tr>
-              <!-- Left modal column -->
-              <td class="cellSpacing">
+    </div>
+  </div>
+  
+  <!-- Modal content -->
+  <div class="modal fade" id="adminProgramManagement" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="updateProgramForm" class="info" action="" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+            <!-- Modal body content goes here -->
+            <div class="row">
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label for="programName" class="form-label">Program Name</label>
                   <input type="text" class="form-control" id="programName" name="programName">
                 </div>
                 <div class="mb-3">
                   <label for="programDescription" class="form-label">Program Description</label>
-                  <textarea type="text" rows="4" class="form-control" id="programDescription" name="programDescription"></textarea>
+                  <textarea class="form-control" id="programDescription" name="programDescription" rows="4"></textarea>
                 </div>
                 <div class="mb-3">
                   <label for='modalProgramImage'><strong>Add Image</strong></label>
@@ -194,11 +193,11 @@
                 </div>
                 <div class="mb-3">
                   <label for='instagramUrl' class="form-label">Instagram URL</label>
-                  <textarea type="text" class="form-control" id="instagramUrl" name="instagramUrl"></textarea>
+                  <textarea class="form-control" id="instagramUrl" name="instagramUrl"></textarea>
                 </div>
                 <div class="mb-3">
                   <label for='facebookUrl' class="form-label">Facebook URL</label>
-                  <textarea type="text" class="form-control" id="facebookUrl" name="facebookUrl"></textarea>
+                  <textarea class="form-control" id="facebookUrl" name="facebookUrl"></textarea>
                 </div>
                 {% if filePaths %}
                 <div class="form-group mb-5">
@@ -206,9 +205,8 @@
                   {{ displayFiles(filePaths, 'Program Attachments', '/deleteProgramFile', program.id) }}
                 </div>
                 {% endif %}
-              </td>
-              <!-- Right modal column -->
-              <td class="cellSpacing">
+              </div>
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label for="partner" class="form-label">Program Partner</label>
                   <input type="text" class="form-control" id="partner" name="partner">
@@ -227,18 +225,18 @@
                 </div>
                 <div class="mb-3">
                   <label for="bereaUrl" class="form-label">Berea URL</label>
-                  <textarea type="text" class="form-control" id="bereaUrl" name="bereaUrl"></textarea>
+                  <textarea class="form-control" id="bereaUrl" name="bereaUrl"></textarea>
                 </div>
-              </td>
-            </tr>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalView" id="cancelModalView">Cancel</button>
-          <button type="submit" class="btn btn-success" role="button">Save changes</button>
-        </div>
-      </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success" role="button">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" name="cancelModalView" id="cancelModalView">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
 {% endblock %}
