@@ -8,6 +8,7 @@ from app.models.eventParticipant import EventParticipant
 
 from app.logic.spreadsheet import *
 
+
 @pytest.mark.integration 
 @pytest.fixture
 def fixture_users():
@@ -145,8 +146,8 @@ def fixture_eventData():
         {
             "id": 31,
             "term": 2,
-            "name": "Empty Bowls Spring Event 1",
-            "description": "Empty Bowls Spring 2021",
+            "name": "Hunger Initiative",
+            "description": "Hunger Initiave Program",
             "isTraining": True,
             "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
             "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -161,7 +162,7 @@ def fixture_eventData():
         {
             "id": 32,
             "term": 2,
-            "name": "Hunger Hurts",
+            "name": "Adopt-A-Grandparent", 
             "description": "Will donate Food to Community",
             "isTraining": False,
             "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -222,6 +223,27 @@ def fixture_term():
             transaction.rollback()
 
 
+# ###############################################
+@pytest.fixture
+def fixture_info():
+    with mainDB.atomic() as transaction:
+        user1 = User.create(username = "user1", firstName="John", lastName="Doe", bNumber="B77777", major="Graphics Design", classLevel="Sophomore")
+        user2 = User.create(username = "user2", firstName="Jane", lastName="Doe", bNumber="B88888", major="Biology", classLevel="Junior")
+
+        term1 = Term.create(description='Fall 2023', academicYear='2023-2024') 
+
+        program1 = Program.create(id=1, programName='Program1')
+
+        event1 = Event.create(id=1, name='Event1', term=term1, program=program1) 
+
+        EventParticipant.create(event=event1, user=user1, hoursEarned=5)
+        EventParticipant.create(event=event1, user=user2, hoursEarned=3)
+        yield 
+    
+    transaction.rollback() 
+
+
+
 @pytest.mark.integration
 def test_createSpreadsheet():
     createSpreadsheet("2020-2021")
@@ -229,14 +251,13 @@ def test_createSpreadsheet():
 @pytest.mark.integration
 def test_calculateRetentionRate():
     # Takes 2 dictionaries, a fall and spring dictionary and see who has returned in the spring from the fall term
-    fallDict = ({'Adopt-a-Grandparent': ['ramazanim'], 'CELTS-Sponsored Event': [None]})
-    springDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    fallDict = ({'Adopt-a-Grandparent': ['curiem'], 'CELTS-Sponsored Event': [None]})
+    springDict = ({'Hunger Initiatives': ['einsteina', 'lintelmannaders']})
     assert calculateRetentionRate(fallDict, springDict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
 
-    fallDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    fallDict = ({'Hunger Initiatives': ['einsteina', 'lintelmannaders', 'doejohn', 'janedoe']})
     assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 1.0}
 
-    fallDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
     springDict = ({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie']})
     assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 0.75}
 
@@ -249,10 +270,11 @@ def test_removeNullParticipants():
     assert removeNullParticipants(testInputList) == ['khatts', 'ayisie']
 
 @pytest.mark.integration
-def test_termParticipation(term):
+def test_termParticipation(fixture_eventData, fixture_term, fixture_users):
     # Checks who all participated in any given program for an even. NONE will be the result if there was an event for a program without and participants.
-    with mainDB.atomic() as transaction:    
-        assert termParticipation('Fall 2020') == {'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
+        print("pp", fixture_term)
+
+        assert fixture_term == {'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
 
         EventParticipant.create(user = 'partont',
                                 event = 10,
@@ -269,7 +291,6 @@ def test_termParticipation(term):
         for participantList in termParticipationResult.values():
             participantList.sort()
         assert termParticipationResult == {'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': ['ayisie']}
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_getRetentionRate():
@@ -308,7 +329,7 @@ def test_getRetentionRate():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_repeatVolunteers(term):
+def test_repeatVolunteers():
     #repeat volunteers people who participated in more than one event
     with mainDB.atomic() as transaction:
         EventParticipant.delete().execute()
@@ -336,9 +357,9 @@ def test_repeatVolunteers(term):
         EventParticipant.create(user='solijonovam',
                                 event=testEvent2,
                                 hoursEarned=1)
-        assert sorted(list(repeatVolunteers(term.academicYear))) == [('Madinabonu Solijonova', 2)]
+        assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2)]
         EventParticipant.delete().execute()
-        assert sorted(list(repeatVolunteers(term.academicYear))) == []
+        assert sorted(list(repeatVolunteers())) == []
         EventParticipant.create(user='solijonovam',
                                 event=testEvent,
                                 hoursEarned=1)
@@ -354,8 +375,7 @@ def test_repeatVolunteers(term):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_repeatVolunteersPerProgram(term):
-    print("###@", term)
+def test_repeatVolunteersPerProgram():
     # Find people who have participated in two events of the same program
     with mainDB.atomic() as transaction:
         EventParticipant.delete().execute()
@@ -522,7 +542,7 @@ def test_volunteerProgramHours():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_totalVolunteerHours(term):
+def test_totalVolunteerHours():
     #Returns the total amount of volunteer hours in the database
     with mainDB.atomic() as transaction:
         EventParticipant.delete().execute()
@@ -532,7 +552,7 @@ def test_totalVolunteerHours(term):
         Term.create(id = 1,
                     academicYear = '2021-2022',)
         
-        assert list(totalVolunteerHours(term)) == [(None,)]
+        assert list(totalVolunteerHours()) == [(None,)]
         # Adding 1 volunteer hour to one event
         Event.create(id = 2, 
                      term_id = 1,)
@@ -540,11 +560,11 @@ def test_totalVolunteerHours(term):
                                 event = 2,
                                 hoursEarned = 1)
         # Checking that the total volunteer hours has increased by 1
-        assert list(totalVolunteerHours(term)) == [(1.0,)]
+        assert list(totalVolunteerHours()) == [(1.0,)]
         EventParticipant.create(user = 'ayisie',
                                 event = 3,
                                 hoursEarned = 6)
-        assert list(totalVolunteerHours(term)) == [(7.0,)]
+        assert list(totalVolunteerHours()) == [(7.0,)]
         transaction.rollback()
 
 @pytest.mark.integration
@@ -635,3 +655,5 @@ def test_getUniqueVolunteers():
                                                                   ('partont', 'Tyler Parton', 'B00751360'), 
                                                                   ('solijonovam', 'Madinabonu Solijonova', 'B00769465')]
         transaction.rollback()
+
+
