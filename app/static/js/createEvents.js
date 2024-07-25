@@ -228,3 +228,24 @@ $(document).ready(function () {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });
+
+function saveSelectedCohorts() {
+  const selectedCohorts = [];
+  $("input[name='cohorts[]']:checked").each(function () {
+    selectedCohorts.push($(this).val());
+  });
+  localStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts));
+}
+
+// Attach the change event to all cohort checkboxes
+$(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
+
+function loadSelectedCohorts() {
+  const selectedCohorts = JSON.parse(localStorage.getItem("selectedCohorts")) || [];
+  selectedCohorts.forEach(function (year) {
+    $(`input[name='cohorts[]'][value='${year}']`).prop("checked", true);
+  });
+}
+
+// Call the function to load selected checkboxes when the page loads
+$(document).ready(loadSelectedCohorts);
