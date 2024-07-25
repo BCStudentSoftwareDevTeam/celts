@@ -117,6 +117,12 @@
                         <p>This event is a training.</p>
                     {% endif %}
 
+                    {% if not eventData.isTraining and not eventData.isService or eventData['program'].isBonnerScholars %}
+                        <p>This is a Bonner Scholars event.</p>
+                    {% else %}
+                        <p>This is not a Bonner Scholars event.</p>
+                    {% endif %}
+
                     {% if eventData['certRequirement'] %}
                         <p>This event satisfies the {{eventData['certRequirement'].name}} requirement for the Bonner program.</p>
                     {% endif %}
