@@ -106,8 +106,7 @@ $(document).ready(function () {
   });
   // Determine which checkbox was clicked and its current checked status, uncheck others
   $("#checkIsTraining, #checkServiceHours, #checkBonners").on('click', function (event) {
-    let $target = $(event.target);
-    $("#checkIsTraining, #checkServiceHours, #checkBonners").not($target).prop('checked', false);
+    $("#checkIsTraining, #checkServiceHours, #checkBonners").not($(event.target)).prop('checked', false);
   });
 
   $("#saveEvent").on('submit', function (event) {
