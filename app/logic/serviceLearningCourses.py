@@ -51,8 +51,8 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
 def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():
-        termObj: Term = Term.get_or_none(description = term) or addPastTerm(term)
-        if not termObj:
+        courseTerm: Term = Term.get_or_none(description = term) or addPastTerm(term)
+        if not courseTerm:
             print(f"Unable to find or create term {term}")
             continue
 
@@ -61,58 +61,64 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
-            termCheck = Term.get(Term.id == termObj)
+            currentTermObj = Term.get(Term.id == courseTerm)
 
-            checkTermOrder = termCheck.termOrder
+            existingCourses = list((Course.select()
+                                            .join(Term, on =(Course.term == Term.id))
+                                            .where((Course.courseAbbreviation == course) & (Term.termOrder <= currentTermObj.termOrder))
+                                            .order_by(Course.term.desc())
+                                            .limit(1)))
 
-            check_for_Existing_Courses = list((Course.select()
-                                        .join(Term, on =(Course.term == Term.id))
-                                        .where((Course.courseAbbreviation == course) & (Term.termOrder <= checkTermOrder))
-                                        .order_by(Course.term.desc())
-                                        .limit(1)))
+            if not existingCourses :
+
+                    courseObj: Course = Course.create(courseName = "",
+                                    sectionDesignation = "",
+                                    courseAbbreviation = course,
+                                    courseCredit = "1",
+                                    term = courseTerm,
+                                    status = CourseStatus.IN_PROGRESS,
+                                    createdBy = g.current_user,
+                                    serviceLearningDesignatedSections = "",
+                                    previouslyApprovedDescription = "")
+                    
+                    CourseQuestion.create(course = courseObj.id,
+                                    questionContent= " ",
+                                    questionNumber=" ")
+                    
+                    CourseInstructor.create(course = courseObj.id,
+                                        user = " ")
+                    
+
             
-            if not check_for_Existing_Courses :
-
-                courseObj: Course = Course.create(courseName = "",
-                                sectionDesignation = "",
-                                courseAbbreviation = course,
-                                courseCredit = "1",
-                                term = termObj,
-                                status = 4,
-                                createdBy = g.current_user,
-                                serviceLearningDesignatedSections = "",
-                                previouslyApprovedDescription = "")
-        
             else:
-                previous_data = check_for_Existing_Courses[0]
+                previousMatchedCourse = existingCourses[0]
 
-                currentTerm = Term.get(Term.id == previous_data.term)
+                currentTerm = Term.get(Term.id == previousMatchedCourse.term)
                 
+                if currentTerm == currentTermObj:
+                    courseObj : Course = previousMatchedCourse 
                 
-                if (currentTerm.termOrder) == checkTermOrder:
-                    courseObj : Course = Course.get( courseAbbreviation = course, term = termObj) 
-               
                 else:
-                    courseObj: Course = Course.create(courseName = previous_data.courseName,
-                                    courseAbbreviation = previous_data.courseAbbreviation,
-                                    sectionDesignation = previous_data.sectionDesignation,
-                                    courseCredit = 1,
-                                    term = termObj,
-                                    status = 4,
+                    courseObj: Course = Course.create(courseName = previousMatchedCourse.courseName,
+                                    courseAbbreviation = previousMatchedCourse.courseAbbreviation,
+                                    sectionDesignation = previousMatchedCourse.sectionDesignation,
+                                    courseCredit = previousMatchedCourse.courseCredit,
+                                    term = courseTerm,
+                                    status = CourseStatus.IN_PROGRESS,
                                     createdBy = g.current_user, 
-                                    serviceLearningDesignatedSections = previous_data.serviceLearningDesignatedSections,
-                                    previouslyApprovedDescription = previous_data.previouslyApprovedDescription)
+                                    serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
+                                    previouslyApprovedDescription = previousMatchedCourse.previouslyApprovedDescription)
 
-            for userDict in courseInfo['students']:
-                if userDict['errorMsg']:
+        for userDict in courseInfo['students']:
+            if userDict['errorMsg']:
                     print(f"Unable to save student. {userDict['errorMsg']}")
                     continue
 
-                CourseParticipant.get_or_create(user=userDict['user'], 
+            CourseParticipant.get_or_create(user=userDict['user'], 
                                                 course=courseObj,
                                                 hoursEarned=20)
                 
-def unapprovedCourses(termId: int) -> List[Course]:
+def unapprovedCourses(termId: int) -> List[Course]:#
     """
     Queries the database to get all the neccessary information for
     submitted/unapproved courses.
