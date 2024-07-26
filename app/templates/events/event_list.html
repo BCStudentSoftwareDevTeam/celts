@@ -85,7 +85,7 @@
     </thead>
     <tbody>
       {% for event in events%}
-        {% if event.deletionDate == "0000-00-00 00:00:00" %}
+        
           {% if event.isPastEnd %}
             <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
@@ -136,7 +136,7 @@
               </td>
             {% endif %}
           </tr>
-        {% endif %}
+        
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>

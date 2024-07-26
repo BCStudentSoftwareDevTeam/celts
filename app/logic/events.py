@@ -199,7 +199,7 @@ def getStudentLedEvents(term):
     studentLedEvents = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where(Program.isStudentLed,
-                                        Event.term == term)
+                                        Event.term == term, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
@@ -218,9 +218,9 @@ def getUpcomingStudentLedCount(term, currentTime):
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
-                                    Event.term == term,
+                                    Event.term == term, Event.deletionDate == None,
                                     (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
-                                    Event.isCanceled == False, Event.deletionDate == None)
+                                    Event.isCanceled == False)
                             .group_by(Program.id))
     
     programCountDict = {}
@@ -242,7 +242,7 @@ def getTrainingEvents(term, user):
     trainingQuery = (Event.select(Event).distinct()
                           .join(Program, JOIN.LEFT_OUTER)
                           .where(Event.isTraining == True,
-                                 Event.term == term)
+                                 Event.term == term, Event.deletionDate == None)
                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
@@ -255,13 +255,14 @@ def getBonnerEvents(term):
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
-                                            Event.term == term)
+                                            Event.term == term, Event.deletionDate == None)
                                      .order_by(Event.startDate, Event.timeStart)
                                      .execute())
     return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
+    
     Get the list of the events not caught by other functions to be displayed in
     the Other Events section of the Events List page.
     :return: A list of Other Event objects
@@ -271,10 +272,9 @@ def getOtherEvents(term):
     
     otherEvents = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.term == term,
+                            .where(Event.term == term, Event.deletionDate == None,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                   Event.deletionDate == None,
                                    ((Program.isOtherCeltsSponsored) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))
@@ -297,7 +297,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
                     .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program) & (ProgramBan.user == user)))
                     .join(Interest, JOIN.LEFT_OUTER, on=(Event.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
+                    .where(Event.deletionDate == None, Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
 
@@ -506,7 +506,7 @@ def getEventRsvpCountsForTerm(term):
     """
     amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
                    .join(EventRsvp, JOIN.LEFT_OUTER)
-                   .where(Event.term == term)
+                   .where(Event.term == term, Event.deletionDate == None)
                    .group_by(Event.id))
 
     amountAsDict = {event.id: event.count for event in amount}

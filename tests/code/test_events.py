@@ -514,7 +514,7 @@ def test_deleteEvent():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(eventId)
             event = Event.get_or_none(Event.id == eventId) 
-        assert event is not None and event.deletionDate != "0000-00-00 00:00:00"
+        assert event is not None and event.isDeleted
 
         transaction.rollback()
 
@@ -544,18 +544,21 @@ def test_deleteEvent():
         event = Event.get_by_id(createdEvents[0].id)
         recurringId = event.recurringId
 
-        # check how many events exist before event deletion
-        recurringEventsBefore = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")).order_by(Event.recurringId))
+        # check how many events exist before event deletion and isDeleted should be false since they are not deleted yet
+        recurringEventsBefore = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
         for counter, recurring in enumerate(recurringEventsBefore):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
+            assert recurring.isDeleted == False
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(createdEvents[0])
+            event = Event.get_or_none(Event.id == createdEvents[0]) 
+            assert event.isDeleted
 
         # check how many events exist after event deletion
-        #event that got deleted now have a deletion date which is != 0000-00-00 00:00:00
-        recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")).order_by(Event.recurringId))
+        # event that got deleted now have a deletion date which is not None
+        recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
@@ -574,7 +577,7 @@ def test_deleteEvent():
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEventAndAllFollowing(eventIdToDelete)
-            totalRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId)&(Event.deletionDate == "0000-00-00 00:00:00")))
+            totalRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId)&(Event.deletionDate == None)))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
         with app.app_context():
