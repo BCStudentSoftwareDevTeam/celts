@@ -3,7 +3,7 @@ import datetime
 from peewee import JOIN
 from http import cookies
 from playhouse.shortcuts import model_to_dict
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for, make_response, session
 
 from app.controllers.main import main_bp
 from app import app
@@ -93,6 +93,9 @@ def events(selectedTerm, activeTab, programID):
     
     managersProgramDict = getManagerProgramDict(g.current_user)
 
+    # Fetch toggle state from session
+    toggle_state = session.get('toggleState', 'unchecked')
+
     return render_template("/events/event_list.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
@@ -107,11 +110,21 @@ def events(selectedTerm, activeTab, programID):
                             activeTab = activeTab,
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
-                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
+                            toggle_state = toggle_state
                             )
 
+@main_bp.route('/updateToggleState', methods=['POST'])
+def update_toggle_state():
+    toggle_state = request.form.get('toggleState')
+    
+    # Update session with toggle state
+    session['toggleState'] = toggle_state
+    
+    return "", 200
+
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewUsersProfile(username):
+def viewUsersProfile(username):   
     """
     This function displays the information of a volunteer to the user
     """
@@ -124,7 +137,7 @@ def viewUsersProfile(username):
         else:
             abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
-    if (g.current_user == volunteer) or g.current_user.isAdmin:
+    if (g.current_user == volunteer) or g.current_user.isAdmin: 
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
@@ -197,7 +210,8 @@ def emergencyContactInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
 
-
+    user = User.get(User.username == username)
+    
     if request.method == 'GET':
         readOnly = g.current_user.username != username
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
@@ -214,7 +228,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -229,6 +243,8 @@ def insuranceInfo(username):
     """
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
+    
+    user = User.get(User.username == username)
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
@@ -247,7 +263,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
@@ -493,6 +509,10 @@ def getDietInfo():
 
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    toggleMinorInterest(username)
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        toggleMinorInterest(username)
+
+    else:
+        abort(403)
     
     return ""
