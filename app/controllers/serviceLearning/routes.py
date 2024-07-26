@@ -69,7 +69,7 @@ def slcEditProposal(courseID):
             filePaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
 
             terms = selectSurroundingTerms(g.current_term, 0)
-           
+
             return render_template('serviceLearning/slcNewProposal.html',
                                     course = course,
                                     questionanswers = questionAnswers,
@@ -77,6 +77,7 @@ def slcEditProposal(courseID):
                                     statusOfCourse = statusOfCourse,
                                     courseInstructor = courseInstructor,
                                     filePaths = filePaths,
+                                    courseStatus = courseStatus,
                                     redirectTarget = getRedirectTarget())
 
     else:
