@@ -229,7 +229,7 @@ users = [
         "minorInterest": 0,
     },
 ]
-
+User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
     { "year": 2020, "user": "neillz" },
@@ -803,6 +803,8 @@ events = [
     },
 ]
 
+Event.insert_many(events).on_conflict_replace().execute()
+
 notes = [
     {
         "id": 1,
@@ -905,6 +907,7 @@ courses = [
 
     }
 ]
+Course.insert_many(courses).on_conflict_replace().execute()
 
 individualReqs = [
         {
