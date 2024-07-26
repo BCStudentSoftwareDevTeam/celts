@@ -145,7 +145,18 @@
                       id="programManagementButton{{ loop.index }}" 
                       data-bs-toggle="modal" 
                       data-bs-target="#adminProgramManagement" 
-                      data-programInfo=' {{ programData }}'>
+                      data-programinfo= '{
+                        "programName": "{{ program.programName }}",
+                        "programDescription": "{{ program.programDescription }}",
+                        "partner": "{{ program.partner }}",
+                        "contactEmail": "{{ program.contactEmail }}",
+                        "contactName": "{{ program.contactName }}",
+                        "location": "{{ program.location }}",
+                        "programid": "{{ program.id }}",
+                        "instagramUrl": "{{ program.instagramUrl }}",
+                        "facebookUrl": "{{ program.facebookUrl }}",
+                        "bereaUrl": "{{ program.bereaUrl }}"
+                    }'>
                       Edit Details</button>
             </div>
           </div>

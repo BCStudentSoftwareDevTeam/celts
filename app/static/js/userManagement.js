@@ -1,5 +1,5 @@
 import searchUser from './searchUser.js'
-import { populateModal } from "/static/js/userManagement.js";
+
 
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
@@ -65,29 +65,32 @@ function submitRequest(method, username){
   })
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-      button.addEventListener('click', function(event) {
-          // Retrieve and parse the programInfo data
-          const programInfo = JSON.parse(event.currentTarget.getAttribute('data-programinfo'));
-          populateModal(programInfo);
-      });
+
+
+$(document).ready(function() {
+  $('[data-bs-toggle="modal"]').on('click', function() {
+      // Get the JSON data from the data-programinfo attribute
+      const programInfo = JSON.parse($(this).attr('data-programinfo'));
+      // Directly populate modal fields
+      console.log(programInfo)
+      $("#programName").val(programInfo.programName);
+      $("#programDescription").val(programInfo.programDescription);
+      $("#partner").val(programInfo.partner);
+      $("#contactEmail").val(programInfo.contactEmail);
+      $("#contactName").val(programInfo.contactName);
+      $("#location").val(programInfo.location);
+      $("#programid").val(programInfo.programid)
+      $("#instagramUrl").val(programInfo.instagramUrl);
+      $("#facebookUrl").val(programInfo.facebookUrl);
+      $("#bereaUrl").val(programInfo.bereaUrl);
+      
+
+      handleFileSelection('modalProgramImage');
+      // Update the form action URL dynamically
+      let updateForm = $('#updateProgramForm');
+      updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
   });
 });
-
-function populateModal(programInfo) {
-  // Assuming your modal fields have IDs matching the keys
-  document.getElementById('programName').value = programInfo.programName || '';
-  document.getElementById('programDescription').value = programInfo.programDescription || '';
-  document.getElementById('partner').value = programInfo.partner || '';
-  document.getElementById('contactEmail').value = programInfo.contactEmail || '';
-  document.getElementById('contactName').value = programInfo.contactName || '';
-  document.getElementById('defaultLocation').value = programInfo.defaultLocation || '';
-  document.getElementById('programId').value = programInfo.id || '';
-  document.getElementById('instagramUrl').value = programInfo.instagramUrl || '';
-  document.getElementById('facebookUrl').value = programInfo.facebookUrl || '';
-  document.getElementById('bereaUrl').value = programInfo.bereaUrl || '';
-}
 
 
   
