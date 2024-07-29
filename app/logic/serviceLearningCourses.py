@@ -43,11 +43,27 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name":course.courseName if course.courseName else course.courseAbbreviation,
+                                 "name": course.courseName,
+                                 "abbr": course.courseAbbreviation,
+                                 "courseDisplayName": createCourseDisplayName(course.courseName, course.courseAbbreviation),                             
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}
     return courseDict
+
+def createCourseDisplayName(name, abbreviation):
+        '''
+        This function combines course name and numbers with conditions
+        inputs: course name, course abbreviation
+        '''
+        if name and abbreviation:
+            return f"{abbreviation} - {name}"
+        elif not name and not abbreviation:
+            return ''
+        elif not name:
+            return abbreviation
+        elif not abbreviation:
+            return name
 
 def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():

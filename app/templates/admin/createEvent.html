@@ -3,7 +3,7 @@
 {% set isNewEvent = 'create' in request.path %}
 {% if isNewEvent %}          
   {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
-    {% set page_title = 'Create A ' + eventData["program"].programName %}
+    {% set page_title = 'Create a ' + eventData["program"].programName %}
 
   {% elif template.tag == 'single-program' %}
     {%set page_title = 'Create Event for ' + eventData["program"].programName %}
@@ -58,22 +58,21 @@
     {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
 
     <div class="form-group mb-4">
-      <label class="form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
-      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required
+      <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
+      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required>
         {% if eventData.location %}
           value="{{eventData.location}}"
         {% endif %}
-      />
     </div>
     <!-- Start and End Datepickers -->
     <div class="row col-md-12">
       <div class="form-group col-md-6">
-          <label class="form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
+          <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
           <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
               <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly" 
-                value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
+                value="{{ eventData.startDate.strftime('%m/%d/%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" 
                 name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" required>
-              <div class="input-group-text" id="calendarIconStart-{{pageLocation}}">
+              <div class="input-group-text" id="calendarIconStart-{{pageLocation}}" onclick="$('#startDatePicker-{{pageLocation}}').datepicker('show')">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
               </div>
           </div>
@@ -82,10 +81,10 @@
       <div class="form-group col-md-6 {{hideDate}} endDateStyle" id ="endDateStyle-{{pageLocation}}" >
       <!--datePicker for End date-->
               <span><i class="bi bi-calendar-plus-fill"></i></span>
-          <label class="form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
+          <label class="required form-label me-2" for="endDate-{{pageLocation}}" ><strong>End Date</strong></label>
           <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
             <input autocomplete="off" type='text' class="form-control datePicker endDatePicker" id='endDatePicker-{{pageLocation}}' 
-              value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
+              value="{{eventData.endDate.strftime('%m/%d/%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" 
               name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
             <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}">
               <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -106,7 +105,7 @@
             {% else %}
               {% set startTime = "12:00" %}
             {% endif %}
-            <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+            <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}" name="timeStart" 
               aria-describedby="timeIcon1" placeholder="Pick a start time"  
               id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
             <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
@@ -120,9 +119,9 @@
             {%else%}
               {% set endTime = "13:00" %}
             {% endif %}
-              <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+              <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd" 
                 aria-describedby="timeIcon2" placeholder="Pick an end time" 
-                id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                class = "startTime" id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
               <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
           </div>
         </div>
@@ -138,7 +137,7 @@
                 <input type="hidden" name="id" value="{{eventData.id}}">
             {% endif %}
         <div class="form-group mb-4">
-          <label class="form-label" for='inputEventName'><strong>Event Name</strong></label>
+          <label class="required form-label" for='inputEventName'><strong>Event Name</strong></label>
           <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
         </div>
         <div class="form-group mb-4">
@@ -216,7 +215,7 @@
 
         <div class="col-md-6 form-group">
           <div class="form-group mb-4">
-            <label class="form-label" for='inputCharacters'><strong>Description</strong></label>
+            <label class="required form-label" for='inputCharacters'><strong>Description</strong></label>
             <textarea rows="5" cols="72" class="form-control" id="inputCharacters" type="text" placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
             <label class="form-label" id ="remainingCharacters"></label>
           </div>
