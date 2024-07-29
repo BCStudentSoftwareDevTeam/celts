@@ -117,15 +117,7 @@ def test_repeatVolunteers(fixture_info):
     #repeat volunteers people who participated in more than one event
     with mainDB.atomic() as transaction:
         EventParticipant.delete().execute()
-        User.create(username = 'solijonovam',
-                    bnumber = 'B00769465',
-                    email = 'solijonovam@berea.edu',
-                    phoneNumber = '732-384-3469',
-                    firstName = 'Madinabonu',
-                    lastName  = 'Solijonova',
-                    isStudent = True,
-                    major = 'Agriculture',
-                    classLevel = 'Sophomore')
+ 
         testProgram = Program.create(programName = "Test Program",
                                      programDescription = "A good program")
         testEvent = Event.create(name="Fall2020Event",
