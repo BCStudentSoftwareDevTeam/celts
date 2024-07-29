@@ -24,17 +24,11 @@ from app.logic.certification import updateCertRequirementForEvent
 
 def cancelEvent(eventId):
     """
-    :param eventId : Key value pair from a dictionary.
-    Used to find specific event to be canceled.
+    :param eventId : Integer used to find specific event to be canceled
 
-    Checks to see if event is in the data base and if so 
-    then cancels that event in the database.
-
-    :returns none:
     """
-    #Assign eventId key value pair to variable
     event = Event.get_or_none(Event.id == eventId)
-    #If event exists (Id is valid) then updates data base 
+
     if event: 
         event.isCanceled = True
         event.save()
@@ -45,19 +39,15 @@ def cancelEvent(eventId):
 
 def deleteEvent(eventId):
     """
-    :param eventId : Key value pair from a dictionary.
-    Used to find specific event to be deleted.
+    :param eventId : Integer used to find specific event to be deleted.
 
     Deletes an event, if it is a recurring event, rename all following events
     to make sure there is no gap in weeks.
-
-    : return none :
     """
-    #Assign eventId key value pair to variable
     event = Event.get_or_none(Event.id == eventId)
     
     if event:
-        #Runs if Event is recurring
+        #Builds list of recurring events in a series
         if event.recurringId:
             recurringId = event.recurringId
             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
@@ -74,7 +64,7 @@ def deleteEvent(eventId):
                     eventDeleted = True
 
         program = event.program
-        #Document deletion of event in admin logs
+
         if program:
             createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
@@ -84,14 +74,11 @@ def deleteEvent(eventId):
 
 def deleteEventAndAllFollowing(eventId):
         """
-        :param eventId : Key value pair from a dictionary.
-        Used to find the first event and following events to be deleted.
+        :param eventId : Integer used to find the first event and following events to be deleted.
 
         Deletes a recurring event and all the recurring events after it.
-
-        :return: None
         """
-        #Assign eventId key value pair to variable
+
         event = Event.get_or_none(Event.id == eventId)
         if event:
             #Makes a list of all instances of the recurring event and events AFTER its start date.
@@ -104,14 +91,10 @@ def deleteEventAndAllFollowing(eventId):
 
 def deleteAllRecurringEvents(eventId):
         """
-        :param eventId : Key value pair from a dictionary.
-        Used to find all recurring events in a series to be deletes.
+        :param eventId : Integer used to find all recurring events in a series to be deleted.
         
         Deletes all recurring events in a series.
-
-        :return: None
         """
-        #Assign eventId key value pair to variable
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId:
@@ -127,31 +110,24 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
     :param eventData: Dictionary that holds data related to the event.
     :param attachmentFiles: files to be attached to event.
-    :param bool renewedEvent: Condition to check if the event has passed and is being reused.
+    :param bool renewedEvent: Checks if the event has passed and is being reused.
     
     Tries to save an event to the database:
-    Checks that the event data is valid and if it is it continus to saves the new
+    Checks that the event data is valid, if it is, it continues to save the new
     event to the database and adds files if there are any.
-    If it is not valid it will return a validation error.
 
-    Returns:
-    Created events and an error message.
+    :returns: Created events OR an error message.
     """
 
-    # Manually set the value of RSVP Limit if it is an empty string
-    # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
     #preprocess data to match data with proper values
     newEventData = preprocessEventData(eventData)
     
-    #validates whether the data has been preprocessed
-    #returns true if data is valid, false if not
     isValid, validationErrorMessage = validateNewEventData(newEventData)
     
     if not isValid:
         return False, validationErrorMessage
-    #Try to save, throw exception if fails.
     try:
         events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
@@ -159,7 +135,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
                 addFile = FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
         return events, ""
-    #Exception to display an error in saving event
     except Exception as e:
         print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
@@ -169,28 +144,25 @@ def saveEventToDb(newEventData, renewedEvent = False):
         :param dict newEventData: Dictionary containing event info (name, dates etc)
         :param bool renewedEvent: Deterimines if the event is being renewed from an existing event
 
-
         Takes in a preprocessed dictionary (newEventData)
         and adds it to the data base, checking to see it is
         reoccuring, and if its a new event.
 
         :return eventRecords: dictionary containing event data
     """
-    #error catch 
+
     if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
     
-    #returns true if event doesn't exist
     isNewEvent = ('id' not in newEventData)
 
-    #list to hold a number of events based on how much they will occur
     eventsToCreate = []
     recurringSeriesId = None
-    # Checks if newEventdata is: A new Event that doesnt exist and that it is reoccuring
+
     if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
-        #If it is then modify that dates and weeks parameter to match Frequency of times the event happens
+
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
-        #Creates a new unique ID for the reoccuring event
+    
         recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -199,9 +171,10 @@ def saveEventToDb(newEventData, renewedEvent = False):
         if renewedEvent:
             recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
-    #loops based on many times an event recurs, will loop multiple times
-    #if it recurs, but execute once if not
-    #will change recurring event name for each event and date information
+
+    #loops based on how many times an event happens
+    #Executes once if not recurring 
+
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -240,22 +213,18 @@ def saveEventToDb(newEventData, renewedEvent = False):
             if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
                 updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
-            #new list of event data created from newEventData (list of data from preprocessing user selections)
-            #and newly processed selections
             eventRecords.append(eventRecord)
     return eventRecords
 
 def getStudentLedEvents(term):
     """
         :param term: Object that gives a range of time (fall 2024, spring 2024..)
-        as an integer ID, 1 being the oldest term in DB.
+        as an integer, 1 being the oldest term in DB.
 
         :returns programs: dictionary containing all student led Events for given term
         and which programs they belong to.
-
     """
-    #lists program identifying numbers with their corresponding events saved in the DB
-    #sorted by date and time
+    #lists program IDs with their corresponding events saved in the DB sorted by date and time
     #student led programs included Berea Buddies(program 2) and adopt a grandparent (program 3)
     studentLedEvents = list(Event.select(Event, Program)
                                  .join(Program)
@@ -267,7 +236,6 @@ def getStudentLedEvents(term):
     programs = {}
 
     #loops through list of student led events and adds them to their proper program categories
-    #which is returned as dictionaries
     for event in studentLedEvents:
         programs.setdefault(event.program, []).append(event)
     return programs
@@ -282,9 +250,9 @@ def getUpcomingStudentLedCount(term, currentTime):
         Return a count of all upcoming events for each student led program.
 
         :return: programCountDict, a list of key value pairs
-        key = programID value = number of events for that key(Program) in a given term
+        key = programID, value = number of events for that key(Program) in a given term
     """
-    #Gets all student led events in DB who start time is >= current time(Get)
+    #Gets all student led events in DB whose start time is >= current time(Get)
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
@@ -294,7 +262,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .group_by(Program.id))
     
     programCountDict = {}
-    #Make a list of key value pairs (from dictionary)
+    
     for programCount in upcomingCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
@@ -307,9 +275,7 @@ def getTrainingEvents(term, user):
         :param user: Expected to be the current user 
 
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
-        together by id's of similiar value. The query will then return the event that is associated
-        with the most programs (highest count) by doing this we can ensure that the event being
-        returned is the All Trainings Event.
+        together by events of similiar type. 
         
         return: a list of all trainings the user can view
     """
@@ -333,8 +299,6 @@ def getBonnerEvents(term):
 
         :returns bonnerScholarsEvents: dictionary containing all Bonner related events for given term
     """
-    #Creates dictionary that contains specifically Bonner Scholars events
-    #sorted by date and time
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
@@ -353,9 +317,6 @@ def getOtherEvents(term):
 
     :return: A list of Other Event objects
     """
-    # Gets all events that are not associated with a program and are not trainings
-    # Gets all events that have a program but don't fit anywhere
-    
     otherEvents = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
                             .where(Event.term == term,
@@ -371,9 +332,9 @@ def getOtherEvents(term):
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
-        :param user: a username or User object
+        :param user: Expected to be the current user 
         :param asOf: The date to use when determining future and past events.
-                      Used in testing, defaults to the current timestamp. 
+        Used in testing, defaults to the current timestamp. 
         :param program: What type of program the event is.
 
         Get the list of upcoming events that the user is interested in as long
@@ -389,10 +350,9 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
                     .where(Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
-    #set events to programs that the user is interested in.
+    #set events to programs that the user is interested in, then ordered by closest start date.
     if program:
         events = events.where(Event.program == program)
-    #Order interested events by closest start date
     events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
@@ -413,9 +373,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
 def getParticipatedEventsForUser(user):
     """
-        :param user: a username or User object
-
-        Get all the events a user has participated in.
+        :param user: Expected to be the current user. 
         
         :return: A list of Event objects
     """
@@ -432,7 +390,7 @@ def getParticipatedEventsForUser(user):
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    #list of events separated by ID and whether they are typical or volunteer events
+    #list of events separated by ID and whether they are volunteer events or not.
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
@@ -444,7 +402,7 @@ def validateNewEventData(data):
 
         Assumes the event data has been processed with `preprocessEventData`. NOT raw form data
 
-        Returns 3 values: (boolean success, the validation error message, the data object)
+        :return: Boolean success, the validation error message.
     """
 
     if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring']]:
@@ -497,7 +455,7 @@ def calculateNewrecurringId():
 
 def getPreviousRecurringEventData(recurringId):
     """
-    :param recurringId: Id for a specific event in a recurring series
+    :param recurringId: Id for a specific recurring event series.
 
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
 
@@ -513,7 +471,7 @@ def getPreviousRecurringEventData(recurringId):
 
 def calculateRecurringEventFrequency(event):
     """
-        :param event: Dictionary data of the particular event in question.
+        :param event: Event object in question.
 
         Calculate the events to create based on a recurring event start and end date.
         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
@@ -596,9 +554,7 @@ def preprocessEventData(eventData):
 
 def getTomorrowsEvents():
     """
-    Grabs each event that occurs tomorrow
-    
-    :return events: Events that occur tomorrow
+        :return events: List of event objects that occur tomorrow.
     """
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
@@ -606,13 +562,11 @@ def getTomorrowsEvents():
 
 def addEventView(viewer,event):
     """
-    :param viewer: User that is looking at specified event
+        :param viewer: User that is looking at specified event
 
-    :param event: particular event in question
+        :param event: Event object in question.
 
-    This checks if the current user already viewed the event. If not, insert a recored to EventView table
-    
-    :return: None
+        This checks if the current user already viewed the event. If not, insert a record to EventView table.
     """
     if not viewer.isCeltsAdmin:
          EventView.get_or_create(user = viewer, event = event)   
@@ -638,8 +592,7 @@ def getEventRsvpCountsForTerm(term):
 
 def getEventRsvpCount(eventId):
     """
-        :param eventId : Key value pair from a dictionary.
-        Used to track specific event
+        :param eventId : Integer used to track specific event.
 
         :return: the number of RSVP'd participants for a given eventId.
     """
@@ -647,7 +600,7 @@ def getEventRsvpCount(eventId):
 
 def getCountdownToEvent(event, *, currentDatetime=None):
     """
-    :param event: The particular event in question
+    :param event: Event object in question.
 
     :param *: Must specify currentDatetime in parameters, when called
     this would look like: getCountdownToEvent(event, currentDatetime=currentTime)
@@ -733,8 +686,6 @@ def copyRsvpToNewEvent(priorEvent, newEvent):
         :param newEvent: Dictionary data from a new event
 
         Copies rvsps from priorEvent to newEvent and saves it to the DB
-
-        :return: None
     """
     rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent['id']).execute())
     
