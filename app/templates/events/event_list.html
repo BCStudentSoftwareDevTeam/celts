@@ -85,6 +85,10 @@
     </thead>
     <tbody>
       {% for event in events%}
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 8473cab78a156a41d7622a70bd61e7cd05141ad6
           {% if event.isPastEnd %}
             <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
@@ -135,6 +139,10 @@
               </td>
             {% endif %}
           </tr>
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 8473cab78a156a41d7622a70bd61e7cd05141ad6
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>
