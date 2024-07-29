@@ -129,8 +129,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                         questionNumber=question.questionNumber)
                     
                     instructors = CourseInstructor.select().where(CourseInstructor.course == previousMatchedCourse.id)
-                    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-                    print(instructors)
+                    
                     for instructor in instructors:
                         CourseInstructor.create(course = courseObj.id,
                                             user = instructor.user)
