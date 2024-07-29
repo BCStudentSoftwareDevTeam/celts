@@ -450,7 +450,22 @@ def RemoveRSVP():
         if eventData['from'] == 'ajax':
             return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
-
+# =========================Event List Indicators=================================
+@main_bp.route('/admin/getEventListCounts', methods=['GET'])
+def getEventListCounts() -> str:
+    """
+    Get the count of events for each category to display in the event list page.
+    It must be returned as a string to be received by the ajax request.
+    """
+    studentLedEventsCount: int = len(getStudentLedEvents(g.current_term)) 
+    trainingEventsCount: int = len(getTrainingEvents())
+    bonnerEventsCount: int = len(getBonnerEvents())
+    otherEventsCount: int = len(getOtherEvents())
+    return {"studentLedEventsCount": studentLedEventsCount,
+            "trainingEventsCount": trainingEventsCount,
+            "bonnerEventsCount": bonnerEventsCount,
+            "otherEventsCount": otherEventsCount}
+# ===============================================================================
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
