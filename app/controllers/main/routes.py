@@ -91,7 +91,8 @@ def events(selectedTerm, activeTab, programID):
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
     # Get the count of events for each category to display in the event list page.
-    studentLedEventsCount: int = len(getStudentLedEvents(g.current_term)) 
+    studentLedEventsCount: int = sum(list(getUpcomingStudentLedCount(term, currentTime).keys()))
+    print("RAAAAAH ", countUpcomingStudentLedEvents)
     trainingEventsCount: int = len(getTrainingEvents(term, g.current_user))
     bonnerEventsCount: int = len(getBonnerEvents(term))
     otherEventsCount: int = len(getOtherEvents(term))
