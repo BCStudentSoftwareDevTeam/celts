@@ -31,48 +31,32 @@ $(document).ready(function(){
       tableRows.hide();
     }
   }
-// ================== Event count notifiers===================
-  $.ajax({
-    url: "/eventsList/" + "3",
+// ================== Event count Indicators ===================
+  $.ajax({ //NEED TO REPLACE 3 WITH CURRENT TERM*************************************************
+    url: "/eventsList/" + $('#termID').val(),
     type: "GET",
     success: function(EventsCount) {
-      const studentLedEventsCount = Number(EventsCount.studentLedEventsCount)
-      const trainingEventsCount = Number(EventsCount.trainingEventsCount)
-      const bonnerEventsCount = Number(EventsCount.bonnerEventsCount)
-      const otherEventsCount = Number(EventsCount.otherEventsCount)
+      const studentLedEventsCount = Number(EventsCount.studentLedEventsCount);
+      const trainingEventsCount = Number(EventsCount.trainingEventsCount);
+      const bonnerEventsCount = Number(EventsCount.bonnerEventsCount);
+      const otherEventsCount = Number(EventsCount.otherEventsCount);
       msgFlash("HELLO", "success");
       console.log(EventsCount);
       console.log(studentLedEventsCount, trainingEventsCount, bonnerEventsCount, otherEventsCount);
 
       if (studentLedEventsCount >= 0) {
-        $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`)
-        // $(".courseManagement").popover({
-        //   trigger: "hover",
-        //   sanitize: false,
-        //   html: true,
-        //   content: function() {
-        //     return "Amount of pending course proposals for the current term."
-        //   }
-        // });
+        $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`);
       }
-       
       if (trainingEventsCount >= 0) {
-        $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`)
-        
+        $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`);
       }
-
       if (bonnerEventsCount >= 0) {
-        $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`)
-       
+        $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`);
       }
 
       if (otherEventsCount >= 0) {
-        $("#otherEvents").html(`Other Events (${otherEventsCount})`)
-       
+        $("#otherEvents").html(`Other Events (${otherEventsCount})`);
       }
-      // if (interestedStudentsCount + unapprovedCoursesCount > 0) {
-      //   $("#admin").html(`Admin (${interestedStudentsCount + unapprovedCoursesCount})`)
-      // }
     },
     error: function(request, status, error) {
       console.log(status,error);
