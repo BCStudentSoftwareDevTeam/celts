@@ -73,25 +73,29 @@ def goToEventsList(programID):
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
-    currentTerm = g.current_term
-    if selectedTerm:
-        currentTerm = selectedTerm
-    currentTime = datetime.datetime.now()
-    
-    listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in participantRSVP]
+    print("annannanananan")
+    print(Event.select(Event.isDeleted).where(Event.get_by_id(1)))
+    print(Event.select(Event.deletionDate).where(Event.get_by_id(1)))
+    if Event.deletionDate == None:
+        currentTerm = g.current_term
+        if selectedTerm:
+            currentTerm = selectedTerm
+        currentTime = datetime.datetime.now()
+        
+        listOfTerms = Term.select()
+        participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
+        rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
-    
-    currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
-    studentLedEvents = getStudentLedEvents(term)
-    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
-    trainingEvents = getTrainingEvents(term, g.current_user)
-    bonnerEvents = getBonnerEvents(term)
-    otherEvents = getOtherEvents(term)
-    
-    managersProgramDict = getManagerProgramDict(g.current_user)
+        term = Term.get_by_id(currentTerm) 
+        
+        currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
+        studentLedEvents = getStudentLedEvents(term)
+        countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
+        trainingEvents = getTrainingEvents(term, g.current_user)
+        bonnerEvents = getBonnerEvents(term)
+        otherEvents = getOtherEvents(term)
+        
+        managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session
     toggle_state = session.get('toggleState', 'unchecked')
