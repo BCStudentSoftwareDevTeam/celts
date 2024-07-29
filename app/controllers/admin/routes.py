@@ -360,16 +360,12 @@ def undoEvent():
     try:
         events = session['lastDeletedEvent']
         for eventId in events: 
-            print("######################################################")
-            print(eventId)
             Event.update({Event.deletionDate: None}).where(Event.id == eventId).execute()
-            Event.update({Event.deletedBy: None}).where(Event.id == event).execute()
-
-        recurringEvents = list(Event.select().where((Event.recurringId==recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
-        event = Event.get_or_none(Event.id == eventId) 
-        recurringId = event.recurringId if event is not None else print("Event doesn't exist")
-        nameCounter = 1
-        if recurringId is not None:
+            Event.update({Event.deletedBy: None}).where(Event.id == eventId).execute()
+            event = Event.get_or_none(Event.id == eventId)
+        recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.recurringId is not None:
+            nameCounter = 1
             for recurringEvent in recurringEvents:
                 newEventNameList = recurringEvent.name.split()
                 newEventNameList[-1] = f"{nameCounter}"
@@ -386,7 +382,7 @@ def undoEvent():
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
-        session['lastDeletedEvent'] = eventId
+        session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
