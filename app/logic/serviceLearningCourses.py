@@ -86,7 +86,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                     questionNumber=" ")
                     
                     CourseInstructor.create(course = courseObj.id,
-                                        user = " ")
+                                        user = "ramsayb2")
                     
 
             
@@ -96,7 +96,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 currentTerm = Term.get(Term.id == previousMatchedCourse.term)
                 
                 if currentTerm == currentTermObj:
-                    courseObj : Course = previousMatchedCourse 
+                    courseObj : Course = previousMatchedCourse
                 
                 else:
                     courseObj: Course = Course.create(courseName = previousMatchedCourse.courseName,
@@ -108,6 +108,18 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                     createdBy = g.current_user, 
                                     serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
                                     previouslyApprovedDescription = previousMatchedCourse.previouslyApprovedDescription)
+                    
+                    questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course==courseObj.id))
+                    for question in questions:
+                        CourseQuestion.create(course = previousMatchedCourse.id,
+                                        questionContent= question.questionContent,
+                                        questionNumber=question.questionNumber)
+                    
+                    instructors = CourseInstructor.select().where(CourseInstructor.course==courseObj.id)
+                    for instructor in instructors:
+                        CourseInstructor.create(course = courseObj.id,
+                                            user = instructor.user)
+                
 
         for userDict in courseInfo['students']:
             if userDict['errorMsg']:
