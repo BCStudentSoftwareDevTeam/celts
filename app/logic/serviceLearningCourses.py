@@ -86,26 +86,21 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                             .limit(1)))
 
             if not existingCourses :
-
-                    courseObj: Course = Course.create(courseName = "",
-                                    sectionDesignation = "",
-                                    courseAbbreviation = course,
-                                    courseCredit = "1",
-                                    term = courseTerm,
-                                    status = CourseStatus.IN_PROGRESS,
-                                    createdBy = g.current_user,
-                                    serviceLearningDesignatedSections = "",
-                                    previouslyApprovedDescription = "")
-                    
-                    CourseQuestion.create(course = courseObj.id,
-                                    questionContent= " ",
-                                    questionNumber=" ")
-                    
-                    CourseInstructor.create(course = courseObj.id,
-                                        user = "ramsayb2")
-                    
-
-            
+                
+                courseObj: Course = Course.create(courseName = "",
+                                sectionDesignation = "",
+                                courseAbbreviation = course,
+                                courseCredit = "1",
+                                term = courseTerm,
+                                status = CourseStatus.IN_PROGRESS,
+                                createdBy = g.current_user,
+                                serviceLearningDesignatedSections = "",
+                                previouslyApprovedDescription = "")
+                CourseQuestion.create(course = courseObj.id,
+                                questionContent= " ",
+                                questionNumber=" ")
+                CourseInstructor.create(course = courseObj.id,
+                                    user = 'ramsayb2')
             else:
                 previousMatchedCourse = existingCourses[0]
 
@@ -115,6 +110,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                     courseObj : Course = previousMatchedCourse
                 
                 else:
+            
                     courseObj: Course = Course.create(courseName = previousMatchedCourse.courseName,
                                     courseAbbreviation = previousMatchedCourse.courseAbbreviation,
                                     sectionDesignation = previousMatchedCourse.sectionDesignation,
@@ -125,13 +121,16 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                     serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
                                     previouslyApprovedDescription = previousMatchedCourse.previouslyApprovedDescription)
                     
-                    questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course==courseObj.id))
+                    questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course == previousMatchedCourse.id))
+
                     for question in questions:
-                        CourseQuestion.create(course = previousMatchedCourse.id,
+                        CourseQuestion.create(course = courseObj.id,
                                         questionContent= question.questionContent,
                                         questionNumber=question.questionNumber)
                     
-                    instructors = CourseInstructor.select().where(CourseInstructor.course==courseObj.id)
+                    instructors = CourseInstructor.select().where(CourseInstructor.course == previousMatchedCourse.id)
+                    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+                    print(instructors)
                     for instructor in instructors:
                         CourseInstructor.create(course = courseObj.id,
                                             user = instructor.user)
