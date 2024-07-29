@@ -154,34 +154,28 @@ def test_repeatVolunteers(fixture_info):
 def test_repeatVolunteersPerProgram(fixture_info):
     # Find people who have participated in two events of the same program
     with mainDB.atomic() as transaction:
-        EventParticipant.delete().execute()
+        # EventParticipant.delete().execute()
         user1 = fixture_info["user1"]
 
         program1 = fixture_info["program1"]  
         
-        testEvent = fixture_info["test_event"]
+        testEvent = fixture_info["event1"] 
 
-        
-        EventParticipant.create(user='solijonovam',
-                                event=testEvent,
-                                hoursEarned=1)
-        assert sorted(list(repeatVolunteersPerProgram(fixture_info[""]))) == []
-        testProgram2 = Program.create(programName = "Test Program 2",
-                                     programDescription = "A good program")
-        testEvent2 = Event.create(name="Test Event2",
-                                 term=term.id, 
-                                 program=testProgram2)
-        EventParticipant.create(user='solijonovam',
-                                event=testEvent2,
-                                hoursEarned=1)
-        assert sorted(list(repeatVolunteersPerProgram(term.academicYear))) == []
-        testEvent3 = Event.create(name="Test Event3",
-                                 term=term.id, 
-                                 program=testProgram)
-        EventParticipant.create(user='solijonovam',
-                                event=testEvent3,
-                                hoursEarned=1)
-        assert sorted(list(repeatVolunteersPerProgram(term.academicYear))) == [('Madinabonu Solijonova', 'Test Program', 2)]
+
+        EventParticipant2 = fixture_info["eventparticipant2"] 
+
+
+        assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == []
+
+        testProgram2 = fixture_info["program2"]
+        testEvent2 = fixture_info["event1"]
+        EventParticipant = fixture_info["eventparticipant2"]
+        assert sorted(list(repeatVolunteersPerProgram("2023-2024S"))) == []
+        # testEvent3 = Event.create(name="Test Event3",
+        #                          term=term.id, 
+        #                          program=testProgram)
+        # EventParticipant2 = 
+        assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [('John Doe', 2)]
 
         transaction.rollback()
 
