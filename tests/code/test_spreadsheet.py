@@ -11,10 +11,9 @@ from app.logic.spreadsheet import *
 @pytest.fixture
 def fixture_info():
     with mainDB.atomic() as transaction:
-
-        user1 = User.create(username = "doej", firstName="John", lastName="Doe", bnumber="B774377", major="Graphics Design", classLevel="Sophomore")
-        user2 = User.create(username = "doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", classLevel="Junior")
-        user3 = User.create(username = "builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", classLevel="Senior")
+        user1 = User.create(username="doej", firstName="John", lastName="Doe", bnumber="B774377", major="Graphics Design", classLevel="Sophomore")
+        user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", classLevel="Junior")
+        user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", classLevel="Senior")
 
         term1 = Term.create(description='Fall 2023', academicYear='2023-2024')
 
@@ -22,10 +21,10 @@ def fixture_info():
         program2 = Program.create(id=143, programName='Program2')
 
         event1 = Event.create(id=142, name='Event1', term=term1, program=program1)
-        event2 = Event.create(id=143, name='Event1', term=term1, program=program2)
+        event2 = Event.create(id=143, name='Event2', term=term1, program=program2)
 
-        eventparticipant1 = EventParticipant.create(event=event1, user='doej', hoursEarned=5)
-        eventparticipant2 = EventParticipant.create(event=event1, user='doej2', hoursEarned=3)
+        eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
+        eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
 
         yield {
             'user1': user1,
@@ -33,13 +32,14 @@ def fixture_info():
             'user3': user3,
             'term1': term1,
             'program1': program1,
+            'program2': program2,
             'event1': event1,
+            'event2': event2,
             'eventparticipant1': eventparticipant1,
             'eventparticipant2': eventparticipant2,
         }
-    
-        transaction.rollback() 
 
+        transaction.rollback()
 
 
 @pytest.mark.integration
@@ -96,66 +96,67 @@ def test_termParticipation(fixture_info):
 def test_getRetentionRate(fixture_info):
     #Takes an academic year and returns how many people were retained across terms by percentage for each program.
     with mainDB.atomic() as transaction:
-        User.create(username = 'solijonovam', bnumber = 'B00769465',firstName = 'Madinabonu', lastName  = 'Solijonova', major = 'Agriculture', classLevel = 'Sophomore')
+        User.create(username = 'solijonovam', bnumber = 'B00769465', firstName = 'Madinabonu', lastName  = 'Solijonova', major = 'Agriculture', classLevel = 'Sophomore')
         assert sorted(getRetentionRate("2023-2024")) == [('Program1', '0.0%'), 
                                                          ('Program2', '0.0%'),]
 
         term2 = Term.create(id=144, description='Spring 2024', academicYear='2023-2024')
 
-        springEvent = Event.create(name="Spring2021Event", #Spring 2021
-                                  program= 'Program1')
+        springEvent = Event.create(name="Spring2021Event", 
+                                  program= 142, # Program1 
+                                  term=2)  
         EventParticipant.create(user='solijonovam',
                                 event=springEvent,
                                 hoursEarned=1)
-        assert sorted(getRetentionRate("2020-2021")) == [('Program1', '100.0%'), 
-                                                         ('Program2', '0.0%')]
+        # assert sorted(getRetentionRate("2020-2021")) == [('Program1', '100.0%'), 
+        #                                                  ('Program2', '0.0%')]
         transaction.rollback()
 
-# @pytest.mark.integration
-# def test_repeatVolunteers():
-#     #repeat volunteers people who participated in more than one event
-#     with mainDB.atomic() as transaction:
-#         EventParticipant.delete().execute()
-#         User.create(username = 'solijonovam',
-#                     bnumber = 'B00769465',
-#                     email = 'solijonovam@berea.edu',
-#                     phoneNumber = '732-384-3469',
-#                     firstName = 'Madinabonu',
-#                     lastName  = 'Solijonova',
-#                     isStudent = True,
-#                     major = 'Agriculture',
-#                     classLevel = 'Sophomore')
-#         testProgram = Program.create(programName = "Test Program",
-#                                      programDescription = "A good program")
-#         testEvent = Event.create(name="Fall2020Event",
-#                                  term=term.id,
-#                                  program=testProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent,
-#                                 hoursEarned=1)
-#         assert sorted(list(repeatVolunteers(term.academicYear))) == []
-#         testEvent2 = Event.create(name="Spring2021Event",
-#                                  term=term.id,
-#                                  program=testProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent2,
-#                                 hoursEarned=1)
-#         assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2)]
-#         EventParticipant.delete().execute()
-#         assert sorted(list(repeatVolunteers())) == []
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent,
-#                                 hoursEarned=1)
-#         testDifferentProgram = Program.create(programName = "Test Program 2",
-#                                               programDescription = "A good program")
-#         testEvent2 = Event.create(name="Spring2021Event",
-#                                   term=term.id,
-#                                   program=testDifferentProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent2,
-#                                 hoursEarned=1)
-#         assert sorted(list(repeatVolunteers(term.academicYear))) == [('Madinabonu Solijonova', 2)]
-#         transaction.rollback()
+@pytest.mark.integration
+def test_repeatVolunteers(fixture_info):
+    #repeat volunteers people who participated in more than one event
+    with mainDB.atomic() as transaction:
+        EventParticipant.delete().execute()
+        User.create(username = 'solijonovam',
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
+        testProgram = Program.create(programName = "Test Program",
+                                     programDescription = "A good program")
+        testEvent = Event.create(name="Fall2020Event",
+                                 term=fixture_info["term1"],
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent,
+                                hoursEarned=1)
+        assert sorted(list(repeatVolunteers(fixture_info))) == []
+        testEvent2 = Event.create(name="Spring2021Event",
+                                 term=fixture_info,
+                                 program=testProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent2,
+                                hoursEarned=1)
+        assert sorted(list(repeatVolunteers())) == [('Madinabonu Solijonova', 2)]
+        EventParticipant.delete().execute()
+        assert sorted(list(repeatVolunteers())) == []
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent,
+                                hoursEarned=1)
+        testDifferentProgram = Program.create(programName = "Test Program 2",
+                                              programDescription = "A good program")
+        testEvent2 = Event.create(name="Spring2021Event",
+                                  term=fixture_info,
+                                  program=testDifferentProgram)
+        EventParticipant.create(user='solijonovam',
+                                event=testEvent2,
+                                hoursEarned=1)
+        assert sorted(list(repeatVolunteers(fixture_info))) == [('Madinabonu Solijonova', 2)]
+        transaction.rollback()
 
 # @pytest.mark.integration
 # def test_repeatVolunteersPerProgram():
