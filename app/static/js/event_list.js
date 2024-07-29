@@ -33,15 +33,18 @@ $(document).ready(function(){
   }
 // ================== Event count notifiers===================
   $.ajax({
-    url: "/admin/getEventListCounts",
+    url: "/eventsList/" + "3",
     type: "GET",
     success: function(EventsCount) {
       const studentLedEventsCount = Number(EventsCount.studentLedEventsCount)
       const trainingEventsCount = Number(EventsCount.trainingEventsCount)
       const bonnerEventsCount = Number(EventsCount.bonnerEventsCount)
       const otherEventsCount = Number(EventsCount.otherEventsCount)
+      msgFlash("HELLO", "success");
+      console.log(EventsCount);
+      console.log(studentLedEventsCount, trainingEventsCount, bonnerEventsCount, otherEventsCount);
 
-      if (studentLedEventsCount > 0) {
+      if (studentLedEventsCount >= 0) {
         $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`)
         // $(".courseManagement").popover({
         //   trigger: "hover",
@@ -53,17 +56,17 @@ $(document).ready(function(){
         // });
       }
        
-      if (trainingEventsCount > 0) {
+      if (trainingEventsCount >= 0) {
         $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`)
         
       }
 
-      if (bonnerEventsCount > 0) {
+      if (bonnerEventsCount >= 0) {
         $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`)
        
       }
 
-      if (otherEventsCount > 0) {
+      if (otherEventsCount >= 0) {
         $("#otherEvents").html(`Other Events (${otherEventsCount})`)
        
       }

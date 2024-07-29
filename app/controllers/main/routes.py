@@ -3,7 +3,7 @@ import datetime
 from peewee import JOIN
 from http import cookies
 from playhouse.shortcuts import model_to_dict
-from flask import request, render_template, g, abort, flash, redirect, url_for, make_response, session
+from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
 
 from app.controllers.main import main_bp
 from app import app
@@ -90,7 +90,20 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+    # Get the count of events for each category to display in the event list page.
+    studentLedEventsCount: int = len(getStudentLedEvents(g.current_term)) 
+    trainingEventsCount: int = len(getTrainingEvents(term, g.current_user))
+    bonnerEventsCount: int = len(getBonnerEvents(term))
+    otherEventsCount: int = len(getOtherEvents(term))
+    # Handle ajax request for Event type header number notifiers
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            "studentLedEventsCount": studentLedEventsCount,
+            "trainingEventsCount": trainingEventsCount,
+            "bonnerEventsCount": bonnerEventsCount,
+            "otherEventsCount": otherEventsCount
+        })
+
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session
@@ -111,7 +124,7 @@ def events(selectedTerm, activeTab, programID):
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
                             countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
-                            toggle_state = toggle_state
+                            toggle_state = toggle_state,
                             )
 
 @main_bp.route('/updateToggleState', methods=['POST'])
@@ -450,22 +463,7 @@ def RemoveRSVP():
         if eventData['from'] == 'ajax':
             return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
-# =========================Event List Indicators=================================
-@main_bp.route('/admin/getEventListCounts', methods=['GET'])
-def getEventListCounts() -> str:
-    """
-    Get the count of events for each category to display in the event list page.
-    It must be returned as a string to be received by the ajax request.
-    """
-    studentLedEventsCount: int = len(getStudentLedEvents(g.current_term)) 
-    trainingEventsCount: int = len(getTrainingEvents())
-    bonnerEventsCount: int = len(getBonnerEvents())
-    otherEventsCount: int = len(getOtherEvents())
-    return {"studentLedEventsCount": studentLedEventsCount,
-            "trainingEventsCount": trainingEventsCount,
-            "bonnerEventsCount": bonnerEventsCount,
-            "otherEventsCount": otherEventsCount}
-# ===============================================================================
+
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
