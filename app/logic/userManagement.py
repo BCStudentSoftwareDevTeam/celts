@@ -39,14 +39,22 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-def changeProgramInfo(programId, attachment, programName= None, programDescription = None, partner = None, contactEmail=None, contactName= None, location = None,instagramUrl = None, facebookUrl = None, bereaUrl = None): 
+def changeProgramInfo(programId, 
+                      attachment, 
+                      programName= None, 
+                      programDescription = None, 
+                      partner = None, 
+                      contactEmail=None, 
+                      contactName= None, 
+                      location = None,
+                      instagramUrl = None, 
+                      facebookUrl = None, 
+                      bereaUrl = None): 
   
     
     """Updates the program info and logs that change"""
-    program = Program.get_by_id(programId)
-    coverImage = program.coverImage 
+    program = Program.get_by_id(programId) 
     if attachment:
-        print(attachment)
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
     updatedProgram = Program.update(

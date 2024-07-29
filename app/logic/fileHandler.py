@@ -8,8 +8,7 @@ import glob
 class FileHandler:
     def __init__(self, files=None, courseId=None, eventId=None, programId=None):
         self.files = files 
-        self.path = app.config['files']['base_path']
-        self.image_path = app.config['files']['image_path']    
+        self.path = app.config['files']['base_path']    
         self.courseId = courseId
         self.eventId = eventId
         self.programId = programId
@@ -18,7 +17,7 @@ class FileHandler:
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
-            self.image_path = os.path.join(self.image_path, app.config['files']['landing_page_path']) 
+            self.path = os.path.join(app.config['files']['image_path'], app.config['files']['landing_page_path']) 
     def makeDirectory(self):
         try:
             extraDir = str(self.eventId) if self.eventId else ""
@@ -33,7 +32,7 @@ class FileHandler:
             if self.eventId or self.courseId:
                 filePath = (os.path.join(self.path, newfilename))
             elif self.programId:
-                filePath = (os.path.join(self.image_path, newfilename))
+                filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
             pass
         except FileExistsError:
@@ -67,11 +66,11 @@ class FileHandler:
                     if not  isFileInProgram:
                         AttachmentUpload.create(program=self.programId, fileName=file.filename)                      
                         name = Program.get(Program.id == self.programId)
-                        file_type = file.filename.split('.')[1] 
+                        file_type = file.filename.split('.')[-1] 
                         current_programName = f"{str(name.programName)}.{file_type}"
                         pattern = '*' + str(name.programName) + '*'
                         
-                        full_pattern = os.path.join(self.image_path, pattern)
+                        full_pattern = os.path.join(self.path, pattern)
                         files_to_delete = glob.glob(full_pattern)
                        
 

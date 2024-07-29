@@ -191,7 +191,6 @@ function handleFileSelection(fileInputId){
         $(fullTrashId).data("file", file);
         $(fullTrashId).data("file-container-id", attachedObjectContainerId);
         $(fullTrashId).on("click", function() {
-          console.log("hehe")
           let elementFileNum = $(this).data('filenum');
           let attachedObjectContainerId = $(this).data('file-container-id');
           $("#"+ attachedObjectContainerId + " #attachedFilesRow" + elementFileNum).remove();
