@@ -7,7 +7,11 @@ import glob
 
 class FileHandler:
     def __init__(self, files=None, courseId=None, eventId=None, programId=None):
+        
         self.files = files 
+        if not isinstance(self.files, list):
+                self.files = [self.files]  
+         
         self.path = app.config['files']['base_path']    
         self.courseId = courseId
         self.eventId = eventId
@@ -18,6 +22,7 @@ class FileHandler:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
             self.path = os.path.join(app.config['files']['image_path'], app.config['files']['landing_page_path']) 
+        
     def makeDirectory(self):
         try:
             extraDir = str(self.eventId) if self.eventId else ""
@@ -41,9 +46,7 @@ class FileHandler:
 
     def saveFiles(self, saveOriginalFile=None):
       
-        try: 
-            if not isinstance(self.files, list):
-                self.files = [self.files]          
+        try:          
             for file in self.files:
 
                 saveFileToFilesystem = None
@@ -62,23 +65,32 @@ class FileHandler:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                 elif self.programId:
-                    isFileInProgram = AttachmentUpload.select().where(AttachmentUpload.program == self.programId, AttachmentUpload.fileName == file.filename).exists()
-                    if not  isFileInProgram:
-                        AttachmentUpload.create(program=self.programId, fileName=file.filename)                      
-                        name = Program.get(Program.id == self.programId)
-                        file_type = file.filename.split('.')[-1] 
-                        current_programName = f"{str(name.programName)}.{file_type}"
-                        pattern = '*' + str(name.programName) + '*'
-                        
-                        full_pattern = os.path.join(self.path, pattern)
-                        files_to_delete = glob.glob(full_pattern)
-                       
+                    # Delete existing files for the program before saving the new one
+                    existing_files = AttachmentUpload.select().where(
+                        AttachmentUpload.program == self.programId
+                    )
 
-                        for  file_path in files_to_delete:
-                                os.remove(file_path)
-                        saveFileToFilesystem = current_programName
+                    for existing_file in existing_files:
+                        existing_file.delete_instance()
+
+                    # Remove files from the filesystem
+                    pattern = '*' + Program.get(Program.id == self.programId).programName + '*'
+                    full_pattern = os.path.join(self.path, pattern)
+                    files_to_delete = glob.glob(full_pattern)
+
+                    for file_path in files_to_delete:
+                        os.remove(file_path)
+
+                    # Save the new file
+                    AttachmentUpload.create(program=self.programId, fileName=file.filename)
+                    name = Program.get(Program.id == self.programId)
+                    file_type = file.filename.split('.')[-1]
+                    current_programName = f"{name.programName}.{file_type}"
+                    saveFileToFilesystem = current_programName
+
                 else:
                     saveFileToFilesystem = file.filename
+
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
