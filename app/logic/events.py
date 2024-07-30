@@ -77,30 +77,33 @@ def deleteEventAndAllFollowing(eventId):
             if event.recurringId:
                 recurringId = event.recurringId
                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
-                #session['lastDeletedEvent'] = []
-                deletedEventList = []                
-                for recurringEvent in recurringSeries:
-                    deletedEventList.append(recurringEvent.id)
-                Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
-                Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
+                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
                 return deletedEventList
 
 def deleteAllRecurringEvents(eventId):
         """
         Deletes all recurring events.
         """
+        # event = Event.get_or_none(Event.id == eventId)
+        # if event:
+        #     if event.recurringId:
+        #         recurringId = event.recurringId
+        #         allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId))
+        #         deletedEventList = []                
+        #         for allRecurringEvent in allRecurringEvents:
+        #             deletedEventList.append(allRecurringEvent.id)
+        #         Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId)).execute()
+        #         Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId)).execute()
+        #         return deletedEventList
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
-                allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId))
-                deletedEventList = []                
-                for allRecurringEvent in allRecurringEvents:
-                    deletedEventList.append(allRecurringEvent.id)
-                Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId)).execute()
-                Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId)).execute()
-                return deletedEventList
-
+            allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
+            startId = allRecurringEvents[0].id
+        return deleteEventAndAllFollowing(startId)
+        
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
