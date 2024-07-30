@@ -89,8 +89,8 @@ def deleteAllRecurringEvents(eventId):
             if event.recurringId:
                 recurringId = event.recurringId
             allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
-            startId = allRecurringEvents[0].id
-        return deleteEventAndAllFollowing(startId)
+            eventId = allRecurringEvents[0].id
+        return deleteEventAndAllFollowing(eventId)
         
 
 
