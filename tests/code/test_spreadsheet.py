@@ -75,7 +75,7 @@ def test_termParticipation(fixture_info):
             assert termParticipation('Fall 2023') == {'Program1': ['doej', 'doej2'], 'Program2': [None]}
 
             EventParticipant.create(user = 'builderb',
-                                    event = 501,
+                                    event = fixture_info['event1'],
                                     hoursEarned = 1)
             termParticipationResult = termParticipation('Fall 2023')
             for participantList in termParticipationResult.values():
@@ -83,7 +83,7 @@ def test_termParticipation(fixture_info):
             assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2'], 'Program2': [None]}
 
             EventParticipant.create(user = 'builderb',
-                                    event = 502,
+                                    event = fixture_info['event2'],
                                     hoursEarned = 1)
             termParticipationResult = termParticipation('Fall 2023')
             for participantList in termParticipationResult.values():
@@ -100,16 +100,18 @@ def test_getRetentionRate(fixture_info):
         assert sorted(getRetentionRate("2023-2024")) == [('Program1', '0.0%'), 
                                                          ('Program2', '0.0%'),]
 
-        term2 = Term.create(id=144, description='Spring 2024', academicYear='2023-2024')
+        testTerm = Term.create(id=144, description='Spring 2024', academicYear='2023-2024')
 
-        springEvent = Event.create(name="Spring2021Event", 
-                                  program= 501, # Program1 
-                                  term=2)  
+        springEvent = Event.create(name = "Spring2021Event", 
+                                  program=  fixture_info['program1'], 
+                                  term = testTerm)
+          
         EventParticipant.create(user='solijonovam',
                                 event=springEvent,
                                 hoursEarned=1)
-        # assert sorted(getRetentionRate("2020-2021")) == [('Program1', '100.0%'), 
-        #                                                  ('Program2', '0.0%')]
+        print(sorted(getRetentionRate("2023-2024")))
+        assert sorted(getRetentionRate("2023-2024")) == [('Program1', '100.0%'), 
+                                                         ('Program2', '0.0%')]
         transaction.rollback()
 
 @pytest.mark.integration
@@ -237,181 +239,145 @@ def test_volunteerHoursByProgram(fixture_info):
         
         transaction.rollback()
 
-# @pytest.mark.integration
-# def test_onlyCompletedAllVolunteer(fixture_info): 
-#     # This function returns a list of usernames and fullnames for people who have only completed all volunteer training in a particular academic year.
-#     with mainDB.atomic() as transaction:
-#         assert list(onlyCompletedAllVolunteer("2020-2021")) == []
-#         user1 = fixture_info["user1"]
+@pytest.mark.integration
+def test_onlyCompletedAllVolunteer(fixture_info): 
+    # This function returns a list of usernames and fullnames for people who have only completed all volunteer training in a particular academic year.
+    with mainDB.atomic() as transaction:
 
-#         # term1 = fixture_info["term1"] 
+        assert list(onlyCompletedAllVolunteer("2023-2024")) == []
 
-#         # testEvent = fixture_info["event1"]
-
-#         # eventParticipant1 = fixture_info["eventparticipant1"]
-
-#         # assert list(onlyCompletedAllVolunteer("2023-2024")) == [('doej', 'John Doe')]
-
-#         # User.create(username = 'solijonovam',
-#         #             bnumber = 'B00769465',
-#         #             email = 'solijonovam@berea.edu',
-#         #             phoneNumber = '732-384-3469',
-#         #             firstName = 'Madinabonu',
-#         #             lastName  = 'Solijonova',
-#         #             isStudent = True,
-#         #             major = 'Agriculture',
-#         #             classLevel = 'Sophomore')
+        allVolunteerEvent = Event.create(name="All Volunteer Training",
+                                 term=fixture_info['term1'],
+                                 program=fixture_info['program1'],
+                                 isTraining=1,
+                                 isAllVolunteerTraining=1)
+        EventParticipant.create(user = 'builderb', # Not participated in event
+                                event = allVolunteerEvent, # Added to all volunteer training event
+                                hoursEarned = 1)
         
-#         allVolunteerEvent = Event.create(name="All Volunteer Training",
-#                                  term=1,
-#                                  program=9,
-#                                  isTraining=1,
-#                                  isAllVolunteerTraining=1)
-#         EventParticipant.create(user = 'solijonovam', # Not participated in event
-#                                 event = allVolunteerEvent, # Added to all volunteer training event
-#                                 hoursEarned = 1)
-#         testEvent = Event.create(name="Test Event",
-#                                   program=1,
-#                                   term=1)
-#         EventParticipant.create(user = 'solijonovam', # Only participated in all volunteer event
-#                                 event = testEvent,
-#                                 hoursEarned = 1)
-#         assert list(onlyCompletedAllVolunteer("2020-2021")) == []
-#         transaction.rollback()
+        assert list(onlyCompletedAllVolunteer("2023-2024")) == [('builderb', 'Bob Builder')]
+
+        testEvent = Event.create(name="Test Event",
+                                  program=fixture_info['program1'],
+                                  term=fixture_info['term1'])
+        
+        EventParticipant.create(user = 'builderb', # Only participated in all volunteer event
+                                event = testEvent,
+                                hoursEarned = 1)
+        assert list(onlyCompletedAllVolunteer("2023-2024")) == []
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_volunteerProgramHours(fixture_info):
     # Returns list of (program, username, hours) for each program
     with mainDB.atomic() as transaction:
 
-        # print(volunteerProgramHours("2023-2024")[0])
-        assert sorted(list(volunteerProgramHours("2022-2023"))) == ([])
+        assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 5.0), ('Program1', 'doej2', 3.0)]
 
-        # eventParticipant1 = fixture_info["eventparticipant1"] 
-
-        # EventParticipant.create(user = 'qasema',
-        #                         event = 2,
-        #                         hoursEarned = 1)
-        # assert sorted(list(volunteerProgramHours("2023-2024"))) == [(fixture_info["event1"].name, fixture_info["user1"].username, 5.0)]
-        # EventParticipant.create(user = 'qasema',
-        #                         event = 3,
-        #                         hoursEarned = 1)
-        # assert sorted(list(volunteerProgramHours())) == [('Adopt-a-Grandparent', 'qasema', 1.0), ('Hunger Initiatives', 'qasema', 1.0)]
+        EventParticipant.create(user = 'doej',
+                                event = fixture_info['event2'],
+                                hoursEarned = 1)
+        assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 5.0), ('Program1', 'doej2', 3.0), ('Program2', 'doej', 1.0)]
+        
+        testEvent = Event.create(name="Test Event",
+                                  program=fixture_info['program1'],
+                                  term=fixture_info['term1'])
+        
+        EventParticipant.create(user = 'doej',
+                                event = testEvent,
+                                hoursEarned = 2)
+        
+        assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 7.0), ('Program1', 'doej2', 3.0), ('Program2', 'doej', 1.0)]
         transaction.rollback()
 
-# @pytest.mark.integration
-# def test_totalVolunteerHours():
-#     #Returns the total amount of volunteer hours in the database
-#     with mainDB.atomic() as transaction:
-#         EventParticipant.delete().execute()
-#         Event.delete().execute()
-#         Term.delete().execute()
-
-#         Term.create(id = 1,
-#                     academicYear = '2021-2022',)
+@pytest.mark.integration
+def test_totalVolunteerHours(fixture_info):
+    #Returns the total amount of volunteer hours in the database
+    with mainDB.atomic() as transaction:
         
-#         assert list(totalVolunteerHours()) == [(None,)]
-#         # Adding 1 volunteer hour to one event
-#         Event.create(id = 2, 
-#                      term_id = 1,)
-#         EventParticipant.create(user = 'qasema',
-#                                 event = 2,
-#                                 hoursEarned = 1)
-#         # Checking that the total volunteer hours has increased by 1
-#         assert list(totalVolunteerHours()) == [(1.0,)]
-#         EventParticipant.create(user = 'ayisie',
-#                                 event = 3,
-#                                 hoursEarned = 6)
-#         assert list(totalVolunteerHours()) == [(7.0,)]
-#         transaction.rollback()
+        assert list(totalVolunteerHours("2023-2024")) == [(8.0,)]
+        # Adding 1 volunteer hour to one event
+        EventParticipant.create(user = 'builderb',
+                                event = fixture_info['event2'],
+                                hoursEarned = 1)
+        # Checking that the total volunteer hours has increased by 1
+        assert list(totalVolunteerHours("2023-2024")) == [(9.0,)]
+        EventParticipant.create(user = 'doej',
+                                event = fixture_info['event1'],
+                                hoursEarned = 3)
+        assert list(totalVolunteerHours("2023-2024")) == [(12.0,)]
+        transaction.rollback()
 
-# @pytest.mark.integration
-# def test_getVolunteerProgramEventByTerm():
-#     # Returns a list for every eventparticipant entry for (full name, username, program, and event) for a given term
-#     with mainDB.atomic() as transaction:
-#         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3))) == ([])
-#         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(2)))) == ([('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-#                                                                                     ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-#                                                                                     ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'),
-#                                                                                     ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-#                                                                                     ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')])
+@pytest.mark.integration
+def test_getVolunteerProgramEventByTerm(fixture_info):
+    # Returns a list for every eventparticipant entry for (full name, username, program, and event) for a given term
+    with mainDB.atomic() as transaction:
 
-#         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(4)))) == [('Alex Bryant', 'bryanta', 'Berea Buddies', 'Tutoring'),
-#                                                                                    ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'),
-#                                                                                    ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
-#         User.create(username = 'solijonovam',
-#                     bnumber = 'B00769465',
-#                     email = 'solijonovam@berea.edu',
-#                     phoneNumber = '732-384-3469',
-#                     firstName = 'Madinabonu',
-#                     lastName  = 'Solijonova',
-#                     isStudent = True,
-#                     major = 'Agriculture',
-#                     classLevel = 'Sophomore')
-#         testProgram = Program.create(programName = "Test Program",
-#                                      programDescription = "A good program")
-#         testEvent = Event.create(name="Test Event",
-#                                  term=3,
-#                                  program=testProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent)
-#         testEvent2 = Event.create(name="Test Event",
-#                                   term=2,
-#                                   program=testProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent2)
-#         testEvent3 = Event.create(name="Test Event",
-#                                   term=4,
-#                                   program=testProgram)
-#         EventParticipant.create(user='solijonovam',
-#                                 event=testEvent3)
-#         assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3))) == [('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event')]
-#         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(2)))) == [('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-#                                                                                    ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
-#                                                                                    ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
-#                                                                                    ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts'), 
-#                                                                                    ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
-#                                                                                    ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts')]
-
-#         assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(4)))) == [('Alex Bryant', 'bryanta', 'Berea Buddies', 'Tutoring'), 
-#                                                                                    ('Madinabonu Solijonova', 'solijonovam', 'Test Program', 'Test Event'),
-#                                                                                    ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'), 
-#                                                                                    ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
-#         transaction.rollback()
-
-# @pytest.mark.integration
-# def test_getUniqueVolunteers():
-#     # Returns a list of everyone who has volunteered.
-#     with mainDB.atomic() as transaction:
-#         assert sorted(list(getUniqueVolunteers("2021-2022"))) == ([('bryanta', 'Alex Bryant', 'B00708826'),
-#                                                                    ('khatts', 'Sreynit Khatt', 'B00759107')])
-    
-#         assert sorted(list(getUniqueVolunteers("2020-2021"))) == ([('ayisie', 'Ebenezer Ayisi', 'B00739736'),
-#                                                                    ('khatts', 'Sreynit Khatt', 'B00759107'),
-#                                                                    ('neillz', 'Zach Neill', 'B00751864'),
-#                                                                    ('partont', 'Tyler Parton', 'B00751360')])
+        assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == ([('John Doe', 'doej', 'Program1', 'Event1'), 
+                                                                                                ('Jane Doe', 'doej2', 'Program1', 'Event1')])
         
-#         User.create(username = 'solijonovam',
-#                     bnumber = 'B00769465',
-#                     email = 'solijonovam@berea.edu',
-#                     phoneNumber = '732-384-3469',
-#                     firstName = 'Madinabonu',
-#                     lastName  = 'Solijonova',
-#                     isStudent = True,
-#                     major = 'Agriculture',
-#                     classLevel = 'Sophomore')
-#         testEvent = Event.create(name="Test Event",
-#                                  term=1,
-#                                  program=1)
-#         EventParticipant.create(user = 'solijonovam',
-#                                 event = testEvent,
-#                                 hoursEarned = 1)
+        EventParticipant.create(user = 'builderb', event = fixture_info['event2'])
         
-#         assert sorted(list(getUniqueVolunteers("2020-2021"))) == [('ayisie', 'Ebenezer Ayisi', 'B00739736'), 
-#                                                                   ('khatts', 'Sreynit Khatt', 'B00759107'), 
-#                                                                   ('neillz', 'Zach Neill', 'B00751864'), 
-#                                                                   ('partont', 'Tyler Parton', 'B00751360'), 
-#                                                                   ('solijonovam', 'Madinabonu Solijonova', 'B00769465')]
-#         transaction.rollback()
+        assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1'])))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
+                                                                                                       ('Jane Doe', 'doej2', 'Program1', 'Event1'),
+                                                                                                       ('John Doe', 'doej', 'Program1', 'Event1')]
+        
+        testEvent = Event.create(name="Test Event",
+                                  term= fixture_info['term1'],
+                                  program = fixture_info['program2'])
+        
+        testEvent2 = Event.create(name = "Test Event 2",
+                                  term = fixture_info['term1'],
+                                  program=fixture_info['program2'])
+        
+        EventParticipant.create(user='doej',
+                                event=testEvent)
+        
+        EventParticipant.create(user='doej',
+                                event=testEvent2)
+        
+        assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
+                                                                                               ('John Doe', 'doej', 'Program1', 'Event1'),
+                                                                                               ('John Doe', 'doej', 'Program2', 'Test Event'),
+                                                                                               ('John Doe', 'doej', 'Program2', 'Test Event 2'),
+                                                                                               ('Jane Doe', 'doej2', 'Program1', 'Event1')]
+        
+        assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1'])))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
+                                                                                                       ('Jane Doe', 'doej2', 'Program1', 'Event1'),
+                                                                                                       ('John Doe', 'doej', 'Program1', 'Event1'),
+                                                                                                       ('John Doe', 'doej', 'Program2', 'Test Event'),
+                                                                                                       ('John Doe', 'doej', 'Program2', 'Test Event 2')]
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getUniqueVolunteers(fixture_info):
+    # Returns a list of everyone who has volunteered.
+    with mainDB.atomic() as transaction:
+        print(list(getUniqueVolunteers("2023-2024")))
+        assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('doej', 'John Doe', 'B774377'),
+                                                                  ('doej2', 'Jane Doe', 'B888828'),]
+        EventParticipant.create(user = 'builderb',
+                                event = fixture_info['event1'])
+        
+        print(sorted(list(getUniqueVolunteers("2023-2024"))))
+        assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('builderb', 'Bob Builder', 'B00700932'),
+                                                                  ('doej', 'John Doe', 'B774377'),
+                                                                  ('doej2', 'Jane Doe', 'B888828')]
+        
+        user4 = User.create(username="testt", firstName="Test", lastName="Tester", bnumber="B55555")
+
+        testEvent = Event.create(name="Test Event",
+                                 term = fixture_info['term1'],
+                                 program = fixture_info['program1'])
+        
+        EventParticipant.create(user = 'testt',    
+                                event = testEvent,
+                                hoursEarned = 1)
+        
+        assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('builderb', 'Bob Builder', 'B00700932'),
+                                                                  ('doej', 'John Doe', 'B774377'),
+                                                                  ('doej2', 'Jane Doe', 'B888828'),
+                                                                  ('testt', 'Test Tester', 'B55555')]
+        transaction.rollback()
 
 
