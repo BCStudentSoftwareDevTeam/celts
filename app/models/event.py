@@ -33,7 +33,7 @@ class Event(baseModel):
 
     @property
     def isDeleted(self):
-        return self.deletionDate
+        return self.deletionDate is not None
 
     @property
     def noProgram(self):
