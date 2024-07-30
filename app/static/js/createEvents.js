@@ -172,7 +172,37 @@ function formatDate(originalDate) {
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-  
+  //makes sure bonners toggle will stay on between event pages
+  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+    if ($("#checkBonners")) {
+      $("#checkBonners").prop('checked', true);
+  }
+}
+// Initialize datepicker with proper options
+$.datepicker.setDefaults({
+  dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
+  minDate: new Date()
+});
+
+$(".datePicker").datepicker({
+  dateFormat: 'mm/dd/yy',
+  minDate: new Date() 
+});
+
+  $(".datePicker").each(function() {
+  var dateStr = $(this).val();
+  if (dateStr) {
+    var dateObj = new Date(dateStr);
+    if (!isNaN(dateObj.getTime())) {
+      $(this).datepicker("setDate", dateObj);
+    }
+  }
+});
+
+// Update datepicker min and max dates on change
+$(".startDatePicker, .endDatePicker").change(function () {
+  updateDate(this);
+});
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
