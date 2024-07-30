@@ -172,6 +172,7 @@ function formatDate(originalDate) {
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
+  
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
@@ -184,10 +185,24 @@ $(document).ready(function() {
       $("#limitGroup").hide();
     }
   });
+  // Determine which checkbox was clicked and its current checked status, uncheck others
+  $("#checkIsTraining, #checkServiceHours, #checkBonners").on('click', function (event) {
+    $("#checkIsTraining, #checkServiceHours, #checkBonners").not($(event.target)).prop('checked', false);
+  });
 
-  // Disable button when we are ready to submit
   $("#saveEvent").on('submit', function (event) {
-    $(this).find("input[type=submit]").prop("disabled", true);
+    let trainingStatus = $("#checkIsTraining").is(":checked")
+    let serviceHourStatus = $("#checkServiceHours").is(":checked")
+    let bonnersStatus = $("#checkBonners").is(":checked")
+    //check if user has selected a toggle, cancel form submission if not
+    if(trainingStatus || serviceHourStatus || bonnersStatus){
+      // Disable button when we are ready to submit
+      $(this).find("input[type=submit]").prop("disabled", true);
+    }
+    else {
+      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
+      event.preventDefault();
+    } 
   });
   
   let modalOpenedByEditButton = false;
@@ -334,14 +349,6 @@ $(document).ready(function() {
   $(".startDatePicker, .endDatePicker").change(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
       calculateRecurringEventFrequency();
-    }
-  });
-
-  $("#checkRSVP").click(function(){
-    if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
-      $("#checkFood").prop('checked', true);
-    } else {
-      $("#checkFood").prop('disabled', false);
     }
   });
 

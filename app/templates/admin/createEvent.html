@@ -2,13 +2,13 @@
 
 {% set isNewEvent = 'create' in request.path %}
 {% if isNewEvent %}          
-  {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+  {% if eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == '' %}
     {% set page_title = 'Create a ' + eventData["program"].programName %}
 
   {% elif template.tag == 'single-program' %}
     {%set page_title = 'Create Event for ' + eventData["program"].programName %}
 
-  {% elif template.tag == 'all-volunteer' %}
+  {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
 
   {% elif template.tag == 'no-program' %}
@@ -23,7 +23,7 @@
   {% extends "eventNav.html"%}
 {% endif %}
 
-{% set eventPast = event.isPastStart if not isNewEvent else False %}
+{% set eventPast = event.isPastEnd if not isNewEvent else False %}
 {% set tabName = 'edit' %}
 
 {% block scripts %}
@@ -59,11 +59,7 @@
 
     <div class="form-group mb-4">
       <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
-      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" required
-        {% if eventData.location %}
-          value="{{eventData.location}}"
-        {% endif %}
-        />
+      <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location" value="{{eventData.location}}" required>
     </div>
     <!-- Start and End Datepickers -->
     <div class="row col-md-12" id="nonMultipleOfferingDate">
@@ -97,9 +93,9 @@
             {% else %}
               {% set startTime = "12:00" %}
             {% endif %}
-            <input autocomplete="off" type="time" class="form-control timepicker" value="{{startTime}}" name="timeStart" 
+            <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}" name="timeStart" 
               aria-describedby="timeIcon1" placeholder="Pick a start time"  
-              class = "startTime" id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+              id="startTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
             <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
           </div>
         </div>
@@ -111,7 +107,7 @@
             {%else%}
               {% set endTime = "13:00" %}
             {% endif %}
-              <input autocomplete="off" type="time" class="form-control timepicker" value="{{endTime}}" name="timeEnd" 
+              <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd" 
                 aria-describedby="timeIcon2" placeholder="Pick an end time" 
                 class = "startTime" id="endTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
               <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i class="bi bi-clock"></i></span>
@@ -123,33 +119,34 @@
     {% endmacro %}
 
 <form enctype="multipart/form-data" id="saveEvent" data-toggle="validator" role="form" action="{{request.path}}" method="POST">
-  <div class="row p-2">
-    <div class="col-md-6">
-      {% if eventData.id %}
-          <input type="hidden" name="id" value="{{eventData.id}}">
-      {% endif %}
-      <div class="form-group mb-4">
-        <label class="form-label required" for='inputEventName'><strong>Event Name</strong></label>
-        <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label required" for='inputEventTerm'><strong>Term</strong></label>
-          <select class="form-select" name='term' id='inputEventTerm' required>
-            {% for term in futureTerms %}
-              <option value='{{term}}' {{"selected" }} if term == eventData.term}}>{{term.description}}</option>
-            {% endfor %}
-          </select>
-      </div>
-      {% if isNewEvent %}
-      <div class="row col-md-12">
-        <div class="form-group col-md-6">
-          <div class="form-check form-switch pb-1">
-            <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the past.</strong></label>
-            <input class="form-check-input" type="checkbox" id="allowPastStart"/>
-          </div>
+    <div class="row p-2">
+        <div class="col-md-6">
+            {% if eventData.id %}
+                <input type="hidden" id="newEventID" name="id" value="{{eventData.id}}">
+            {% endif %}
+        <div class="form-group mb-4">
+          <label class="required form-label" for='inputEventName'><strong>Event Name</strong></label>
+          <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
         </div>
-        <div class="form-group col-md-6">
-          {% if template.tag != 'all-volunteer' %}
+        <div class="form-group mb-4">
+          <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
+            <select class="form-select" name='term' id='inputEventTerm' required>
+              {% for term in futureTerms %}
+                <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
+              {% endfor %}
+            </select>
+        </div>
+
+        {% if isNewEvent %}
+        <div class="row col-md-12">
+          <div class="form-group col-md-6">
+            <div class="form-check form-switch pb-1">
+              <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the past.</strong></label>
+              <input class="form-check-input" type="checkbox" id="allowPastStart"/>
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            {% if template.tag != 'all-volunteer' %}
             <div class="form-check form-switch pb-1">
               <fieldset>
                 <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
@@ -241,37 +238,45 @@
           </div>
             {% if page_title != 'Create All Volunteer Training' %}
             <div class="pt-4 mb-4">
-              <div class="row col-md-12">
-                <div class="form-group col-md-6">
+              <div class="row">
+                <div class="form-group col-xl-5">
+                  <label class="label toggleHeader">(Optional)</label>
                   <div class="form-check form-switch mb-2">
                     <label class="custom-control-label" for='checkRSVP'><strong>This event requires RSVP.</strong></label>
                     <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
                   </div>
-                </div>
-                <div class="form-group col-md-6">
-                  <div class="form-check form-switch ">
-                    <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
-                  </div>
-                </div>
-                <div class="form-group col-md-6 mb-3">
-                  <div class="form-check form-switch">
-                    {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-                    <div class="form-group" id="limitGroup" style= "{{hide}}">
-                      <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-                      <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                  <div class="form-group mb-3">
+                    <div class="form-check form-switch">
+                      {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+                      <div class="form-group" id="limitGroup" style= "{{hide}}">
+                        <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+                        <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                      </div>
+                      <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
+                      <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
                     </div>
-                    <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
                   </div>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="col-xl-1 columnDivide"></div>
+                <div class="form-group col-xl-6">
+                  <label class="label required toggleHeader">(Must Select One)</label>
+                    <div class="form-check form-switch">
+                      <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+                      <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
+                    </div>
                   <div class="form-check form-switch">
                     <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service hours.</strong></label>
                     <input class="form-check-input" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}}/>
                   </div>
+                    {% if eventData['program'].isBonnerScholars %}
+                    <div class="form-check form-switch">
+                      <label class="custom-control-label" for='checkBonners'><strong>This is a Bonner Scholars event.</strong></label>
+                      <input class="form-check-input" type="checkbox" id="checkBonners" name="isBonnersChecked" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}}/> 
+                    </div>
+                    {% endif %}
                 </div>
               </div>
+            </div>
            {% endif %}
             <div class="form-group mb-5">
               <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
