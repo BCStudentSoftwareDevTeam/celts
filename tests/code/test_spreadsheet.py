@@ -217,12 +217,11 @@ def test_volunteerMajorAndClass(fixture_info):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_volunteerHoursByProgram():
+def test_volunteerHoursByProgram(fixture_info):
     # Gets the list of volunteer hours per program as a tuple
     with mainDB.atomic() as transaction:
-        a = (volunteerHoursByProgram(fixture_info['term1'].academicYear))
-        print("# ", a)
-        assert list(volunteerHoursByProgram()) == []
+        assert list(volunteerHoursByProgram(fixture_info["term1"].academicYear)) == [('Program1', 8.0)]
+
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -233,23 +232,35 @@ def test_volunteerHoursByProgram():
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
         
-        assert list(volunteerHoursByProgram()) == [('Program1', 8.0)]
+        EventParticipant.create(event=fixture_info["event1"], user=fixture_info["user3"], hoursEarned=10)
+        assert list(volunteerHoursByProgram(fixture_info["term1"].academicYear)) == [('Program1', 18.0)]
+        
         transaction.rollback()
 
 # @pytest.mark.integration
-# def test_onlyCompletedAllVolunteer():
+# def test_onlyCompletedAllVolunteer(fixture_info): 
 #     # This function returns a list of usernames and fullnames for people who have only completed all volunteer training in a particular academic year.
 #     with mainDB.atomic() as transaction:
 #         assert list(onlyCompletedAllVolunteer("2020-2021")) == []
-#         User.create(username = 'solijonovam',
-#                     bnumber = 'B00769465',
-#                     email = 'solijonovam@berea.edu',
-#                     phoneNumber = '732-384-3469',
-#                     firstName = 'Madinabonu',
-#                     lastName  = 'Solijonova',
-#                     isStudent = True,
-#                     major = 'Agriculture',
-#                     classLevel = 'Sophomore')
+#         user1 = fixture_info["user1"]
+
+#         # term1 = fixture_info["term1"] 
+
+#         # testEvent = fixture_info["event1"]
+
+#         # eventParticipant1 = fixture_info["eventparticipant1"]
+
+#         # assert list(onlyCompletedAllVolunteer("2023-2024")) == [('doej', 'John Doe')]
+
+#         # User.create(username = 'solijonovam',
+#         #             bnumber = 'B00769465',
+#         #             email = 'solijonovam@berea.edu',
+#         #             phoneNumber = '732-384-3469',
+#         #             firstName = 'Madinabonu',
+#         #             lastName  = 'Solijonova',
+#         #             isStudent = True,
+#         #             major = 'Agriculture',
+#         #             classLevel = 'Sophomore')
         
 #         allVolunteerEvent = Event.create(name="All Volunteer Training",
 #                                  term=1,
@@ -259,7 +270,6 @@ def test_volunteerHoursByProgram():
 #         EventParticipant.create(user = 'solijonovam', # Not participated in event
 #                                 event = allVolunteerEvent, # Added to all volunteer training event
 #                                 hoursEarned = 1)
-#         assert list(onlyCompletedAllVolunteer("2020-2021")) == [('solijonovam', 'Madinabonu Solijonova')]
 #         testEvent = Event.create(name="Test Event",
 #                                   program=1,
 #                                   term=1)
@@ -269,21 +279,25 @@ def test_volunteerHoursByProgram():
 #         assert list(onlyCompletedAllVolunteer("2020-2021")) == []
 #         transaction.rollback()
 
-# @pytest.mark.integration
-# def test_volunteerProgramHours():
-#     # Returns list of (program, username, hours) for each program
-#     with mainDB.atomic() as transaction:
-#         EventParticipant.delete().execute()
-#         assert sorted(list(volunteerProgramHours())) == ([])
-#         EventParticipant.create(user = 'qasema',
-#                                 event = 2,
-#                                 hoursEarned = 1)
-#         assert sorted(list(volunteerProgramHours())) == [('Hunger Initiatives', 'qasema', 1.0)]
-#         EventParticipant.create(user = 'qasema',
-#                                 event = 3,
-#                                 hoursEarned = 1)
-#         assert sorted(list(volunteerProgramHours())) == [('Adopt-a-Grandparent', 'qasema', 1.0), ('Hunger Initiatives', 'qasema', 1.0)]
-#         transaction.rollback()
+@pytest.mark.integration
+def test_volunteerProgramHours(fixture_info):
+    # Returns list of (program, username, hours) for each program
+    with mainDB.atomic() as transaction:
+
+        # print(volunteerProgramHours("2023-2024")[0])
+        assert sorted(list(volunteerProgramHours("2022-2023"))) == ([])
+
+        # eventParticipant1 = fixture_info["eventparticipant1"] 
+
+        # EventParticipant.create(user = 'qasema',
+        #                         event = 2,
+        #                         hoursEarned = 1)
+        # assert sorted(list(volunteerProgramHours("2023-2024"))) == [(fixture_info["event1"].name, fixture_info["user1"].username, 5.0)]
+        # EventParticipant.create(user = 'qasema',
+        #                         event = 3,
+        #                         hoursEarned = 1)
+        # assert sorted(list(volunteerProgramHours())) == [('Adopt-a-Grandparent', 'qasema', 1.0), ('Hunger Initiatives', 'qasema', 1.0)]
+        transaction.rollback()
 
 # @pytest.mark.integration
 # def test_totalVolunteerHours():
