@@ -65,8 +65,7 @@ def deleteEvent(eventId):
         else:
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
-        Event.update({Event.deletionDate: datetime.now()}).where(Event.id == event.id).execute()
-        Event.update({Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
+        Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
 
 def deleteEventAndAllFollowing(eventId):
         """
@@ -85,17 +84,6 @@ def deleteAllRecurringEvents(eventId):
         """
         Deletes all recurring events.
         """
-        # event = Event.get_or_none(Event.id == eventId)
-        # if event:
-        #     if event.recurringId:
-        #         recurringId = event.recurringId
-        #         allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId))
-        #         deletedEventList = []                
-        #         for allRecurringEvent in allRecurringEvents:
-        #             deletedEventList.append(allRecurringEvent.id)
-        #         Event.update({Event.deletionDate: datetime.now()}).where((Event.recurringId == recurringId)).execute()
-        #         Event.update({Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId)).execute()
-        #         return deletedEventList
         event = Event.get_or_none(Event.id == eventId)
         if event:
             if event.recurringId:

@@ -359,33 +359,18 @@ def cancelRoute(eventId):
 def undoEvent():
     try:
         events = session['lastDeletedEvent']
-        print("wewe13333")
-        print(events)
-        print("wewe44441")
         for eventId in events: 
-            print("wewe1")
-            Event.update({Event.deletionDate: None}).where(Event.id == eventId).execute()
-            print("wewe12")
-            Event.update({Event.deletedBy: None}).where(Event.id == eventId).execute()
-            print("wewe13")
+            Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-            print("weeeee")
         recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
         if event.recurringId is not None:
             nameCounter = 1
-            print("wewe4")
             for recurringEvent in recurringEvents:
-                print("wewe5")
                 newEventNameList = recurringEvent.name.split()
-                print("wewe6")
                 newEventNameList[-1] = f"{nameCounter}"
-                print("wewe7")
                 newEventNameList = " ".join(newEventNameList)
-                print("wewe8")
                 Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
-                print("wewe9")
                 nameCounter += 1 
-                print("wewe10")
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:
@@ -419,8 +404,6 @@ def deleteEventAndAllFollowingRoute(eventId):
 def deleteAllRecurringEventsRoute(eventId):
     try:
         session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
-        print(session["lastDeletedEvent"])
-        print("Brain")
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
