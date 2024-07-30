@@ -90,12 +90,25 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
+    
+    managersProgramDict = getManagerProgramDict(g.current_user)
+
     # Get the count of events for each category to display in the event list page.
-    studentLedEventsCount: int = sum(list(getUpcomingStudentLedCount(term, currentTime).keys()))
-    print("RAAAAAH ", countUpcomingStudentLedEvents)
+    studentLedEventsCount: int = sum(list(getUpcomingStudentLedCount(term, currentTime).keys())) #only upcoming events
     trainingEventsCount: int = len(getTrainingEvents(term, g.current_user))
+    for event in getTrainingEvents(term, g.current_user):
+        if event.isPastEnd:
+            trainingEventsCount -= 1
+
     bonnerEventsCount: int = len(getBonnerEvents(term))
+    for event in getBonnerEvents(term):
+        if event.isPastEnd:
+            bonnerEventsCount -= 1
+
     otherEventsCount: int = len(getOtherEvents(term))
+    for event in getOtherEvents(term):
+        if event.isPastEnd:
+            otherEventsCount -= 1
     # Handle ajax request for Event type header number notifiers
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
@@ -104,9 +117,7 @@ def events(selectedTerm, activeTab, programID):
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount
         })
-
-    managersProgramDict = getManagerProgramDict(g.current_user)
-
+    
     # Fetch toggle state from session
     toggle_state = session.get('toggleState', 'unchecked')
 

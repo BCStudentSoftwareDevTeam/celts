@@ -32,7 +32,7 @@ $(document).ready(function(){
     }
   }
 // ================== Event count Indicators ===================
-  $.ajax({ //NEED TO REPLACE 3 WITH CURRENT TERM*************************************************
+  $.ajax({
     url: "/eventsList/" + $('#termID').val(),
     type: "GET",
     success: function(EventsCount) {
