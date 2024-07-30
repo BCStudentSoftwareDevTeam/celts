@@ -67,8 +67,8 @@ def createCourseDisplayName(name, abbreviation):
 
 def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():
-        courseTerm: Term = Term.get_or_none(description = term) or addPastTerm(term)
-        if not courseTerm:
+        currentCourseTerm: Term = Term.get_or_none(description = term) or addPastTerm(term)
+        if not currentCourseTerm:
             print(f"Unable to find or create term {term}")
             continue
 
@@ -77,11 +77,9 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
-            currentTermObj = Term.get(Term.id == courseTerm)
-
             existingCourses = list((Course.select()
                                             .join(Term, on =(Course.term == Term.id))
-                                            .where((Course.courseAbbreviation == course) & (Term.termOrder <= currentTermObj.termOrder))
+                                            .where((Course.courseAbbreviation == course) & (Term.termOrder <= currentCourseTerm.termOrder))
                                             .order_by(Course.term.desc())
                                             .limit(1)))
 
@@ -91,22 +89,17 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 sectionDesignation = "",
                                 courseAbbreviation = course,
                                 courseCredit = "1",
-                                term = courseTerm,
+                                term = currentCourseTerm,
                                 status = CourseStatus.IN_PROGRESS,
                                 createdBy = g.current_user,
                                 serviceLearningDesignatedSections = "",
                                 previouslyApprovedDescription = "")
-                CourseQuestion.create(course = courseObj.id,
-                                questionContent= " ",
-                                questionNumber=" ")
-                CourseInstructor.create(course = courseObj.id,
-                                    user = 'ramsayb2')
             else:
                 previousMatchedCourse = existingCourses[0]
 
-                currentTerm = Term.get(Term.id == previousMatchedCourse.term)
+                previousCourseTerm = Term.get(Term.id == previousMatchedCourse.term)
                 
-                if currentTerm == currentTermObj:
+                if previousCourseTerm == currentCourseTerm:
                     courseObj : Course = previousMatchedCourse
                 
                 else:
@@ -115,7 +108,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                     courseAbbreviation = previousMatchedCourse.courseAbbreviation,
                                     sectionDesignation = previousMatchedCourse.sectionDesignation,
                                     courseCredit = previousMatchedCourse.courseCredit,
-                                    term = courseTerm,
+                                    term = currentCourseTerm,
                                     status = CourseStatus.IN_PROGRESS,
                                     createdBy = g.current_user, 
                                     serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
