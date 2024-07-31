@@ -12,6 +12,7 @@ from app.models.courseParticipant import CourseParticipant
 
 from app.logic.serviceLearningCourses import *
 
+
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
     '''tests for the successful implementation of populating the proposal table'''
@@ -22,7 +23,9 @@ def test_getServiceLearningCoursesData():
     assert "Submitted" == courseDict[2]['status']
     assert 'Spring 2021' in courseDict[2]['term'].description
     assert "Scott Heggen"  == courseDict[2]['creator']
+    assert "SPN 104 - Spanish Help" == courseDict[2]['courseDisplayName']
 
+    
     courseDict = getSLProposalInfoForUser('heggens')
     assert 3 in courseDict
     assert 'Scott Heggen' in courseDict[3]['faculty']
@@ -30,6 +33,8 @@ def test_getServiceLearningCoursesData():
     assert "Approved" == courseDict[3]['status']
     assert 'Summer 2021' in courseDict[3]['term'].description
     assert "Brian Ramsay"  == courseDict[3]['creator']
+    assert "FRN 103 - Frenchy Help" == courseDict[3]['courseDisplayName']
+
 
     courseDict = getSLProposalInfoForUser('heggens')
     assert 4 in courseDict
@@ -38,6 +43,21 @@ def test_getServiceLearningCoursesData():
     assert "In Progress" == courseDict[4]['status']
     assert 'Spring 2021' in courseDict[4]['term'].description
     assert "Scott Heggen"  == courseDict[4]['creator']
+    assert "Testing" == courseDict[4]['courseDisplayName']
+
+
+
+@pytest.mark.integration
+def test_createCourseDisplayName():
+    '''tests for the successful implementation of combining course name and number to proper format'''
+    
+    assert 'Databases' == createCourseDisplayName("Databases", '')
+    assert 'Databases' == createCourseDisplayName("Databases", "")
+    assert 'FRN 103 - Frenchy Help' == createCourseDisplayName("Frenchy Help", 'FRN 103')
+    assert 'FRN 103' == createCourseDisplayName("", 'FRN 103')
+    assert '' == createCourseDisplayName ("", '')
+    
+    
 
 @pytest.mark.integration
 def test_getInstructorCourses():
