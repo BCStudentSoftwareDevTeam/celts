@@ -93,19 +93,18 @@ def events(selectedTerm, activeTab, programID):
     
     managersProgramDict = getManagerProgramDict(g.current_user)
 
-    # Fetch toggle state from session
-    #toggle_state = session.get('toggleState', 'unchecked') #REMOVE LATER MAYBE************************************
-    
+    # Fetch toggle state from session    
     toggle_state = request.args.get('toggleState', 'unchecked')
-    # Update session with toggle state
-    #session['toggleState'] = toggle_state
-    print("AYO", toggle_state) #REMOVE THIS LATER*********************************************************
-    # Get the count of upcoming events for each category to display in the event list page.
-    studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
+
+    # Get the count of all term events for each category to display in the event list page.
+    studentEvents = [event for sublist in studentLedEvents.values() for event in sublist]
+
+    studentLedEventsCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
-
+    toggleStatus: str = toggle_state
+    #gets only upcoming events to display in indicators
     if (toggle_state == 'unchecked'):
         studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
         for event in trainingEvents:
@@ -117,14 +116,14 @@ def events(selectedTerm, activeTab, programID):
         for event in otherEvents:
             if event.isPastEnd:
                 otherEventsCount -= 1
-    # Handle ajax request for Event category header number notifiers
+    # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             "studentLedEventsCount": studentLedEventsCount,
             "trainingEventsCount": trainingEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount,
-            "toggle_state": toggle_state
+            "toggleStatus": toggleStatus
         })
     
     return render_template("/events/event_list.html",
@@ -144,16 +143,6 @@ def events(selectedTerm, activeTab, programID):
                             countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
                             toggle_state = toggle_state,
                             )
-
-@main_bp.route('/updateToggleState', methods=['POST'])
-def update_toggle_state():
-    toggle_state = request.form.get('toggleState')
-    # Update session with toggle state
-    session['toggleState'] = toggle_state
-    print("toggle state ", toggle_state)
-    print("Toggle state updated to:", session.get('toggleState'))
-    
-    return "", 200
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):   
