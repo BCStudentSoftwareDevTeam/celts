@@ -68,8 +68,7 @@ def updateProgramInfo(programID):
             associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) 
            
             filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) 
-            print('$$$$$$$$$$$$$$$')
-            print(filePaths)
+           
           
             file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} 
             flash("Program updated", "success")
