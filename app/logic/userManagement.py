@@ -51,24 +51,24 @@ def changeProgramInfo(programId,
                       facebookUrl = None, 
                       bereaUrl = None): 
   
-  
+
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId) 
     if attachment:
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
     updatedProgram = Program.update(
-        {Program.programName:programName,
+      { Program.programName:programName,
         Program.programDescription: programDescription, 
         Program.partner: partner, 
         Program.contactEmail: contactEmail, 
         Program.contactName: contactName,
-    Program.defaultLocation: location,
+        Program.defaultLocation: location,
         Program.coverImage: attachment,
         Program.instagramUrl:instagramUrl,
         Program.facebookUrl: facebookUrl,
-    Program.bereaUrl: bereaUrl
-        }
+        Program.bereaUrl: bereaUrl
+      }
         ).where(Program.id==programId)    
     updatedProgram.execute()
   

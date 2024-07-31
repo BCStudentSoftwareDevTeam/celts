@@ -32,9 +32,7 @@ class FileHandler:
     
     def getFileFullPath(self, newfilename=''):
         try:
-            if self.eventId or self.courseId:
-                filePath = (os.path.join(self.path, newfilename))
-            elif self.programId:
+            if self.eventId or self.courseId or self.programId:
                 filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
             pass
