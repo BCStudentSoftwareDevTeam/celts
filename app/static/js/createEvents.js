@@ -114,7 +114,7 @@ $(document).ready(function () {
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
     //check if user has selected a toggle, cancel form submission if not
-    if(trainingStatus || serviceHourStatus || bonnersStatus){
+    if(trainingStatus || serviceHourStatus || bonnersStatus || $("#pageTitle").text() == 'Create All Volunteer Training'){
       // Disable button when we are ready to submit
       $(this).find("input[type=submit]").prop("disabled", true);
     }
