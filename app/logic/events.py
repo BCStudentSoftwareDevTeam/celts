@@ -75,7 +75,7 @@ def deleteEventAndAllFollowing(eventId):
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId or event.multipleOfferingId:
+            if event.recurringId:
                 recurringId = event.recurringId
                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
                 deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
@@ -89,7 +89,7 @@ def deleteAllRecurringEvents(eventId):
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId or event.multipleOfferingId:
+            if event.recurringId:
                 recurringId = event.recurringId
             allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
             eventId = allRecurringEvents[0].id
