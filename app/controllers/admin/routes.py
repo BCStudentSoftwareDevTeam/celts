@@ -355,10 +355,33 @@ def cancelRoute(eventId):
     else:
         abort(403)
     
+@admin_bp.route('/event/undo', methods=['GET'])
+def undoEvent():
+    try:
+        events = session['lastDeletedEvent']
+        for eventId in events: 
+            Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
+            event = Event.get_or_none(Event.id == eventId)
+        recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.recurringId is not None:
+            nameCounter = 1
+            for recurringEvent in recurringEvents:
+                newEventNameList = recurringEvent.name.split()
+                newEventNameList[-1] = f"{nameCounter}"
+                newEventNameList = " ".join(newEventNameList)
+                Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
+                nameCounter += 1 
+        flash("Deletion successfully undone.", "success")
+        return redirect('/eventsList/' + str(g.current_term))
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+    
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
+        session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -369,7 +392,7 @@ def deleteRoute(eventId):
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
-        deleteEventAndAllFollowing(eventId)
+        session["lastDeletedEvent"] = deleteEventAndAllFollowing(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -380,7 +403,7 @@ def deleteEventAndAllFollowingRoute(eventId):
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
-        deleteAllRecurringEvents(eventId)
+        session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
