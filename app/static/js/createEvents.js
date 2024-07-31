@@ -59,6 +59,12 @@ function calculateRecurringEventFrequency(){
   }
   
 $(document).ready(function () {
+  //makes sure bonners toggle will stay on between event pages
+  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+      if ($("#checkBonners")) {
+        $("#checkBonners").prop('checked', true);
+    }
+  }
   // Initialize datepicker with proper options
   $.datepicker.setDefaults({
     dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
@@ -98,10 +104,24 @@ $(document).ready(function () {
       $("#limitGroup").hide();
     }
   });
+  // Determine which checkbox was clicked and its current checked status, uncheck others
+  $("#checkIsTraining, #checkServiceHours, #checkBonners").on('click', function (event) {
+    $("#checkIsTraining, #checkServiceHours, #checkBonners").not($(event.target)).prop('checked', false);
+  });
 
-  // Disable button when we are ready to submit
   $("#saveEvent").on('submit', function (event) {
-    $(this).find("input[type=submit]").prop("disabled", true);
+    let trainingStatus = $("#checkIsTraining").is(":checked")
+    let serviceHourStatus = $("#checkServiceHours").is(":checked")
+    let bonnersStatus = $("#checkBonners").is(":checked")
+    //check if user has selected a toggle, cancel form submission if not
+    if(trainingStatus || serviceHourStatus || bonnersStatus){
+      // Disable button when we are ready to submit
+      $(this).find("input[type=submit]").prop("disabled", true);
+    }
+    else {
+      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
+      event.preventDefault();
+    } 
   });
 
   $("#checkIsRecurring").click(function () {
