@@ -534,7 +534,13 @@
           class="bi bi-plus-square col-md-1 py-2 d-flex flex-row justify-content-center btn-success btn-lg addMultipleBtn"></i>
       </div>
       <br>
-      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
+          id="cancelModalPreview">Cancel</button>
+        {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
+        <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}}
+          id="submitParticipant">Save</button> <!--check if text box empty upon save-->
+      </div> 
   </div>
 </div>
 

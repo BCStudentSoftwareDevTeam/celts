@@ -1,5 +1,5 @@
 import pytest
-from flask import g
+from flask import g, session
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
 from playhouse.shortcuts import model_to_dict
@@ -556,7 +556,6 @@ def test_cancelEvent():
         assert event.isCanceled
         transaction.rollback()
 
-
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
@@ -571,7 +570,7 @@ def test_deleteEvent():
                                     isTraining = 0,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
+                                    endDate = " ",
                                     recurringId = None,
                                     program = 9)
 
@@ -582,12 +581,9 @@ def test_deleteEvent():
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(eventId)
-        assert Event.get_or_none(Event.id == eventId) is None
+            event = Event.get_or_none(Event.id == eventId) 
+        assert event is not None and event.isDeleted
 
-        with app.app_context():
-            g.current_user = User.get_by_id("ramsayb2")
-            deleteEvent(eventId)
-        assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
 
         # creates a recurring event
@@ -616,18 +612,21 @@ def test_deleteEvent():
         event = Event.get_by_id(createdEvents[0].id)
         recurringId = event.recurringId
 
-        # check how many events exist before event deletion
-        recurringEventsBefore = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        # check how many events exist before event deletion and isDeleted should be false since they are not deleted yet
+        recurringEventsBefore = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
         for counter, recurring in enumerate(recurringEventsBefore):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
+            assert recurring.isDeleted == False
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEvent(createdEvents[0])
+            event = Event.get_or_none(Event.id == createdEvents[0]) 
+            assert event.isDeleted
 
-        # check how many events exist after event deletion and make sure they are linear
-        recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
-
+        # check how many events exist after event deletion
+        # event that got deleted now have a deletion date which is not None
+        recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
@@ -643,19 +642,19 @@ def test_deleteEvent():
         totalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         #checks the number of all recurring events that will take place after a recurring event plus the event itself.
         eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= eventIdToDelete.startDate)))
-
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEventAndAllFollowing(eventIdToDelete)
-            totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
+            totalRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId)&(Event.deletionDate == None)))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
-
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteAllRecurringEvents(eventIdToDelete)
-            newTotalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
+            newTotalRecurringEvents = len(Event.select().where((Event.recurringId == recurringId)& (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRecurringEvents == 0
+        transaction.rollback()
+
 
         '''testing the deletion of multiple offering events individually and all at once'''
         '''saveEventToDB is not working propoerly yet for multiple offering events; change will need to be made in the events.py in loogic'''

@@ -1,4 +1,4 @@
-from flask import  url_for
+from flask import  url_for, g, session
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date, datetime
@@ -58,14 +58,14 @@ def deleteEvent(eventId):
                     newEventName = recurringEvent.name
                     eventDeleted = True
 
-        program = event.program
+        program = event.program 
 
         if program:
             createActivityLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
-        event.delete_instance(recursive = True, delete_nullable = True)
+        Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
 
 
 def deleteEventAndAllFollowing(eventId):
@@ -77,10 +77,17 @@ def deleteEventAndAllFollowing(eventId):
         if event:
             if event.recurringId or event.multipleOfferingId:
                 recurringId = event.recurringId
+<<<<<<< HEAD
                 multipleOfferingId = event.multipleOfferingId
                 recurringSeries = list(Event.select().where((Event.recurringId == recurringId or Event.multipleOfferingId== multipleOfferingId) & (Event.startDate >= event.startDate)))
         for seriesEvent in recurringSeries:
             seriesEvent.delete_instance(recursive = True)
+=======
+                recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+                deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
+                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                return deletedEventList
+>>>>>>> origin/development
 
 def deleteAllRecurringEvents(eventId):
         """
@@ -91,10 +98,17 @@ def deleteAllRecurringEvents(eventId):
         if event:
             if event.recurringId or event.multipleOfferingId:
                 recurringId = event.recurringId
+<<<<<<< HEAD
                 MultipleOfferingId = event.multipleOfferingId
                 allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId or Event.multipleOfferingId == MultipleOfferingId))
             for aRecurringEvent in allRecurringEvents:
                 aRecurringEvent.delete_instance(recursive = True)
+=======
+            allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
+            eventId = allRecurringEvents[0].id
+        return deleteEventAndAllFollowing(eventId)
+        
+>>>>>>> origin/development
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
@@ -204,7 +218,7 @@ def getStudentLedEvents(term):
     studentLedEvents = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where(Program.isStudentLed,
-                                        Event.term == term)
+                                        Event.term == term, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
@@ -223,7 +237,7 @@ def getUpcomingStudentLedCount(term, currentTime):
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
-                                    Event.term == term,
+                                    Event.term == term, Event.deletionDate == None,
                                     (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
@@ -247,7 +261,7 @@ def getTrainingEvents(term, user):
     trainingQuery = (Event.select(Event).distinct()
                           .join(Program, JOIN.LEFT_OUTER)
                           .where(Event.isTraining == True,
-                                 Event.term == term)
+                                 Event.term == term, Event.deletionDate == None)
                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
@@ -260,13 +274,14 @@ def getBonnerEvents(term):
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
-                                            Event.term == term)
+                                            Event.term == term, Event.deletionDate == None)
                                      .order_by(Event.startDate, Event.timeStart)
                                      .execute())
     return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
+    
     Get the list of the events not caught by other functions to be displayed in
     the Other Events section of the Events List page.
     :return: A list of Other Event objects
@@ -276,7 +291,7 @@ def getOtherEvents(term):
     
     otherEvents = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.term == term,
+                            .where(Event.term == term, Event.deletionDate == None,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
                                    ((Program.isOtherCeltsSponsored) |
@@ -301,7 +316,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
                     .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program) & (ProgramBan.user == user)))
                     .join(Interest, JOIN.LEFT_OUTER, on=(Event.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
+                    .where(Event.deletionDate == None, Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
 
@@ -534,7 +549,7 @@ def getEventRsvpCountsForTerm(term):
     """
     amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
                    .join(EventRsvp, JOIN.LEFT_OUTER)
-                   .where(Event.term == term)
+                   .where(Event.term == term, Event.deletionDate == None)
                    .group_by(Event.id))
 
     amountAsDict = {event.id: event.count for event in amount}
