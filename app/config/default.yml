@@ -31,7 +31,6 @@ files:
   event_attachment_path: 'eventattachments'
   course_attachment_path: 'courseattachments'
 
-
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
 MAIL_PORT: 465                # use port 465 for gmail, use 25 for Berea

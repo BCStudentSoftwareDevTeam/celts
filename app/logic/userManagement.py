@@ -51,7 +51,7 @@ def changeProgramInfo(programId,
                       facebookUrl = None, 
                       bereaUrl = None): 
   
-    
+  
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId) 
     if attachment:

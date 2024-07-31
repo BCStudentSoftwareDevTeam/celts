@@ -1,6 +1,5 @@
 import searchUser from './searchUser.js'
 
-
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }
@@ -64,8 +63,6 @@ function submitRequest(method, username){
     }
   })
 }
-
-
 
 $(document).ready(function() {
   $('[data-bs-toggle="modal"]').on('click', function() {

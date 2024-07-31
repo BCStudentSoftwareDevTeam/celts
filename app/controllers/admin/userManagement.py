@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload

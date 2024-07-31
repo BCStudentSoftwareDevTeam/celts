@@ -7,11 +7,9 @@ import glob
 
 class FileHandler:
     def __init__(self, files=None, courseId=None, eventId=None, programId=None):
-        
         self.files = files 
         if not isinstance(self.files, list):
                 self.files = [self.files]  
-         
         self.path = app.config['files']['base_path']    
         self.courseId = courseId
         self.eventId = eventId
@@ -45,10 +43,8 @@ class FileHandler:
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
-      
         try:          
             for file in self.files:
-
                 saveFileToFilesystem = None
 
                 if self.eventId:
