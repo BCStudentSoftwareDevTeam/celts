@@ -2,9 +2,9 @@
     padding-bottom: 10px;
     font-weight: bold;  
     text-align: center;
-    margin-left: 10%; /* Position the header at 50% of the viewport width */
-    /* transform: translateX(- 40%);   */
-    width: 150px
+    margin-left: 50%; /* Position the header at 50% of the viewport width */
+    transform: translateX(-50%);  
+    width: 170px
 }
 .columnDivide{
     flex: 1;
