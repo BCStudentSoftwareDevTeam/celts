@@ -77,17 +77,10 @@ def deleteEventAndAllFollowing(eventId):
         if event:
             if event.recurringId or event.multipleOfferingId:
                 recurringId = event.recurringId
-<<<<<<< HEAD
-                multipleOfferingId = event.multipleOfferingId
-                recurringSeries = list(Event.select().where((Event.recurringId == recurringId or Event.multipleOfferingId== multipleOfferingId) & (Event.startDate >= event.startDate)))
-        for seriesEvent in recurringSeries:
-            seriesEvent.delete_instance(recursive = True)
-=======
                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
                 deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
                 Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
                 return deletedEventList
->>>>>>> origin/development
 
 def deleteAllRecurringEvents(eventId):
         """
@@ -98,17 +91,10 @@ def deleteAllRecurringEvents(eventId):
         if event:
             if event.recurringId or event.multipleOfferingId:
                 recurringId = event.recurringId
-<<<<<<< HEAD
-                MultipleOfferingId = event.multipleOfferingId
-                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId or Event.multipleOfferingId == MultipleOfferingId))
-            for aRecurringEvent in allRecurringEvents:
-                aRecurringEvent.delete_instance(recursive = True)
-=======
             allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
             eventId = allRecurringEvents[0].id
         return deleteEventAndAllFollowing(eventId)
         
->>>>>>> origin/development
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
