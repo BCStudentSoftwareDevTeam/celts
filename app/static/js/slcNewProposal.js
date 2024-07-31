@@ -78,7 +78,15 @@ $(document).ready(function(e) {
   });
 
   $("#cancelButton").on("click", function() {
-      window.location.replace($(this).val());
+    var cancelButton = $(this)
+      $.ajax({
+        url: '/serviceLearning/canceledProposal',
+        method: 'POST',
+        data: {courseID : document.getElementById('courseID').value},
+        success: function(response) {
+            window.location.replace(cancelButton.val());
+        }
+      })
   });
 
   $("#saveContinue").on("click", function() {
