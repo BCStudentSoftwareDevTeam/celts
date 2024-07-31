@@ -71,7 +71,8 @@ def onlyCompletedAllVolunteer(academicYear):
 
 
 def volunteerHoursByProgram(academicYear):
-    query = (Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
+    query = (Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+             .join(Event)
              .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
              .join(Term, on=(Term.id == Event.term))
              .where(Term.academicYear == academicYear)
