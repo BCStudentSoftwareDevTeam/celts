@@ -1,24 +1,9 @@
 const flashMessageResponse = function flashEventResponse(message){
   if (message.slice(-8) == "deleted."){
 
-    return `<strong><a href="/event/undo" style="color: dark-green;" id="restoreDeleted">Undo</a></strong>` 
+    return `<strong><a href="/event/undo" style="color: dark-green;">Undo</a></strong>` 
   }
   return '';
-}
-
-function undoGeneralEvent(){
-  undoEvent = {from: 'ajax'}
-  $.ajax({
-    url: "/event/undo",
-    type: "POST",
-    data: undoEvent,
-    success: function(){
-      alert("Successfully undone!")
-    },
-    error: function(error, status){
-      console.log(error, status)
-    }
-  })
 }
 
 function msgFlash(flash_message, status){
@@ -38,9 +23,6 @@ function msgFlash(flash_message, status){
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {
         $(e.target).parent().submit();
-    });
-    $('#restoredDeleted').click(function(){
-      undoGeneralEvent($('#restoredDeleted').val())
     });
     $(flashMessages).each((i, messageData) => {msgFlash(messageData[1], messageData[0])})
 
