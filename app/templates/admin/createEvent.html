@@ -58,7 +58,6 @@
     {% endblock %}
 
     {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
-
 <div class="form-group mb-4">
   <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
   <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
@@ -354,11 +353,14 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="submit" class="btn btn-primary" value="Save" />
       </div>
     </div>
+
   </div>
   </div>
+  <div class="saveBtnDiv">
+  <input type="submit" class="btn btn-primary saveBtn" value="Save" />
+</div>
 </form>
 <!-- Modal for Cancel Event -->
 <div class="modal fade" id="cancelWarning" tabindex="-1" aria-labelledby="cancelModel" aria-hidden="true">
@@ -535,6 +537,5 @@
       
   </div>
 </div>
-
 
 {% endblock %}
