@@ -150,7 +150,8 @@ def termParticipation(termDescription):
                           .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
                           .join(Program, on=(Event.program == Program.id))
                           .join(Term, on=(Event.term_id == Term.id))
-                          .where(Term.description == termDescription))
+                          .where(Term.description == termDescription)
+                          .order_by(EventParticipant.user))
 
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
