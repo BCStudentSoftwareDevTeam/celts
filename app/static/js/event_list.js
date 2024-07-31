@@ -66,6 +66,3 @@ function removeRsvpForEvent(eventID){
     }
   })
 }
-
-
-
