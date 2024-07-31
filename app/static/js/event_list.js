@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  updateIndicatorCounts()
 
   $("#removeRsvpBtn").click(function(){
       removeRsvpForEvent($("#removeRsvpBtn").val())
@@ -12,16 +11,16 @@ $(document).ready(function(){
   var isChecked = viewPastEventsToggle.prop("checked");
   toggleRows(isChecked);
 
+  //updateIndicatorCounts(isChecked)
+
   viewPastEventsToggle.on("change", function(){
     if (!g_isPastTerm) {
       let isChecked = $(this).prop("checked");
       toggleRows(isChecked);
-      // Update server state via AJAX POST
-      $.post("/updateToggleState", {
-        toggleState: isChecked ? "checked" : "unchecked",
-      });
     }
-    updateIndicatorCounts();
+    // $.post("/updateToggleState", {
+    //   toggleState: isChecked ? "checked" : "unchecked"
+    // })
   });
 
   function toggleRows(isChecked) {
@@ -32,6 +31,7 @@ $(document).ready(function(){
     } else {
       tableRows.hide();
     }
+    updateIndicatorCounts(isChecked);
   }
 });
 
@@ -70,18 +70,24 @@ function removeRsvpForEvent(eventID){
 }
 
 //gets number of events in each event list category
-function updateIndicatorCounts(){
+function updateIndicatorCounts(isChecked){
   $.ajax({
     url: "/eventsList/" + $('#termID').val(),
     type: "GET",
-    success: function(EventsCount) {
-      const studentLedEventsCount = Number(EventsCount.studentLedEventsCount);
-      const trainingEventsCount = Number(EventsCount.trainingEventsCount);
-      const bonnerEventsCount = Number(EventsCount.bonnerEventsCount);
-      const otherEventsCount = Number(EventsCount.otherEventsCount);
+    data: {
+      toggleState: isChecked ? "checked" : "unchecked",
+    },
+    success: function(eventsCount) {
+      const studentLedEventsCount = Number(eventsCount.studentLedEventsCount);
+      const trainingEventsCount = Number(eventsCount.trainingEventsCount);
+      const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
+      const otherEventsCount = Number(eventsCount.otherEventsCount);
+      const toggle_state = eventsCount.toggle_state;
       msgFlash("HELLO", "success"); //REMOVE THESE LATER***********************
-      console.log(EventsCount);
+      console.log(eventsCount);
       console.log(studentLedEventsCount, trainingEventsCount, bonnerEventsCount, otherEventsCount);
+
+      $("#viewPastEventsToggle").prop('checked', toggle_state === 'checked');
 
       if (studentLedEventsCount >= 0) {
         $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`);

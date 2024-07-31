@@ -94,7 +94,11 @@ def events(selectedTerm, activeTab, programID):
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session
-    toggle_state = session.get('toggleState', 'unchecked')
+    #toggle_state = session.get('toggleState', 'unchecked') #REMOVE LATER MAYBE************************************
+    
+    toggle_state = request.args.get('toggleState', 'unchecked')
+    # Update session with toggle state
+    #session['toggleState'] = toggle_state
     print("AYO", toggle_state) #REMOVE THIS LATER*********************************************************
     # Get the count of upcoming events for each category to display in the event list page.
     studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
@@ -119,7 +123,8 @@ def events(selectedTerm, activeTab, programID):
             "studentLedEventsCount": studentLedEventsCount,
             "trainingEventsCount": trainingEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
-            "otherEventsCount": otherEventsCount
+            "otherEventsCount": otherEventsCount,
+            "toggle_state": toggle_state
         })
     
     return render_template("/events/event_list.html",
@@ -143,9 +148,10 @@ def events(selectedTerm, activeTab, programID):
 @main_bp.route('/updateToggleState', methods=['POST'])
 def update_toggle_state():
     toggle_state = request.form.get('toggleState')
-    
     # Update session with toggle state
     session['toggleState'] = toggle_state
+    print("toggle state ", toggle_state)
+    print("Toggle state updated to:", session.get('toggleState'))
     
     return "", 200
 
