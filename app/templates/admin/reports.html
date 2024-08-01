@@ -1,34 +1,110 @@
-{% set title = "Download Reports" %}
-{% extends "base.html" %}
-
-
-{% block app_content %}
-<div class="download-container mt-50 text-center ">
-    <h1 class="mb-3">Download Annual Report</h1>
-    <form method="post" action="/admin/reports/download" class="form-group col">
-        <div class="d-flex flex-row text-center justify-content-evenly align-items-center">
-            <div class="col-md-3 d-flex flex-row justify-content-end g-0">
-                <label class="fw-bold py-2" for="academicYear">Academic Year:</label>
-            </div>
-            <div class="col-md-3">          
-                <select id="academicYear" name="academicYear" class="form-select" required>
-                    <option value="" disabled selected>Select an academic year</option>
-                    {% for year in academicYears %}
-                        <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="d-flex flex-row justify-content-evenly align-items-center btn btn-primary btn-m " >
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
-                    <defs><linearGradient id="G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1" x1="6" x2="27" y1="24" y2="24" data-name="ÐÐµÐ·ÑÐ¼ÑÐ½Ð½ÑÐ¹ Ð³ÑÐ°Ð´Ð¸ÐµÐ½Ñ 10" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#21ad64"></stop><stop offset="1" stop-color="#088242"></stop></linearGradient></defs><path fill="#31c447" d="m41,10h-16v28h16c.55,0,1-.45,1-1V11c0-.55-.45-1-1-1Z"></path><path fill="#fff" d="m32,15h7v3h-7v-3Zm0,10h7v3h-7v-3Zm0,5h7v3h-7v-3Zm0-10h7v3h-7v-3Zm-7-5h5v3h-5v-3Zm0,10h5v3h-5v-3Zm0,5h5v3h-5v-3Zm0-10h5v3h-5v-3Z"></path><path fill="url(#G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1)" d="m27,42l-21-4V10l21-4v36Z"></path><path fill="#fff" d="m19.13,31l-2.41-4.56c-.09-.17-.19-.48-.28-.94h-.04c-.05.22-.15.54-.32.98l-2.42,4.52h-3.76l4.46-7-4.08-7h3.84l2,4.2c.16.33.3.73.42,1.18h.04c.08-.27.22-.68.44-1.22l2.23-4.16h3.51l-4.2,6.94,4.32,7.06h-3.74Z"></path>
-                    </svg>
-                    <p class="mb-0 py-0">Download</p>
-                </button>
-            </div>
-            </div>
-        </div>
-    </form>    
+{% set title = "Download Reports" %} {% extends "base.html" %} {% block
+app_content %}
+<div class="download-container mt-50 text-center">
+  <h1 class="mb-3">Annual Report</h1>
+  <form method="post" action="/admin/reports/download" class="form-group col">
+    <div
+      class="d-flex flex-row text-center justify-content-evenly align-items-center"
+    >
+      <div class="col-md-3 d-flex flex-row justify-content-end g-0"></div>
+      <div class="col-md-3">
+        <select
+          id="academicYear"
+          name="academicYear"
+          class="form-select"
+          required
+        >
+          <option value="" disabled selected>Select an academic year</option>
+          {% for year in academicYears %}
+          <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button
+          type="submit"
+          class="d-flex flex-row justify-content-evenly align-items-center btn btn-primary btn-m"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px"
+            y="0px"
+            width="20"
+            height="20"
+            viewBox="0 0 48 48"
+          >
+            <defs>
+              <linearGradient
+                id="G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1"
+                x1="6"
+                x2="27"
+                y1="24"
+                y2="24"
+                data-name="ÐÐµÐ·ÑÐ¼ÑÐ½Ð½ÑÐ¹ Ð³ÑÐ°Ð´Ð¸ÐµÐ½Ñ 10"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0" stop-color="#21ad64"></stop>
+                <stop offset="1" stop-color="#088242"></stop>
+              </linearGradient>
+            </defs>
+            <path
+              fill="#31c447"
+              d="m41,10h-16v28h16c.55,0,1-.45,1-1V11c0-.55-.45-1-1-1Z"
+            ></path>
+            <path
+              fill="#fff"
+              d="m32,15h7v3h-7v-3Zm0,10h7v3h-7v-3Zm0,5h7v3h-7v-3Zm0-10h7v3h-7v-3Zm-7-5h5v3h-5v-3Zm0,10h5v3h-5v-3Zm0,5h5v3h-5v-3Zm0-10h5v3h-5v-3Z"
+            ></path>
+            <path
+              fill="url(#G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1)"
+              d="m27,42l-21-4V10l21-4v36Z"
+            ></path>
+            <path
+              fill="#fff"
+              d="m19.13,31l-2.41-4.56c-.09-.17-.19-.48-.28-.94h-.04c-.05.22-.15.54-.32.98l-2.42,4.52h-3.76l4.46-7-4.08-7h3.84l2,4.2c.16.33.3.73.42,1.18h.04c.08-.27.22-.68.44-1.22l2.23-4.16h3.51l-4.2,6.94,4.32,7.06h-3.74Z"
+            ></path>
+          </svg>
+          <p class="mb-0 py-0">Download</p>
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
+
+<!-- Chart.js Container -->
+<div class="chart-container mt-5" style="width: 800px; margin: 0 auto">
+  <canvas id="acquisitionsChart"></canvas>
 </div>
-{% endblock %} 
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script type="module">
+  import { getAquisitionsByYear } from "{{ url_for('static', filename='js/api.js') }}";
+
+  (async function () {
+    const data = await getAquisitionsByYear();
+
+    new Chart(document.getElementById("acquisitionsChart"), {
+      type: "bar",
+      data: {
+        labels: data.map((row) => row.year),
+        datasets: [
+          {
+            label: "Acquisitions by year",
+            data: data.map((row) => row.count),
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  })();
+</script>
+{% endblock %}
