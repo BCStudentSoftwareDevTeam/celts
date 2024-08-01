@@ -102,4 +102,3 @@ function updateIndicatorCounts(isChecked){
       console.log(status,error);
     }
   });
-}
