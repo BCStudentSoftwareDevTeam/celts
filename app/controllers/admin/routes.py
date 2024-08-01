@@ -30,7 +30,8 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -82,6 +83,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
+    savedEventsList = []
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -114,13 +116,31 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         eventData.update(request.form.copy())
-        try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+        if eventData.get('isMultipleOffering'):
+            multipleOfferingId = calculateNewMultipleOfferingId()
 
-        except Exception as e:
-            print("Error saving event:", e)
-            savedEvents = False
-            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
+            for event in multipleOfferingData:
+                multipleOfferingDict = eventData.copy()
+                multipleOfferingDict.update({
+                    'name': event['eventName'],
+                    'startDate': event['eventDate'],
+                    'timeStart': event['startTime'],
+                    'timeEnd': event['endTime'],
+                    'multipleOfferingId': multipleOfferingId
+                    })
+                try:
+                    savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
+                    savedEventsList.append(savedEvents)
+                    
+                except Exception as e:
+                    print("Failed saving multi event", e)
+
+        else:
+            try:
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            except Exception as e:
+                    print("Failed saving regular event", e)
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
@@ -129,14 +149,32 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-
+            
+           
             if program:
-                if len(savedEvents) > 1:
+                if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                
+                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
+                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
+                    
+                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
+
+                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+
+                    if len(modifiedSavedEvents) > 1:
+                        #creates list of events created in a multiple series to display in the logs
+                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
+                        #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
+                        last_event_date = event_dates[-1]
+                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+
+                    createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                    
                 else:
-                    createActivityLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
@@ -203,7 +241,8 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId'])
+                    'isRecurring': bool(priorEvent['recurringId']),
+                    'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:

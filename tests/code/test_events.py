@@ -24,7 +24,7 @@ from app.models.note import Note
 
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
-from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
+from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
@@ -145,13 +145,24 @@ def test_preprocessEventData_checkboxes():
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == False
     assert newData['isTraining'] == False
+    assert newData['isMultipleOffering'] == False
 
-    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
+    
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True}
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
     assert newData['isRecurring'] == True
+    assert newData['isMultipleOffering'] == False
+
+    eventData = {'isRsvpRequired':'', 'isMultipleOffering': 'on', 'isService':False }
+    newData = preprocessEventData(eventData)
+    assert newData['isTraining'] == False
+    assert newData['isRsvpRequired'] == False
+    assert newData['isService'] == False
+    assert newData['isRecurring'] == False
+    assert newData['isMultipleOffering'] == True
 
 @pytest.mark.integration
 def test_preprocessEventData_dates():
@@ -180,6 +191,12 @@ def test_preprocessEventData_dates():
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] != newData['endDate']
+
+    eventData = {'startDate':'09/07/21', 'endDate': '', 'isMultipleOffering': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == newData['endDate']
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+
 
 @pytest.mark.integration
 def test_preprocessEventData_term():
@@ -237,11 +254,12 @@ def test_preprocessEventData_requirement():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isRecurring': False, 'isMultipleOffering': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
+    eventData['isMultipleOffering'] = False
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
     assert eventErrorMessage == "All inputs are valid."
@@ -249,11 +267,18 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRecurring':False, 'isMultipleOffering': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
-
+     
     eventData['isRecurring'] = True
+    eventData['startDate'] = parser.parse('2021-12-12')
+    eventData['endDate'] = parser.parse('2021-06-12')
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == False
+    assert eventErrorMessage == "Event start date is after event end date."
+
+    eventData['isMultipleOffering'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
     eventData['endDate'] = parser.parse('2021-06-12')
     isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -263,7 +288,7 @@ def test_wrongValidateNewEventData():
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
     eventData['endDate'] = parser.parse('2022-06-12')
-    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring']:
+    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring', 'isMultipleOffering']:
         eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
         assert isValid == False
@@ -320,7 +345,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
@@ -350,7 +375,7 @@ def test_attemptSaveEvent():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
@@ -385,7 +410,7 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'isMultipleOffering':False, 'multipleOfferingId':None, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -400,6 +425,48 @@ def test_saveEventToDb_recurring():
             transaction.rollback()
 
 @pytest.mark.integration
+def test_saveEventToDb_multipleOffering():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':'', 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+
+            eventInfo_1['valid'] = True
+            eventInfo_2['valid'] = True
+            eventInfo_3['valid'] = True
+            eventInfo_1['program'] = Program.get_by_id(1)
+            eventInfo_2['program'] = Program.get_by_id(1)
+            eventInfo_3['program'] = Program.get_by_id(1)
+
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = [
+                saveEventToDb(eventInfo_1),
+                saveEventToDb(eventInfo_2),
+                saveEventToDb(eventInfo_3)
+            ]
+            assert len(createdEvents) == 3
+            assert eventInfo_1['multipleOfferingId'] == 1
+            assert eventInfo_2['multipleOfferingId'] == 1
+            assert eventInfo_3['multipleOfferingId'] == 1
+
+            transaction.rollback()
+
+@pytest.mark.integration
 def test_saveEventToDb_update():
     with mainDB.atomic() as transaction:
 
@@ -410,7 +477,7 @@ def test_saveEventToDb_update():
         # Verify description, cerRequirement, and isRsvpRequried are updated for event 4 and 
         # program, isAllVolunteerTraining, and recurringId are not updated.  
         newEventData = {
-                        "id": 4,
+                        "id": eventId,
                         "program": 1,
                         "term": 1,
                         "name": "First Meetup",
@@ -422,6 +489,8 @@ def test_saveEventToDb_update():
                         'isFoodProvided': False,
                         'isRecurring': True,
                         'recurringId': 3,
+                        'isMultipleOffering': False,
+                        'multipleOfferingId': None,
                         'isTraining': True,
                         'isRsvpRequired': True,
                         'rsvpLimit': None,
@@ -455,7 +524,6 @@ def test_saveEventToDb_update():
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "Berea Buddies First Meetup"
         
-
         transaction.rollback()
 
 @pytest.mark.integration
@@ -588,6 +656,29 @@ def test_deleteEvent():
         transaction.rollback()
 
 
+        '''testing the deletion of multiple offering events individually and all at once'''
+        '''saveEventToDB is not working propoerly yet for multiple offering events; change will need to be made in the events.py in loogic'''
+        # creates a multiple offering event
+        eventInfo =  {'isFoodProvided': False,
+                      'isRsvpRequired': False,
+                      'rsvpLimit': None,
+                      'isService': False,
+                      'isAllVolunteerTraining': True,
+                      'isTraining': True,
+                      'isMultipleOffering': True,
+                      'multipleOfferingId': 10,
+                      'startDate': parser.parse('12-12-2021'),
+                      'endDate': parser.parse('01-18-2022'),
+                      'location': "Your pet rubber ducks little pond",
+                      'timeEnd': '09:00 PM',
+                      'timeStart': '06:00 PM',
+                      'description': "Empty Bowls Spring 2021",
+                      'name': 'Not Empty Bowls Spring',
+                      'term': 1,
+                      'contactEmail': '',
+                      'contactName': ''}
+
+
 @pytest.mark.integration
 def test_upcomingEvents():
     with mainDB.atomic() as transaction:
@@ -631,6 +722,15 @@ def test_upcomingEvents():
                                            isBonnerScholars = False,
                                            contactEmail = "test@email",
                                            contactName = "testName")
+        
+        programForMultiple = Program.create(id = 16,
+                                        programName = "TestMultiple",
+                                        isStudentLed = False,
+                                        isBonnerScholars = False,
+                                        contactEmail = "test@email",
+                                        contactName = "testName")
+        
+
         
         
         
@@ -678,17 +778,28 @@ def test_upcomingEvents():
                                                endDate = date(2021,12,13),
                                                recurringId = 2,
                                                program= programForInterest)
+        
+        multipleOfferingEvent = Event.create(name = "Mltiple Offering Id",
+                                            term = 2,
+                                            description = "Test multiple offering event",
+                                            location = "The moon",
+                                            startDate = date(2021,12,13),
+                                            endDate = date(2021,12,13),
+                                            multipleOfferingId = 2,
+                                            program= programForMultiple)
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForInterest2.id, user)
         addUserInterest(programForBanning.id, user)
+        addUserInterest(programForMultiple.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
         assert newRecurringDifferentId in eventsInUserInterestedProgram
         assert newRecurringEvent in eventsInUserInterestedProgram
         assert newRecurringSecond not in eventsInUserInterestedProgram
+        assert multipleOfferingEvent in eventsInUserInterestedProgram
 
         # Programs the user is banned from do not have their events showing up in
         # their upcoming events
@@ -721,6 +832,8 @@ def test_upcomingEvents():
         removeUserInterest(programForInterest.id, user)
         removeUserInterest(programForInterest2.id, user)
         removeUserInterest(programForBanning.id, user)
+        removeUserInterest(programForMultiple.id, user)
+
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
         assert eventsInUserRsvp == [noProgram]
 
@@ -728,6 +841,8 @@ def test_upcomingEvents():
         # we would have multiples with interests in both programs, but we specify only one
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForInterest2.id, user)
+        addUserInterest(programForMultiple.id, user)
+
         eventsInProgram = getUpcomingEventsForUser(user, program = programForInterest2.id, asOf = testDate)
 
         assert eventsInProgram == [newProgramEvent]
@@ -832,6 +947,17 @@ def test_calculateNewrecurringId():
         maxRecurringId += 1
     assert calculateNewrecurringId() == maxRecurringId
 
+
+@pytest.mark.integration
+def test_calculateNewMultipleOfferingId():
+
+    maxMulitpleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
+    if maxMulitpleOfferingId == None:
+        maxMulitpleOfferingId = 1
+    else:
+        maxMulitpleOfferingId += 1
+    assert calculateNewMultipleOfferingId() == maxMulitpleOfferingId
+
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
@@ -891,6 +1017,56 @@ def test_getPreviousRecurringEventData():
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
         transaction.rollback()
+
+
+
+@pytest.mark.integration
+def test_getPreviousMultipleOfferingEventData():
+    with mainDB.atomic() as transaction:
+
+        testingEvent1 = Event.create(name = "Testing delete event",
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-12",
+                                     endDate = "2022-12-12",
+                                     multipleOfferingId = 3,
+                                     program = 9)
+        testingEvent2 = Event.create(name = "Testing delete event",
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     multipleOfferingId = 3,
+                                     program = 9)
+
+        EventParticipant.create(user = User.get_by_id("neillz"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("ramsayb2"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("khatts"),
+                                                      event = testingEvent1.id,
+                                                      hoursEarned = None)
+
+        val = getPreviousMultipleOfferingEventData(testingEvent2.multipleOfferingId)
+        assert val[0].username == "neillz"
+        assert val[1].username == "ramsayb2"
+        assert val[2].username == "khatts"
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_getEventRsvpCountsForTerm():
@@ -966,7 +1142,7 @@ def test_getCountdownToEvent():
     This functions creates events that are different times away from the current time and tests
     the output of the getCountdown
     """
-    # Define a custom datetime representing the current time
+    # Define a multiple offering datetime representing the current time
     currentTime = datetime.strptime('1/1/2024 12:00 PM', '%m/%d/%Y %I:%M %p')
     def makeEventIn(*, timeDifference=None, **kwargs):
         """
