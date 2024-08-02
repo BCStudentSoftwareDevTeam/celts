@@ -69,7 +69,6 @@ $(document).ready(function() {
       // Get the JSON data from the data-programinfo attribute
       const programInfo = JSON.parse($(this).attr('data-programinfo'));
       // Directly populate modal fields
-      console.log(programInfo)
       $("#programName").val(programInfo.programName);
       $("#programDescription").val(programInfo.programDescription);
       $("#partner").val(programInfo.partner);
