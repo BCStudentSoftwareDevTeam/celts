@@ -1,16 +1,25 @@
 {% set title = "Template Selector" %}
 {% extends "base.html"%}
-
 {% block app_content %}
 <h1 class="text-center mb-5">Create an Event</h1>
-<div class="card m-auto" style="width: 400px;">
-    <div class="templateList">
-      {% for template in templates %}
-      <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
-      {% endfor %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 mx-3">
+            <h2 class="text-center">Programs</h2>
+            <div class="list-group">
+                {% for program in programs %}
+                <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-lg-5 mx-3">
+            <h2 class="text-center">Templates</h2>
+            <div class="list-group">
+                {% for template in templates %}
+                <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  {% for program in programs %}
-  <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
-  {% endfor %}
 </div>
-{% endblock %}
+{% endblock %} 

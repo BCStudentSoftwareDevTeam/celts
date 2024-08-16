@@ -1,22 +1,30 @@
-function msgFlash(flash_message, status){
-    if (status === "success") {
-        category = "success";
-        $("#flash_container").prepend('<div class=\"alert alert-'+ category + '\" role="alert" id="flasher">' + flash_message + '</div>');
-        $("#flasher").delay(5000).fadeOut();
-    }
-    else {
-        category = "danger";
-        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
-        $("#flasher").delay(5000).fadeOut();
-    }
+const flashMessageResponse = function flashEventResponse(message){
+  if (message.slice(-8) == "deleted."){
 
+    return `<strong><a href="/event/undo" style="color: dark-green;">Undo</a></strong>` 
+  }
+  return '';
 }
+
+function msgFlash(flash_message, status){
+    if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
+    $("#flash_container").prepend(`
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
+        ${flashMessageResponse(flash_message)}
+        <button type="button" class="btn-close kiosk-hide"  id="flashResponded"  aria-label="Close"></button>
+      </div>`);
+    $("#flashResponded").click(function(){
+      $(".alert").delay(1000).fadeOut();
+    })
+}
+
+
+
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {
         $(e.target).parent().submit();
     });
-
-    $(".alert").delay(5000).fadeOut();
+    $(flashMessages).each((i, messageData) => {msgFlash(messageData[1], messageData[0])})
 
     toastElementList = [].slice.call(document.querySelectorAll('.toast'))
     toastList = toastElementList.map(function (toastEl) {

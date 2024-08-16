@@ -1,4 +1,9 @@
-<h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2>
+ <h2 class="text-center pt-4 pb-2">Proposal For Service-Learning Course</h2>
+
+      <h3 class="text-center pb-4">Status:
+          {{ courseStatus.status }}
+      </h3>
+
 <p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
 <div class="container-fluid">
   <div class="row">
@@ -40,7 +45,7 @@
                   <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
               </td>
               <td class="align-middle">
-                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                <button class="btn btn-danger removeButton">Remove</button>
               </td>
 
             </tr>
@@ -68,12 +73,14 @@
         value="{{course.courseAbbreviation}}"
         type="text"
         />
+        <!--Credit value input-->
       <label for="credit" class="pt-3">Credit</label>
       <input
         class="form-control"
         id="credit"
         name="credit"
         value="{{course.courseCredit}}"
+        onkeyup="if(value<0) value=0;"
         type="number"
         min="0"
         required/>
@@ -98,10 +105,10 @@
         </div>
 
       
-        {% if filepaths %}
+        {% if filePaths %}
         <div class="form-group mb-5">
           {% from 'displayFilesMacro.html' import displayFiles %}
-          {{ displayFiles(filepaths, 'Course Attachments', '/deleteCourseFile', course.id) }}
+          {{ displayFiles(filePaths, 'Course Attachments', '/deleteCourseFile', course.id) }}
         </div>
         {% endif %}
 
@@ -196,5 +203,5 @@
       </div>
     </div>
   </div>
-  <input value={{course.id}} name="courseID" hidden/>
+  <input value={{course.id}} id="courseID" name="courseID" hidden/>
 </div>

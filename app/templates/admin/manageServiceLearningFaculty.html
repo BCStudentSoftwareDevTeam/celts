@@ -5,20 +5,24 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <script src="/static/js/slcManagement.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script type="module" src="/static/js/slcManagement.js"></script>
+
   {% if cpPreview %}
     <script>
       $(document).ready(function () {
-        $("#modalPreview").modal('show')
+        $("#previewImportedCourses").modal('show')
       })
     </script>
   {% endif %}
+
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 <link rel="stylesheet" href="{{url_for('static', filename ='css/manageServiceLearningFaculty.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
 
 {% block app_content %}
@@ -33,18 +37,25 @@
     </form>
   </div>
 
-  {########################### Unapproved Table ###############################}
-  <div class="row">
-    <h2 class="col">Unapproved</h2>
-    <div class="col"align="right">
-        <form method="post" action="/serviceLearning/createCourse">
-          <button class="btn btn-success btn-sm mr" type='Submit'>Add Course</button>
-        </form>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h2>Unapproved</h2>
+      </div>
+      <div class="col">
+        <div align="right">
+          <form method="post" action="/serviceLearning/createCourse">
+            <button class="btn btn-success btn-sm mr" type='Submit'>Add Course</button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-  {% if unapprovedCourses | length == 0 %}
+
+  {########################### Unapproved Table ###############################}
+    {% if unapprovedCourses | length == 0 %}
     <h5 class="ms-3">There are no unapproved courses for {{ term.description }}.</h5>
-  {% else %}
+    {% else %}
     <table class="table table-striped border">
       <thead>
         <tr>
@@ -61,7 +72,14 @@
           <td>{{ course.instructors }}</td>
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-              title="Status" data-content="{{course.status.status}}">{{course.status.status}}</a>
+          title="status key" data-content="{{ course.status.status }}">
+          {% if course.status.status == 'In Progress' %}
+            <i class="fa-solid fa-circle-half-stroke" style="margin-right: 3px;"></i>
+          {% elif course.status.status == 'Submitted' %}
+            <i class="fa-solid fa-circle" style="margin-right: 3px;"></i>
+          {% endif %}
+          {{course.status.status}}
+        </a>
           </td>
           <td>
             <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
@@ -76,46 +94,161 @@
       </tbody>
     </table>
   {% endif %}
-
   {########################### Approved Table #################################}
-  <h2>Approved</h2>
-  {% if approvedCourses | length == 0 %}
-      <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
-  {% else %}
-      <table class="table table-striped border">
-        <thead>
-          <tr>
-            <th class="col-md-1" scope="col">Courses</th>
-            <th class="col-md-1" scope="col">Faculty</th>
-            <th class="col-md-1" scope="col">Status</th>
-            <th class="col-md-1" scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for course in approvedCourses %}
-          <tr>
-            <td>{{course.courseName}}</td>
-            <td>{{ course.instructors }}</td>
-            <td>
-              <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-                title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
-            </td>
-            <td>
-              <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
-                <option value="---" disabled selected>Select Action</option>
-                <option value="Review">Review</option>
-                <option value="View">View</option>
-                <option value="Print">Print</option>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-  {% endif %}
+    <h2>Approved</h2>
+    {% if approvedCourses | length == 0 %}
+    <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+    {% else %}
+    <table class="table table-striped border">
+      <thead>
+        <tr>
+          <th class="col-md-1" scope="col">Courses</th>
+          <th class="col-md-1" scope="col">Faculty</th>
+          <th class="col-md-1" scope="col">Status</th>
+          <th class="col-md-1" scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in approvedCourses %}
+        <tr>
+          <td>{{course.courseName}}</td>
+          <td>{{ course.instructors }}</td>
+          <td>
+            <a class="status-key text-dark" id="statuskey" href="javascript:void(0);" data-toggle="popover"
+          title="status key" data-content="{{ course.status.status }}">
+          <i class="fa-solid fa-circle-check" style="margin-right: 3px;"></i> {{ course.status.status }}
+        </a>
+          </td>
+          <td>
+            <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+              <option value="---" disabled selected>Select Action</option>
+              <option value="Review">Review</option>
+              <option value="View">View</option>
+              <option value="Print">Print</option>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
 
+  {########################### Imported Table #################################}
+    <h2>Imported</h2>      
+
+  <!-- IMPORTED COURSES -->
+    {% if importedCourses | length == 0 %}
+    <h5 class="ms-3 pb-3">There are no imported courses for {{ term.description }}.</h5>
+    {% else %}
+    <table class="table table-striped border pb-5">
+      <thead>
+        <tr>
+          <th class="col-md-1" scope="col">Courses</th>
+          <th class="col-md-1" scope="col">Faculty</th>
+          <th class="col-md-1" scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in importedCourses %}
+        <tr>
+          <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
+          <td>{{course.instructors}}</td>
+          <td>
+            <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+              <option value="---" disabled selected>Select Action</option>
+              <option value="Modify">Edit</option>
+              <option value="View">View</option>
+              <option value="Print">Print</option>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  
+  {% set downloadAndSend = "disabled" if approvedCourses | length == 0 else "" %} 
+
+    <!-- Modal for editing imported courses -->
+    <div class="modal fade" id="alterModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <h5 class="modal-header fw-bold" id="alterModalTitle"></h5>
+          <form enctype="multipart/form-data" role="form" method="POST">
+            <input type="hidden" id="alterCourseId" name="courseId">
+            <input type="hidden" id="alterTermId" name="termId" value="{{term}}">
+            <div class="modal-body"> 
+              <table class="table table-striped ml-4">
+                <tbody>
+                  <tr>
+                    <td class="fw-bold">Course Name</td>
+                    <td><input class="form-control" id="courseName" name="courseName"></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Course Abbreviation</td>
+                    <td><input class="input form-control" id="courseAbbreviation" disabled></input></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Service Hours</td>
+                    <td><input class="form-control" id="hoursEarned" name="hoursEarned" type="number" min="0" required/></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Instructor(s)</td>
+                    <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" value=""/></td>
+                    <!-- Start of Instructor Table -->
+                    <table class="table mb-3" id="instructorTable" name="instructorTable">
+                      <thead>
+                        <tr>
+                          <th scope="col">Instructor(s)</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody id="instructorTableBody">
+                        <tr data-username="" hidden>  <!-- This is a hidden table row. To add new rows to the instructor table, we copy this one and fill out the information -->
+                            <td>
+                              <p class="mb-0"></p>
+                              <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
+                              <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
+                            </td>
+                            <td class="align-middle">
+                                <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                            </td>
+                        </tr>
+
+                        {% for instructor in courseInstructor %}
+                        <tr data-username="{{instructor.user.username}}">
+                          <td>
+                            <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                              <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                              <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
+                          </td>
+                          <td class="align-middle">
+                              <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- End of Instructor Table -->
+                  </tr>
+                  <div id='instructorTableNames'>
+                    {% for instructor in courseInstructor %}
+                    <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
+                    {% endfor %}
+                  </div>
+                </tbody>
+              </table>
+            </div>
+
+          <div class="modal-footer p-2">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+            <button id="saveButton" type="submit" class="btn btn-success position-relative">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   {########################### Action Buttons #################################}
-  {% set disable_button = "disabled" if approvedCourses | length ==0 else "" %}
+  {% set disable_button = "disabled" if approvedCourses | length == 0 else "" %}
   <div class="mb-5">
     <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
         <button class="float-end btn btn-primary {{disable_button}}" 
@@ -123,25 +256,21 @@
                 value="{{term.id}}">Download Course List</button>
     </form>
 
-  {% if term.isCurrentTerm or term.isFutureTerm %}
-      <a class="btn btn-primary float-end mr {{disable_button}}"
-        href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"
-        target="_blank">Send Recommendation</a>
+    {% if term.isCurrentTerm or term.isFutureTerm %}
+        <a class="btn btn-primary float-end mr {{disable_button}}"
+          href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"
+          target="_blank">Send Recommendation</a>
 
-      <a class="btn btn-primary mr float-end {{disable_button}}"
-        href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT"
-        target="_blank">Email registrar</a>
-
-      <button class=" btn btn-primary mr" 
-              id="modalCourseParticipant" 
-              data-bs-toggle="modal"
-              data-bs-target="#modalSubmit">Import Course Participants</button>
-  {% endif %}
+        <a class="btn btn-primary mr float-end {{disable_button}}"
+          href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT"
+          target="_blank">Email registrar</a>
+    {% endif %}
+    <button class=" btn btn-primary mr" id="modalCourseParticipant" data-bs-toggle="modal" data-bs-target="#submitImportedCourses">Import Course Participants</button>
   </div>
 
   {###################### Service Learning Faculty ############################}
-  <h1 class="text-center" style="margin-bottom:-30px">Service-Learning Faculty</h1>
-  <div class="btn" style=" text-align:right; position:relative; top: 38px; z-index:1;">
+  <h1 class="text-center" style="margin-bottom:10px">Service-Learning Faculty</h1>
+  <div class="btn" style=" text-align:right; position:relative; top: 5px; z-index:1;">
       <button class="btn btn-primary" id="emailSelectedButton"> Email Selected</button>
       <button class="btn btn-primary" id="selectAllOthersButton">Select All</button>
   </div>
@@ -172,7 +301,7 @@
   {############################### Modals #####################################}
 
   <!-- Modal for Uploading Course Participants -->
-  <div class="modal fade float-start col" id="modalSubmit">
+  <div class="modal fade float-start col" id="submitImportedCourses">
     <div class="modal-dialog custom-modal-size">
       <div class="modal-content">
         <div class="modal-header">
@@ -195,7 +324,7 @@
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" id="closeAddCourseParticipants">Close</button>
-            <button class="form-control btn btn-success position-relative" id="previewButton" style='width: 90px' disabled>Preview</button>
+            <button class="form-control btn btn-success position-relative" id="previewButton" disabled style='width: 90px'>Preview</button>
           </div>
         </form>
       </div>
@@ -203,13 +332,13 @@
   </div>
 
   <!-- modal for Preview -->
-  <div class="modal fade float-start col" id="modalPreview">
+  <div class="modal fade float-start col" id="previewImportedCourses">
     <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
       <div class="modal-dialog {% if cpPreviewErrors|count %} modal-lg {% endif %} custom-modal-size">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">List of Participants</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalPreview"></button>
           </div>
           <div class="modal-body py-0">
             <br>
@@ -262,46 +391,5 @@
       </div>
     </form>
   </div>
-
-  <!-- modal for Preview -->
-  <div class="modal fade float-start col" id="modalPreview">
-    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
-      <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Course to Import</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body py-0">
-              {% if previewParticipantDisplayList %}
-                {% for line in previewParticipantDisplayList %}
-                  {% set splitRow = line.split("-") %}
-                  {% if splitRow[0] == "TERM" %}
-                    {% if not loop.first %}<hr>{% endif %}
-                    <h3><b>{{splitRow[1]}}</b></h3>
-                  {% endif %}
-                  {% if splitRow[0] == "COURSE" %}
-                    <div><b>{{splitRow[1]}}:</b></div>
-                  {% endif %}
-                  {% if splitRow[0] == "STUDENT" %}
-                    <div>&ensp;&ensp;{{splitRow[1]}}</div>
-                  {% endif %}
-                  {% if splitRow[0] == "ERROR" %}
-                  <div class="text-danger"><b>{{splitRow[1]}}</b></div>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-          </div>
-          <br>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-            {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
-            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-  <!-- end preview modal  -->
   <div id="review-modal"></div>
 {% endblock %}

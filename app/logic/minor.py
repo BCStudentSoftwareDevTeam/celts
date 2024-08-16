@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List, Dict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 
@@ -24,15 +25,15 @@ def getEngagementTotal(engagementData):
     return sum(map(lambda e: e['matched'], sum(engagementData.values(),[])))
 
 
-def getMinorInterest():
+def getMinorInterest() -> List[Dict]:
     """
         Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
     """
-    interestedStudents = (User.select(User.firstName, User.lastName, User.username)
+    interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
                               .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
 
-    interestedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName, 'username': student.username} for student in interestedStudents]
+    interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
     return interestedStudentList
 
@@ -45,22 +46,24 @@ def getMinorProgress():
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), fn.SUM(summerCase).alias('hasSummer'))
+        User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
+                                                                    fn.SUM(summerCase).alias('hasSummer'),
+                                                                    fn.IF(fn.COUNT(CommunityEngagementRequest.id) > 0, True, False).alias('hasCommunityEngagementRequest'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
+            .switch(User).join(CommunityEngagementRequest, JOIN.LEFT_OUTER, on= (User.username == CommunityEngagementRequest.user,))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
-    
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
+                            'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
-
     return engagedStudentsList
-   
+
 def toggleMinorInterest(username):
     """
         Given a username, update their minor interest and minor status.
@@ -159,7 +162,6 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
     else:
         raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
-
 def getCommunityEngagementByTerm(username):
     """
         Given a username, return all of their community engagements (service learning courses and event participations.)
@@ -214,6 +216,7 @@ def saveOtherEngagementRequest(engagementRequest):
     """
     engagementRequest['status'] = "Pending"
     CommunityEngagementRequest.create(**engagementRequest)
+    
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """

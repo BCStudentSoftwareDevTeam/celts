@@ -3,55 +3,122 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/minorRequirements.js"></script>
+  <script type="module" src="/static/js/minorAdminPage.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
   {% block styles %}
     {{super()}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   {% endblock %}
 {% endblock %}
 {% block app_content %}
-
 <h1 class="text-center mb-5">CCE Minor Management</h1>
 <h2>CCE Minor Progress</h2>
 <table class="display" id="engagedStudentsTable">
     <thead>
         <tr>
             <th>Name</th>
+            <th></th> 
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
+            <th>Requested Other Engagement</th>
         </tr>
     </thead>
     <tbody>
         {% for student in sustainedEngagement %}
         <tr>
             <td>
-                <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a> 
             </td>
+            <td>
+                {% if student.engagementCount == 4 and student.hasSummer == 'Completed' %}
+                    <i class="fa-solid fa-circle"></i> 
+                {% else %}
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                {% endif %}
+                </td>
             <td>{{ student.engagementCount }}/4 </td>
             <td>{{ student.hasSummer }}</td>
+            <td>
+            {% if student.hasCommunityEngagementRequest %}
+                {# Placeholder for request other engagement #}
+                <a href="#">Yes</a>
+            {% else %}
+                No
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<br>
-<h2>Interested Students</h2>
+<br> <br>
+<div class="row">
+    <div class="col">
+        <h2>Interested Students</h2>
+    </div>
+    <div class="col-auto">
+        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addInterestedStudentsModal" style="margin:5px;">Add Students</a>
+        <button class="btn btn-primary" id="emailAllInterested">Email All</button>
+    </div>
+</div>
 <table class="display" id="interestedStudentsTable">
     <thead>
         <tr>
             <th>Name</th>
+            <th> Remove Student</th>
         </tr>
     </thead>
     <tbody>
         {% for student in interestedStudentsList %}
             <tr>
-                <td>
-                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                <td style = "width: 82%">
+                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
+                </td>
+                <td style="text-align:center">
+                  <button
+                    type="button"
+                    class="remove_interested_student btn btn-danger btn-sm"
+                    id = "{{student.username}}"
+                    aria-label="remove interested student">
+                    <span class="bi bi-trash h5 align-middle"></span>
+                  </button>
                 </td>
             </tr>
         {% endfor %}
+        <input id="interestedStudentEmails" hidden value="{{interestedStudentEmailString}}"/>
     </tbody>
 </table>
 
+<!-- #################  Modal  ################# -->
+
+<div class="modal fade float-start" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{modalTitle}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+              <input type="input" id="addStudentInput" class="form-control" placeholder="Search" autocomplete="off"/>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm">
+              <i class="bi bi-search ms-0"></i>
+            </button>
+          </div>         
+        </div>
+        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST'>
+            <ul 
+              class="list-unstyled mx-3 mt-2" id= "interestedStudentList">
+            </ul>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+            <button id="addInterestedStudentsbtn" type="submit" class="btn btn-success" disabled>Add Students</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -174,37 +174,32 @@ def test_getCommunityEngagementByTerm():
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
         testInfo = {'user': 'ramsayb2',
-                    'experienceName': 'Test Experience',
                     'term': 3,
-                    'description': 'Test Description',
+                    'experienceName': 'Test Experience',
                     'company': 'Test Company',
-                    'weeklyHours': 5,
+                    'companyAddress': '123 test ln',
+                    'companyPhone': '(123)-456-7890',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
                     'weeks': 10,
+                    'description': 'Test Description',
                     'filename': 'test_file.txt',
+                    'status': 'Pending',
                    }
+        
+        expectedValues = testInfo.copy()
 
         # Save the requested event to the database
         saveOtherEngagementRequest(testInfo)
-
-        expectedValues = {'user': testInfo['user'],
-                           'experienceName': testInfo['experienceName'],
-                           'term': testInfo['term'],
-                           'description': testInfo['description'],
-                           'company': testInfo['company'],
-                           'weeklyHours': testInfo['weeklyHours'],
-                           'weeks': testInfo['weeks'],
-                           'filename': testInfo['filename'],
-                           'status': "Pending"
-                          }
 
         # Get the actual saved request from the database (the most recent one)
         savedRequest = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
         # Check that the saved request matches the expected values
         for key, expectedValue in expectedValues.items():
             if key == "user":
-                assert savedRequest.user.username == 'ramsayb2'
+                assert savedRequest.user.username == expectedValues['user']
             elif key == "term":
-                assert savedRequest.term.id == 3
+                assert savedRequest.term.id == expectedValues['term']
             else:             
                 assert getattr(savedRequest, key) == expectedValue
 
@@ -338,6 +333,7 @@ def test_getMinorProgress():
 
         assert noMinorProgress == []
         
+        # create a sustained engagement for Sreynit
         khattsSustainedEngagement = {"username": "khatts",
                                      "program": 2,
                                      "course": None,
@@ -350,10 +346,12 @@ def test_getMinorProgress():
 
         IndividualRequirement.create(**khattsSustainedEngagement)
         minorProgress = getMinorProgress()
-        
-        assert minorProgress[0]['engagementCount'] == 1
-        assert minorProgress[0]['hasSummer'] == "Incomplete"
+        sreynitProgress = minorProgress[0]
+        assert sreynitProgress['engagementCount'] == 1
+        assert sreynitProgress['hasSummer'] == "Incomplete"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 0
 
+        # add a summer engagement and requested engagement to Sreynit's progress
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
                                   "course": None, 
@@ -361,15 +359,27 @@ def test_getMinorProgress():
                                   "term": 3,
                                   "requirement": 16,
                                   "addedBy": "ramsayb2",
-                                  "addedOn": ""
+                                  "addedOn": "",
                                  }
-        
+        khattsRequestedEngagement = {"user": "khatts",
+                                     "experienceName ": "Voluteering",
+                                     "company" : "Berea Celts",
+                                     "term": 3,
+                                     "description": "Summer engagement",
+                                     "weeklyHours": 3,
+                                     "weeks": 4,
+                                     "filename": None,
+                                     "status" : "Pending",
+                                    }
+    
+        # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
+        CommunityEngagementRequest.create(**khattsRequestedEngagement)
         IndividualRequirement.create(**khattsSummerEngagement)
-        minorProgressWithSummer = getMinorProgress()
-
-        assert minorProgressWithSummer[0]['engagementCount']== 1
-        assert minorProgressWithSummer[0]['hasSummer'] == "Completed"
-        
+        minorProgressWithSummerAndRequestOther = getMinorProgress()
+        sreynitProgress = minorProgressWithSummerAndRequestOther[0]
+        assert sreynitProgress['engagementCount'] == 1
+        assert sreynitProgress['hasSummer'] == "Completed"
+        assert sreynitProgress['hasCommunityEngagementRequest'] == 1
 
         transaction.rollback()
 
