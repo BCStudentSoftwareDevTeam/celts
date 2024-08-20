@@ -17,7 +17,10 @@
  * default python is Python 3
 
 ## Getting Started With CELTS in a devcontainer
-1. If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+1. Windows
+   * If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+   * In git-bash, set `git config --global core.symlink true` and cross your fingers
+   * It's possible after the final setup is done in VSCode you will need to fix the symlink in `database` and `app/scripts`
 3. Set up an SSH agent with your GitHub SSH key. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 4. Open repository directory in VSCode (either clone with VSCode or install git yourself and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```)
 5. Follow prompts to install Dev Container extension and open project in dev container
