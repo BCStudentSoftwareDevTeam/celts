@@ -94,7 +94,7 @@ def events(selectedTerm, activeTab, programID):
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session    
-    toggle_state = request.args.get('toggleState', 'unchecked')
+    toggleState = request.args.get('toggleState', 'unchecked')
 
     # Get the count of all term events for each category to display in the event list page.
     studentEvents = [event for sublist in studentLedEvents.values() for event in sublist]
@@ -103,9 +103,9 @@ def events(selectedTerm, activeTab, programID):
     trainingEventsCount: int = len(trainingEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
-    toggleStatus: str = toggle_state
+    toggleStatus: str = toggleState
     #gets only upcoming events to display in indicators
-    if (toggle_state == 'unchecked'):
+    if (toggleState == 'unchecked'):
         studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
         for event in trainingEvents:
             if event.isPastEnd:
@@ -141,7 +141,7 @@ def events(selectedTerm, activeTab, programID):
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
                             countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
-                            toggle_state = toggle_state,
+                            toggleState = toggleState,
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
