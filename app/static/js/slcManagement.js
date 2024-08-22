@@ -130,7 +130,7 @@ function renew(){
 }
 function withdraw(){
   // uses hidden label to withdraw course
-  courseID = $("#courseID").val();
+  let courseID = $("#courseID").val();
   $.ajax({
     url: `/serviceLearning/withdraw/${courseID}`,
     type: "POST",
