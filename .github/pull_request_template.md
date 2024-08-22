@@ -5,6 +5,7 @@ Fixes issue #__~~add issue number~~_
 
 ## Changes
 - _Use bullet points to provide a description of added changes_
+- _Add images where possible to provide more context to your changes_
 
 ## Testing
 - _Use backticks to highlight shell commands or file directories in your test descriptions._
