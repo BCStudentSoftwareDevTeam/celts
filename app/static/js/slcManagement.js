@@ -114,8 +114,8 @@ function changeAction(action){
 }
 
 function renew(){
-    courseID = $("#courseID").val();
-    termID = $('#renewTerm').find(":selected").val()
+    let courseID = $("#courseID").val();
+    let termID = $('#renewTerm').find(":selected").val()
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",
