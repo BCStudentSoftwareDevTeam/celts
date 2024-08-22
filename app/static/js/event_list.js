@@ -85,16 +85,16 @@ function updateIndicatorCounts(isChecked){
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
-      if (studentLedEventsCount >= 0) {
+      if (studentLedEventsCount > 0) {
         $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`);
       }
-      if (trainingEventsCount >= 0) {
+      if (trainingEventsCount > 0) {
         $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`);
       }
-      if (bonnerEventsCount >= 0) {
+      if (bonnerEventsCount > 0) {
         $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`);
       }
-      if (otherEventsCount >= 0) {
+      if (otherEventsCount > 0) {
         $("#otherEvents").html(`Other Events (${otherEventsCount})`);
       }
     },
@@ -102,3 +102,4 @@ function updateIndicatorCounts(isChecked){
       console.log(status,error);
     }
   });
+}
