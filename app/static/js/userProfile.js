@@ -54,12 +54,10 @@ $(document).ready(function(){
         contentType: "application/json",
         data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
         success: function(response) {
-            console.log(response);
-            // Handle success response if needed
+
         },
         error: function(error) {
             console.error("An error occurred:", error);
-            // Handle error if needed
         }
     });
   });
