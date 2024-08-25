@@ -53,7 +53,7 @@ select.empty {
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
-  position:relative;
+  position: relative;
   z-index:10
 }
 
@@ -102,4 +102,25 @@ select.empty {
 
 .rsvp-btn{
     padding-top: 4em;
+}
+.required::after {
+  content: " *";
+  color: red;
+  font-size: 1.3em; /* Adjust the font size as needed */
+  font-weight: bolder; /* make it bold */
+  vertical-align: middle; /* Align vertically with the text */
+  line-height: 1; /* Match the line height of the parent text */
+}
+
+form {
+  margin-bottom: 5em;
+}
+
+.saveBtn {
+  z-index: 10;
+  text-align: center;
+}
+
+.saveBtnDiv {
+  text-align: center;
 }

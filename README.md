@@ -17,7 +17,10 @@
  * default python is Python 3
 
 ## Getting Started With CELTS in a devcontainer
-1. If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+1. Windows
+   * If on Windows 10, make sure your Windows install is in developer mode so that core.symlinks will be set properly: https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development (requires admin privileges)
+   * In git-bash, set `git config --global core.symlink true` and cross your fingers
+   * It's possible after the final setup is done in VSCode you will need to fix the symlink in `database` and `app/scripts`
 3. Set up an SSH agent with your GitHub SSH key. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 4. Open repository directory in VSCode (either clone with VSCode or install git yourself and clone with ```git clone git@github.com:BCStudentSoftwareDevTeam/celts.git```)
 5. Follow prompts to install Dev Container extension and open project in dev container
@@ -98,7 +101,7 @@ If you want to test with actual emails, use an email other than outlook to test 
 1. Set up two factor authentication on your Gmail (Security Settings)
 2. Create an App Password through your Gmail. This 16 character password can only be viewed once, so make sure to save it. (NOTE: You won't have the option to create an app password unless step one is completed)
 3. Inside of your secret_config.yaml file set the MAIL_USERNAME and MAIL_DEFAULT_SENDER as your Gmail, set the MAIL_PASSWORD as your new app password as, and set ALWAYS_SEND_MAIL as True. If you want emails to go to their real recipients, remove MAIL_OVERRIDE_ALL from your config or set it to "".
-4. For testing purposes, change the email of the student and supervisor to match another email that can receive your test emails (or you can use MAIL_OVERRIDE_ALL to send everything to the address specified.
+4. For testing purposes, change the email of the student and supervisor to match another email that can receive your test emails or you can use MAIL_OVERRIDE_ALL to send everything to the address specified.
 
 ### SSDT Documentation 
 This is SSDT Documentation that contains details, references, workflow, system administration, etc. You are welcome to contribute to it and/or review it:
