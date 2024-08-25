@@ -25,20 +25,24 @@
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
             <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
-          {% endfor %}
+          {% endfor %}
         </select>
       </div>
     </div>
-  </div>
-  {% if user.isAdmin %}
-    <div class="row px-4">
+    {% if user.isAdmin %}
+    <div class="row col-md-4 px-4">
       <div class = "d-none d-sm-block col "></div>
       <div class="form-check form-switch mb-2 col-auto">
         <label class="form-check-label" for="viewPastEventsToggle">View Past Events</label>
-        <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off">
+        {% if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm %}
+            <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off" name="toggleState" {% if toggle_state == 'checked' %}checked{% endif %}>
+        {% else %}  
+          <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off" name="toggleState" checked disabled>
+        {% endif %}
       </div>
     </div>
-  {% endif %}
+    {% endif %}
+  </div>
 </div>
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
@@ -64,7 +68,7 @@
 </div>
 
 {% macro createTable(events, type) %}
-{% if events|count %}
+{% if events|count%}
 <div class="table-responsive">
   <table class="table">
     <thead>
@@ -80,8 +84,9 @@
       </tr>
     </thead>
     <tbody>
-      {% for event in events %}
-          {% if event.isPast %}
+      {% for event in events%}
+        
+          {% if event.isPastEnd %}
             <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
             <tr height = '50' class="">
@@ -90,7 +95,7 @@
               <td class="text-dark">{{event.program.programName}}</td>
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
-              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
+              {% set link_class = 'link-secondary' if event.isPastStart else 'link-primary' %}
                 <td><a href="/event/{{event.id}}/edit" class="{{link_class}}">{{event.name}}</a></td>
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
@@ -108,15 +113,15 @@
               {% endif %}
             {% if user.isAdmin %}
               <td>
-                {% if event.isPast %}
-                  {% set isPastEvent = "true" %}
+                {% if event.isPastStart %}
+                  {% set isPastStart = "true" %}
                 {% else %}
-                  {% set isPastEvent = "false" %}
+                  {% set isPastStart = "false" %}
                 {% endif %}
                 {% set defaultTemplate = "Test" %} {# The default template is set via the purpose column of the corresponding template #}
-                {% set btn_class = 'btn-secondary' if event.isPast or event.isCanceled else 'btn-primary' %}
-                {% set btn_text = 'Email' if event.isPast or event.isCanceled else 'Invite' %}
-                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }}, '{{defaultTemplate}}')">
+                {% set btn_class = 'btn-secondary' if event.isPastStart or event.isCanceled else 'btn-primary' %}
+                {% set btn_text = 'Email' if event.isPastStart or event.isCanceled else 'Invite' %}
+                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastStart }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>
               </td>
@@ -124,15 +129,16 @@
               <td>
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
-              {% elif (not event.isPast) and (event.isRsvpRequired) and (not event.isCanceled) %}
+              {% elif (not event.isPastStart) and (event.isRsvpRequired) and (not event.isCanceled) %}
                   {% set buttonName = "Join Waitlist" if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) else "RSVP" %}
                     <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">{{buttonName}}</button>
               {% endif %}
               </td>
             {% endif %}
           </tr>
+        
       {% endfor %}
-      {% if selectedTerm == g.current_term and events[-1].isPast %}
+      {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>
           {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
           <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>

@@ -24,7 +24,7 @@ from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.adminLog import AdminLog
+from app.models.activityLog import ActivityLog
 from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
@@ -229,7 +229,6 @@ users = [
         "minorInterest": 0,
     },
 ]
-
 User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
@@ -803,6 +802,7 @@ events = [
         "program": 9
     },
 ]
+
 Event.insert_many(events).on_conflict_replace().execute()
 
 notes = [
@@ -1452,7 +1452,7 @@ logs = [
    "logContent": "Created Adoption Event."
    }
 ]
-AdminLog.insert_many(logs).on_conflict_replace().execute()
+ActivityLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {

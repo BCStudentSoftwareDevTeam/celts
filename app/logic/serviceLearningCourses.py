@@ -17,7 +17,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
 
@@ -43,16 +43,32 @@ def getSLProposalInfoForUser(user: User) -> Dict[int, Dict[str, Any]]:
 
         courseDict[course.id] = {"id":course.id,
                                  "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-                                 "name":course.courseName if course.courseName else course.courseAbbreviation,
+                                 "name": course.courseName,
+                                 "abbr": course.courseAbbreviation,
+                                 "courseDisplayName": createCourseDisplayName(course.courseName, course.courseAbbreviation),                             
                                  "faculty": faculty,
                                  "term": course.term,
                                  "status": course.status.status}
     return courseDict
 
+def createCourseDisplayName(name, abbreviation):
+        '''
+        This function combines course name and numbers with conditions
+        inputs: course name, course abbreviation
+        '''
+        if name and abbreviation:
+            return f"{abbreviation} - {name}"
+        elif not name and not abbreviation:
+            return ''
+        elif not name:
+            return abbreviation
+        elif not abbreviation:
+            return name
+
 def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]]) -> None:
     for term, terminfo in cpPreview.items():
-        termObj: Term = Term.get_or_none(description = term) or addPastTerm(term)
-        if not termObj:
+        currentCourseTerm: Term = Term.get_or_none(description = term) or addPastTerm(term)
+        if not currentCourseTerm:
             print(f"Unable to find or create term {term}")
             continue
 
@@ -61,28 +77,67 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                 print(f"Unable to save course {course}. {courseInfo['errorMsg']}")
                 continue
 
-            courseObj: Course = Course.get_or_create(
-                 courseAbbreviation = course,
-                 term = termObj, 
-                 defaults = {"CourseName" : "",
-                             "sectionDesignation" : "",
-                             "courseCredit" : "1",
-                             "term" : termObj,
-                             "status" : 4,
-                             "createdBy" : g.current_user,
-                             "serviceLearningDesignatedSections" : "",
-                             "previouslyApprovedDescription" : "" })[0]
+            existingCourses = list((Course.select()
+                                            .join(Term, on =(Course.term == Term.id))
+                                            .where((Course.courseAbbreviation == course) & (Term.termOrder <= currentCourseTerm.termOrder))
+                                            .order_by(Course.term.desc())
+                                            .limit(1)))
 
-            for userDict in courseInfo['students']:
-                if userDict['errorMsg']:
+            if not existingCourses :
+                
+                courseObj: Course = Course.create(courseName = "",
+                                sectionDesignation = "",
+                                courseAbbreviation = course,
+                                courseCredit = "1",
+                                term = currentCourseTerm,
+                                status = CourseStatus.IN_PROGRESS,
+                                createdBy = g.current_user,
+                                serviceLearningDesignatedSections = "",
+                                previouslyApprovedDescription = "")
+            else:
+                previousMatchedCourse = existingCourses[0]
+
+                previousCourseTerm = Term.get(Term.id == previousMatchedCourse.term)
+                
+                if previousCourseTerm == currentCourseTerm:
+                    courseObj : Course = previousMatchedCourse
+                
+                else:
+            
+                    courseObj: Course = Course.create(courseName = previousMatchedCourse.courseName,
+                                    courseAbbreviation = previousMatchedCourse.courseAbbreviation,
+                                    sectionDesignation = previousMatchedCourse.sectionDesignation,
+                                    courseCredit = previousMatchedCourse.courseCredit,
+                                    term = currentCourseTerm,
+                                    status = CourseStatus.IN_PROGRESS,
+                                    createdBy = g.current_user, 
+                                    serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
+                                    previouslyApprovedDescription = previousMatchedCourse.previouslyApprovedDescription)
+                    
+                    questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course == previousMatchedCourse.id))
+
+                    for question in questions:
+                        CourseQuestion.create(course = courseObj.id,
+                                        questionContent= question.questionContent,
+                                        questionNumber=question.questionNumber)
+                    
+                    instructors = CourseInstructor.select().where(CourseInstructor.course == previousMatchedCourse.id)
+                    
+                    for instructor in instructors:
+                        CourseInstructor.create(course = courseObj.id,
+                                            user = instructor.user)
+                
+
+        for userDict in courseInfo['students']:
+            if userDict['errorMsg']:
                     print(f"Unable to save student. {userDict['errorMsg']}")
                     continue
 
-                CourseParticipant.get_or_create(user=userDict['user'], 
+            CourseParticipant.get_or_create(user=userDict['user'], 
                                                 course=courseObj,
                                                 hoursEarned=20)
                 
-def unapprovedCourses(termId: int) -> List[Course]:
+def unapprovedCourses(termId: int) -> List[Course]:#
     """
     Queries the database to get all the neccessary information for
     submitted/unapproved courses.
@@ -189,7 +244,12 @@ def withdrawProposal(courseID) -> None:
     except DoesNotExist:
         print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
-    # delete course object
+    # deletes course
+    deletedCourse = deleteCourseObject(courseID=courseID)
+
+    createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
+
+def deleteCourseObject(courseID):
     course: Course = Course.get(Course.id == courseID)
     courseName: str = course.courseName
     questions: List[CourseQuestion] = CourseQuestion.select().where(CourseQuestion.course == course)
@@ -200,8 +260,7 @@ def withdrawProposal(courseID) -> None:
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
-
-    createAdminLog(f"Withdrew SLC proposal: {courseName}")
+    return courseName
 
 def createCourse(creator: str="No user provided") -> Course:
     """
@@ -257,7 +316,7 @@ def updateCourse(courseData, attachments=None) -> Union[Course, bool]:
                 addFile: FileHandler = FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
 
-            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+            createActivityLog(f"Saved SLC proposal: {courseData['courseName']}")
 
             return Course.get_by_id(course.id)
         
