@@ -82,7 +82,7 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
+    term: Term = Term.get_by_id(currentTerm) 
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
@@ -96,15 +96,18 @@ def events(selectedTerm, activeTab, programID):
     # Fetch toggle state from session    
     toggleState = request.args.get('toggleState', 'unchecked')
 
-    # Get the count of all term events for each category to display in the event list page.
-    studentEvents = [event for sublist in studentLedEvents.values() for event in sublist]
+    # compile all student led events into one list
+    studentEvents = []
+    for studentEvent in studentLedEvents.values():
+        studentEvents += studentEvent # add all contents of studentEvent to the studentEvents list
 
+    # Get the count of all term events for each category to display in the event list page.
     studentLedEventsCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
-    toggleStatus: str = toggleState
-    #gets only upcoming events to display in indicators
+
+    # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
         studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
         for event in trainingEvents:
@@ -116,6 +119,7 @@ def events(selectedTerm, activeTab, programID):
         for event in otherEvents:
             if event.isPastEnd:
                 otherEventsCount -= 1
+
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
@@ -123,7 +127,7 @@ def events(selectedTerm, activeTab, programID):
             "trainingEventsCount": trainingEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount,
-            "toggleStatus": toggleStatus
+            "toggleStatus": toggleState
         })
     
     return render_template("/events/event_list.html",
