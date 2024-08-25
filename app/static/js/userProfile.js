@@ -121,7 +121,7 @@ $(document).ready(function(){
     banButton.text(banValue + " Volunteer");
     programID = $(this).data("programid"); // Assign value to programID variable
     banButton.data("programID", programID)
-    banButton.data("username", $("#notifyInput").data("username"))
+    banButton.data("username", $(".banEdit").data("username"))
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
