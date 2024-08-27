@@ -59,6 +59,7 @@ def getMinorProgress():
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,
                             'lastName': student.lastName,
+                            'hasGraduated': student.hasGraduated, 
                             'engagementCount': student.engagementCount - student.hasSummer,
                             'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
