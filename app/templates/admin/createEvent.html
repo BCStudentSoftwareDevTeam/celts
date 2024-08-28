@@ -467,7 +467,7 @@
           <br>
         </div>
         <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="row mb-2 divStripes pt-3 pb-4" id="multipleOfferingEvent">
+          <div class="eventOffering row mb-2 divStripes pt-3 pb-4" id="multipleOfferingEvent">
             <br>
             <div class="form-group mb-3">
               <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
@@ -535,8 +535,8 @@
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
           id="cancelModalPreview">Cancel</button>
         {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-        <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}}
-          id="submitParticipant">Save</button> <!--check if text box empty upon save-->
+        <button type="submit" name="multipleOfferingSave" class="btn btn-primary multipleOfferingSave" {{disableSave}}
+          id="multipleOfferingSave">Save</button> <!--check if text box empty upon save-->
       </div> 
   </div>
 </div>

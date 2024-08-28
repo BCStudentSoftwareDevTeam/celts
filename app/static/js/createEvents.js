@@ -49,7 +49,7 @@ function calculateRecurringEventFrequency(){
           var recurringEvents = JSON.parse(jsonData)
           var recurringTable = $("#recurringEventsTable")
           $("#recurringEventsTable tbody tr").remove();
-          for (var event of recurringEvents){
+          for(var event of recurringEvents){
             var eventdate = new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
             }
@@ -59,25 +59,29 @@ function calculateRecurringEventFrequency(){
         }
       });
   }
-  $('#submitParticipant').on('click', function() {
+  $('#multipleOfferingSave').on('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
-    let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
-    let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
-    let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime');
-    let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime');
+    let eventOfferings = $('.eventOffering'); 
+    let eventNameInputs = $('.multipleOfferingNameField');
+    let datePickerInputs = $('.multipleOfferingDatePicker');
+    let startTimeInputs = $('.multipleOfferingStartTime');
+    let endTimeInputs = $('.multipleOfferingEndTime');
     let isEmpty = false;
-    let timeCheck = false;
-    eventNameInputs.forEach(eventNameInput => {
-      // Check if the input field is empty
+    let hasValidTimes = true;
+    let hasDuplicateListings = false;
+
+    // Check if the input field is empty
+    eventNameInputs.each((index, eventNameInput) => {
       if (eventNameInput.value.trim() === '') {
-          isEmpty = true;
-          $(eventNameInput).addClass('border-red');
+        isEmpty = true;
+        $(eventNameInput).addClass('border-red');
       } else{
         $(eventNameInput).removeClass('border-red');
       }
-    }); 
-    datePickerInputs.forEach(datePickerInput => {
-    // Check if the input field is empty
+    });
+
+    // Check if the date input field is empty
+    datePickerInputs.each((index, datePickerInput) => {
       if (datePickerInput.value.trim() === '') {
           isEmpty = true;
           $(datePickerInput).addClass('border-red');
@@ -86,19 +90,37 @@ function calculateRecurringEventFrequency(){
       }
     });  
 
+    // Check if the start time is after the end time
     for(let i = 0; i < startTimeInputs.length; i++){
-      if(startTimeInputs[i].value >= endTimeInputs[i].value){
-        console.log(startTimeInputs[i]);
-        console.log(endTimeInputs[i]);
-        $(startTimeInputs[i]).addClass('border-red');
-        $(endTimeInputs[i]).addClass('border-red');
-        timeCheck = true;
-      }else{
+      if(startTimeInputs[i].value < endTimeInputs[i].value){
         $(startTimeInputs[i]).removeClass('border-red');
         $(endTimeInputs[i]).removeClass('border-red');
+      } else {
+        $(startTimeInputs[i]).addClass('border-red');
+        $(endTimeInputs[i]).addClass('border-red');
+        hasValidTimes = false;
       }
-      console.log(timeCheck);
     }
+
+    // Check if there are duplicate event offerings
+    let eventListings = {};
+    for(let i = 0; i < eventOfferings.length; i++){
+      let eventName = eventNameInputs[i].value
+      let date = datePickerInputs[i].value.trim()
+      let startTime = startTimeInputs[i].value
+      let endTime = endTimeInputs[i].value
+      let eventListing = JSON.stringify([eventName, date, startTime, endTime])
+
+      if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
+        hasDuplicateListings = true
+        $(eventOfferings[i]).addClass('border-red');
+        $(eventOfferings[eventListings[eventListing]]).addClass('border-red')
+      } else { // If we haven't seen this event before
+        $(eventOfferings[i]).removeClass('border-red');
+        eventListings[eventListing] = i
+      }
+    }
+
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event name or date field is empty");
@@ -107,9 +129,8 @@ function calculateRecurringEventFrequency(){
         $('.invalidFeedback').css('display', 'none');
         $('#textNotifierPadding').removeClass('pt-5')
       });
-      isEmpty = false;  
     }
-    else if(timeCheck){
+    else if(!hasValidTimes){
       $('#textNotifierPadding').addClass('pt-5');
       $('.invalidFeedback').text("Event end time must be after start time");
       $('.invalidFeedback').css('display', 'block');  
@@ -117,8 +138,15 @@ function calculateRecurringEventFrequency(){
         $('.invalidFeedback').css('display', 'none');
         $('#textNotifierPadding').removeClass('pt-5')
       });
-      timeCheck= false;
-        
+    }
+    else if (hasDuplicateListings){
+      $('#textNotifierPadding').addClass('pt-5');
+      $('.invalidFeedback').text("Two event listings cannot have the same event name, date, and time");
+      $('.invalidFeedback').css('display', 'block');  
+      $('.invalidFeedback').on('animationend', function() {
+        $('.invalidFeedback').css('display', 'none');
+        $('#textNotifierPadding').removeClass('pt-5')
+      });
     }
     else {
       storeMultipleOfferingEventAttributes();
