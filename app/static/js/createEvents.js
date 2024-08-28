@@ -324,17 +324,23 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
+    var newMinDate = allowPast ? new Date('1999/10/25') : new Date();
+
+    console.log("Allow Past:", allowPast);
+    console.log("New Min Date:", newMinDate);
+
     if (allowPast == 'on') {
       $.datepicker.setDefaults({
-        minDate: new Date('1999/10/25'),
+        minDate: newMinDate,
         dateFormat: 'yy-mm-dd' // Ensures compatibility across browsers
       });
     } else {
       $.datepicker.setDefaults({
-        minDate: new Date(),
+        minDate: null,
         dateFormat: 'yy/mm/dd' // Ensures compatibility across browsers
       });
     }
+    $("#startDatePicker").datepicker("refresh");
   });
 
   // everything except Chrome
