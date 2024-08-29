@@ -97,26 +97,26 @@
                 <th scope="col">Event Name</th>
                 <th scope="col">Event Date</th>
                 <th nowrap scope="col">Start Time</th>
+                <th nowrap scope="col">End Time</th>
                 <th scope="col">Location</th>
                 <th scope="col">RSVP Status</th>
               </thead>
               {% for event in upcomingEvents %}
-              <tr class="
-                        {% if event.startDate == currentDateTime.date()%}
-                          {% if event.timeStart <= currentDateTime.time() %}
-                            {% if event.timeEnd <= currentDateTime.time() %}
-                              past-event
-                            {% else %}
-                              ongoing-event
-                            {% endif %}
-                          {% endif %}
-                        {% endif %}
-                        "
-              >
+
+              {% set eventStatus = 'future-event' %}
+              {% if event.isPastStart %}
+                {% set eventStatus = 'ongoing-event' %}
+              {% endif %}
+              {% if event.isPastEnd %}
+                {% set eventStatus = 'past-event' %}
+              {% endif %}
+
+              <tr class="{{ eventStatus }}">
                   <td>{{event.program.programName if event.program else '--'}}</td>
                   <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-                  <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                  <td nowrap>{{ '<i>In Progress</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
                   <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                  <td nowrap>{{event.timeEnd.strftime('%-I:%M %p')}}</td>
                   <td>{{event.location}}</td>
                   {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
                     <td>You have RSVP'd for this event.</td>
