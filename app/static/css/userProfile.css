@@ -2,8 +2,12 @@
   vertical-align: middle;
 }
 
-.ongoing-event{
+.past-event{
     opacity:0.6;
+}
+
+.ongoing-event{
+    background-color: #cce1ff;
 }
 
 dt { 
