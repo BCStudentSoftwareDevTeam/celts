@@ -309,7 +309,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     if program:
         events = events.where(Event.program == program)
 
-    events = events.order_by(Event.startDate, Event.name)
+    events = events.order_by(Event.startDate, Event.timeStart)
 
     events_list = []
     shown_recurring_event_list = []
