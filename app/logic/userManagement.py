@@ -6,6 +6,7 @@ from app.models.eventTemplate import EventTemplate
 from flask import g, session
 from app.logic.createLogs import createActivityLog
 from playhouse.shortcuts import model_to_dict
+from app.logic.fileHandler import FileHandler
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -38,20 +39,53 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
+def changeProgramInfo(programId, 
+                      attachment, 
+                      programName= None, 
+                      programDescription = None, 
+                      partner = None, 
+                      contactEmail=None, 
+                      contactName= None, 
+                      location = None,
+                      instagramUrl = None, 
+                      facebookUrl = None, 
+                      bereaUrl = None): 
+  
 
-def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
-    """Updates the program info with a new sender and email."""
-    program = Program.get_by_id(programId)
-    updatedProgram = Program.update({Program.programName:newProgramName, Program.contactEmail: newContactEmail, Program.contactName:newContactName, Program.defaultLocation:newLocation}).where(Program.id==programId)
+    """Updates the program info and logs that change"""
+    program = Program.get_by_id(programId) 
+    if attachment:
+        addFile: FileHandler = FileHandler(attachment, programId=programId)
+        addFile.saveFiles()
+    updatedProgram = Program.update(
+      { Program.programName:programName,
+        Program.programDescription: programDescription, 
+        Program.partner: partner, 
+        Program.contactEmail: contactEmail, 
+        Program.contactName: contactName,
+        Program.defaultLocation: location,
+        Program.coverImage: attachment,
+        Program.instagramUrl:instagramUrl,
+        Program.facebookUrl: facebookUrl,
+        Program.bereaUrl: bereaUrl
+      }
+        ).where(Program.id==programId)    
     updatedProgram.execute()
-    if newProgramName != program.programName:
-        createActivityLog(f"{program.programName} Program Name was changed to: {newProgramName}")
-    if newContactEmail != program.contactEmail:
-        createActivityLog(f"{program.programName} Contact Email was changed to: {newContactEmail}")
-    if newContactName != program.contactName:
-        createActivityLog(f"{program.programName} Contact Name was changed to: {newContactName}")
-    if newLocation != program.defaultLocation:
-        createActivityLog(f"{program.programName} Location was changed to: {newLocation}")
+  
+   
+    if programName != program.programName:
+        createActivityLog(f"{program.programName} Program Name was changed to: {programName}")
+    if programDescription != program.programDescription:
+        createActivityLog(f"{program.programName} Description was changed to: {programDescription}")
+    if partner != program.partner:
+        createActivityLog(f"{program.programName} Program Partner was changed to: {partner}")
+    if contactEmail != program.contactEmail:
+        createActivityLog(f"{program.programName} Contact Email was changed to: {contactEmail}")
+    if contactName != program.contactName:
+        createActivityLog(f"{program.programName} Contact Name was changed to: {contactName}")
+    if location != program.defaultLocation:
+        createActivityLog(f"{program.programName} Location was changed to: {location}")
+    
 
     return (f'Program email info updated')
 

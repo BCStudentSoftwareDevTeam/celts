@@ -1,0 +1,38 @@
+.modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* Removed incorrect translate */
+}
+
+.modal-dialog-scrollable {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+
+.info {
+  overflow-y: auto;
+  margin-top: -20px;
+}
+
+.cellSpacing {
+  margin: 5px;
+  padding: 10px;
+}
+
+.programHeader {
+  border-bottom: 1px solid black;
+  font-weight: bold;
+}
+
+.borderless {
+  border: 0;
+}
+
+.rightJustify {
+  position: absolute;
+  right: 10px; /* Added px to right */
+}
+
