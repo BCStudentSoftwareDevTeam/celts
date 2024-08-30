@@ -141,7 +141,7 @@ function calculateRecurringEventFrequency(){
     }
     else if (hasDuplicateListings){
       $('#textNotifierPadding').addClass('pt-5');
-      $('.invalidFeedback').text("Two event listings cannot have the same event name, date, and time");
+      $('.invalidFeedback').text("Event listings cannot have the same event name, date, and time");
       $('.invalidFeedback').css('display', 'block');  
       $('.invalidFeedback').on('animationend', function() {
         $('.invalidFeedback').css('display', 'none');
