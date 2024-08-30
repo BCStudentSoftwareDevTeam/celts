@@ -2,7 +2,7 @@
 {% extends "base.html"%}
 {% block scripts %}
   {{super()}}
-  <script src="/static/js/slcManagement.js"></script>
+  <script type="module" src="/static/js/slcManagement.js"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -18,9 +18,9 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th scope="col">Courses</th>
+        <th scope="col">Course</th>
         <th scope="col">Created By</th>
-        <th scope="col">Faculty</th>
+        <th scope="col">Instructor(s)</th>
         <th scope="col">Term</th>
         <th scope="col">Status</th>
         <th scope="col">Action</th>
@@ -29,7 +29,7 @@
     <tbody>
       {% for course in courseDict %}
         <tr>
-          <td id="name-{{courseDict[course]['id']}}">{{courseDict[course]['name']}}</td>
+          <td id="name-{{ courseDict[course]['id'] }}">{{courseDict[course]['courseDisplayName']}}</td>
           <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
           <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
           <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td>

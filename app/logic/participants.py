@@ -79,7 +79,7 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-        if event.isPast:
+        if event.isPastStart:
             if not volunteerExists:
                 # We duplicate these two lines in addBnumberAsParticipant
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -127,7 +127,7 @@ def getEventParticipants(event):
                                          .join(User)
                                          .where(EventParticipant.event == event))
 
-    return {p.user: p.hoursEarned for p in eventParticipants}
+    return [p for p in eventParticipants]
 
 def getParticipationStatusForTrainings(program, userList, term):
     """
@@ -148,7 +148,7 @@ def getParticipationStatusForTrainings(program, userList, term):
     trainingData = {}
     for training in programTrainings:
         try:
-            if training.isPast:
+            if training.isPastStart:
                 trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
             else:  # The training has yet to happen
                 trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
@@ -161,3 +161,33 @@ def getParticipationStatusForTrainings(program, userList, term):
             userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
 
     return userParticipationStatus
+
+def sortParticipantsByStatus(event):
+    """
+    Takes in an event object, queries all participants, and then filters those
+    participants by their attendee status.
+
+    return: a list of participants who didn't attend, a list of participants who are waitlisted,
+    a list of participants who attended, and a list of all participants who have some status for the 
+    event.
+    """
+    eventParticipants = getEventParticipants(event)
+
+    # get all RSVPs for event and filter out those that did not attend into separate list
+    eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventParticipants]
+
+    if event.isPastStart:
+        eventVolunteerData = eventParticipants
+        
+        # if the event date has passed disregard the waitlist
+        eventWaitlistData = []
+    else:
+        # if rsvp is required for the event, grab all volunteers that are in the waitlist
+        eventWaitlistData = [volunteer for volunteer in (eventParticipants + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+        
+        # put the rest of the users that are not on the waitlist into the volunteer data
+        eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
+        eventNonAttendedData = []
+    
+    return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import date
-from peewee import IntegrityError
+from peewee import IntegrityError, SQL, fn
 
 import xlsxwriter
 
@@ -8,6 +8,7 @@ from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.logic.createLogs import createRsvpLog
 
 def makeBonnerXls():
     """
@@ -56,23 +57,37 @@ def getBonnerCohorts(limit=None, currentYear=date.today().year):
         Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for
         intermediate years, or the last 5 years if there are no older records.
     """
-    years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
+    bonnerCohorts = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
-    defaultStart = currentYear-4
-    firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
+    firstYear = currentYear - 4 if not bonnerCohorts else min(currentYear - 4, bonnerCohorts[0].year)
+    lastYear = currentYear if not bonnerCohorts else max(currentYear, bonnerCohorts[-1].year)
 
-    cohorts = { year: [] for year in range(firstYear, currentYear+1) }
-    for cohort in years:
+
+    cohorts = { year: [] for year in range(firstYear, lastYear + 1) }
+    for cohort in bonnerCohorts:
         cohorts[cohort.year].append(cohort.user)
 
-    # slice off the last n elements
+    # slice off cohorts that go over our limit starting with the earliest
     if limit:
-        cohorts = dict(list(cohorts.items())[-limit:])
+        cohorts = dict(sorted(list(cohorts.items()), key=lambda e: e[0], reverse=True)[:limit])
 
     return cohorts
+
+
 
 def rsvpForBonnerCohort(year, event):
     """
     Adds an EventRsvp record to the given event for each user in the given Bonner year.
     """
-    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).on_conflict(action='IGNORE').execute()
+    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()'))
+                                      .where(BonnerCohort.year == year),
+                                      [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    
+def addBonnerCohortToRsvpLog(year, event):
+    """ This method adds the table information in the RSVP Log page"""
+    bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
+                                    .join(User, on=(User.username == BonnerCohort.user))
+                                    .where(BonnerCohort.year == year))
+    for bonner in bonnerCohort:
+        fullName = bonner.fullName
+        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")

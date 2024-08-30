@@ -19,10 +19,13 @@ class Event(baseModel):
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
+    multipleOfferingId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
     isCanceled = BooleanField(default=False)
+    deletionDate = DateTimeField(null=True)
+    deletedBy = TextField(null=True)
 
     _spCache = "Empty"
 
@@ -30,12 +33,20 @@ class Event(baseModel):
         return f"{self.id}: {self.description}"
 
     @property
+    def isDeleted(self):
+        return self.deletionDate is not None
+
+    @property
     def noProgram(self):
         return not self.program_id
 
     @property
-    def isPast(self):
-        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)
+    def isPastStart(self):
+        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)  
+
+    @property
+    def isPastEnd(self):
+        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd) 
 
     @property
     def isRecurring(self):
@@ -47,6 +58,10 @@ class Event(baseModel):
         return firstRecurringEvent.id == self.id
 
     @property
+    def isMultipleOffering(self):
+        return bool(self.multipleOfferingId)
+    
+    @property
     def relativeTime(self):
         relativeTime = datetime.combine(self.startDate, self.timeStart) - datetime.now()
 
@@ -54,7 +69,7 @@ class Event(baseModel):
         minutesFromNow = secondsFromNow // 60
         hoursFromNow = minutesFromNow // 60
         daysFromNow = relativeTime.days
-        if self.isPast:
+        if self.isPastStart:
             return ""
         elif (daysFromNow):
             return f"{daysFromNow} day" + ("s" if daysFromNow > 1 else "")

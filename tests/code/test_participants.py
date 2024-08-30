@@ -1,6 +1,6 @@
 from pprint import isrecursive
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from peewee import IntegrityError, DoesNotExist
 from app import app
 from flask import g
@@ -13,8 +13,9 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
 from app.models.eventRsvp import EventRsvp
+
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -148,23 +149,25 @@ def test_addPersonToEvent():
 
 @pytest.mark.integration
 def test_updateEventParticipants():
-    # tests if the volunteer table gets succesfully updated
-    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
-    volunteerTableUpdate = updateEventParticipants(participantData)
-    assert volunteerTableUpdate == True
+    with mainDB.atomic() as transaction:
+        # tests if the volunteer table gets succesfully updated
+        participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
+        volunteerTableUpdate = updateEventParticipants(participantData)
+        assert volunteerTableUpdate == True
 
-    # tests if user does not exist in the database
-    participantData = ImmutableMultiDict({'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username': 'jarjug'})
-    volunteerTableUpdate = updateEventParticipants(participantData)
-    assert volunteerTableUpdate == False
+        # tests if user does not exist in the database
+        participantData = ImmutableMultiDict({'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username': 'jarjug'})
+        volunteerTableUpdate = updateEventParticipants(participantData)
+        assert volunteerTableUpdate == False
 
-    # tests for the case when the checkbox is not checked (user is not present)
-    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'event':3, 'username': 'agliullovak'})
-    volunteerTableUpdate = updateEventParticipants(participantData)
-    assert volunteerTableUpdate == True
+        # tests for the case when the checkbox is not checked (user is not present)
+        participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'event':3, 'username': 'agliullovak'})
+        volunteerTableUpdate = updateEventParticipants(participantData)
+        assert volunteerTableUpdate == True
 
-    #Undo the above test changes
-    participantData = ImmutableMultiDict({'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
+        #Undo the above test changes
+        participantData = ImmutableMultiDict({'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_trainedParticipants():
@@ -298,7 +301,7 @@ def test_unattendedRequiredEvents():
         unattendedEvents = unattendedRequiredEvents(program, user)
         assert len(unattendedEvents) == 0
 
-        mainDB.rollback()
+        transaction.rollback()
 
     # test where all required events are attended
     user = 'khatts'
@@ -352,17 +355,18 @@ def test_addBnumberAsParticipant():
 
             EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
             EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
-        mainDB.rollback()
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getEventParticipants():
     event = Event.get_by_id(1)
 
     khatts = User.get_by_id('khatts')
-
-    eventParticipantsDict = getEventParticipants(event)
-    assert khatts in eventParticipantsDict
-    assert eventParticipantsDict[khatts] == 2
+    khatts_participant = EventParticipant.get(event=event, user=khatts)
+    eventParticipants = getEventParticipants(event)
+    assert khatts_participant in eventParticipants
+    khatts_index = eventParticipants.index(khatts_participant)
+    assert eventParticipants[khatts_index].hoursEarned == 2
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():
@@ -410,13 +414,15 @@ def test_getParticipationStatusForTrainings():
 
         # If the user "attended" the training, assert their participated status == 1, otherwise, assert participated status == 0
         # only make the user a participant on even iterations
+        briansParticipatedEvents = []
         for counter, training in enumerate(listOfProgramTrainings):
             if (counter % 2) == 0:
                 EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
+                briansParticipatedEvents.append(training)
 
         programTrainings = getParticipationStatusForTrainings(Program.get_by_id(2), [User.get_by_id("ramsayb2")], currentTerm)
         for counter, (training, attended) in enumerate(programTrainings['ramsayb2']):
-            if (counter % 2) == 0:
+            if training in briansParticipatedEvents:
                 assert attended == 1
             else:
                 assert attended == 0
@@ -435,6 +441,7 @@ def test_getParticipationStatusForTrainings():
                                  isSummer = False,
                                  isCurrentTerm = False,
                                  termOrder = f"{futureYear}-1")
+        
         testingEvent = Event.create(name = "Testing delete event",
                                     term = futureTerm,
                                     description= "This Event is Created to be Deleted.",
@@ -457,3 +464,73 @@ def test_getParticipationStatusForTrainings():
         for training, attended in programTrainings['neillz']:
             assert attended == 0
         transaction.rollback()
+
+@pytest.mark.integration
+def test_sortParticipantsByStatus():
+    """
+    Test the sorting of event participants into the 
+    non attended, waitlist, and attended groups.
+    """
+    with mainDB.atomic() as transaction:  
+        testingEvent = Event.create(name = "Test Sorting Participant Event",
+                                    term = 2,
+                                    description = "Test Sorting Participant Event.",
+                                    timeStart = time(2, 2, 2),
+                                    timeEnd = "06:00:00",
+                                    location = "The Sun",
+                                    isTraining = False,
+                                    startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
+                                    program = 3)
+
+        EventParticipant.create(user = "neillz", event = testingEvent)
+        EventParticipant.create(user = "khatts", event = testingEvent)
+        EventParticipant.create(user = "ayisie", event = testingEvent)
+        
+        EventRsvp.create(event = testingEvent, user = "partont")
+
+        # get event participants for the event
+        partontRsvp = EventRsvp.get(user = "partont", event = testingEvent)
+
+        neillzParticipant = EventParticipant.get(user = "neillz", event = testingEvent)
+        khattsParticipant = EventParticipant.get(user = "khatts", event = testingEvent)
+        ayisieParticipant = EventParticipant.get(user = "ayisie", event = testingEvent)
+        
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingEvent)
+        assert eventNonAttendedData == [partontRsvp] 
+        assert eventWaitlistData == []
+        assert eventVolunteerData == [neillzParticipant, khattsParticipant, ayisieParticipant]
+        assert eventParticipants == getEventParticipants(testingEvent)
+
+        transaction.rollback()
+
+        # test a upcoming event
+
+        testFutureEvent = Event.create(name = "Test Sorting Participant Event",
+                                            term = 2,
+                                            description = "Test Sorting Participant Event.",
+                                            timeStart = time(2, 2, 2),
+                                            timeEnd = "06:00:00",
+                                            location = "The Sun",
+                                            isTraining = False,
+                                            startDate = datetime.strptime("2030-08-02", "%Y-%m-%d"),
+                                            program = 3,
+                                            isRsvpRequired = True,
+                                            rsvpLimit = 2)
+
+        EventRsvp.create(user = "agliullovak", event = testFutureEvent)
+        EventRsvp.create(user = "mupotsal", event = testFutureEvent)
+        EventRsvp.create(user = "ayisie", event = testFutureEvent, rsvpWaitlist = True)
+
+        agliullovakRsvp = EventRsvp.get(user = "agliullovak", event = testFutureEvent)
+        mupotsalRsvp = EventRsvp.get(user = "mupotsal", event = testFutureEvent)
+        ayisieRsvp = EventRsvp.get(user = "ayisie", event = testFutureEvent)
+
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testFutureEvent)
+        assert eventNonAttendedData == []
+        assert eventWaitlistData == [ayisieRsvp]
+        assert eventVolunteerData == [agliullovakRsvp, mupotsalRsvp]
+        assert eventParticipants == []
+           
+        transaction.rollback()
+
+  

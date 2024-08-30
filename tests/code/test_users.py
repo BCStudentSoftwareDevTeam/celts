@@ -32,6 +32,7 @@ def test_user_model():
     assert not user.isAdmin
     assert user.fullName == "Tyler Parton"
 
+
 @pytest.mark.integration
 def test_isEligibleForProgram():
 
@@ -282,8 +283,8 @@ def test_getStudentManagerForEvent():
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
-
+        "isCeltsStudentStaff": False,
+        "cpoNumber": "1400",  
         },
         # This user will be a program manager
         {
@@ -296,9 +297,11 @@ def test_getStudentManagerForEvent():
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
+        "cpoNumber": "1500", 
         }
         ]
+
 
         # Insert new rows into User table
         User.insert_many(testUserData).on_conflict_replace().execute()
@@ -317,6 +320,8 @@ def test_getStudentManagerForEvent():
         assert student.isProgramManagerForEvent(test_event) == False
 
         transaction.rollback()
+
+
 
 @pytest.mark.integration
 def test_getUserBGCheckHistory():
@@ -418,4 +423,4 @@ def test_updateDietInfo():
         newContent = [list.dietRestriction for list in newDiet]
         assert newContent == ["Beef"]
 
-    transaction.rollback()
+        transaction.rollback()

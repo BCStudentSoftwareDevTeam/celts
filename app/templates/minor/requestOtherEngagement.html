@@ -1,0 +1,141 @@
+{% set title = "Request Other Engagement" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>  
+    <script type="module" src="/static/js/displayFilesMacro.js"></script>
+    <script type="module" src="/static/js/requestOtherEngagement.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{{request.path}}" method="POST">
+  <div class='row'>
+      <div class="container text-center">
+        <div class='form-group mb-4'>
+          <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
+          <input type="hidden" value="{{user}}" name="user"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputTerm"> <strong>Term</strong> </label>
+        <select class="form-select" name="term" id="inputTerm" required>
+          {% for term in terms %}
+            <option value="{{term}}">{{term.description}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <br><br><br><br>
+
+      <div class="from-group">
+        <label class="form-label" for="experienceName"> <strong>Experience Title</strong> </label>
+        <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required/>
+      </div>
+
+      <br> <br> <br> <br>
+
+      <div class="form-group">
+        <br>
+        <h4> Company/Organization Information </h4>
+        <hr>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="companyOrOrg"> <strong>Name</strong> </label>
+        <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="company"/>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label class="form-label" for="companyAddress"> <strong>Address</strong> </label>
+        <input class="form-control" id="companyAddress" placeholder="Company or organization's physical address" name="companyAddress"/>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="form-group col-6">
+          <label class="form-label" for="companyPhone"> <strong>Phone Number</strong> </label>
+          <input class="form-control phone-input" id="companyPhone" placeholder="Company or organization's phone number" name="companyPhone"/>
+        </div>
+
+        <div class="form-group col-6">
+          <label class="form-label" for="companyWebsite"> <strong>Website</strong> </label>
+          <input class="form-control" id="companyWebsite" placeholder="Company or organization's website" name="companyWebsite"/>
+        </div>
+      </div>
+
+      <br> 
+
+      <div class="form-group">
+        <br>
+        <h4> Supervisor Information </h4>
+        <hr>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-6">
+          <label class="form-label" for="supervisorPhone"> <strong>Phone Number</strong> </label>
+          <input class="form-control phone-input" id="supervisorPhone" placeholder="Supervisor's phone number" name="supervisorPhone"/>
+        </div>
+
+        <div class="form-group col-6">
+          <label class="form-label" for="supervisorEmail"> <strong>Email</strong> </label>
+          <input class="form-control email-input" id="supervisorEmail" placeholder="Supervisor's email" name="supervisorEmail"/>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+      <label class="mb-2" for="supervisorAttachment"> <strong>Upload Confirmation of Participation</strong> (From Supervisor) </label>
+        <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <br>
+        <h4> Experience Information </h4>
+        <hr>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="totalHours"><strong> Total Hours </strong></label>
+        <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours"/>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label class="form-label" for="totalWeeks"><strong> Weeks Worked </strong></label>
+        <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks"/>
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label class="form-label" for="experienceDescription"><strong> Experience Description </strong></label>
+        <textarea class="form-control" rows="5" cols="72" id="experienceDescription" type="text" placeholder="Please describe your experience" name="description" required></textarea>
+        <br>
+      </div>
+
+      {% if filepaths %}
+        <div class="form-group col-md-4 mb-4">
+          {% from 'displayFilesMacro.html' import displayFiles %}
+          {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
+          {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+        </div>
+      {% endif %}
+
+      <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+  </div>
+</form>
+
+{% endblock %}

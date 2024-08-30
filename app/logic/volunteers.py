@@ -1,11 +1,12 @@
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createActivityLog
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -53,23 +54,6 @@ def updateEventParticipants(participantData):
             return False
     return True
 
-
-def addVolunteerToEventRsvp(user, volunteerEventID):
-    '''
-    Adds a volunteer to event rsvp table when a user rsvps and when they are
-    added through the track volunteer page by an admin.
-
-    param: user - a string containing username
-           volunteerEventID - id of the event the volunteer is being registered for
-    '''
-    try:
-        if not EventRsvp.get_or_none(user=user, event=volunteerEventID):
-            EventRsvp.create(user=user, event=volunteerEventID)
-        return True
-
-    except Exception as e:
-        return False
-
 def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
@@ -78,17 +62,17 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     today = date.today()
     user = User.get_by_id(user)
     if bgStatus == '' and dateCompleted == '':
-        createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
+        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
     else:
         if not dateCompleted:
             dateCompleted = None
         update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
         if bgStatus == 'Submitted':
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
         elif bgStatus == 'Passed':
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:
-            createAdminLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
 def setProgramManager(username, program_id, action):
     '''

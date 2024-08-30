@@ -1,3 +1,4 @@
+import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
 import searchUser from './searchUser.js'
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -77,11 +78,19 @@ $(document).ready(function(e) {
   });
 
   $("#cancelButton").on("click", function() {
-      window.location.replace($(this).val());
+    var cancelButton = $(this)
+      $.ajax({
+        url: '/serviceLearning/canceledProposal',
+        method: 'POST',
+        data: {courseID : document.getElementById('courseID').value},
+        success: function(response) {
+            window.location.replace(cancelButton.val());
+        }
+      })
   });
 
   $("#saveContinue").on("click", function() {
-    
+
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -118,25 +127,30 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-  // -----------------------------------------
-      $("#instructorTable").on("click", "#remove", function() {
-        let closestRow =  $(this).closest("tr")
-        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
-        closestRow.remove();
-      });
-      $("#courseInstructor").on('input', function() {
-          searchUser("courseInstructor", createNewRow, true, null, "instructor");
-      });
+  $("#instructorTable").on("click", ".removeButton", function() {
+    let closestRow = $(this).closest("tr");
+    let username = closestRow.data('username');
 
-      // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-      $('#instructorTable tr').each(function(){
-        var username = getRowUsername(this)
-        var edit = "#editButton-" + username
-        var input = "#inputPhoneNumber-" + username
-        if (username){
-          setupPhoneNumber(edit, input)
-        }
-      })
+    // Check if the username is not empty or undefined
+    if (username) {
+        $("#instructorTableNames input[value='" + username + "']").remove();
+        closestRow.remove();
+    }
+});
+
+    $("#courseInstructor").on('input', function() {
+        searchUser("courseInstructor", createNewRow, true, null, "instructor");
+    });
+
+    // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+    $('#instructorTable tr').each(function(){
+      var username = getRowUsername(this)
+      var edit = "#editButton-" + username
+      var input = "#inputPhoneNumber-" + username
+      if (username){
+        setupPhoneNumber(edit, input)
+      }
+    })
   }
 })
 
@@ -253,13 +267,13 @@ function showTab(currentTab) {
 
 function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
+    var formData = $("form").serialize()
+    var instructorData = $.param(getCourseInstructors())
 
-    var formdata = $("form").serialize()
-    var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: url,
         type: "POST",
-        data: formdata + "&" + instructordata,
+        data: formData + "&" + instructorData,
         success: successCallback,
         error: function(request, status, error) {
          msgFlash("Error saving changes!", "danger")
@@ -304,64 +318,8 @@ function validateForm() {
   return valid;
 };
 
-// Instructor manipulation functions
-// -------------------------------------
-//
-
-function getRowUsername(element) {
-    return $(element).closest("tr").data("username")
-}
-
-function createNewRow(selectedInstructor) {
-  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
-  let username = selectedInstructor["username"];
-  let phone = selectedInstructor["phoneNumber"];
-  let tableBody = $("#instructorTable").find("tbody");
-  if(tableBody.prop('outerHTML').includes(instructor)){
-    msgFlash("Instructor is already added.", "danger");
-    return;
-  }
-  // Create new table row and update necessary attributes
-  let lastRow = tableBody.find("tr:last");
-  let newRow = lastRow.clone();
-
-  let instructorName = newRow.find("td:eq(0) p")
-  instructorName.text(instructor);
-
-  let phoneInput = newRow.find("td:eq(0) input")
-  phoneInput.val(phone);
-  phoneInput.attr("id", "inputPhoneNumber-" +username);
-  $(phoneInput).inputmask('(999)-999-9999');
-
-  let removeButton = newRow.find("td:eq(1) button")
-  let editLink = newRow.find("td:eq(0) a")
-  editLink.attr("id", "editButton-" + username);
-
-  editLink.attr("data-username", username)
-  newRow.prop("hidden", false);
-  lastRow.after(newRow);
-
-  phoneInput.attr("data-value", phone)
-  var edit = "#editButton-" + username
-  var input = "#inputPhoneNumber-" + username
-  if (username){
-    setupPhoneNumber(edit, input)
-  }
-
-  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
-}
-
-function getCourseInstructors() {
-  // get usernames out of the table rows into an array
-  return $("#instructorTableNames input").map((i,el) => $(el).val())
-}
-
 function disableSyllabusUploadFile() {
   $("#fileUpload").prop("disabled", true);
-}
-
-function enableSyllabusUploadFile() {
-    $("#fileUpload").prop("disabled", false);
 }
 
 const textareas = $(".textarea");

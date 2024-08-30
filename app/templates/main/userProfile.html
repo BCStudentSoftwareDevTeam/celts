@@ -9,16 +9,36 @@
 
 {% block styles %}
   {{super()}}
-  <link rel="stylesheet" href="{{url_for('static', filename ='css/volunteerProfile.css') }}?u={{lastStaticUpdate}}">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
 
 {% endblock %}
 
 {% block app_content %}
+{% if volunteer.isStudent and not totalSustainedEngagements%}
+  <div class="float-end rounded d-none d-lg-block minorInfoBox">
+    <p for="expressInterest">Did you know we have a Civic and Community Engagement Minor? Click 
+      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+      for more information.
+    </p>
+    {% if g.current_user.isAdmin %}
+      <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
+    {% else %}
+      <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
+    {% endif %}
+      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
+  </div>
+{% endif %}
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+</div>
+<div class="row">
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
+    <div class="col-md-6 col-lg-3" style="display: flex;">
+      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> &nbsp;
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -27,15 +47,21 @@
     {% if volunteer.classLevel -%}
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
+    {% if volunteer.cpoNumber %}
+      <div>
+      {{volunteer.cpoNumber}} 
+    </div>
+    {% else %}
+      <div>
+    </div>
+    {%endif%}
   </div>
+      
   <div class="row pb-2 pe-0">
-    <div class="col-md-6 col-lg-3">
-      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> &nbsp;
+    
     <div class="col"></div>
     <div class="col-auto pe-0 ">
-      <select data-username="{{volunteer.username}}" id="actions" class=form-select align="right">
+      <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
         <option value="" selected disabled hidden>Choose an Action</option>
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
@@ -51,11 +77,8 @@
       </select>
     </div>
   </div>
-  
 </div>
 <div class="accordion" id="userProfile">
-
-
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -74,15 +97,26 @@
                 <th scope="col">Event Name</th>
                 <th scope="col">Event Date</th>
                 <th nowrap scope="col">Start Time</th>
+                <th nowrap scope="col">End Time</th>
                 <th scope="col">Location</th>
                 <th scope="col">RSVP Status</th>
               </thead>
               {% for event in upcomingEvents %}
-                <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
+
+              {% set eventStatus = 'future-event' %}
+              {% if event.isPastStart %}
+                {% set eventStatus = 'ongoing-event' %}
+              {% endif %}
+              {% if event.isPastEnd %}
+                {% set eventStatus = 'past-event' %}
+              {% endif %}
+
+              <tr class="{{ eventStatus }}">
                   <td>{{event.program.programName if event.program else '--'}}</td>
                   <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-                  <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                  <td nowrap>{{ '<i>In Progress</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
                   <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                  <td nowrap>{{event.timeEnd.strftime('%-I:%M %p')}}</td>
                   <td>{{event.location}}</td>
                   {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
                     <td>You have RSVP'd for this event.</td>
@@ -176,7 +210,7 @@
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                   <td>
                     {% set hasCompletedAllTrainings = row.completedTraining %}
-                    <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
+                    <i class="bi bi-{{'check' if hasCompletedAllTrainings or not trainingList else 'x'}}-lg"></i> &nbsp&nbsp
                     <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
