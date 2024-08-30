@@ -160,11 +160,16 @@ function reviewCourses(courseID) {
       success: function(modal_html) {
         $("#review-modal").html(modal_html)
         $("#proposal_view").modal('show')
+
+        // once the modal has rendered in we can add the handlers to give the approve/unapprove
+        // buttons functionality
+        $("#unapproveButton").on("click", () => unapproveProposal($("#unapproveButton")))
+        $("#approveButton").on("click", () => approveProposal($("#approveButton")))
       }
     })
 }
 
-function approveProposal(el){
+function approveProposal(el) {
     let courseID = $(el).data("id")
     $.ajax({
       url: '/serviceLearning/approveCourse',
@@ -176,7 +181,7 @@ function approveProposal(el){
     })
 }
 
-function unapproveProposal(el){
+function unapproveProposal(el) {
     let courseID = $(el).data("id")
     $.ajax({
       url: '/serviceLearning/unapproveCourse',
