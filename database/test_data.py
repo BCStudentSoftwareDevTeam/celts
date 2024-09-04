@@ -229,7 +229,6 @@ users = [
         "minorInterest": 0,
     },
 ]
-
 User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
@@ -823,6 +822,7 @@ events = [
         "program": 9
     },
 ]
+
 Event.insert_many(events).on_conflict_replace().execute()
 
 notes = [
