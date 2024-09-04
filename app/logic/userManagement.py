@@ -53,7 +53,7 @@ def changeProgramInfo(programId,
   
 
     """Updates the program info and logs that change"""
-    program = Program.get_by_id(programId) 
+    program = Program.get_by_id(programId)
     if attachment:
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
@@ -64,7 +64,6 @@ def changeProgramInfo(programId,
         Program.contactEmail: contactEmail, 
         Program.contactName: contactName,
         Program.defaultLocation: location,
-        Program.coverImage: attachment,
         Program.instagramUrl:instagramUrl,
         Program.facebookUrl: facebookUrl,
         Program.bereaUrl: bereaUrl
