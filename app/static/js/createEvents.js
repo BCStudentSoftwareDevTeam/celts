@@ -108,8 +108,7 @@ function calculateRecurringEventFrequency(){
       let eventName = eventNameInputs[i].value
       let date = datePickerInputs[i].value.trim()
       let startTime = startTimeInputs[i].value
-      let endTime = endTimeInputs[i].value
-      let eventListing = JSON.stringify([eventName, date, startTime, endTime])
+      let eventListing = JSON.stringify([eventName, date, startTime])
 
       if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
         hasDuplicateListings = true
@@ -141,7 +140,7 @@ function calculateRecurringEventFrequency(){
     }
     else if (hasDuplicateListings){
       $('#textNotifierPadding').addClass('pt-5');
-      $('.invalidFeedback').text("Event listings cannot have the same event name, date, and time");
+      $('.invalidFeedback').text("Event listings cannot have the same event name, date, and start time");
       $('.invalidFeedback').css('display', 'block');  
       $('.invalidFeedback').on('animationend', function() {
         $('.invalidFeedback').css('display', 'none');
