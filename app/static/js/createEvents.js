@@ -323,19 +323,10 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   $("#allowPastStart").click(function() {
-    var allowPast = $("#allowPastStart:checked").val()
-    if (allowPast == 'on') {
-      $.datepicker.setDefaults({
-        minDate: new Date('1999/10/25'),
-        dateFormat: 'yy-mm-dd' // Ensures compatibility across browsers
-      });
-    } else {
-      $.datepicker.setDefaults({
-        minDate: new Date(),
-        dateFormat: 'yy/mm/dd' // Ensures compatibility across browsers
-      });
-    }
-  });
+    var minDate = $("#allowPastStart:checked").val() ? new Date('1999/10/25') : new Date()
+    $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+    $("#startDatePicker-main").datepicker("option", "dateFormat", "yy/mm/dd")
+    })
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
