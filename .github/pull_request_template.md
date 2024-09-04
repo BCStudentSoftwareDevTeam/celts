@@ -1,6 +1,6 @@
 ## Issue Description
 
-Fixes issue #add issue number
+Fixes #add issue number
 - Add issue description
 
 ## Changes
