@@ -73,7 +73,7 @@ def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/template_selector.html",
+        return render_template("/events/templateSelector.html",
                                 programs=allprograms,
                                 celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)

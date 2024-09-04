@@ -96,7 +96,7 @@ def events(selectedTerm, activeTab, programID):
     # Fetch toggle state from session
     toggle_state = session.get('toggleState', 'unchecked')
 
-    return render_template("/events/event_list.html",
+    return render_template("/events/eventList.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
