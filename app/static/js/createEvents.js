@@ -324,9 +324,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $("#allowPastStart").click(function() {
     var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
-      $("#startDatePicker-main").datepicker("option", "minDate", minDate)
-      $("#startDatePicker-main").datepicker("option", "dateFormat", "mm/dd/yy")
-    })
+    $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+  })
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
