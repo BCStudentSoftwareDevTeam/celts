@@ -20,7 +20,7 @@
 {% extends "base.html" %}
 {% else %}
   {% set page_title = eventData.name %}
-  {% extends "eventNav.html"%}
+  {% extends "events/eventNav.html"%}
 {% endif %}
 
 {% set eventPast = event.isPastEnd if not isNewEvent else False %}
