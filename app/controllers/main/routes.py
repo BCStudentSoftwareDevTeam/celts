@@ -3,7 +3,7 @@ import datetime
 from peewee import JOIN
 from http import cookies
 from playhouse.shortcuts import model_to_dict
-from flask import request, render_template, g, abort, flash, redirect, url_for, make_response, session
+from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
 
 from app.controllers.main import main_bp
 from app import app
@@ -82,7 +82,7 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
+    term: Term = Term.get_by_id(currentTerm) 
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
@@ -93,9 +93,43 @@ def events(selectedTerm, activeTab, programID):
     
     managersProgramDict = getManagerProgramDict(g.current_user)
 
-    # Fetch toggle state from session
-    toggle_state = session.get('toggleState', 'unchecked')
+    # Fetch toggle state from session    
+    toggleState = request.args.get('toggleState', 'unchecked')
 
+    # compile all student led events into one list
+    studentEvents = []
+    for studentEvent in studentLedEvents.values():
+        studentEvents += studentEvent # add all contents of studentEvent to the studentEvents list
+
+    # Get the count of all term events for each category to display in the event list page.
+    studentLedEventsCount: int = len(studentEvents)
+    trainingEventsCount: int = len(trainingEvents)
+    bonnerEventsCount: int = len(bonnerEvents)
+    otherEventsCount: int = len(otherEvents)
+
+    # gets only upcoming events to display in indicators
+    if (toggleState == 'unchecked'):
+        studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
+        for event in trainingEvents:
+            if event.isPastEnd:
+                trainingEventsCount -= 1
+        for event in bonnerEvents:
+            if event.isPastEnd:
+                bonnerEventsCount -= 1
+        for event in otherEvents:
+            if event.isPastEnd:
+                otherEventsCount -= 1
+
+    # Handle ajax request for Event category header number notifiers and toggle
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            "studentLedEventsCount": studentLedEventsCount,
+            "trainingEventsCount": trainingEventsCount,
+            "bonnerEventsCount": bonnerEventsCount,
+            "otherEventsCount": otherEventsCount,
+            "toggleStatus": toggleState
+        })
+    
     return render_template("/events/event_list.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
@@ -111,17 +145,8 @@ def events(selectedTerm, activeTab, programID):
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
                             countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
-                            toggle_state = toggle_state
+                            toggleState = toggleState,
                             )
-
-@main_bp.route('/updateToggleState', methods=['POST'])
-def update_toggle_state():
-    toggle_state = request.form.get('toggleState')
-    
-    # Update session with toggle state
-    session['toggleState'] = toggle_state
-    
-    return "", 200
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):   
