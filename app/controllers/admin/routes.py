@@ -30,8 +30,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -83,7 +82,6 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    savedEventsList = []
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -117,25 +115,9 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         eventData.update(request.form.copy())
         if eventData.get('isMultipleOffering'):
-            multipleOfferingId = calculateNewMultipleOfferingId()
-
-            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
-            for event in multipleOfferingData:
-                multipleOfferingDict = eventData.copy()
-                multipleOfferingDict.update({
-                    'name': event['eventName'],
-                    'startDate': event['eventDate'],
-                    'timeStart': event['startTime'],
-                    'timeEnd': event['endTime'],
-                    'multipleOfferingId': multipleOfferingId
-                    })
-                try:
-                    savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
-                    savedEventsList.append(savedEvents)
-                    
-                except Exception as e:
-                    print("Failed saving multi event", e)
-
+            succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
+            if not succeeded:
+                print(f"Failed to save offerings {failedSavedOfferings}")
         else:
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
@@ -157,6 +139,7 @@ def createEvent(templateid, programid):
                 if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
+                # TODO: Change the way that this logic works since we're no longer using a nested savedEventsList and are using savedEvents instead like the lines above
                 elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
@@ -452,7 +435,7 @@ def deleteAllRecurringEventsRoute(eventId):
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
-    recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
+    recurringEvents = getRecurringEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
 

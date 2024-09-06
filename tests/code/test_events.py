@@ -22,7 +22,7 @@ from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
+from app.logic.events import preprocessEventData, validateNewEventData, getRecurringEventsData
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
@@ -326,7 +326,7 @@ def test_calculateRecurringEventFrequency():
                  'endDate': parser.parse("03/9/2023")}
 
     # test correct response
-    returnedEvents = calculateRecurringEventFrequency(eventInfo)
+    returnedEvents = getRecurringEventsData(eventInfo)
     assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
     assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
     assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
@@ -334,13 +334,13 @@ def test_calculateRecurringEventFrequency():
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
+        returnedEvents = getRecurringEventsData(eventInfo)
 
     # test non-recurring
     eventInfo["startDate"] = '2021/06/07'
     eventInfo["endDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
+        returnedEvents = getRecurringEventsData(eventInfo)
 
 @pytest.mark.integration
 def test_attemptSaveEvent():
@@ -358,8 +358,8 @@ def test_attemptSaveEvent():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            success, errorMessage = attemptSaveEvent(eventInfo)
-        if not success:
+            savedEvents, errorMessage = attemptSaveEvent(eventInfo)
+        if not savedEvents:
             pytest.fail(f"Save failed: {errorMessage}")
 
         try:
