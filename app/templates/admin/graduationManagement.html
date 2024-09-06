@@ -1,0 +1,127 @@
+{% set title = "Graduation Management" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% block styles %}
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  {% endblock %}
+{% endblock %}
+{% block app_content %}
+<h1 class="text-center mb-5">Graduation Management</h1>
+
+<table class="display" id="gradStudentsTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th> 
+            <th>Graduated</th>
+            <th>Class Level</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in sustainedEngagement %}
+        <tr>
+            <td>
+                <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }} 
+                    {% if student.hasGraduated %} <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path d="M11.7 2.805a.75.75 0 0 1 .6 0A60.65 60.65 0 0 1 22.83 8.72a.75.75 0 0 1-.231 1.337 49.948 49.948 0 0 0-9.902 3.912l-.003.002c-.114.06-.227.119-.34.18a.75.75 0 0 1-.707 0A50.88 50.88 0 0 0 7.5 12.173v-.224c0-.131.067-.248.172-.311a54.615 54.615 0 0 1 4.653-2.52.75.75 0 0 0-.65-1.352 56.123 56.123 0 0 0-4.78 2.589 1.858 1.858 0 0 0-.859 1.228 49.803 49.803 0 0 0-4.634-1.527.75.75 0 0 1-.231-1.337A60.653 60.653 0 0 1 11.7 2.805Z" />
+  <path d="M13.06 15.473a48.45 48.45 0 0 1 7.666-3.282c.134 1.414.22 2.843.255 4.284a.75.75 0 0 1-.46.711 47.87 47.87 0 0 0-8.105 4.342.75.75 0 0 1-.832 0 47.87 47.87 0 0 0-8.104-4.342.75.75 0 0 1-.461-.71c.035-1.442.121-2.87.255-4.286.921.304 1.83.634 2.726.99v1.27a1.5 1.5 0 0 0-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.66a6.727 6.727 0 0 0 .551-1.607 1.5 1.5 0 0 0 .14-2.67v-.645a48.549 48.549 0 0 1 3.44 1.667 2.25 2.25 0 0 0 2.12 0Z" />
+  <path d="M4.462 19.462c.42-.419.753-.89 1-1.395.453.214.902.435 1.347.662a6.742 6.742 0 0 1-1.286 1.794.75.75 0 0 1-1.06-1.06Z"/>
+</svg>{% endif %}</a>
+            </td>
+            <td>
+                {% if student.engagementCount == 4 and student.hasSummer == 'Completed' %}
+                    <i class="fa-solid fa-circle"></i> 
+                {% else %}
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                {% endif %}
+                </td>
+            <td>{{ student.engagementCount }}/4 </td>
+            <td>{{ student.hasSummer }}</td>
+            <td>
+            {% if student.hasCommunityEngagementRequest %}
+                {# Placeholder for request other engagement #}
+                <a href="#">Yes</a>
+            {% else %}
+                No
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br> <br>
+<div class="row">
+    <div class="col">
+        <h2>Interested Students</h2>
+    </div>
+    <div class="col-auto">
+        <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addInterestedStudentsModal" style="margin:5px;">Add Students</a>
+        <button class="btn btn-primary" id="emailAllInterested">Email All</button>
+    </div>
+</div>
+<table class="display" id="interestedStudentsTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th> Remove Student</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in interestedStudentsList %}
+            <tr>
+                <td style = "width: 82%">
+                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
+                </td>
+                <td style="text-align:center">
+                  <button
+                    type="button"
+                    class="remove_interested_student btn btn-danger btn-sm"
+                    id = "{{student.username}}"
+                    aria-label="remove interested student">
+                    <span class="bi bi-trash h5 align-middle"></span>
+                  </button>
+                </td>
+            </tr>
+        {% endfor %}
+        <input id="interestedStudentEmails" hidden value="{{interestedStudentEmailString}}"/>
+    </tbody>
+</table>
+
+<!-- #################  Modal  ################# -->
+
+<div class="modal fade float-start" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{modalTitle}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+              <input type="input" id="addStudentInput" class="form-control" placeholder="Search" autocomplete="off"/>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm">
+              <i class="bi bi-search ms-0"></i>
+            </button>
+          </div>         
+        </div>
+        <form action = "{{ url_for('admin.manageMinor')}}" method = 'POST'>
+            <ul 
+              class="list-unstyled mx-3 mt-2" id= "interestedStudentList">
+            </ul>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+            <button id="addInterestedStudentsbtn" type="submit" class="btn btn-success" disabled>Add Students</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
