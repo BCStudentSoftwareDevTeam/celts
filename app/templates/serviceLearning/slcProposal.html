@@ -1,4 +1,9 @@
-<h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2>
+ <h2 class="text-center pt-4 pb-2">Proposal For Service-Learning Course</h2>
+
+      <h3 class="text-center pb-4">Status:
+          {{ courseStatus.status }}
+      </h3>
+
 <p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
 <div class="container-fluid">
   <div class="row">
@@ -198,5 +203,5 @@
       </div>
     </div>
   </div>
-  <input value={{course.id}} name="courseID" hidden/>
+  <input value={{course.id}} id="courseID" name="courseID" hidden/>
 </div>
