@@ -105,36 +105,42 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     If any data is not valid it will return a validation error.
 
     Returns:
-    (Whether all saves were successful, the list of saved offering objects, a list of the indecies of all failed offerings)
+    allSavesSucceeded : bool | Whether or not all offering saves were successful
+    savedOfferings : List[event] | A list of event objects holding all offerings that were saved. If allSavesSucceeded is False then this list will be empty.
+    failedSavedOfferings : dict | Maps the indicies of failed saved offerings to the associated validation error message. 
     """
     savedOfferings = []
-    failedSavedOfferingIndicies = []
+    failedSavedOfferings = {}
+    allSavesSucceeded = True
     
     # Creates a shared multipleOfferingId for all offerings to have
     multipleOfferingId = calculateNewMultipleOfferingId()
 
     # Create separate event data inheriting from the original eventData
     multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
-    for i, event in enumerate(multipleOfferingData):
-        multipleOfferingDict = eventData.copy()
-        multipleOfferingDict.update({
-            'name': event['eventName'],
-            'startDate': event['eventDate'],
-            'timeStart': event['startTime'],
-            'timeEnd': event['endTime'],
-            'multipleOfferingId': multipleOfferingId
-            })
-        # Try to save each offering
-        savedEvent, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
-        if validationErrorMessage:
-            failedSavedOfferingIndicies.append(i)
-            print(f"Failed saving multi event {i}:", validationErrorMessage)
-        else:
-            savedOfferings.append(savedEvent)
-            
-    succeeded = len(failedSavedOfferingIndicies) == 0
-    # TODO: We need to rollback right here from all saved offerings if any failed so we can refresh the page and highlight the ones that had been created.
-    return succeeded, savedOfferings, failedSavedOfferingIndicies
+    with mainDB.atomic() as transaction:
+        for i, event in enumerate(multipleOfferingData):
+            multipleOfferingDict = eventData.copy()
+            multipleOfferingDict.update({
+                'name': event['eventName'],
+                'startDate': event['eventDate'],
+                'timeStart': event['startTime'],
+                'timeEnd': event['endTime'],
+                'multipleOfferingId': multipleOfferingId
+                })
+            # Try to save each offering
+            savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
+            if validationErrorMessage:
+                failedSavedOfferings[i] = validationErrorMessage
+                allSavesSucceeded = False
+                print(f"Failed saving multi event {i}:", validationErrorMessage)
+            else:
+                savedEvent = savedEvents[0]
+                savedOfferings.append(savedEvent)
+        if not allSavesSucceeded:
+            savedOfferings = []
+            transaction.rollback()
+    return allSavesSucceeded, savedOfferings, failedSavedOfferings
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):

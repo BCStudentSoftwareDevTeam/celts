@@ -117,6 +117,7 @@ def createEvent(templateid, programid):
         if eventData.get('isMultipleOffering'):
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
             if not succeeded:
+                validationErrorMessage = sorted(failedSavedOfferings.items(), key=lambda e: e[0])[-1][1] # The last validation error message from the list of offerings if there are multiple
                 print(f"Failed to save offerings {failedSavedOfferings}")
         else:
             try:
@@ -139,15 +140,12 @@ def createEvent(templateid, programid):
                 if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
-                # TODO: Change the way that this logic works since we're no longer using a nested savedEventsList and are using savedEvents instead like the lines above
-                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
-                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
-                    
-                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
+                elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
+                    event_dates = [event_data.startDate.strftime('%m/%d/%Y') for event_data in savedEvents]
 
-                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
 
-                    if len(modifiedSavedEvents) > 1:
+                    if len(savedEvents) > 1:
                         #creates list of events created in a multiple series to display in the logs
                         event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
                         #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
