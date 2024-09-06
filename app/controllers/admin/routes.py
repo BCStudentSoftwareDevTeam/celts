@@ -473,13 +473,6 @@ def studentSearchPage():
         return render_template("/admin/searchStudentPage.html")
     abort(403)
 
-@admin_bp.route('/addParticipants', methods = ['GET'])
-def addParticipants():
-    '''Renders the page, will be removed once merged with full page'''
-
-    return render_template('addParticipants.html',
-                            title="Add Participants")
-
 @admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
 def activityLogs():
     if g.current_user.isCeltsAdmin:
