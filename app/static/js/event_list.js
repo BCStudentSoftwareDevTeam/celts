@@ -85,18 +85,11 @@ function updateIndicatorCounts(isChecked){
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
-      if (studentLedEventsCount > 0) {
-        $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`);
-      }
-      if (trainingEventsCount > 0) {
-        $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`);
-      }
-      if (bonnerEventsCount > 0) {
-        $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`);
-      }
-      if (otherEventsCount > 0) {
-        $("#otherEvents").html(`Other Events (${otherEventsCount})`);
-      }
+      // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
+      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student Led Service`)
+      trainingEventsCount > 0 ? $("#trainingEvents").html(`Training and Education (${trainingEventsCount})`) : $("#trainingEvents").html(`Training and Education`)
+      bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
+      otherEventsCount > 0 ? $("#otherEvents").html(`Other Events (${otherEventsCount})`) : $("#otherEvents").html(`Other Events`)
     },
     error: function(request, status, error) {
       console.log(status,error);
