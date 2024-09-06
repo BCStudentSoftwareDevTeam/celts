@@ -26,7 +26,6 @@
 {% set eventPast = event.isPastEnd if not isNewEvent else False %}
 {% set tabName = 'edit' %}
 
-
 {% block scripts %}
   {{super()}}
 <script type="module" src="/static/js/createEvents.js"></script>
@@ -452,6 +451,7 @@
     </div>
   </div>
 </form>
+{% endblock %}
 <!--multiple offering event modal-->
 <div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">

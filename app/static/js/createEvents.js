@@ -4,7 +4,8 @@ let pendingmultipleEvents = []
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
 function updateDate(obj) {
-  var selectedDate = $(obj).datepicker("getDate"); 
+  var selectedDate = $(obj).datepicker("getDate"); // No need for / for Firefox compatibility 
+
   var newMonth = selectedDate.getMonth();
   var newYear = selectedDate.getFullYear();
   var newDay = selectedDate.getDate();
@@ -88,8 +89,6 @@ function calculateRecurringEventFrequency(){
 
     for(let i = 0; i < startTimeInputs.length; i++){
       if(startTimeInputs[i].value >= endTimeInputs[i].value){
-        console.log(startTimeInputs[i]);
-        console.log(endTimeInputs[i]);
         $(startTimeInputs[i]).addClass('border-red');
         $(endTimeInputs[i]).addClass('border-red');
         timeCheck = true;
@@ -97,7 +96,6 @@ function calculateRecurringEventFrequency(){
         $(startTimeInputs[i]).removeClass('border-red');
         $(endTimeInputs[i]).removeClass('border-red');
       }
-      console.log(timeCheck);
     }
     if (isEmpty){
       $('#textNotifierPadding').addClass('pt-5');
@@ -136,7 +134,23 @@ function storeMultipleOfferingEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
+  // Initialize timepicker
+  $('.timepicker').timepicker({
+    timeFormat: 'h:mm p',
+    interval: 15,
+    minTime: '12:00am',
+    maxTime: '11:45pm',
+    defaultTime: '11:00am',
+    startTime: '8:00am',
+    dynamic: false,
+    dropdown: true,
+    scrollbar: true
+  });
 
+
+  // Update datepicker min and max dates on change
+  $(".startDatePicker, .endDatePicker").change(function () {
+    updateDate(this);
         entries.push({
             eventName: rowData[0],
             eventDate: rowData[1],
@@ -327,32 +341,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
   })
 
-  // everything except Chrome
-  if (navigator.userAgent.indexOf("Chrome") == -1) {
-    $('input.timepicker').timepicker({
-      timeFormat: 'hh:mm p',
-      scrollbar: true,
-      dropdown: true,
-      dynamic: true,
-      minTime: "08:00am",
-      maxTime: "10:00pm"
-    });
-    $(".timepicker").prop("type", "text");
-    $(".timeIcons").prop("hidden", false);
-
-    var formattedStartTime = format24to12HourTime($(".startTime").prop("defaultValue"));
-    var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
-    $(".startTime").val(formattedStartTime);
-    $(".endTime").val(formattedEndTime);
-  } else {
-    $(".timepicker").prop("type", "time");
-    $(".timeIcons").prop("hidden", true);
-  }
-
-  if ($(".datePicker").is("readonly")) {
-    $(".datePicker").datepicker("option", "disabled", true);
-  }
-
   $(".readonly").on('keydown paste', function (e) {
     if (e.keyCode != 9) // ignore tab
       e.preventDefault();
@@ -369,6 +357,27 @@ $(".startDatePicker, .endDatePicker").change(function () {
   $(".startDatePicker, .endDatePicker").change(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
       calculateRecurringEventFrequency();
+    }
+  })
+  // Time picker click events
+  $(".timeIcons").on("click", function(e) {
+    e.stopPropagation()
+
+
+    if ($(this).siblings(".timepicker").timepicker("closed")) {
+      $(this).siblings(".timepicker").timepicker("open"); 
+    }
+
+    else {
+      $(this).siblings(".timepicker").timepicker("close");
+    }
+  })
+  
+  $("#checkRSVP").click(function () {
+    if ($("input[name='isRsvpRequired']:checked").val() == 'on') {
+      $("#checkFood").prop('checked', true);
+    } else {
+      $("#checkFood").prop('disabled', false);
     }
   });
 
