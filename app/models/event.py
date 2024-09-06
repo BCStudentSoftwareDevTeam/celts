@@ -20,6 +20,8 @@ class Event(baseModel):
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
     multipleOfferingId = IntegerField(null=True)
+    seriesId = IntegerField(null=True)
+    isRepeating = BooleanField(default=False)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
