@@ -178,6 +178,22 @@ $(document).ready(function() {
       $("#checkBonners").prop('checked', true);
   }
 }
+
+// Initialize datepicker for multiple offering modal
+$(".multipleOfferingDatePicker").datepicker({
+  dateFormat: 'mm/dd/yy',
+  minDate: new Date(),
+  onSelect: function() {
+    $(this).focus();
+  }
+});
+
+$(document).on('click', '.input-group-text, .multipleOfferingDatePicker', function (e) {
+  // Prevent click from showing datepicker when it's not the datepicker or calendar icon
+  e.stopPropagation();
+  $(this).closest('.input-group').find('.multipleOfferingDatePicker').datepicker('show');
+});
+
 // Initialize datepicker with proper options
 $.datepicker.setDefaults({
   dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
