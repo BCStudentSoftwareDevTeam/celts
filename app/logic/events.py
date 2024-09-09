@@ -416,6 +416,15 @@ def calculateNewMultipleOfferingId():
         return multipleOfferingId + 1
     else:
         return 1
+    
+def calculateNewSeriesId():
+    """
+    Gets the max series ID to determine the ID for a new series.
+    """
+    maxSeriesId = Event.select(fn.MAX(Event.seriesId)).scalar()
+    if maxSeriesId:
+        return maxSeriesId + 1
+    return 1
 
 def getPreviousRecurringEventData(recurringId):
     """
