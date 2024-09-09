@@ -113,17 +113,18 @@ def createEvent(templateid, programid):
 
     # Try to save the form
     if request.method == "POST":
+        savedEvents = None
         eventData.update(request.form.copy())
         if eventData.get('isMultipleOffering'):
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
             if not succeeded:
-                validationErrorMessage = sorted(failedSavedOfferings.items(), key=lambda e: e[0])[-1][1] # The last validation error message from the list of offerings if there are multiple
+                validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
                 print(f"Failed to save offerings {failedSavedOfferings}")
         else:
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
-                    print("Failed saving regular event", e)
+                print("Failed saving regular event", e)
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")

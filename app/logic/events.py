@@ -105,13 +105,13 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     If any data is not valid it will return a validation error.
 
     Returns:
-    allSavesSucceeded : bool | Whether or not all offering saves were successful
-    savedOfferings : List[event] | A list of event objects holding all offerings that were saved. If allSavesSucceeded is False then this list will be empty.
-    failedSavedOfferings : dict | Maps the indicies of failed saved offerings to the associated validation error message. 
+    allSavesWereSuccessful : bool | Whether or not all offering saves were successful
+    savedOfferings : List[event] | A list of event objects holding all offerings that were saved. If allSavesWereSuccessful is False then this list will be empty.
+    failedSavedOfferings : List[(int, str), ...] | Tuples containing the indicies of failed saved offerings and the associated validation error message. 
     """
     savedOfferings = []
-    failedSavedOfferings = {}
-    allSavesSucceeded = True
+    failedSavedOfferings = []
+    allSavesWereSuccessful = True
     
     # Creates a shared multipleOfferingId for all offerings to have
     multipleOfferingId = calculateNewMultipleOfferingId()
@@ -131,16 +131,16 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
             if validationErrorMessage:
-                failedSavedOfferings[i] = validationErrorMessage
-                allSavesSucceeded = False
+                failedSavedOfferings.append((i, validationErrorMessage))
+                allSavesWereSuccessful = False
                 print(f"Failed saving multi event {i}:", validationErrorMessage)
             else:
                 savedEvent = savedEvents[0]
                 savedOfferings.append(savedEvent)
-        if not allSavesSucceeded:
+        if not allSavesWereSuccessful:
             savedOfferings = []
             transaction.rollback()
-    return allSavesSucceeded, savedOfferings, failedSavedOfferings
+    return allSavesWereSuccessful, savedOfferings, failedSavedOfferings
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
