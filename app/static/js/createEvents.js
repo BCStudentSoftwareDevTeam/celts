@@ -148,7 +148,8 @@ function calculateRecurringEventFrequency(){
       });
     }
     else {
-      storeMultipleOfferingEventAttributes();
+      saveOfferingsFromModal();
+      updateOfferingsTable();
       pendingmultipleEvents = [];
       $("#checkIsMultipleOffering").prop('checked', true);
       // Remove the modal and overlay from the DOM
@@ -158,33 +159,49 @@ function calculateRecurringEventFrequency(){
       msgFlash("Multiple time offering events saved!", "success");
     }
   });
-//build multi-event table
-function storeMultipleOfferingEventAttributes() {
-    let entries = [];
-    $(".extraSlots").children().each(function(index, element) {
-        let rowData = $.map($(element).find("input"), (el) => $(el).val());
 
-        entries.push({
-            eventName: rowData[0],
-            eventDate: rowData[1],
-            startTime: rowData[2],
-            endTime: rowData[3]
-        });
-    });
 
-    let entriesJson = JSON.stringify(entries);
-    $("#multipleOfferingDataId").val(entriesJson);
+// Save the offerings from the modal to the hidden input field
+function saveOfferingsFromModal() {
+  let offerings = [];
+  $(".extraSlots").children().each(function(index, element) {
+      let rowData = $.map($(element).find("input"), (el) => $(el).val());
+
+      offerings.push({
+          eventName: rowData[0],
+          eventDate: rowData[1],
+          startTime: rowData[2],
+          endTime: rowData[3]
+      });
+  });
+
+  let offeringsJson = JSON.stringify(offerings);
+  $("#multipleOfferingDataId").val(offeringsJson);
+}
+
+// Update the table of offerings with the offerings from the hidden input field
+function updateOfferingsTable() {
+  console.log("multiple offering data id is", $("#multipleOfferingDataId").val())
+  let offerings = JSON.parse($("#multipleOfferingDataId").val())
 
   var multipleOfferingTable = $("#multipleOfferingEventsTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
-  entries.forEach(function(entry){
+  offerings.forEach(function(offering){
     //fromat to 12hr time for display
-    var formattedEventDate = formatDate(entry.eventDate);
-    var startTime = format24to12HourTime(entry.startTime);
-    var endTime = format24to12HourTime(entry.endTime);
-    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
+    var formattedEventDate = formatDate(offering.eventDate);
+    var startTime = format24to12HourTime(offering.startTime);
+    var endTime = format24to12HourTime(offering.endTime);
+    multipleOfferingTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
+                                    "<td>" + offering.eventName + "</td>" +
+                                    "<td>" + formattedEventDate + "</td>" +
+                                    "<td>" + startTime + "</td>" +
+                                    "<td>" + endTime + "</td>" +
+                                  "</tr>"
+                                );
   });
-}  
+}
+
+
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
@@ -261,6 +278,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
       event.preventDefault();
     } 
   });
+
+  updateOfferingsTable();
   
   let modalOpenedByEditButton = false;
   

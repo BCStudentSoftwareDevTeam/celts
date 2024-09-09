@@ -117,7 +117,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     multipleOfferingId = calculateNewMultipleOfferingId()
 
     # Create separate event data inheriting from the original eventData
-    multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
+    multipleOfferingData = eventData.get('multipleOfferingData')
     with mainDB.atomic() as transaction:
         for i, event in enumerate(multipleOfferingData):
             multipleOfferingDict = eventData.copy()
@@ -140,6 +140,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
         if not allSavesWereSuccessful:
             savedOfferings = []
             transaction.rollback()
+
     return allSavesWereSuccessful, savedOfferings, failedSavedOfferings
 
 

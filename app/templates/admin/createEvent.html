@@ -222,7 +222,7 @@
         </table>
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
-      <input type="hidden" name="multipleOfferingData" value="hidden value here" id="multipleOfferingDataId">
+      <input type="hidden" name="multipleOfferingData" value="{{ eventData.multipleOfferingData if eventData.multipleOfferingData else [] | tojson }}" id="multipleOfferingDataId">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
