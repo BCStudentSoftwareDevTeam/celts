@@ -24,7 +24,7 @@ from app.models.note import Note
 
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
-from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
+from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
@@ -1017,56 +1017,6 @@ def test_getPreviousRecurringEventData():
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
         transaction.rollback()
-
-
-
-@pytest.mark.integration
-def test_getPreviousMultipleOfferingEventData():
-    with mainDB.atomic() as transaction:
-
-        testingEvent1 = Event.create(name = "Testing delete event",
-                                     term = 2,
-                                     description = "This Event is Created to be Deleted.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "No Where",
-                                     isRsvpRequired = 0,
-                                     isTraining = 0,
-                                     isService = 0,
-                                     startDate = "2022-12-12",
-                                     endDate = "2022-12-12",
-                                     multipleOfferingId = 3,
-                                     program = 9)
-        testingEvent2 = Event.create(name = "Testing delete event",
-                                     term = 2,
-                                     description = "This Event is Created to be Deleted.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "No Where",
-                                     isRsvpRequired = 0,
-                                     isTraining = 0,
-                                     isService = 0,
-                                     startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
-                                     multipleOfferingId = 3,
-                                     program = 9)
-
-        EventParticipant.create(user = User.get_by_id("neillz"),
-                                                      event = testingEvent1.id,
-                                                      hoursEarned = None)
-        EventParticipant.create(user = User.get_by_id("ramsayb2"),
-                                                      event = testingEvent1.id,
-                                                      hoursEarned = None)
-        EventParticipant.create(user = User.get_by_id("khatts"),
-                                                      event = testingEvent1.id,
-                                                      hoursEarned = None)
-
-        val = getPreviousMultipleOfferingEventData(testingEvent2.multipleOfferingId)
-        assert val[0].username == "neillz"
-        assert val[1].username == "ramsayb2"
-        assert val[2].username == "khatts"
-        transaction.rollback()
-
 
 @pytest.mark.integration
 def test_getEventRsvpCountsForTerm():

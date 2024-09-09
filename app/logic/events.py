@@ -417,6 +417,7 @@ def calculateNewMultipleOfferingId():
     else:
         return 1
     
+# RepeatingImplementation: Remove function above
 def calculateNewSeriesId():
     """
     Gets the max series ID to determine the ID for a new series.
@@ -436,14 +437,15 @@ def getPreviousRecurringEventData(recurringId):
                                    .where(Event.recurringId==recurringId))
     return previousEventVolunteers
 
-def getPreviousMultipleOfferingEventData(multipleOfferingId):
+# RepeatingImplementation: remove function above
+def getPreviousRepeatingEventData(seriesId):
     """
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
     """
     previousEventVolunteers = (User.select(User).distinct()
                                    .join(EventParticipant)
                                    .join(Event)
-                                   .where(Event.multipleOfferingId == multipleOfferingId))
+                                   .where(Event.seriesId==seriesId))
     return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
