@@ -68,6 +68,39 @@ def deleteEvent(eventId):
         Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
 
 
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWdeleteEvent(eventId):
+    """
+    Deletes an event, if it is a repeating event, rename all following events
+    to make sure there is no gap in weeks.
+    """
+    event = Event.get_or_none(Event.id == eventId)
+
+    if event:
+        if event.isRepeating:
+            seriesId = event.seriesId
+            repeatingEvents = list(Event.select().where(Event.seriesId==seriesId).order_by(Event.id)) # orders for tests
+            eventDeleted = False
+
+            # once the deleted event is detected, change all other names to the previous event's name
+            for repeatingEvent in repeatingEvents:
+                if eventDeleted:
+                    Event.update({Event.name:newEventName}).where(Event.id==repeatingEvent.id).execute()
+                    newEventName = repeatingEvent.name
+
+                if repeatingEvent == event:
+                    newEventName = repeatingEvent.name
+                    eventDeleted = True
+
+        program = event.program 
+
+        if program:
+            createActivityLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        else:
+            createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
+        Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
+
 def deleteEventAndAllFollowing(eventId):
         """
         Deletes a recurring event and all the recurring events after it.
@@ -80,6 +113,20 @@ def deleteEventAndAllFollowing(eventId):
                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
                 deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
                 Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+                return deletedEventList
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name           
+def NEWdeleteEventAndAllFollowing(eventId):
+        """
+        Deletes an event in the Series and all events after it
+        """
+        event = Event.get_or_none(Event.id == eventId)
+        if event:
+            if event.seriesId:
+                seriesId = event.seriesId
+                eventSeries = list(Event.select(Event.id).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)))
+                deletedEventList = [event.id for events in eventSeries]                
+                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)).execute()
                 return deletedEventList
 
 def deleteAllRecurringEvents(eventId):
@@ -95,7 +142,18 @@ def deleteAllRecurringEvents(eventId):
             eventId = allRecurringEvents[0].id
         return deleteEventAndAllFollowing(eventId)
         
-
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name    
+def NEWdeleteAllRecurringEvents(eventId):
+        """
+        Deletes all events in a Series
+        """
+        event = Event.get_or_none(Event.id == eventId)
+        if event:
+            if event.seriesId:
+                seriesId = event.seriesId
+            allSeriesEvents = list(Event.select(Event.id).where(Event.seriesId == seriesId).order_by(Event.startDate))
+            eventId = allSeriesEvents[0].id
+        return deleteEventAndAllFollowing(eventId)
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
@@ -199,6 +257,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
 
             eventRecords.append(eventRecord)
     return eventRecords
+
 
 def getStudentLedEvents(term):
     studentLedEvents = list(Event.select(Event, Program)
@@ -331,6 +390,46 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     return events_list
 
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWgetUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
+    """
+        Get the list of upcoming events that the user is interested in as long
+        as they are not banned from the program that the event is a part of.
+        :param user: a username or User object
+        :param asOf: The date to use when determining future and past events.
+                      Used in testing, defaults to the current timestamp.
+        :return: A list of Event objects
+    """
+
+    events =  (Event.select().distinct()
+                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program) & (ProgramBan.user == user)))
+                    .join(Interest, JOIN.LEFT_OUTER, on=(Event.program == Interest.program))
+                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                    .where(Event.deletionDate == None, Event.startDate >= asOf,
+                          (Interest.user == user) | (EventRsvp.user == user),
+                          ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
+
+    if program:
+        events = events.where(Event.program == program)
+
+    events = events.order_by(Event.startDate, Event.timeStart)
+
+    events_list = []
+    seriesId_list = []
+
+    # removes all events in series except for the next upcoming one
+    for event in events:
+        if event.seriesId:
+            if not event.isCanceled:
+                if event.seriesId not in seriesId_list:
+                    events_list.append(event)
+                    seriesId_list.append(event.seriesId)
+        else:
+            if not event.isCanceled:
+                events_list.append(event)
+
+    return events_list
+
 def getParticipatedEventsForUser(user):
     """
         Get all the events a user has participated in.
@@ -386,6 +485,49 @@ def validateNewEventData(data):
 
         for event in sameEventListCopy:
             if event.isCanceled or event.recurringId:   
+                sameEventList.remove(event)
+
+        try:
+            Term.get_by_id(data['term'])
+        except DoesNotExist as e:
+            return (False, f"Not a valid term: {data['term']}")
+        if sameEventList:
+            return (False, "This event already exists")
+        
+    data['valid'] = True
+    return (True, "All inputs are valid.")
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWvalidateNewEventData(data):
+    """
+        Confirm that the provided data is valid for an event.
+
+        Assumes the event data has been processed with `preprocessEventData`. NOT raw form data
+
+        Returns 3 values: (boolean success, the validation error message, the data object)
+    """
+
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating'], data['isSeries']]:
+        return (False, "Raw form data passed to validate method. Preprocess first.")
+
+    if data['isRepeating'] and data['endDate']  <  data['startDate']:
+        return (False, "Event start date is after event end date.")
+
+    if data['timeEnd'] <= data['timeStart']:
+        return (False, "Event end time must be after start time.")
+    
+    # Validation if we are inserting a new event
+    if 'id' not in data:
+
+        sameEventList = list((Event.select().where((Event.name == data['name']) &
+                                                   (Event.location == data['location']) &
+                                                   (Event.startDate == data['startDate']) &
+                                                   (Event.timeStart == data['timeStart'])).execute()))
+        
+        sameEventListCopy = sameEventList.copy()
+
+        for event in sameEventListCopy:
+            if event.isCanceled or event.seriesId:   
                 sameEventList.remove(event)
 
         try:
@@ -468,6 +610,27 @@ def calculateRecurringEventFrequency(event):
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
+# RepeatingImplementation: remove function above
+def calculateRepeatingEventFrequency(event):
+    """
+        Calculate the events to create based on a repating event start and end date. Takes a
+        dictionary of event data.
+
+        Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
+
+        Return a list of events to create from the event data.
+    """
+    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
+        raise Exception("startDate and endDate must be datetime.date objects.")
+
+    if event['endDate'] == event['startDate']:
+        raise Exception("This event is not a recurring event")
+    
+    return [ {'name': f"{event['name']} Week {counter+1}",
+              'date': event['startDate'] + timedelta(days=7*counter),
+              "week": counter+1}
+            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
+
 def preprocessEventData(eventData):
     """
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
@@ -499,6 +662,66 @@ def preprocessEventData(eventData):
     
     # If we aren't recurring, all of our events are single-day or mutliple offerings, which also have the same start and end date
     if not eventData['isRecurring']:
+        eventData['endDate'] = eventData['startDate']
+    
+    # Process terms
+    if 'term' in eventData:
+        try:
+            eventData['term'] = Term.get_by_id(eventData['term'])
+        except DoesNotExist:
+            eventData['term'] = ''
+    
+    # Process requirement
+    if 'certRequirement' in eventData:
+        try:
+            eventData['certRequirement'] = CertificationRequirement.get_by_id(eventData['certRequirement'])
+        except DoesNotExist:
+            eventData['certRequirement'] = ''
+    elif 'id' in eventData:
+        # look up requirement
+        match = RequirementMatch.get_or_none(event=eventData['id'])
+        if match:
+            eventData['certRequirement'] = match.requirement
+    if 'timeStart' in eventData:
+        eventData['timeStart'] = format24HourTime(eventData['timeStart'])
+
+    if 'timeEnd' in eventData:
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
+
+    return eventData
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWpreprocessEventData(eventData):
+    """
+        Ensures that the event data dictionary is consistent before it reaches the template or event logic.
+
+        - dates should exist and be date objects if there is a value
+        - checkboxes should be True or False
+        - if term is given, convert it to a model object
+        - times should exist be strings in 24 hour format example: 14:40
+        - Look up matching certification requirement if necessary
+    """
+    ## Process checkboxes
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isSeries', 'isAllVolunteerTraining']
+
+    for checkBox in eventCheckBoxes:
+        if checkBox not in eventData:
+            eventData[checkBox] = False
+        else:
+            eventData[checkBox] = bool(eventData[checkBox])
+
+    ## Process dates
+    eventDates = ['startDate', 'endDate']
+    for eventDate in eventDates:
+        if eventDate not in eventData:
+            eventData[eventDate] = ''
+        elif type(eventData[eventDate]) is str and eventData[eventDate]:
+            eventData[eventDate] = parser.parse(eventData[eventDate])
+        elif not isinstance(eventData[eventDate], date):
+            eventData[eventDate] = ''
+    
+    # If we aren't repeating, all of our events are single-day or mutliple offerings, which also have the same start and end date
+    if not eventData['isRepeating']:
         eventData['endDate'] = eventData['startDate']
     
     # Process terms
