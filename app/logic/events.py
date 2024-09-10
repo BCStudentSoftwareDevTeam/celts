@@ -118,7 +118,7 @@ def deleteEventAndAllFollowing(eventId):
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name           
 def NEWdeleteEventAndAllFollowing(eventId):
         """
-        Deletes an event in the Series and all events after it
+        Deletes an event in the series and all events after it
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
@@ -143,9 +143,9 @@ def deleteAllRecurringEvents(eventId):
         return deleteEventAndAllFollowing(eventId)
         
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name    
-def NEWdeleteAllRecurringEvents(eventId):
+def deleteAllEventsInSeries(eventId):
         """
-        Deletes all events in a Series
+        Deletes all events in a series
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
@@ -414,21 +414,21 @@ def NEWgetUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     events = events.order_by(Event.startDate, Event.timeStart)
 
-    events_list = []
-    seriesId_list = []
+    eventsList = []
+    seriesEventsList = []
 
     # removes all events in series except for the next upcoming one
     for event in events:
         if event.seriesId:
             if not event.isCanceled:
-                if event.seriesId not in seriesId_list:
-                    events_list.append(event)
-                    seriesId_list.append(event.seriesId)
+                if event.seriesId not in seriesEventsList:
+                    eventsList.append(event)
+                    seriesEventsList.append(event.seriesId)
         else:
             if not event.isCanceled:
-                events_list.append(event)
+                eventsList.append(event)
 
-    return events_list
+    return eventsList
 
 def getParticipatedEventsForUser(user):
     """
