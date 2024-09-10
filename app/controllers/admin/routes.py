@@ -240,10 +240,10 @@ def NEWcreateEvent(templateid, programid):
         if eventData.get('isSeries') and eventData.get('isRepeating') is None:
             seriesId = calculateNewSeriesId()
 
-            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
-            for event in multipleOfferingData:
-                multipleOfferingDict = eventData.copy()
-                multipleOfferingDict.update({
+            seriesEvents = json.loads(eventData.get('seriesEvents'))
+            for event in seriesEvents:
+                eventDict = eventData.copy()
+                eventDict.update({
                     'name': event['eventName'],
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
@@ -251,7 +251,7 @@ def NEWcreateEvent(templateid, programid):
                     'seriesId': seriesId
                     })
                 try:
-                    savedEvents, validationErrorMessage = NEWattemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
+                    savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventDict, getFilesFromRequest(request))
                     savedEventsList.append(savedEvents)
                     
                 except Exception as e:
@@ -259,7 +259,7 @@ def NEWcreateEvent(templateid, programid):
 
         else:
             try:
-                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+                savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
                     print("Failed saving regular event", e)
 
@@ -270,15 +270,13 @@ def NEWcreateEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = (eventData.get('isSeries') and "Events" or "Event") # pluralize
+            noun = (eventData.get('isSeries') or eventData.get('isRepeating') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
            
-            if program and eventData.get('isSeries'):
-                if len(savedEvents) > 1 and eventData.get('isRepeating'):
-                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-                
-                elif len(savedEventsList) >= 1 and eventData.get('isRepeating') is None:
+            if program and eventData.get('isRepeating'):
+                createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+            elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
                     event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
@@ -293,9 +291,6 @@ def NEWcreateEvent(templateid, programid):
                         event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
 
                     createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
-                    
-                else:
-                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 

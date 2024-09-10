@@ -55,6 +55,11 @@ class Event(baseModel):
         return bool(self.recurringId)
 
     @property
+    def isFirstRepeatingEvent(self):
+        firstRepeatingEvent = Event.select().where(Event.seriesId==self.seriesId).order_by(Event.id).get()
+        return firstRepeatingEvent.id == self.id
+    
+    @property
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
