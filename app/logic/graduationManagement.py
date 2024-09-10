@@ -6,7 +6,7 @@ from peewee import JOIN, fn, Case, DoesNotExist
 from app.models.user import User
 from app.models.term import Term
 
-def getGradutedStudents():
+def getGraduatedStudents():
     """
         Get all the users who graduated
     """
