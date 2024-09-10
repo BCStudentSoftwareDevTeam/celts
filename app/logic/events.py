@@ -188,6 +188,41 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     except Exception as e:
         print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
+    
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWattemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
+    """
+    Tries to save an event to the database:
+    Checks that the event data is valid and if it is, it continues to save the new
+    event to the database and adds files if there are any.
+    If it is not valid it will return a validation error.
+
+    Returns:
+    Created events and an error message.
+    """
+
+    # Manually set the value of RSVP Limit if it is and empty string since it is
+    # automatically changed from "" to 0
+    if eventData["rsvpLimit"] == "":
+        eventData["rsvpLimit"] = None
+        
+    newEventData = NEWpreprocessEventData(eventData)
+    
+    isValid, validationErrorMessage = NEWvalidateNewEventData(newEventData)
+    
+    if not isValid:
+        return False, validationErrorMessage
+
+    try:
+        events = NEWsaveEventToDb(newEventData, renewedEvent)
+        if attachmentFiles:
+            for event in events:
+                addFile = FileHandler(attachmentFiles, eventId=event.id)
+                addFile.saveFiles(saveOriginalFile=events[0])
+        return events, ""
+    except Exception as e:
+        print(f'Failed attemptSaveEvent() with Exception: {e}')
+        return False, e
 
 def saveEventToDb(newEventData, renewedEvent = False):
     
@@ -246,6 +281,75 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
                 eventData['multipleOfferingId'] = multipleSeriesId
+                eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
+                eventRecord = Event.create(**eventData)
+            else:
+                eventRecord = Event.get_by_id(newEventData['id'])
+                Event.update(**eventData).where(Event.id == eventRecord).execute()
+
+            if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
+                updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
+
+            eventRecords.append(eventRecord)
+    return eventRecords
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name
+def NEWsaveEventToDb(newEventData, renewedEvent = False):
+    
+    if not newEventData.get('valid', False) and not renewedEvent:
+        raise Exception("Unvalidated data passed to saveEventToDb")
+    
+    
+    isNewEvent = ('id' not in newEventData)
+
+    
+    eventsToCreate = []
+    seriesId = None
+    
+    # RepeatingImplementation: How can I merge this logic?
+    if (isNewEvent and newEventData['isRepeating']) and not renewedEvent:
+        eventsToCreate = calculateRepeatingEventFrequency(newEventData)
+        seriesId = calculateNewSeriesId()
+    
+    elif(isNewEvent and newEventData['isSeries']) and not renewedEvent:
+        eventsToCreate.append({'name': f"{newEventData['name']}",
+                                'date':newEventData['startDate']
+                                })
+        seriesId = calculateNewSeriesId()
+        
+    else:
+        eventsToCreate.append({'name': f"{newEventData['name']}",
+                                'date':newEventData['startDate'],
+                                "week":1})
+        if renewedEvent:
+            seriesId = newEventData.get('seriesId')
+    eventRecords = []
+    for eventInstance in eventsToCreate: 
+        with mainDB.atomic():
+           
+            eventData = {
+                    "term": newEventData['term'],
+                    "name": eventInstance['name'],
+                    "description": newEventData['description'],
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
+                    "location": newEventData['location'],
+                    "isFoodProvided" : newEventData['isFoodProvided'],
+                    "isTraining": newEventData['isTraining'],
+                    "isRsvpRequired": newEventData['isRsvpRequired'],
+                    "isService": newEventData['isService'],
+                    "startDate": eventInstance['date'],
+                    "rsvpLimit": newEventData['rsvpLimit'],
+                    "endDate": eventInstance['date'],
+                    "contactEmail": newEventData['contactEmail'],
+                    "contactName": newEventData['contactName']
+                }
+
+            # The three fields below are only relevant during event creation so we only set/change them when 
+            # it is a new event. 
+            if isNewEvent:
+                eventData['program'] = newEventData['program']
+                eventData['seriesId'] = seriesId
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
@@ -709,6 +813,10 @@ def NEWpreprocessEventData(eventData):
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
+
+    ## Add isSeries flag to repeating events.
+    if eventData['isRepeating']:
+        eventData['isSeries'] = True
 
     ## Process dates
     eventDates = ['startDate', 'endDate']
