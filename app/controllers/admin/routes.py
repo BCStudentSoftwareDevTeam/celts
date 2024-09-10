@@ -237,8 +237,8 @@ def NEWcreateEvent(templateid, programid):
     # RepeatingImplementation: Not sure why multiple offerings is saved differently from recurring?
     if request.method == "POST":
         eventData.update(request.form.copy())
-        if eventData.get('isMultipleOffering'):
-            multipleOfferingId = calculateNewMultipleOfferingId()
+        if eventData.get('isSeries') and eventData.get('isRepeating') is None:
+            seriesId = calculateNewSeriesId()
 
             multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
             for event in multipleOfferingData:
@@ -248,7 +248,7 @@ def NEWcreateEvent(templateid, programid):
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
                     'timeEnd': event['endTime'],
-                    'multipleOfferingId': multipleOfferingId
+                    'seriesId': seriesId
                     })
                 try:
                     savedEvents, validationErrorMessage = NEWattemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
@@ -270,15 +270,15 @@ def NEWcreateEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
+            noun = (eventData.get('isSeries') and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
            
-            if program:
-                if len(savedEvents) > 1 and eventData.get('isRecurring'):
+            if program and eventData.get('isSeries'):
+                if len(savedEvents) > 1 and eventData.get('isRepeating'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
-                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
+                elif len(savedEventsList) >= 1 and eventData.get('isRepeating') is None:
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
                     event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
@@ -304,7 +304,7 @@ def NEWcreateEvent(templateid, programid):
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET or POST
-    preprocessEventData(eventData)
+    NEWpreprocessEventData(eventData)
     isProgramManager = g.current_user.isProgramManagerFor(programid)
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
