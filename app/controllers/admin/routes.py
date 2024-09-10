@@ -30,8 +30,8 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import cancelEvent, deleteEvent, NEWdeleteEvent, attemptSaveEvent, NEWattemptSaveEvent, preprocessEventData, NEWpreprocessEventData, calculateRecurringEventFrequency, calculateRepeatingEventFrequency, \
+      deleteEventAndAllFollowing, NEWdeleteEventAndAllFollowing, deleteAllRecurringEvents, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId, calculateNewSeriesId 
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
