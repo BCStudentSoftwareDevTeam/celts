@@ -536,11 +536,34 @@ def undoEvent():
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name     
+@admin_bp.route('/event/NEWundo', methods=['GET'])
+def NEWundoEvent():
+    try:
+        events = session['lastDeletedEvent']
+        for eventId in events: 
+            Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
+            event = Event.get_or_none(Event.id == eventId)
+        repeatingEvents = list(Event.select().where((Event.seriesId==event.seriesId) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.isRepeating is True:
+            nameCounter = 1
+            for repeatingEvent in repeatingEvents:
+                newEventNameList = repeatingEvent.name.split()
+                newEventNameList[-1] = f"{nameCounter}"
+                newEventNameList = " ".join(newEventNameList)
+                Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvent.id).execute()
+                nameCounter += 1 
+        flash("Deletion successfully undone.", "success")
+        return redirect('/eventsList/' + str(g.current_term))
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
     
-@admin_bp.route('/event/<eventId>/NEWdelete', methods=['POST'])
+@admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
-        NEWdeleteEvent(eventId)
+        deleteEvent(eventId)
         session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -551,9 +574,9 @@ def deleteRoute(eventId):
 
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name     
 @admin_bp.route('/event/<eventId>/NEWdelete', methods=['POST'])
-def deleteRoute(eventId):
+def NEWdeleteRoute(eventId):
     try:
-        deleteEvent(eventId)
+        NEWdeleteEvent(eventId)
         session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -573,10 +596,34 @@ def deleteEventAndAllFollowingRoute(eventId):
         print('Error while canceling event:', e)
         return "", 500
     
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name      
+@admin_bp.route('/event/<eventId>/NEWdeleteEventAndAllFollowing', methods=['POST'])
+def NEWdeleteEventAndAllFollowingRoute(eventId):
+    try:
+        session["lastDeletedEvent"] = NEWdeleteEventAndAllFollowing(eventId)
+        flash("Events successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
         session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
+        flash("Events successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name  
+@admin_bp.route('/event/<eventId>/deleteAllEventsInSeries', methods=['POST'])
+def deleteAllEventsInSeriesRoute(eventId):
+    try:
+        session["lastDeletedEvent"] = deleteAllEventsInSeries(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -589,6 +636,11 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name 
+@admin_bp.route('/makeRepeatingEvents', methods=['POST'])
+def addRepeatingEvents():
+    repeatingEvents = calculateRepeatingEventFrequency(NEWpreprocessEventData(request.form.copy()))
+    return json.dumps(repeatingEvents, default=str)
 
 @admin_bp.route('/userProfile', methods=['POST'])
 def userProfile():
