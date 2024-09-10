@@ -200,6 +200,127 @@ def createEvent(templateid, programid):
                            bonnerCohorts = bonnerCohorts,
                            isProgramManager = isProgramManager)
 
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name 
+@admin_bp.route('/eventTemplates/<templateid>/<programid>/NEWcreate', methods=['GET','POST'])
+def NEWcreateEvent(templateid, programid):
+    savedEventsList = []
+    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
+        abort(403)
+
+    # Validate given URL
+    program = None
+    try:
+        template = EventTemplate.get_by_id(templateid)
+        if programid:
+            program = Program.get_by_id(programid)
+    except DoesNotExist as e:
+        print("Invalid template or program id:", e)
+        flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
+        return redirect(url_for("admin.program_picker"))
+
+    # Get the data from the form or from the template
+    eventData = template.templateData
+
+    eventData['program'] = program
+
+    if request.method == "GET":
+        eventData['contactName'] = "CELTS Admin"
+        eventData['contactEmail'] = app.config['celts_admin_contact']
+        if program:
+            eventData['location'] = program.defaultLocation
+            if program.contactName:
+                eventData['contactName'] = program.contactName
+            if program.contactEmail:
+                eventData['contactEmail'] = program.contactEmail
+
+    # Try to save the form
+    # RepeatingImplementation: Not sure why multiple offerings is saved differently from recurring?
+    if request.method == "POST":
+        eventData.update(request.form.copy())
+        if eventData.get('isMultipleOffering'):
+            multipleOfferingId = calculateNewMultipleOfferingId()
+
+            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
+            for event in multipleOfferingData:
+                multipleOfferingDict = eventData.copy()
+                multipleOfferingDict.update({
+                    'name': event['eventName'],
+                    'startDate': event['eventDate'],
+                    'timeStart': event['startTime'],
+                    'timeEnd': event['endTime'],
+                    'multipleOfferingId': multipleOfferingId
+                    })
+                try:
+                    savedEvents, validationErrorMessage = NEWattemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
+                    savedEventsList.append(savedEvents)
+                    
+                except Exception as e:
+                    print("Failed saving multi event", e)
+
+        else:
+            try:
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            except Exception as e:
+                    print("Failed saving regular event", e)
+
+        if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), savedEvents[0].id)
+                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
+
+
+            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
+            flash(f"{noun} successfully created!", 'success')
+            
+           
+            if program:
+                if len(savedEvents) > 1 and eventData.get('isRecurring'):
+                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                
+                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
+                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
+                    
+                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
+
+                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+
+                    if len(modifiedSavedEvents) > 1:
+                        #creates list of events created in a multiple series to display in the logs
+                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
+                        #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
+                        last_event_date = event_dates[-1]
+                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+
+                    createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                    
+                else:
+                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+            else:
+                createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+
+            return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
+        else:
+            flash(validationErrorMessage, 'warning')
+
+    # make sure our data is the same regardless of GET or POST
+    preprocessEventData(eventData)
+    isProgramManager = g.current_user.isProgramManagerFor(programid)
+
+    futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
+
+    requirements, bonnerCohorts = [], []
+    if eventData['program'] is not None and eventData['program'].isBonnerScholars:
+        requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
+    return render_template(f"/admin/{template.templateFile}",
+                           template = template,
+                           eventData = eventData,
+                           futureTerms = futureTerms,
+                           requirements = requirements,
+                           bonnerCohorts = bonnerCohorts,
+                           isProgramManager = isProgramManager)
+
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
@@ -416,7 +537,20 @@ def undoEvent():
         print('Error while canceling event:', e)
         return "", 500
     
-@admin_bp.route('/event/<eventId>/delete', methods=['POST'])
+@admin_bp.route('/event/<eventId>/NEWdelete', methods=['POST'])
+def deleteRoute(eventId):
+    try:
+        NEWdeleteEvent(eventId)
+        session['lastDeletedEvent'] = [eventId]
+        flash("Event successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+
+# RepeatingImplementation: Remove function above; remove "NEW" from the function name     
+@admin_bp.route('/event/<eventId>/NEWdelete', methods=['POST'])
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
