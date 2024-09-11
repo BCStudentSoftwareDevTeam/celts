@@ -182,15 +182,11 @@
       {% endif %}
 
       {% if eventData.isRecurring == True and isNewEvent %}
-      {% set hideDate = "" %}
-      {% set hideMultipleOffering = "d-none" %}
-      {% elif eventData.isMultipleOffering == True and isNewEvent %}
-      {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "" %}
-
+        {% set hideDate = "" %}
+        {% set hideMultipleOffering = "d-none" %}
       {% else %}
-      {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "d-none" %}
+        {% set hideDate = "d-none" %}
+        {% set hideMultipleOffering = "d-none" %}
       {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
@@ -222,7 +218,7 @@
         </table>
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
-      <input type="hidden" name="multipleOfferingData" value="{{ eventData.multipleOfferingData }}" id="multipleOfferingDataId">
+      <input type="hidden" name="multipleOfferingData" value="{{ eventData.multipleOfferingData }}" id="multipleOfferingData">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
@@ -466,64 +462,66 @@
         <div class="form-group" id="textNotifierPadding">
           <br>
         </div>
-        <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="eventOffering row mb-2 divStripes pt-3 pb-4" id="multipleOfferingEvent">
-            <br>
-            <div class="form-group mb-3">
-              <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
-              <input type="text" class="form-control multipleOfferingNameField" id="eventName" name="eventName"
-                placeholder="Enter event name" required>
-            </div>
-            
-            <div class="form-group col-md-5">
-              <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event
-                  Date</strong></label>
-              <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
-                data-page-location="{{pageLocation}}">
-                <input autocomplete="off" type='date'
-                  class="form-control datePicker multipleOfferingDatePicker readonly"
-                  value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}"
-                  name="multipleOfferingDate" placeholder="Pick a start date"
-                  id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" />
-              </div>
-            </div>
-            <div class="form-group col-md-3">
-              <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start
-                  Time</strong></label>
-              <div class="input-group">
-                {% if eventData.timeStart %}
-                  {% set startTime = eventData.timeStart %}
-                {% else %}
-                  {% set startTime = "12:00" %}
-                {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime"
-                  value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time"
-                  id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-                <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
-                    class="bi bi-clock"></i></span>
-              </div>
-            </div>
-            <div class='form-group col-md-3'>
-              <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-              <div class="input-group pb-5">
-                {% if eventData.timeEnd %}
-                  {% set endTime = eventData.timeEnd %}
-                {%else%}
-                  {% set endTime = "13:00" %}
-                {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingEndTime"
-                  value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time"
-                  id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-                <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i
-                    class="bi bi-clock"></i></span>
-              </div>
-            </div>
-            <div class="delete_row d-none col-md-1" id="deleteMultipleOfferingEvent"> <!--delete div icon-->
-              <br />
-              <i class="bi bi-trash btn-danger btn-lg px-2 py-1 deleteRow"></i>
+
+        <!-- Template eventOffering row -->
+        <div class="eventOffering row mb-2 divStripes pt-3 pb-4 d-none" id="multipleOfferingEvent">
+          <br>
+          <div class="form-group mb-3">
+            <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
+            <input type="text" class="form-control multipleOfferingNameField" id="eventName" name="eventName"
+              placeholder="Enter event name" required>
+          </div>
+          
+          <div class="form-group col-md-5">
+            <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event
+                Date</strong></label>
+            <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
+              data-page-location="{{pageLocation}}">
+              <input autocomplete="off" type='date'
+                class="form-control datePicker multipleOfferingDatePicker readonly"
+                value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}"
+                name="multipleOfferingDate" placeholder="Pick a start date"
+                id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" />
             </div>
           </div>
+          <div class="form-group col-md-3">
+            <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start
+                Time</strong></label>
+            <div class="input-group">
+              {% if eventData.timeStart %}
+                {% set startTime = eventData.timeStart %}
+              {% else %}
+                {% set startTime = "12:00" %}
+              {% endif %}
+              <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime"
+                value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time"
+                id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
+                  class="bi bi-clock"></i></span>
+            </div>
+          </div>
+          <div class='form-group col-md-3'>
+            <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+            <div class="input-group pb-5">
+              {% if eventData.timeEnd %}
+                {% set endTime = eventData.timeEnd %}
+              {%else%}
+                {% set endTime = "13:00" %}
+              {% endif %}
+              <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingEndTime"
+                value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time"
+                id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+              <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i
+                  class="bi bi-clock"></i></span>
+            </div>
+          </div>
+          <div class="col-md-1 deleteMultipleOfferingWrapper">
+            <br />
+            <div class="deleteMultipleOffering deleteOfferingBtn"><i class="bi bi-trash btn-danger btn-lg px-2 py-1"></i></div>
+          </div>
         </div>
+        <!--addition slot for data start time and end time-->
+        <div id="multipleOfferingSlots"></div>
       </div>
 
       <div class="addMultipleOfferingEvent mb-3 mt-2"> <!--add button for the slots-->
