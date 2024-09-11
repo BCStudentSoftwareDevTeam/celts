@@ -35,23 +35,23 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-function calculateRecurringEventFrequency(){
+function calculateRepeatingEventFrequency(){
       var eventDatesAndName = {name:$("#inputEventName").val(),
-                               isRecurring: true,
+                               isRepeating: true,
                                startDate:$(".startDatePicker")[0].value,
                                endDate:$(".endDatePicker")[0].value}
       $.ajax({
         type:"POST",
-        url: "/makeRecurringEvents",
+        url: "/makeRepeatingEvents",
         //get the startDate, endDate and name as a dictionary
         data: eventDatesAndName,
         success: function(jsonData){
-          var recurringEvents = JSON.parse(jsonData)
-          var recurringTable = $("#recurringEventsTable")
-          $("#recurringEventsTable tbody tr").remove();
-          for (var event of recurringEvents){
+          var repeatingEvents = JSON.parse(jsonData)
+          var repeatingTable = $("#repeatingEventsTable")
+          $("#repeatingEventsTable tbody tr").remove();
+          for (var event of repeatingEvents){
             var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
+            repeatingTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
             }
         },
         error: function(error){
@@ -204,7 +204,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   updateDate(this);
 });
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
-    calculateRecurringEventFrequency();
+    calculateRepeatingEventFrequency();
   }
     handleFileSelection("attachmentObject")
 
@@ -237,14 +237,14 @@ $(".startDatePicker, .endDatePicker").change(function () {
   
   let modalOpenedByEditButton = false;
   
-  //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
+  //#checkIsRepeating, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
+  $("#checkIsRepeating, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
-    let recurringStatus = $("#checkIsRecurring").is(":checked")
+    let recurringStatus = $("#checkIsRepeating").is(":checked")
     let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
@@ -264,7 +264,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
     else if (multipleOfferingStatus == true) {
       $(".startDatePicker").prop('required', false);
       $("#multipleOfferingTableDiv").removeClass('d-none');
-      $("#checkIsRecurring").prop('checked', false);
+      $("#checkIsRepeating").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
       //hides the non multiple offering time and dates and replace
@@ -368,7 +368,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(".startDatePicker, .endDatePicker").change(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
-      calculateRecurringEventFrequency();
+      calculateRepeatingEventFrequency();
     }
   });
 
