@@ -123,7 +123,7 @@ function calculateRepeatingEventFrequency(){
     else {
       storeMultipleOfferingEventAttributes();
       pendingmultipleEvents = [];
-      $("#checkIsMultipleOffering").prop('checked', true);
+      $("#checkIsSeries").prop('checked', true);
       // Remove the modal and overlay from the DOM
       $('#modalMultipleOffering').modal('hide');
       $('.invalidFeedback').css('display', 'none');
@@ -237,31 +237,31 @@ $(".startDatePicker, .endDatePicker").change(function () {
   
   let modalOpenedByEditButton = false;
   
-  //#checkIsRepeating, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-  $("#checkIsRepeating, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
+  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
+  $("#checkIsRepeating, #checkIsSeries, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
-    let recurringStatus = $("#checkIsRepeating").is(":checked")
-    let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
+    let repeatingStatus = $("#checkIsRepeating").is(":checked")
+    let seriesStatus = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
 
-    if (multipleOfferingStatus == true && recurringStatus == true){
+    if (seriesStatus == true && repeatingStatus == true){
       msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
       return; 
     }
-    if (recurringStatus == true) {
+    if (repeatingStatus == true) {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $("#checkIsSeries").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
 
-    else if (multipleOfferingStatus == true) {
+    else if (seriesStatus == true) {
       $(".startDatePicker").prop('required', false);
       $("#multipleOfferingTableDiv").removeClass('d-none');
       $("#checkIsRepeating").prop('checked', false);
@@ -285,7 +285,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $("#checkIsSeries").prop('checked', false);
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
       $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
