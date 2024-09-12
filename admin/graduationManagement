@@ -27,9 +27,8 @@
   <tbody>
     {% for user in users %}
     <tr>
-      <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }} </a><svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-      </svg></td>
-      <td><input type="checkbox" class="graduated-checkbox" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.hasGraduated }}</td>
       <td>{{ user.classLevel }}</td>
 
     </tr>
