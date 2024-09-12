@@ -183,19 +183,19 @@
 
       {% if eventData.isRepeating == True and isNewEvent %}
       {% set hideDate = "" %}
-      {% set hideMultipleOffering = "d-none" %}
+      {% set hideNonRepeatingSeries = "d-none" %}
       {% elif eventData.isMultipleOffering == True and isNewEvent %}
       {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "" %}
+      {% set hideNonRepeatingSeries = "" %}
 
       {% else %}
       {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "d-none" %}
+      {% set hideNonRepeatingSeries = "d-none" %}
       {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
 
-      <div class="{{hideDate}}" id="recurringTableDiv">
+      <div class="{{hideDate}}" id="repeatingTableDiv">
         <table class="table table-striped" id="repeatingEventsTable">
           <thead>
             <tr>
@@ -206,8 +206,8 @@
           <tbody></tbody>
         </table>
       </div>
-      <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
-        <table class="table table-striped" id="multipleOfferingEventsTable">
+      <div class="{{hideNonRepeatingSeries}}" id="nonRepeatingSeriesTableDiv">
+        <table class="table table-striped" id="nonRepeatingSeriesTable">
           <thead>
             <tr>
               <th>Event Name</th>
@@ -222,7 +222,7 @@
         </table>
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
-      <input type="hidden" name="multipleOfferingData" value="hidden value here" id="multipleOfferingDataId">
+      <input type="hidden" name="seriesData" value="hidden value here" id="seriesDataId">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
@@ -389,7 +389,7 @@
         <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      {% if eventData.recurringId%}
+      {% if eventData.isRepeating%}
       <div class="modal-body">
         <div class="container-fluid">
           <p>This action is irreversible. </p>
@@ -401,7 +401,7 @@
             <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
               <button type="submit" class="btn btn-danger">Delete This and All Following</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+            <form action="/event/{{eventData.id}}/deleteAllRepeating" method='post'>
               <button type="submit" class="btn btn-danger">Delete Series </button>
             </form>
           </div>

@@ -323,7 +323,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
                                 "week":1})
         if renewedEvent:
             seriesId = newEventData.get('seriesId')
-    print (eventsToCreate, "FFFFFF")
+    print (seriesId, "theSeriesId")
     eventRecords = []
     for eventInstance in eventsToCreate: 
         with mainDB.atomic():

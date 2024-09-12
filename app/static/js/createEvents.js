@@ -146,16 +146,17 @@ function storeMultipleOfferingEventAttributes() {
     });
 
     let entriesJson = JSON.stringify(entries);
-    $("#multipleOfferingDataId").val(entriesJson);
+    console.log(entriesJson);
+    $("#seriesDataId").val(entriesJson);
 
-  var multipleOfferingTable = $("#multipleOfferingEventsTable");
-  multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
+  var nonRepeatingSeriesTable = $("#nonRepeatingSeriesTable");
+  nonRepeatingSeriesTable.find("tbody tr").remove(); // Clear existing rows
   entries.forEach(function(entry){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(entry.eventDate);
     var startTime = format24to12HourTime(entry.startTime);
     var endTime = format24to12HourTime(entry.endTime);
-    multipleOfferingTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
+    nonRepeatingSeriesTable.append("<tr><td>" + entry.eventName + "</td><td>" + formattedEventDate +"</td><td>" + startTime + "</td><td>" + endTime + "</td></tr>");
   });
 }  
 //visual date formatting for multi-event table
@@ -257,13 +258,13 @@ $(".startDatePicker, .endDatePicker").change(function () {
     if (repeatingStatus == true) {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
       $("#checkIsSeries").prop('checked', false);
-      $('#multipleOfferingTableDiv').addClass('d-none');
+      $('#nonRepeatingSeriesTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
 
     else if (seriesStatus == true) {
       $(".startDatePicker").prop('required', false);
-      $("#multipleOfferingTableDiv").removeClass('d-none');
+      $("#nonRepeatingSeriesTableDiv").removeClass('d-none');
       $("#checkIsRepeating").prop('checked', false);
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
@@ -275,7 +276,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $(".endDateStyle, #recurringTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
       //set page UI back to default
-      $("#multipleOfferingTableDiv").addClass('d-none');
+      $("#nonRepeatingSeriesTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
       $(".startDatePicker").prop('required', true);
@@ -287,7 +288,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
     if (modalOpenedByEditButton == false) {
       $("#checkIsSeries").prop('checked', false);
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-      $("#multipleOfferingTableDiv").addClass('d-none');
+      $("#nonRepeatingSeriesTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }

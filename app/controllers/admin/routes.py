@@ -237,10 +237,11 @@ def createEvent(templateid, programid):
     # RepeatingImplementation: Not sure why multiple offerings is saved differently from recurring?
     if request.method == "POST":
         eventData.update(request.form.copy())
+        
         if eventData.get('isSeries') and eventData.get('isRepeating') is None:
-            seriesId = calculateNewSeriesId()
+            # seriesId = calculateNewSeriesId()
 
-            seriesEvents = json.loads(eventData.get('seriesEvents'))
+            seriesEvents = json.loads(eventData.get('seriesData'))
             for event in seriesEvents:
                 eventDict = eventData.copy()
                 eventDict.update({
@@ -248,7 +249,6 @@ def createEvent(templateid, programid):
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
                     'timeEnd': event['endTime'],
-                    'seriesId': seriesId
                     })
                 try:
                     savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventDict, getFilesFromRequest(request))
@@ -276,7 +276,7 @@ def createEvent(templateid, programid):
            
             if program and eventData.get('isRepeating'):
                 createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-            elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
+            elif len(savedEventsList) >= 1 and eventData.get('isSeries'):
                     modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                     
                     event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
@@ -730,7 +730,7 @@ def deleteEventAndAllFollowingRoute(eventId):
 #         return "", 500
 
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name  
-@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
+@admin_bp.route('/event/<eventId>/deleteAllRepeating', methods=['POST'])
 def deleteAllEventsInSeriesRoute(eventId):
     try:
         session["lastDeletedEvent"] = deleteAllEventsInSeries(eventId)
