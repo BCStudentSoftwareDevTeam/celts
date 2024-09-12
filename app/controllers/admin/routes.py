@@ -379,7 +379,122 @@ def renewEvent(eventId):
 
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
-@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
+# @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
+# def eventDisplay(eventId):
+#     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
+#     if request.method == 'GET' and request.path == f'/event/{eventId}/view':
+#         viewer = g.current_user
+#         event = Event.get_by_id(eventId)
+#         addEventView(viewer,event) 
+#     # Validate given URL
+#     try:
+#         event = Event.get_by_id(eventId)
+#     except DoesNotExist as e:
+#         print(f"Unknown event: {eventId}")
+#         abort(404)
+
+#     notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+#     if 'edit' in request.url_rule.rule and notPermitted:
+#         abort(403)
+
+#     eventData = model_to_dict(event, recurse=False)
+#     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
+#     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+
+#     image = None
+#     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
+#     for attachment in associatedAttachments:
+#         for extension in picurestype:
+#             if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
+#                 image = filepaths[attachment.fileName][0]
+#         if image:
+#             break
+
+                
+#     if request.method == "POST": # Attempt to save form
+#         eventData = request.form.copy()
+#         try:
+#             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+
+#         except Exception as e:
+#             print("Error saving event:", e)
+#             savedEvents = False
+#             validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
+
+#         if savedEvents:
+#             rsvpcohorts = request.form.getlist("cohorts[]")
+#             for year in rsvpcohorts:
+#                 rsvpForBonnerCohort(int(year), event.id)
+#                 addBonnerCohortToRsvpLog(int(year), event.id)
+
+#             flash("Event successfully updated!", "success")
+#             return redirect(url_for("admin.eventDisplay", eventId = event.id))
+#         else:
+#             flash(validationErrorMessage, 'warning')
+
+#     # make sure our data is the same regardless of GET and POST
+#     preprocessEventData(eventData)
+#     eventData['program'] = event.program
+#     futureTerms = selectSurroundingTerms(g.current_term)
+#     userHasRSVPed = checkUserRsvp(g.current_user, event) 
+#     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+#     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+#     requirements, bonnerCohorts = [], []
+    
+#     if eventData['program'] and eventData['program'].isBonnerScholars:
+#         requirements = getCertRequirements(Certification.BONNER)
+#         bonnerCohorts = getBonnerCohorts(limit=5)
+    
+#     rule = request.url_rule
+
+#     # Event Edit
+#     if 'edit' in rule.rule:
+#         return render_template("admin/createEvent.html",
+#                                 eventData = eventData,
+#                                 futureTerms=futureTerms,
+#                                 event = event,
+#                                 requirements = requirements,
+#                                 bonnerCohorts = bonnerCohorts,
+#                                 userHasRSVPed = userHasRSVPed,
+#                                 isProgramManager = isProgramManager,
+#                                 filepaths = filepaths)
+#     # Event View
+#     else:
+#         # get text representations of dates for html
+#         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
+#         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
+#         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
+#         eventCountdown = getCountdownToEvent(event)
+ 
+
+#         # Identify the next event in a recurring series
+#         if event.recurringId:
+#             eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+#                                         .where((Event.isCanceled == False) | (Event.id == event.id))
+#                                         .order_by(Event.startDate))
+#             eventIndex = eventSeriesList.index(event)
+#             if len(eventSeriesList) != (eventIndex + 1):
+#                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+
+#         currentEventRsvpAmount = getEventRsvpCount(event.id)
+
+#         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+
+#         return render_template("eventView.html",
+#                                 eventData=eventData,
+#                                 event=event,
+#                                 userHasRSVPed=userHasRSVPed,
+#                                 programTrainings=userParticipatedTrainingEvents,
+#                                 currentEventRsvpAmount=currentEventRsvpAmount,
+#                                 isProgramManager=isProgramManager,
+#                                 filepaths=filepaths,
+#                                 image=image,
+#                                 pageViewsCount=pageViewsCount,
+#                                 eventCountdown=eventCountdown
+#                                 )
+
+@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])                              
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
     if request.method == 'GET' and request.path == f'/event/{eventId}/view':
@@ -414,7 +529,7 @@ def eventDisplay(eventId):
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
@@ -434,7 +549,7 @@ def eventDisplay(eventId):
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET and POST
-    preprocessEventData(eventData)
+    NEWpreprocessEventData(eventData)
     eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event) 
@@ -469,13 +584,13 @@ def eventDisplay(eventId):
  
 
         # Identify the next event in a recurring series
-        if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+        if event.isRepeating:
+            eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
                                         .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
-                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+                eventData["nextRepeatingEvent"] = eventSeriesList[eventIndex + 1]
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
