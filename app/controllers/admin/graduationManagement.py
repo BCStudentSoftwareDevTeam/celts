@@ -14,3 +14,6 @@ def gradManagement():
     return render_template('/admin/graduationManagement.html', users = users)
 
 
+
+
+
