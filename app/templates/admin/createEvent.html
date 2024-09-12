@@ -169,11 +169,11 @@
               <label class="custom-control-label" for='checkIsRepeating'><strong>This is a recurring
                   event.</strong></label>
               <input class="form-check-input" type="checkbox" id="checkIsRepeating" name="isRepeating" {{"checked" if
-                eventData.isCheckRecurring}} />
+                eventData.isRepeating}} />
               <label class="custom-control-label" for='checkIsSeries'><strong>This is an event with multiple
                   time offerings.</strong></label>
               <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
-                {{"checked" if eventData.isSeries}} />
+                {{"checked" if eventData.seriesId}} />
             </fieldset>
           </div>
           {% endif %}

@@ -323,6 +323,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
                                 "week":1})
         if renewedEvent:
             seriesId = newEventData.get('seriesId')
+    print (eventsToCreate, "FFFFFF")
     eventRecords = []
     for eventInstance in eventsToCreate: 
         with mainDB.atomic():
@@ -338,6 +339,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
+                    "isRepeating": newEventData['isRepeating'],
                     "startDate": eventInstance['date'],
                     "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
@@ -732,7 +734,7 @@ def calculateRepeatingEventFrequency(event):
     
     return [ {'name': f"{event['name']} Week {counter+1}",
               'date': event['startDate'] + timedelta(days=7*counter),
-              "week": counter+1}
+              "isRepeating": True, "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):

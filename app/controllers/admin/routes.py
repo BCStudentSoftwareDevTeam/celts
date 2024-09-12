@@ -632,7 +632,7 @@ def deleteAllEventsInSeriesRoute(eventId):
 #     return json.dumps(recurringEvents, default=str)
 
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name 
-@admin_bp.route('/makeRecurringEvents', methods=['POST'])
+@admin_bp.route('/makeRepeatingEvents', methods=['POST'])
 def addRepeatingEvents():
     repeatingEvents = calculateRepeatingEventFrequency(NEWpreprocessEventData(request.form.copy()))
     return json.dumps(repeatingEvents, default=str)
