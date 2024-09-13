@@ -152,7 +152,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     If it is not valid it will return a validation error.
 
     Returns:
-    The saved event Created events and an error message if an error occurred.
+    The saved event, created events and an error message if an error occurred.
     """
 
     # Manually set the value of RSVP Limit if it is and empty string since it is
