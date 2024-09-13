@@ -2,7 +2,7 @@
 {% set page_title = eventData.name %}
 {% set isPastEnd = event.isPastEnd %} 
 {% set tabName = 'view' %}
-{% extends "eventNav.html"%}
+{% extends "events/eventNav.html"%}
 <!-- Without eventPast view event cannot use it when called through eventNav -->
 {% set eventPast = event.isPastStart if not isNewEvent else False %}
 

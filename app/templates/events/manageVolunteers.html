@@ -2,7 +2,7 @@
 {% set page_title = event.name %}
 {% set eventPast = event.isPastStart %}
 {% set tabName = 'manageVolunteers' %}
-{% extends "eventNav.html" %}
+{% extends "events/eventNav.html" %}
 
 
 
@@ -22,7 +22,7 @@
 {% block app_content %}
 {{super()}}
 
-{% from 'trainingsHoverMacro.html' import trainingsHover %}
+{% from 'macros/trainingsHoverMacro.html' import trainingsHover %}
 
 {% set rsvpNeeded = (event.isRsvpRequired) and (not event.isPastStart) %}
 {% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}

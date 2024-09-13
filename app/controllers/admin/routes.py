@@ -73,7 +73,7 @@ def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/template_selector.html",
+        return render_template("/events/templateSelector.html",
                                 programs=allprograms,
                                 celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
@@ -312,7 +312,7 @@ def createEvent(templateid, programid):
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-    return render_template(f"/admin/{template.templateFile}",
+    return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
                            futureTerms = futureTerms,
@@ -569,7 +569,7 @@ def eventDisplay(eventId):
 
     # Event Edit
     if 'edit' in rule.rule:
-        return render_template("admin/createEvent.html",
+        return render_template("events/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 event = event,
@@ -600,7 +600,7 @@ def eventDisplay(eventId):
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
-        return render_template("eventView.html",
+        return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,
                                 userHasRSVPed=userHasRSVPed,
@@ -772,13 +772,6 @@ def studentSearchPage():
     if g.current_user.isAdmin:
         return render_template("/admin/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/addParticipants', methods = ['GET'])
-def addParticipants():
-    '''Renders the page, will be removed once merged with full page'''
-
-    return render_template('addParticipants.html',
-                            title="Add Participants")
 
 @admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
 def activityLogs():
