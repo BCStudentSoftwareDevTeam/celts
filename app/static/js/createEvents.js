@@ -270,7 +270,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $(".endDateStyle, #repeatingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
       //hides the non multiple offering time and dates and replace
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
+      $('#nonSeriesTime, #nonSeriesDate').addClass('d-none'); 
     }
     else { 
       //adds the display none button of bootstrap so that the end-date div disappears for repeating even
@@ -279,7 +279,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       //set page UI back to default
       $("#nonRepeatingSeriesTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+      $('#nonSeriesTime, #nonSeriesDate').removeClass('d-none');
       $(".startDatePicker").prop('required', true);
     }
   });
@@ -288,7 +288,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
       $("#checkIsSeries").prop('checked', false);
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+      $('#nonSeriesTime, #nonSeriesDate').removeClass('d-none');
       $("#nonRepeatingSeriesTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
       $('.extraSlots').children().not(':first').remove();
