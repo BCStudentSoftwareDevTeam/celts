@@ -357,25 +357,25 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     events = events.order_by(Event.startDate, Event.timeStart)
 
-    events_list = []
-    shown_recurring_event_list = []
-    shown_multiple_offering_event_list = []
+    eventsList = []
+    shownRecurringEventList = []
+    shownMultipleOfferingEventList = []
 
     # removes all recurring events except for the next upcoming one
     for event in events:
         if event.recurringId or event.multipleOfferingId:
             if not event.isCanceled:
-                if event.recurringId not in shown_recurring_event_list:
-                    events_list.append(event)
-                    shown_recurring_event_list.append(event.recurringId)
-                if event.multipleOfferingId not in shown_multiple_offering_event_list:
-                    events_list.append(event)
-                    shown_multiple_offering_event_list.append(event.multipleOfferingId)
+                if event.recurringId not in shownRecurringEventList:
+                    eventsList.append(event)
+                    shownRecurringEventList.append(event.recurringId)
+                if event.multipleOfferingId not in shownMultipleOfferingEventList:
+                    eventsList.append(event)
+                    shownMultipleOfferingEventList.append(event.multipleOfferingId)
         else:
             if not event.isCanceled:
-                events_list.append(event)
+                eventsList.append(event)
 
-    return events_list
+    return eventsList
 
 def getParticipatedEventsForUser(user):
     """

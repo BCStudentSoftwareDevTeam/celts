@@ -145,18 +145,18 @@ def createEvent(templateid, programid):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
                 elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
-                    event_dates = [event_data.startDate.strftime('%m/%d/%Y') for event_data in savedEvents]
+                    eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
 
-                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
+                    eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
 
                     if len(savedEvents) > 1:
                         #creates list of events created in a multiple series to display in the logs
-                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
+                        eventList = ', '.join(eventList.split(', ')[:-1]) + f', and ' + eventList.split(', ')[-1]
                         #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
-                        last_event_date = event_dates[-1]
-                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+                        lastEventDate = eventDates[-1]
+                        eventDates = ', '.join(eventDates[:-1]) + f', and {lastEventDate}'
 
-                    createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                    createActivityLog(f"Created events {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
                     createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
