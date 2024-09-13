@@ -119,7 +119,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     # Create separate event data inheriting from the original eventData
     multipleOfferingData = eventData.get('multipleOfferingData')
     with mainDB.atomic() as transaction:
-        for i, event in enumerate(multipleOfferingData):
+        for index, event in enumerate(multipleOfferingData):
             multipleOfferingDict = eventData.copy()
             multipleOfferingDict.update({
                 'name': event['eventName'],
@@ -131,9 +131,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
             if validationErrorMessage:
-                failedSavedOfferings.append((i, validationErrorMessage))
+                failedSavedOfferings.append((index, validationErrorMessage))
                 allSavesWereSuccessful = False
-                print(f"Failed saving multi event {i}:", validationErrorMessage)
+                print(f"Failed saving multi event {index}:", validationErrorMessage)
             else:
                 savedEvent = savedEvents[0]
                 savedOfferings.append(savedEvent)

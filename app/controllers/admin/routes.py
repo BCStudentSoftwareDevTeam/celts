@@ -119,8 +119,8 @@ def createEvent(templateid, programid):
             eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
             if not succeeded:
-                for i, validationErrorMessage in failedSavedOfferings:
-                    eventData['multipleOfferingData'][i]['isDuplicate'] = True
+                for index, validationErrorMessage in failedSavedOfferings:
+                    eventData['multipleOfferingData'][index]['isDuplicate'] = True
                 validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
                 print(f"Failed to save offerings {failedSavedOfferings}")
         else:
