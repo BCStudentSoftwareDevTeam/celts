@@ -20,7 +20,7 @@
 {% extends "base.html" %}
 {% else %}
   {% set page_title = eventData.name %}
-  {% extends "eventNav.html"%}
+  {% extends "events/eventNav.html"%}
 {% endif %}
 
 {% set eventPast = event.isPastEnd if not isNewEvent else False %}
@@ -327,7 +327,7 @@
       </div>
       {% if filepaths %}
       <div class="form-group mb-5">
-        {% from 'displayFilesMacro.html' import displayFiles %}
+        {% from 'macros/displayFilesMacro.html' import displayFiles %}
         <!-- {{eventData.id}} -->
         {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}
       </div>
