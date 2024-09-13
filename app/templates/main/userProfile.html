@@ -204,7 +204,7 @@
                 {% if row.program in programsInterested %}
                   {% set checked = "checked" %}
                 {% endif %}
-                {% from 'trainingsHoverMacro.html' import trainingsHover %}
+                {% from 'macros/trainingsHoverMacro.html' import trainingsHover %}
                 <tr>
                   <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>

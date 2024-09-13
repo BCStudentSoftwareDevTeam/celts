@@ -20,7 +20,7 @@
 {% extends "base.html" %}
 {% else %}
   {% set page_title = eventData.name %}
-  {% extends "eventNav.html"%}
+  {% extends "events/eventNav.html"%}
 {% endif %}
 
 {% set eventPast = event.isPastEnd if not isNewEvent else False %}
@@ -331,7 +331,7 @@
       </div>
       {% if filepaths %}
       <div class="form-group mb-5">
-        {% from 'displayFilesMacro.html' import displayFiles %}
+        {% from 'macros/displayFilesMacro.html' import displayFiles %}
         <!-- {{eventData.id}} -->
         {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}
       </div>
@@ -340,7 +340,7 @@
   </div>
   <div class="row justify-content-left mt-2">
     <div class="col-md-6 offset-md-3">
-      <div class="text-center">
+      <div class="text-center mb-2">
         <!--Submission buttons-->
         {% if event %}
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete
@@ -353,7 +353,7 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="submit" class="btn btn-primary saveBtn mb-3" value="Save" />
+        <input type="submit" class="btn btn-primary saveBtn" value="Save" />
       </div>
     </div>
   </div>
