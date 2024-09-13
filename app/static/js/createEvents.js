@@ -69,6 +69,16 @@ function setViewForMultipleOffering(){
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
 }
 
+function displayNotification(message) {
+  $('#textNotifierPadding').addClass('pt-5');
+  $('.invalidFeedback').text(message);
+  $('.invalidFeedback').css('display', 'block');  
+  $('.invalidFeedback').on('animationend', function() {
+    $('.invalidFeedback').css('display', 'none');
+    $('#textNotifierPadding').removeClass('pt-5')
+  });
+}
+
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
   // Parameters are in the format: {'test name', '2024-09-11', '12:00', '13:00'}
 
@@ -159,31 +169,16 @@ $('#multipleOfferingSave').on('click', function() {
   }
 
   if (isEmpty){
-    $('#textNotifierPadding').addClass('pt-5');
-    $('.invalidFeedback').text("Event name or date field is empty");
-    $('.invalidFeedback').css('display', 'block');  
-    $('.invalidFeedback').on('animationend', function() {
-      $('.invalidFeedback').css('display', 'none');
-      $('#textNotifierPadding').removeClass('pt-5')
-    });
+    let emptyFieldMessage = "Event name or date field is empty";
+    displayNotification(emptyFieldMessage);
   }
   else if(!hasValidTimes){
-    $('#textNotifierPadding').addClass('pt-5');
-    $('.invalidFeedback').text("Event end time must be after start time");
-    $('.invalidFeedback').css('display', 'block');  
-    $('.invalidFeedback').on('animationend', function() {
-      $('.invalidFeedback').css('display', 'none');
-      $('#textNotifierPadding').removeClass('pt-5')
-    });
+    let invalidTimeMessage = "Event end time must be after start time";
+    displayNotification(invalidTimeMessage);
   }
   else if (hasDuplicateListings){
-    $('#textNotifierPadding').addClass('pt-5');
-    $('.invalidFeedback').text("Event listings cannot have the same event name, date, and start time");
-    $('.invalidFeedback').css('display', 'block');  
-    $('.invalidFeedback').on('animationend', function() {
-      $('.invalidFeedback').css('display', 'none');
-      $('#textNotifierPadding').removeClass('pt-5')
-    });
+    let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
+    displayNotification(eventConflictMessage);
   }
   else {
     saveOfferingsFromModal();
