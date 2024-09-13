@@ -105,7 +105,7 @@ def unbanUser(program_id, username, note, creator):
                             noteType = "unban")
     (ProgramBan.update(endDate = datetime.datetime.now(),
                        unbanNote = noteForDb,
-                       removeFromTranscript = False)
+                       removeFromTranscript = 0)
                .where(ProgramBan.program == program_id,
                       ProgramBan.user == username,
                       ProgramBan.endDate >  datetime.datetime.now())).execute()
