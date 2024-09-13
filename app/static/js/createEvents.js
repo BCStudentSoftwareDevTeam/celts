@@ -53,6 +53,7 @@ function calculateRepeatingEventFrequency(){
             var eventdate = new Date(event.date).toLocaleDateString()
             repeatingTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
             }
+          console.log(repeatingEvents)
         },
         error: function(error){
           console.log(error)
@@ -256,7 +257,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       return; 
     }
     if (repeatingStatus == true) {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
+      $(".endDateStyle, #repeatingTableDiv").removeClass('d-none');
       $("#checkIsSeries").prop('checked', false);
       $('#nonRepeatingSeriesTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
@@ -266,14 +267,14 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $(".startDatePicker").prop('required', false);
       $("#nonRepeatingSeriesTableDiv").removeClass('d-none');
       $("#checkIsRepeating").prop('checked', false);
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+      $(".endDateStyle, #repeatingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('show');
       //hides the non multiple offering time and dates and replace
       $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
     }
     else { 
-      //adds the display none button of bootstrap so that the end-date div disappears for recurring even
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+      //adds the display none button of bootstrap so that the end-date div disappears for repeating even
+      $(".endDateStyle, #repeatingTableDiv").addClass('d-none');
       $(".endDatePicker").prop('required', false);
       //set page UI back to default
       $("#nonRepeatingSeriesTableDiv").addClass('d-none');

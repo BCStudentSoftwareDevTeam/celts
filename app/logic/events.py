@@ -299,9 +299,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
     if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
     
-    
     isNewEvent = ('id' not in newEventData)
-
     
     eventsToCreate = []
     seriesId = None
@@ -315,7 +313,6 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate']
                                 })
-        seriesId = calculateNewSeriesId()
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -325,6 +322,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
             seriesId = newEventData.get('seriesId')
     print (seriesId, "theSeriesId")
     eventRecords = []
+    print (eventsToCreate, "gbayi")
     for eventInstance in eventsToCreate: 
         with mainDB.atomic():
            
@@ -351,7 +349,7 @@ def NEWsaveEventToDb(newEventData, renewedEvent = False):
             # it is a new event. 
             if isNewEvent:
                 eventData['program'] = newEventData['program']
-                eventData['seriesId'] = seriesId
+                eventData['seriesId'] = seriesId if seriesId else newEventData.get('seriesId')
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
@@ -815,10 +813,6 @@ def NEWpreprocessEventData(eventData):
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
-
-    ## Add isSeries flag to repeating events.
-    if eventData['isRepeating']:
-        eventData['isSeries'] = True
 
     ## Process dates
     eventDates = ['startDate', 'endDate']

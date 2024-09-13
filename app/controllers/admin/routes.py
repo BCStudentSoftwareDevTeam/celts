@@ -239,7 +239,7 @@ def createEvent(templateid, programid):
         eventData.update(request.form.copy())
         
         if eventData.get('isSeries') and eventData.get('isRepeating') is None:
-            # seriesId = calculateNewSeriesId()
+            seriesId = calculateNewSeriesId()
 
             seriesEvents = json.loads(eventData.get('seriesData'))
             for event in seriesEvents:
@@ -249,6 +249,7 @@ def createEvent(templateid, programid):
                     'startDate': event['eventDate'],
                     'timeStart': event['startTime'],
                     'timeEnd': event['endTime'],
+                    'seriesId': seriesId
                     })
                 try:
                     savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventDict, getFilesFromRequest(request))
@@ -274,23 +275,26 @@ def createEvent(templateid, programid):
             flash(f"{noun} successfully created!", 'success')
             
            
-            if program and eventData.get('isRepeating'):
-                createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-            elif len(savedEventsList) >= 1 and eventData.get('isSeries'):
-                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
-                    
-                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
+            if program:
+                if eventData.get('isRepeating'):
+                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                elif len(savedEventsList) >= 1 and eventData.get('isSeries'):
+                        modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
+                        
+                        event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
 
-                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+                        event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
 
-                    if len(modifiedSavedEvents) > 1:
-                        #creates list of events created in a multiple series to display in the logs
-                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
-                        #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
-                        last_event_date = event_dates[-1]
-                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+                        if len(modifiedSavedEvents) > 1:
+                            #creates list of events created in a multiple series to display in the logs
+                            event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
+                            #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
+                            last_event_date = event_dates[-1]
+                            event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
 
-                    createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                        createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                else:
+                    createActivityLog(f"Created event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
