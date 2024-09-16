@@ -7,8 +7,8 @@ $(document).ready(function() {
         
         $.ajax({
             type: "POST", 
-            url: "/graduationManagement/" + username + "/updateGraduationStatus",
-            data: { hasGraduated: isChecked },
+            url: "/admin/graduationManagement/",
+            data: { username: username, hasGraduated: isChecked },
             success: function(response) {
                 msgFlash("Graduation status has been updated!", "success");
             },
