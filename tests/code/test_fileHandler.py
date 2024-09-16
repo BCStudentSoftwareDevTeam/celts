@@ -8,7 +8,7 @@ from app.models import mainDB
 from dateutil import parser
 from app.models.user import User
 from flask import g
-from app.logic.events import attemptSaveEvent
+from app.logic.events import NEWattemptSaveEvent
 
 from app.models.program import Program
 from app.models.attachmentUpload import AttachmentUpload

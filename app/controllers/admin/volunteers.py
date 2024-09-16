@@ -10,7 +10,7 @@ from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
-from app.logic.events import getPreviousRecurringEventData, getPreviousRepeatingEventData, getEventRsvpCount
+from app.logic.events import getPreviousRepeatingEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.createLogs import createActivityLog, createRsvpLog
