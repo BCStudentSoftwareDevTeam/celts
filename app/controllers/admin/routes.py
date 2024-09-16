@@ -98,7 +98,6 @@ def createEvent(templateid, programid):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-
     eventData['program'] = program
 
     if request.method == "GET":
@@ -115,6 +114,7 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         savedEvents = None
         eventData.update(request.form.copy())
+        eventData = preprocessEventData(eventData)
         if eventData.get('isMultipleOffering'):
             eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))

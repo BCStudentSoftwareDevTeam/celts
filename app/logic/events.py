@@ -133,7 +133,6 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
             if validationErrorMessage:
                 failedSavedOfferings.append((index, validationErrorMessage))
                 allSavesWereSuccessful = False
-                print(f"Failed saving multi event {index}:", validationErrorMessage)
             else:
                 savedEvent = savedEvents[0]
                 savedOfferings.append(savedEvent)
@@ -543,6 +542,7 @@ def preprocessEventData(eventData):
     elif type(eventData['multipleOfferingData']) is str:
         try:
             multipleOfferingData = json.loads(eventData['multipleOfferingData'])
+            eventData['multipleOfferingData'] = multipleOfferingData
             if type(multipleOfferingData) != list:
                 eventData['multipleOfferingData'] = json.dumps([])
         except json.decoder.JSONDecodeError as e:
