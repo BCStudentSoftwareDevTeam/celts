@@ -555,7 +555,7 @@ def preprocessEventData(eventData):
                 if type(offeringDatum.get(attribute)) != str:
                     offeringDatum[attribute] = ''
             if type(offeringDatum.get('isDuplicate')) != bool:
-                    offeringDatum[attribute] = False
+                    offeringDatum['isDuplicate'] = False
 
         eventData['multipleOfferingData'] = json.dumps(eventData['multipleOfferingData'])
     
