@@ -71,7 +71,7 @@
       <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly"
         value="{{ eventData.startDate.strftime('%Y/%m/%d') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}"
         name="startDate" placeholder="Pick a start date" id='startDatePicker-{{pageLocation}}'
-        data-page-location="{{pageLocation}}">
+        data-page-location="{{pageLocation}}" required>
       <div class="input-group-text" id="calendarIconStart-{{pageLocation}}"
         onclick="$('#startDatePicker-{{pageLocation}}').datepicker('show')">
         <span><i class="bi bi-calendar-plus-fill"></i></span>

@@ -60,13 +60,18 @@ function calculateRecurringEventFrequency(){
   });
 }
 
+function setViewForSingleOffering(){
+  $(".startDatePicker").prop('required', true);
+  $("#multipleOfferingTableDiv").addClass('d-none');
+  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+}
+
 function setViewForMultipleOffering(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $("#checkIsRecurring").prop('checked', false);
   $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-  //hides the non multiple offering time and dates and replace
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none'); 
+  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
 }
 
 function displayNotification(message) {
@@ -370,11 +375,9 @@ $(".startDatePicker, .endDatePicker").change(function () {
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-      $("#checkIsMultipleOffering").prop('checked', false);
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-      $("#multipleOfferingTableDiv").addClass('d-none');
       $('#modalMultipleOffering').modal('hide');
-      $('#multipleOfferingSlots').children().remove();
+      $("#checkIsMultipleOffering").prop('checked', false);
+      setViewForSingleOffering()
     }
     pendingmultipleEvents.forEach(function(element){
       element.remove();
