@@ -72,7 +72,7 @@ def manageVolunteersPage(eventID):
 
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
-        recurringVolunteers = getPreviousRepeatingEventData(event.recurringId)
+        recurringVolunteers = getPreviousRepeatingEventData(event.seriesId)
 
         currentRsvpAmount = getEventRsvpCount(event.id)
 

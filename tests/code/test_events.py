@@ -22,10 +22,10 @@ from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import NEWpreprocessEventData, NEWvalidateNewEventData, calculateRepeatingEventFrequency
-from app.logic.events import NEWattemptSaveEvent, NEWsaveEventToDb, cancelEvent, NEWdeleteEvent, getParticipatedEventsForUser
-from app.logic.events import calculateNewSeriesId, getPreviousRepeatingEventData, NEWgetUpcomingEventsForUser
-from app.logic.events import NEWdeleteEventAndAllFollowing, deleteAllEventsInSeries, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
+from app.logic.events import preprocessEventData, validateNewEventData, calculateRepeatingEventFrequency
+from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
+from app.logic.events import calculateNewSeriesId, getPreviousRepeatingEventData, getUpcomingEventsForUser
+from app.logic.events import deleteEventAndAllFollowing, deleteAllEventsInSeries, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser

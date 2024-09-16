@@ -30,8 +30,8 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, NEWdeleteEvent, NEWattemptSaveEvent, NEWpreprocessEventData, calculateRepeatingEventFrequency, \
-       NEWdeleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId 
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRepeatingEventFrequency, \
+       deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId 
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -129,7 +129,7 @@ def createEvent(templateid, programid):
                     'seriesId': seriesId
                     })
                 try:
-                    savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventDict, getFilesFromRequest(request))
+                    savedEvents, validationErrorMessage = attemptSaveEvent(eventDict, getFilesFromRequest(request))
                     savedEventsList.append(savedEvents)
                     
                 except Exception as e:
@@ -137,7 +137,7 @@ def createEvent(templateid, programid):
 
         else:
             try:
-                savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventData, getFilesFromRequest(request))
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
                 print("Failed saving regular event", e)
 
@@ -180,7 +180,7 @@ def createEvent(templateid, programid):
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET or POST
-    NEWpreprocessEventData(eventData)
+    preprocessEventData(eventData)
     isProgramManager = g.current_user.isProgramManagerFor(programid)
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
@@ -238,8 +238,8 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId']),
-                    'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
+                    'isRepeating': bool(priorEvent['isRepeating']),
+                    'isSeries': bool(priorEvent['isSeries']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
@@ -292,7 +292,7 @@ def eventDisplay(eventId):
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
-            savedEvents, validationErrorMessage = NEWattemptSaveEvent(eventData, getFilesFromRequest(request))
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
@@ -312,7 +312,7 @@ def eventDisplay(eventId):
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET and POST
-    NEWpreprocessEventData(eventData)
+    preprocessEventData(eventData)
     eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event) 
@@ -388,7 +388,7 @@ def cancelRoute(eventId):
 
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name     
 @admin_bp.route('/event/undo', methods=['GET'])
-def NEWundoEvent():
+def undoEvent():
     try:
         events = session['lastDeletedEvent']
         for eventId in events: 
@@ -413,7 +413,7 @@ def NEWundoEvent():
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
-        NEWdeleteEvent(eventId)
+        deleteEvent(eventId)
         session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -426,7 +426,7 @@ def deleteRoute(eventId):
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
-        session["lastDeletedEvent"] = NEWdeleteEventAndAllFollowing(eventId)
+        session["lastDeletedEvent"] = deleteEventAndAllFollowing(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -449,7 +449,7 @@ def deleteAllEventsInSeriesRoute(eventId):
 # RepeatingImplementation: Remove function above; remove "NEW" from the function name 
 @admin_bp.route('/makeRepeatingEvents', methods=['POST'])
 def addRepeatingEvents():
-    repeatingEvents = calculateRepeatingEventFrequency(NEWpreprocessEventData(request.form.copy()))
+    repeatingEvents = calculateRepeatingEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(repeatingEvents, default=str)
 
 @admin_bp.route('/userProfile', methods=['POST'])
