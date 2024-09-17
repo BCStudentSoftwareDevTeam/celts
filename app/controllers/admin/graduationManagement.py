@@ -2,7 +2,7 @@ from flask import render_template, g, abort, request, redirect, url_for, flash
 from app.models.user import User
 from app.controllers.admin import admin_bp
 
-from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent
+from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent, getAllTerms
 
 
 @admin_bp.route('/admin/graduationManagement', methods=['GET'])
@@ -12,8 +12,11 @@ def gradManagement():
         abort(403)
 
     users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
+    selectedTerm = getAllTerms()
 
-    return render_template('/admin/graduationManagement.html', users = users)
+    return render_template('/admin/graduationManagement.html', users = users, 
+                           selectedTerm = selectedTerm,
+                           allTerms = getAllTerms())
 
 
 @admin_bp.route('/<username>/hasGraduated/', methods=['POST'])
