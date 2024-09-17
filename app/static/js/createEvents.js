@@ -63,9 +63,9 @@ function calculateRepeatingEventFrequency(){
   $('#submitParticipant').on('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
     let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
-    let datePickerInputs = document.querySelectorAll('.multipleOfferingDatePicker');
-    let startTimeInputs = document.querySelectorAll('.multipleOfferingStartTime');
-    let endTimeInputs = document.querySelectorAll('.multipleOfferingEndTime');
+    let datePickerInputs = document.querySelectorAll('.nonRepeatingSeriesEventDatePicker');
+    let startTimeInputs = document.querySelectorAll('.nonRepeatingSeriesEventStartTimeTime');
+    let endTimeInputs = document.querySelectorAll('.nonRepeatingSeriesEventEndTimeTime');
     let isEmpty = false;
     let timeCheck = false;
     eventNameInputs.forEach(eventNameInput => {
