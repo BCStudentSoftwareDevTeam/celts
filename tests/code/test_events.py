@@ -268,7 +268,7 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRpeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRepeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
      
@@ -324,10 +324,14 @@ def test_calculateRepeatingEventFrequency():
 
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
-                 'endDate': parser.parse("03/9/2023")}
+                 'endDate': parser.parse("03/09/2023")}
 
     # test correct response
     returnedEvents = calculateRepeatingEventFrequency(eventInfo)
+    print('returned Events', returnedEvents)
+    print('One', returnedEvents[0])
+    print('Two',returnedEvents[1])
+    print('Three',returnedEvents[2])
     assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
     assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
     assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
@@ -425,8 +429,9 @@ def test_saveEventToDb_repeating():
 
             transaction.rollback()
 
+
 @pytest.mark.integration
-def test_saveEventToDb_multipleOffering():
+def test_saveEventToDb_nonRepeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
@@ -559,7 +564,7 @@ def test_cancelEvent():
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
-        # creates non-repeating event
+        # creates non-series event (single event)
         testingEvent = Event.create(name = "Testing delete event",
                                     term = 2,
                                     description = "This Event is Created to be Deleted.",
@@ -586,7 +591,7 @@ def test_deleteEvent():
 
         transaction.rollback()
 
-        # creates a repeating event
+        # creates a repeating series event
         eventInfo =  {'isFoodProvided': False,
                       'isRsvpRequired': False,
                       'rsvpLimit': None,
@@ -640,7 +645,7 @@ def test_deleteEvent():
         seriesId = event.seriesId
 
         totalRepeatingEvents = len(Event.select().where(Event.seriesId == seriesId))
-        #checks the number of all recurring events that will take place after a recurring event plus the event itself.
+        #checks the number of all repeating events that will take place after a repeating event plus the event itself.
         eventPlusAllRepeatingEventsAfter = len(Event.select().where((Event.seriesId == seriesId) & (Event.startDate >= eventIdToDelete.startDate)))
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
@@ -648,17 +653,18 @@ def test_deleteEvent():
             totalRepeatingEventsAfter = len(Event.select().where((Event.seriesId == seriesId)&(Event.deletionDate == None)))
         assert (totalRepeatingEvents - eventPlusAllRepeatingEventsAfter) == totalRepeatingEventsAfter
         transaction.rollback()
+
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteAllEventsInSeries(eventIdToDelete)
-            newTotalRepeatingEvents = len(Event.select().where((Event.seriesId == seriesId)& (Event.startDate >= eventIdToDelete.startDate)))
+            newTotalRepeatingEvents = len(Event.select().where((Event.seriesId == seriesId) & (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRepeatingEvents == 0
         transaction.rollback()
 
 
-        '''testing the deletion of multiple offering events individually and all at once'''
-        '''saveEventToDB is not working propoerly yet for multiple offering events; change will need to be made in the events.py in loogic'''
-        # creates a multiple offering event
+        '''testing the deletion of non-repeating series events, individually and all at once'''
+        '''saveEventToDB is not working propoerly yet for non-repeating series events; change will need to be made in the events.py in logic'''
+        # creates a non-repeating series event
         eventInfo =  {'isFoodProvided': False,
                       'isRsvpRequired': False,
                       'rsvpLimit': None,
@@ -666,6 +672,7 @@ def test_deleteEvent():
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
                       'isSeries': True,
+                      'isRepeating': False,
                       'seriesId': 10,
                       'startDate': parser.parse('12-12-2021'),
                       'endDate': parser.parse('01-18-2022'),
@@ -752,7 +759,7 @@ def test_upcomingEvents():
                                              endDate = testDate + timedelta(days=1),
                                              program= programForBanning)
 
-        newRecurringEvent = Event.create(name = "Recurring Event Test",
+        newSeriesEvent = Event.create(name = "Series Event Test",
                                          term = 2,
                                          description = "Test upcoming program event.",
                                          location = "The sun",
@@ -761,7 +768,7 @@ def test_upcomingEvents():
                                          seriesId = 1,
                                          program= programForInterest)
 
-        newRecurringSecond = Event.create(name = "Recurring second event",
+        newSeriesSecond = Event.create(name = "Series second event",
                                           term = 2,
                                           description = "Test upcoming program event.",
                                           location = "The sun",
@@ -770,7 +777,7 @@ def test_upcomingEvents():
                                           seriesId = 1,
                                           program= programForInterest)
 
-        newRecurringDifferentId = Event.create(name = "Recurring different Id",
+        newSeriesDifferentId = Event.create(name = "Series different Id",
                                                term = 2,
                                                description = "Test upcoming program event.",
                                                location = "The sun",
@@ -778,15 +785,6 @@ def test_upcomingEvents():
                                                endDate = date(2021,12,13),
                                                seriesId = 2,
                                                program= programForInterest)
-        
-        multipleOfferingEvent = Event.create(name = "Mltiple Offering Id",
-                                            term = 2,
-                                            description = "Test multiple offering event",
-                                            location = "The moon",
-                                            startDate = date(2021,12,13),
-                                            endDate = date(2021,12,13),
-                                            multipleOfferingId = 2,
-                                            program= programForMultiple)
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
@@ -796,10 +794,9 @@ def test_upcomingEvents():
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
-        assert newRecurringDifferentId in eventsInUserInterestedProgram
-        assert newRecurringEvent in eventsInUserInterestedProgram
-        assert newRecurringSecond not in eventsInUserInterestedProgram
-        assert multipleOfferingEvent in eventsInUserInterestedProgram
+        assert newSeriesDifferentId in eventsInUserInterestedProgram
+        assert newSeriesEvent in eventsInUserInterestedProgram
+        assert newSeriesSecond not in eventsInUserInterestedProgram
 
         # Programs the user is banned from do not have their events showing up in
         # their upcoming events
@@ -948,23 +945,10 @@ def test_calculateNewSeriesId():
     assert calculateNewSeriesId() == maxSeriesId
 
 @pytest.mark.integration
-def test_getPreviousRecurringEventData():
+def test_getPreviousRepeatingEventData():
     with mainDB.atomic() as transaction:
 
         testingEvent1 = Event.create(name = "Testing delete event",
-                                     term = 2,
-                                     description = "This Event is Created to be Deleted.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "No Where",
-                                     isRsvpRequired = 0,
-                                     isTraining = 0,
-                                     isService = 0,
-                                     startDate = "2021-12-5",
-                                     endDate = "2022-12-5",
-                                     seriesId = 3,
-                                     program = 9)
-        testingEvent2 = Event.create(name = "Testing delete event",
                                      term = 2,
                                      description = "This Event is Created to be Deleted.",
                                      timeStart = "6:00 pm",
@@ -977,7 +961,7 @@ def test_getPreviousRecurringEventData():
                                      endDate = "2022-12-12",
                                      seriesId = 3,
                                      program = 9)
-        testingEvent3 = Event.create(name = "Testing delete event",
+        testingEvent2 = Event.create(name = "Testing delete event",
                                      term = 2,
                                      description = "This Event is Created to be Deleted.",
                                      timeStart = "6:00 pm",
@@ -992,16 +976,16 @@ def test_getPreviousRecurringEventData():
                                      program = 9)
 
         EventParticipant.create(user = User.get_by_id("neillz"),
-                                                      event = testingEvent2.id,
+                                                      event = testingEvent1.id,
                                                       hoursEarned = None)
         EventParticipant.create(user = User.get_by_id("ramsayb2"),
-                                                      event = testingEvent2.id,
+                                                      event = testingEvent1.id,
                                                       hoursEarned = None)
         EventParticipant.create(user = User.get_by_id("khatts"),
-                                                      event = testingEvent2.id,
+                                                      event = testingEvent1.id,
                                                       hoursEarned = None)
 
-        val = getPreviousRepeatingEventData(testingEvent3.seriesId)
+        val = getPreviousRepeatingEventData(testingEvent2.seriesId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"

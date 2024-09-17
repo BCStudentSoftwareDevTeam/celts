@@ -419,7 +419,7 @@ def getPreviousRepeatingEventData(seriesId):
 # RepeatingImplementation: remove function above
 def calculateRepeatingEventFrequency(event):
     """
-        Calculate the events to create based on a repating event start and end date. Takes a
+        Calculate the events to create based on a repeating event start and end date. Takes a
         dictionary of event data.
 
         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
