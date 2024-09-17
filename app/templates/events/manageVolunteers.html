@@ -340,7 +340,7 @@
           </button>
         </div>
         <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
-          {% if event.isRecurring and not event.isFirstRecurringEvent%}
+          {% if event.isRepeating and not event.isFirstRepeatingEvent%}
             {% if recurringVolunteers %}
               {%for participant in recurringVolunteers%}
                 <li>
@@ -355,7 +355,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        {% if event.isRecurring and recurringVolunteers and not event.isFirstRecurringEvent  %}
+        {% if event.isRepeating and recurringVolunteers and not event.isFirstRepeatingEvent  %}
         <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% endif %}
         {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteer") %}

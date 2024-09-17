@@ -64,7 +64,7 @@
     value="{{eventData.location}}" required>
 </div>
 <!-- Start and End Datepickers -->
-<div class="row col-md-12" id="nonMultipleOfferingDate">
+<div class="row col-md-12" id="nonSeriesDate">
   <div class="form-group col-md-6">
     <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
     <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
@@ -95,7 +95,7 @@
 </div>
 <br>
 <!-- Start and End Time -->
-<div class="mb-4" id="nonMultipleOfferingTime">
+<div class="mb-4" id="nonSeriesTime">
   <div class="row col-md-12">
     <div class="form-group col-md-6">
       <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
@@ -166,14 +166,14 @@
           {% if template.tag != 'all-volunteer' %}
           <div class="form-check form-switch pb-1">
             <fieldset>
-              <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring
+              <label class="custom-control-label" for='checkIsRepeating'><strong>This is a recurring
                   event.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if
-                eventData.isCheckRecurring}} />
-              <label class="custom-control-label" for='checkIsMultipleOffering'><strong>This is an event with multiple
+              <input class="form-check-input" type="checkbox" id="checkIsRepeating" name="isRepeating" {{"checked" if
+                eventData.isRepeating}} />
+              <label class="custom-control-label" for='checkIsSeries'><strong>This is an event with multiple
                   time offerings.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsMultipleOffering" name="isMultipleOffering"
-                {{"checked" if eventData.isCheckIsMultipleOffering}} />
+              <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
+                {{"checked" if eventData.seriesId}} />
             </fieldset>
           </div>
           {% endif %}
@@ -181,22 +181,22 @@
       </div>
       {% endif %}
 
-      {% if eventData.isRecurring == True and isNewEvent %}
+      {% if eventData.isRepeating == True and isNewEvent %}
       {% set hideDate = "" %}
-      {% set hideMultipleOffering = "d-none" %}
+      {% set hideNonRepeatingSeries = "d-none" %}
       {% elif eventData.isMultipleOffering == True and isNewEvent %}
       {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "" %}
+      {% set hideNonRepeatingSeries = "" %}
 
       {% else %}
       {% set hideDate = "d-none" %}
-      {% set hideMultipleOffering = "d-none" %}
+      {% set hideNonRepeatingSeries = "d-none" %}
       {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
 
-      <div class="{{hideDate}}" id="recurringTableDiv">
-        <table class="table table-striped" id="recurringEventsTable">
+      <div class="{{hideDate}}" id="repeatingTableDiv">
+        <table class="table table-striped" id="repeatingEventsTable">
           <thead>
             <tr>
               <th>Event Name</th>
@@ -206,8 +206,8 @@
           <tbody></tbody>
         </table>
       </div>
-      <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
-        <table class="table table-striped" id="multipleOfferingEventsTable">
+      <div class="{{hideNonRepeatingSeries}}" id="nonRepeatingSeriesTableDiv">
+        <table class="table table-striped" id="nonRepeatingSeriesTable">
           <thead>
             <tr>
               <th>Event Name</th>
@@ -222,7 +222,7 @@
         </table>
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
-      <input type="hidden" name="multipleOfferingData" value="hidden value here" id="multipleOfferingDataId">
+      <input type="hidden" name="seriesData" value="hidden value here" id="seriesDataId">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
@@ -389,7 +389,7 @@
         <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      {% if eventData.recurringId%}
+      {% if eventData.isRepeating%}
       <div class="modal-body">
         <div class="container-fluid">
           <p>This action is irreversible. </p>
@@ -401,7 +401,7 @@
             <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
               <button type="submit" class="btn btn-danger">Delete This and All Following</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+            <form action="/event/{{eventData.id}}/deleteAllRepeating" method='post'>
               <button type="submit" class="btn btn-danger">Delete Series </button>
             </form>
           </div>
@@ -453,13 +453,13 @@
   </div>
 </form>
 <!--multiple offering event modal-->
-<div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
+<div class="modal fade float-start col" data-bs-backdrop='static' id="nonRepeatingSeries">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">This is an event with multiple time offerings.</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-          id="multipleOfferingXbutton"></button>
+          id="nonSeriesEventsXButton"></button>
       </div>
       <div class="modal-body py-0">
         <div id="textNotifier" class="invalidFeedback"></div>
@@ -467,28 +467,28 @@
           <br>
         </div>
         <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="row mb-2 divStripes pt-3 pb-4" id="multipleOfferingEvent">
+          <div class="row mb-2 divStripes pt-3 pb-4" id="nonRepeatingSeriesEvent">
             <br>
             <div class="form-group mb-3">
               <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
-              <input type="text" class="form-control multipleOfferingNameField" id="eventName" name="eventName"
+              <input type="text" class="form-control nonRepeatingSeriesEventNameField" id="eventName" name="eventName"
                 placeholder="Enter event name" required>
             </div>
             
             <div class="form-group col-md-5">
-              <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event
+              <label class="form-label me-2 required" for="nonRepeatingSeriesEventDatePicker"><strong>Event
                   Date</strong></label>
-              <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
+              <div class='input-group date' id="nonRepeatingSeriesEventDate-{{pageLocation}}"
                 data-page-location="{{pageLocation}}">
                 <input autocomplete="off" type='date'
-                  class="form-control datePicker multipleOfferingDatePicker readonly"
-                  value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}"
-                  name="multipleOfferingDate" placeholder="Pick a start date"
-                  id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" />
+                  class="form-control datePicker nonRepeatingSeriesEventDatePicker readonly"
+                  value="{{ eventData.nonRepeatingSeriesEventDate.strftime('%m-%d-%Y') if eventData.nonRepeatingSeriesEventDate and eventData.nonRepeatingSeriesEventDate.strftime else eventData.nonRepeatingSeriesEventDate}}"
+                  name="nonRepeatingSeriesEventDate" placeholder="Pick a start date"
+                  id='nonRepeatingSeriesEventDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" />
               </div>
             </div>
             <div class="form-group col-md-3">
-              <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start
+              <label class="form-label me-2" for="nonRepeatingSeriesEventStartTimeTime-{{pageLocation}}"><strong>Start
                   Time</strong></label>
               <div class="input-group">
                 {% if eventData.timeStart %}
@@ -496,9 +496,9 @@
                 {% else %}
                   {% set startTime = "12:00" %}
                 {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime"
+                <input autocomplete="off" type="time" class="form-control timepicker nonRepeatingSeriesEventStartTimeTime"
                   value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time"
-                  id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                  id="nonRepeatingSeriesEventStartTimeTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                 <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
                     class="bi bi-clock"></i></span>
               </div>
@@ -511,14 +511,14 @@
                 {%else%}
                   {% set endTime = "13:00" %}
                 {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingEndTime"
+                <input autocomplete="off" type="time" class="form-control timepicker nonRepeatingSeriesEventEndTimeTime"
                   value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time"
-                  id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
+                  id="nonRepeatingSeriesEventEndTimeTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
                 <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i
                     class="bi bi-clock"></i></span>
               </div>
             </div>
-            <div class="delete_row d-none col-md-1" id="deleteMultipleOfferingEvent"> <!--delete div icon-->
+            <div class="delete_row d-none col-md-1" id="deleteNonRepeatingSeriesEvent"> <!--delete div icon-->
               <br />
               <i class="bi bi-trash btn-danger btn-lg px-2 py-1 deleteRow"></i>
             </div>
@@ -526,7 +526,7 @@
         </div>
       </div>
 
-      <div class="addMultipleOfferingEvent"> <!--add button for the slots-->
+      <div class="addNonRepeatingSeriesEvent"> <!--add button for the slots-->
         <i
           class="bi bi-plus-square col-md-1 py-2 d-flex flex-row justify-content-center btn-success btn-lg addMultipleBtn"></i>
       </div>
@@ -535,7 +535,7 @@
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
           id="cancelModalPreview">Cancel</button>
         {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-        <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}}
+        <button type="submit" name="submitParticipant" class="btn btn-primary" {{disableSave}}
           id="submitParticipant">Save</button> <!--check if text box empty upon save-->
       </div> 
   </div>
