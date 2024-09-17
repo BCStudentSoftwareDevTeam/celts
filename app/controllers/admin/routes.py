@@ -257,6 +257,7 @@ def renewEvent(eventId):
         flash("There was an error renewing the event. Please try again or contact Systems Support.", 'danger')
         return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
+@admin_bp.route('/event/<eventId>/view', methods=['GET'])
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])                              
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
