@@ -62,7 +62,7 @@ function calculateRepeatingEventFrequency(){
   }
   $('#submitParticipant').on('click', function() {
     //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
-    let eventNameInputs = document.querySelectorAll('.multipleOfferingNameField');
+    let eventNameInputs = document.querySelectorAll('.nonRepeatingSeriesEventNameField');
     let datePickerInputs = document.querySelectorAll('.nonRepeatingSeriesEventDatePicker');
     let startTimeInputs = document.querySelectorAll('.nonRepeatingSeriesEventStartTimeTime');
     let endTimeInputs = document.querySelectorAll('.nonRepeatingSeriesEventEndTimeTime');
@@ -122,7 +122,7 @@ function calculateRepeatingEventFrequency(){
         
     }
     else {
-      storeMultipleOfferingEventAttributes();
+      storeNonRepeatingSeriesEventAttributes();
       pendingmultipleEvents = [];
       $("#checkIsSeries").prop('checked', true);
       // Remove the modal and overlay from the DOM
@@ -133,7 +133,7 @@ function calculateRepeatingEventFrequency(){
     }
   });
 //build multi-event table
-function storeMultipleOfferingEventAttributes() {
+function storeNonRepeatingSeriesEventAttributes() {
     let entries = [];
     $(".extraSlots").children().each(function(index, element) {
         let rowData = $.map($(element).find("input"), (el) => $(el).val());
@@ -285,7 +285,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   //untoggles the button when the modal cancel or close button is clicked
-  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
+  $("#cancelModalPreview, #nonSeriesEventsXButton").click(function(){ 
     if (modalOpenedByEditButton == false) {
       $("#checkIsSeries").prop('checked', false);
       $('#nonSeriesTime, #nonSeriesDate').removeClass('d-none');
@@ -302,11 +302,11 @@ $(".startDatePicker, .endDatePicker").change(function () {
   /*cloning the div with ID nonRepeatingSeriesEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteNonRepeatingSeriesEvent so that when the trash icon is clicked, that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
-  $(".addMultipleOfferingEvent").click(function(){
-    let clonedMultipleOffering = $("#nonRepeatingSeriesEvent").clone();
-    let newMultipleObject = clonedMultipleOffering.attr("id", "nonRepeatingSeriesEvent" + counterAdd)
-    clonedMultipleOffering.find("#deleteNonRepeatingSeriesEvent").attr("id", "deleteNonRepeatingSeriesEvent" + counterAdd).removeClass('d-none');
-    $(".extraSlots").append(clonedMultipleOffering);
+  $(".addNonRepeatingSeriesEvent").click(function(){
+    let clonedNonRepeatingSeriesEvent = $("#nonRepeatingSeriesEvent").clone();
+    let newMultipleObject = clonedNonRepeatingSeriesEvent.attr("id", "nonRepeatingSeriesEvent" + counterAdd)
+    clonedNonRepeatingSeriesEvent.find("#deleteNonRepeatingSeriesEvent").attr("id", "deleteNonRepeatingSeriesEvent" + counterAdd).removeClass('d-none');
+    $(".extraSlots").append(clonedNonRepeatingSeriesEvent);
     pendingmultipleEvents.push(newMultipleObject);
     //stripes event sections in event modal
     if(counterAdd % 2 == 0){
@@ -317,7 +317,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       }
       counterAdd += 1
     //this is so that the trash icon can be used to delete the event
-    clonedMultipleOffering.on("click", "[id^=deleteNonRepeatingSeriesEvent]", function() {
+    clonedNonRepeatingSeriesEvent.on("click", "[id^=deleteNonRepeatingSeriesEvent]", function() {
       // Extract the numeric part from the id
       var id = $(this).attr('id').match(/\d+/)[0]; 
       $("#nonRepeatingSeriesEvent" + id).remove(); 
