@@ -480,7 +480,7 @@
                   Date</strong></label>
               <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
                 data-page-location="{{pageLocation}}">
-                <input autocomplete="off" type='date'
+                <input autocomplete="off" type='text'
                   class="form-control datePicker multipleOfferingDatePicker readonly"
                   value="{{ eventData.multipleOfferingDate.strftime('%m-%d-%Y') if eventData.multipleOfferingDate and eventData.multipleOfferingDate.strftime else eventData.multipleOfferingDate}}"
                   name="multipleOfferingDate" placeholder="Pick a start date"

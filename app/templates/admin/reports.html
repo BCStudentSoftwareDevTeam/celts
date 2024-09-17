@@ -1,34 +1,160 @@
 {% set title = "Download Reports" %}
 {% extends "base.html" %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="/static/css/reports.css"></link>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="/static/js/reports.js"></script>
+{% endblock %}
 
 {% block app_content %}
-<div class="download-container mt-50 text-center ">
-    <h1 class="mb-3">Download Annual Report</h1>
-    <form method="post" action="/admin/reports/download" class="form-group col">
-        <div class="d-flex flex-row text-center justify-content-evenly align-items-center">
-            <div class="col-md-3 d-flex flex-row justify-content-end g-0">
-                <label class="fw-bold py-2" for="academicYear">Academic Year:</label>
-            </div>
-            <div class="col-md-3">          
-                <select id="academicYear" name="academicYear" class="form-select" required>
+<div class="download-container mt-50 text-center d-flex flex-column align-items-center">
+    <h1 class="mb-3">Annual Report</h1>
+    <form method="post" action="/admin/reports/download" class="form-group col-md-6 d-flex flex-column align-items-center">
+        <div class="d-flex flex-column text-center justify-content-center align-items-center">
+            <div class="col-12 col-md-10 mb-3 d-flex justify-content-center">
+                <select id="academicYear" name="academicYear" class="form-select w-100" 
+                        style="max-width: 700px; min-width: 280px; padding: 10px; font-size: 16px;" required>
                     <option value="" disabled selected>Select an academic year</option>
                     {% for year in academicYears %}
                         <option value="{{ year }}">{{ year }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-3">
-                <button type="submit" class="d-flex flex-row justify-content-evenly align-items-center btn btn-primary btn-m " >
+            <div class="d-flex gap-3 justify-content-between">
+                <button type="submit" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
-                    <defs><linearGradient id="G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1" x1="6" x2="27" y1="24" y2="24" data-name="ÐÐµÐ·ÑÐ¼ÑÐ½Ð½ÑÐ¹ Ð³ÑÐ°Ð´Ð¸ÐµÐ½Ñ 10" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#21ad64"></stop><stop offset="1" stop-color="#088242"></stop></linearGradient></defs><path fill="#31c447" d="m41,10h-16v28h16c.55,0,1-.45,1-1V11c0-.55-.45-1-1-1Z"></path><path fill="#fff" d="m32,15h7v3h-7v-3Zm0,10h7v3h-7v-3Zm0,5h7v3h-7v-3Zm0-10h7v3h-7v-3Zm-7-5h5v3h-5v-3Zm0,10h5v3h-5v-3Zm0,5h5v3h-5v-3Zm0-10h5v3h-5v-3Z"></path><path fill="url(#G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1)" d="m27,42l-21-4V10l21-4v36Z"></path><path fill="#fff" d="m19.13,31l-2.41-4.56c-.09-.17-.19-.48-.28-.94h-.04c-.05.22-.15.54-.32.98l-2.42,4.52h-3.76l4.46-7-4.08-7h3.84l2,4.2c.16.33.3.73.42,1.18h.04c.08-.27.22-.68.44-1.22l2.23-4.16h3.51l-4.2,6.94,4.32,7.06h-3.74Z"></path>
+                        <defs>
+                            <linearGradient id="G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1" x1="6" x2="27" y1="24" y2="24" data-name="Gradient" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="#21ad64"></stop>
+                                <stop offset="1" stop-color="#088242"></stop>
+                            </linearGradient>
+                        </defs>
+                        <path fill="#31c447" d="m41,10h-16v28h16c.55,0,1-.45,1-1V11c0-.55-.45-1-1-1Z"></path>
+                        <path fill="#fff" d="m32,15h7v3h-7v-3Zm0,10h7v3h-7v-3Zm0,5h7v3h-7v-3Zm0-10h7v3h-7v-3Zm-7-5h5v3h-5v-3Zm0,10h5v3h-5v-3Zm0,5h5v3h-5v-3Zm0-10h5v3h-5v-3Z"></path>
+                        <path fill="url(#G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1)" d="m27,42l-21-4V10l21-4v36Z"></path>
+                        <path fill="#fff" d="m19.13,31l-2.41-4.56c-.09-.17-.19-.48-.28-.94h-.04c-.05.22-.15.54-.32.98l-2.42,4.52h-3.76l4.46-7-4.08-7h3.84l2,4.2c.16.33.3.73.42,1.18h.04c.08-.27.22-.68.44-1.22l2.23-4.16h3.51l-4.2,6.94,4.32,7.06h-3.74Z"></path>
                     </svg>
-                    <p class="mb-0 py-0">Download</p>
+                    <p class="mb-0 py-0 ms-2">Download</p>
+                </button>
+
+                <button id = "open-viz-modal" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+                        <circle fill="#FF7D5F" cx="24" cy="24" r="11.722"></circle>
+                        <path fill="#FFDA88" d="M15 19l6 10-6 10h18l-6-10 6-10H15z"></path>
+                    </svg>
+                    <p class="mb-0 py-0 ms-2">Visualize</p>
                 </button>
             </div>
-            </div>
         </div>
-    </form>    
+    </form>
 </div>
+
+<div class="visualization-container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6 visualiztion-div">
+            <p>Total Hours By Program</p>
+            <canvas id="chart1" class="chart-canvas"></canvas>
+        </div>
+        <div class="col-12 col-md-6 visualiztion-div">
+            <p>Hours By Major</p>
+            <canvas id="chart2" class="chart-canvas"></canvas>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center mt-3">
+        <div class="col-12 col-md-6 visualiztion-div">
+            <p>Volunteers Per Class Level</p>
+            <canvas id="chart3" class="chart-canvas"></canvas>
+        </div>
+        <div class="col-12 col-md-6 visualiztion-div">
+            <p>Retention Rate By Semester</p>
+            <canvas id="chart4" class="chart-canvas"></canvas>
+        </div>
+    </div>
 </div>
-{% endblock %} 
+
+<button id="open-viz-modal" class="btn btn-primary" data-bs-toggle="viz-modal" data-bs-target="">Open Modal</button>
+
+
+<div id="viz-modal" class="viz-modal">
+    <div class="viz-modal-content">
+        <button id="close-viz-modal" class="close-viz-modal">&times;</button>
+        <p>Content displayed in modal.</p>
+    </div>
+</div>
+
+
+<style>
+.chart-canvas {
+    width: 100% !important; /* Ensures canvas takes full width of its container */
+    max-width: 500px; /* Optional: set a max width to maintain the aspect ratio */
+    aspect-ratio: 1 / 1; /* Ensures a perfect square canvas for pie charts */
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Check console for any JavaScript errors and ensure this script is loading correctly
+
+// Bar chart for Total Hours By Program
+const chartData1 = {
+  type: 'bar',
+  data: {
+    labels: ['Computer Science', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [{
+      label: '# of Hours',
+      data: [12, 19, 3, 5, 2, 3],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+};
+new Chart(document.getElementById('chart1'), chartData1);
+
+// Pie chart for Hours By Major
+const pieData = {
+  type: 'pie',
+  data: {
+    labels: ['Computer Science', 'Engineering', 'Mathematics', 'Physics', 'Chemistry'],
+    datasets: [{
+      label: 'Hours By Major',
+      data: [20, 15, 25, 30, 10],
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+      hoverOffset: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Hours By Major'
+      }
+    }
+  }
+};
+new Chart(document.getElementById('chart2'), pieData);
+
+// Bar chart for Volunteers Per Class Level
+new Chart(document.getElementById('chart3'), chartData1);
+
+// Bar chart for Retention Rate By Semester
+new Chart(document.getElementById('chart4'), chartData1);
+</script>
+
+{% endblock %}
+
