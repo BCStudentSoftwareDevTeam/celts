@@ -54,36 +54,20 @@
     </form>
 </div>
 
-<div class="visualization-container">
-    <div class="row d-flex justify-content-center">
-        <div class="col-12 col-md-6 visualiztion-div">
-            <p>Total Hours By Program</p>
-            <canvas id="chart1" class="chart-canvas"></canvas>
-        </div>
-        <div class="col-12 col-md-6 visualiztion-div">
-            <p>Hours By Major</p>
-            <canvas id="chart2" class="chart-canvas"></canvas>
-        </div>
-    </div>
-    <div class="row d-flex justify-content-center mt-3">
-        <div class="col-12 col-md-6 visualiztion-div">
-            <p>Volunteers Per Class Level</p>
-            <canvas id="chart3" class="chart-canvas"></canvas>
-        </div>
-        <div class="col-12 col-md-6 visualiztion-div">
-            <p>Retention Rate By Semester</p>
-            <canvas id="chart4" class="chart-canvas"></canvas>
-        </div>
-    </div>
-</div>
-
-<button id="open-viz-modal" class="btn btn-primary" data-bs-toggle="viz-modal" data-bs-target="">Open Modal</button>
-
-
 <div id="viz-modal" class="viz-modal">
     <div class="viz-modal-content">
         <button id="close-viz-modal" class="close-viz-modal">&times;</button>
-        <p>Content displayed in modal.</p>
+        <div class="visualization-container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 col-md-6 visualiztion-div">
+                <canvas id="chart1" class="chart-canvas"></canvas>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 col-md-6 visualiztion-div">
+                <canvas id="chart2" class="chart-canvas"></canvas>
+            </div>
+        </div>
+        </div>
     </div>
 </div>
 
@@ -97,64 +81,7 @@
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// Check console for any JavaScript errors and ensure this script is loading correctly
 
-// Bar chart for Total Hours By Program
-const chartData1 = {
-  type: 'bar',
-  data: {
-    labels: ['Computer Science', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [{
-      label: '# of Hours',
-      data: [12, 19, 3, 5, 2, 3],
-      borderWidth: 1
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-};
-new Chart(document.getElementById('chart1'), chartData1);
-
-// Pie chart for Hours By Major
-const pieData = {
-  type: 'pie',
-  data: {
-    labels: ['Computer Science', 'Engineering', 'Mathematics', 'Physics', 'Chemistry'],
-    datasets: [{
-      label: 'Hours By Major',
-      data: [20, 15, 25, 30, 10],
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-      hoverOffset: 4
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Hours By Major'
-      }
-    }
-  }
-};
-new Chart(document.getElementById('chart2'), pieData);
-
-// Bar chart for Volunteers Per Class Level
-new Chart(document.getElementById('chart3'), chartData1);
-
-// Bar chart for Retention Rate By Semester
-new Chart(document.getElementById('chart4'), chartData1);
-</script>
 
 {% endblock %}
 

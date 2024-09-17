@@ -8,8 +8,8 @@
   right: 20%;
   bottom: 20%;
   width: 70%;
-  height: 70%;
-  overflow: auto;
-  background-color: blue;
-
+  height: 60%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #F0F0F0;
 }
