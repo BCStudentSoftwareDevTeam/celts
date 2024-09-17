@@ -232,20 +232,29 @@ $(document).ready(function () {
 function saveSelectedCohorts() {
   const selectedCohorts = [];
   $("input[name='cohorts[]']:checked").each(function () {
-    selectedCohorts.push($(this).val());
+    selectedCohorts.push($(this).val()); 
   });
-  localStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts));
+  sessionStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts)); 
 }
 
-// Attach the change event to all cohort checkboxes
 $(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
-
 function loadSelectedCohorts() {
-  const selectedCohorts = JSON.parse(localStorage.getItem("selectedCohorts")) || [];
-  selectedCohorts.forEach(function (year) {
-    $(`input[name='cohorts[]'][value='${year}']`).prop("checked", true);
+  const selectedCohorts = JSON.parse(sessionStorage.getItem("selectedCohorts")) || []; 
+  selectedCohorts.forEach(function (cohort) {
+    $("input[name='cohorts[]'][value='" + cohort + "']").prop("checked", true);
   });
 }
 
-// Call the function to load selected checkboxes when the page loads
-$(document).ready(loadSelectedCohorts);
+ 
+$(document).ready(function () {
+  loadSelectedCohorts();   
+
+ 
+  $("#createNewEventButton").on("click", function () {
+    clearSelectedCohorts(); // 
+  });
+});
+function clearSelectedCohorts() {
+  sessionStorage.removeItem("selectedCohorts"); 
+  $("input[name='cohorts[]']").prop("checked", false); 
+}
