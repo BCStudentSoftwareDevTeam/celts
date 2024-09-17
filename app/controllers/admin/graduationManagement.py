@@ -1,9 +1,11 @@
-from flask import render_template, g, abort, request, redirect, url_for
+from flask import render_template, g, abort, request, redirect, url_for, flash
 from app.models.user import User
 from app.controllers.admin import admin_bp
 
+from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent
 
-@admin_bp.route('/admin/graduationManagement', methods=['GET', 'POST'])
+
+@admin_bp.route('/admin/graduationManagement', methods=['GET'])
 def gradManagement():
 
     if not g.current_user.isAdmin:
@@ -11,25 +13,42 @@ def gradManagement():
 
     users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        has_graduated = request.form.get('hasGraduated') == 'true'
-
-        # Find the user by username
-        user = User.get_or_none(User.username == username)
-
-        if user:
-            # Update the graduation status
-            user.hasGraduated = has_graduated
-            user.save()
-            return jsonify({"status": "success"}), 200
-        else:
-            return jsonify({"status": "error", "message": "User not found"}), 404
-
-
     return render_template('/admin/graduationManagement.html', users = users)
 
 
+@admin_bp.route('/<username>/hasGraduated/', methods=['POST'])
+def hasGraduated(username):
+    """
+    This function 
+    username: unique value of a user to correctly identify them
+    """
+    try:
+        success = getGraduatedStudent(username)
+        if success:
+            return "", 200
+        else:
+            return "", 500
 
+    except Exception as e:
+        print(e)
+        return "Error Updating Graduation Status", 500
+
+@admin_bp.route('/<username>/hasNotGraduated/', methods=['POST'])
+def hasNotGraduated(username):
+    """
+    This function removes 
+    username: unique value of a user to correctly identify them
+    """
+    try:
+        removed = removeGraduatedStudent(username)
+        if removed:
+            flash("Graduation status has been updated!", "success")
+            return "", 200
+        else:
+            flash("Error!", "Failed to update graduation status.")
+            return "", 500
+    except Exception as e:
+        print(e)
+        return "Error Updating Graduation Status", 500
 
 

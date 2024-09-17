@@ -6,10 +6,30 @@ from peewee import JOIN, fn, Case, DoesNotExist
 from app.models.user import User
 from app.models.term import Term
 
-def getGraduatedStudents():
-    """
-        Get all the users who graduated
-    """
-    graduatedStudents = User.select().where(User.hasGraduated)
 
-    return graduatedStudents
+def getGraduatedStudent(username):
+    """
+    This function marks students as graduated
+    Parameters:
+    username: username of the user graduating
+    """
+    gradStudent = User.get(User.username == username)
+    if gradStudent:
+        gradStudent.hasGraduated = True
+        gradStudent.save()
+        return True
+    return False
+
+def removeGraduatedStudent(username):
+    """
+    This function unmarks students as graduated
+    Parameters:
+    username: username of the user graduating
+
+    """
+    notGradStudent = User.get(User.username == username)
+    if notGradStudent:
+        notGradStudent.hasGraduated = False
+        notGradStudent.save()
+        return True
+    return False

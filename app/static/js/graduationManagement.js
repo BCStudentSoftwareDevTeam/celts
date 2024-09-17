@@ -1,21 +1,35 @@
 $(document).ready(function() {
     $('#gradStudentsTable').DataTable();
+    let selectAllMode = true;
 
     $('.graduated-checkbox').change(function() {
-        let isChecked = $(this).is(':checked');
+        let hasGraduated = $(this).is(':checked');
         let username = $(this).data('username');
-        
+        let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
+        let graduationURL = "/" + username + "/" + routeUrl + "/"
+
         $.ajax({
             type: "POST", 
-            url: "/admin/graduationManagement/",
-            data: { username: username, hasGraduated: isChecked },
+            url: graduationURL,
             success: function(response) {
-                msgFlash("Graduation status has been updated!", "success");
+                msgFlash("Graduation status updated successfully!", "success")
+                console.log("Graduation status updated successfully!");
             },
-            error: function(error) {
-                msgToast("Error!", "Failed to update graduation status.");
-                $(this).prop('checked', !isChecked);  // Revert checkbox state on error
+            error: function(status, error) {
+                msgFlash("Graduation status updated successfully!", "error")
+                console.error("Error updating graduation status:", error);
             }
         });
+    });
+    $('#selectAll').click(function() {
+        let checkboxes = $('.graduated-checkbox');
+        if (selectAllMode) {
+            checkboxes.prop('checked', true).change();
+            $(this).text('Deselect All');
+        } else {
+            checkboxes.prop('checked', false).change();
+            $(this).text('Select All');
+        }
+        selectAllMode = !selectAllMode; // Toggle the state
     });
 });
