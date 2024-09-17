@@ -126,7 +126,7 @@ function calculateRepeatingEventFrequency(){
       pendingmultipleEvents = [];
       $("#checkIsSeries").prop('checked', true);
       // Remove the modal and overlay from the DOM
-      $('#modalMultipleOffering').modal('hide');
+      $('#nonRepeatingSeries').modal('hide');
       $('.invalidFeedback').css('display', 'none');
       $('#textNotifierPadding').removeClass('pt-5');
       msgFlash("Multiple time offering events saved!", "success");
@@ -268,7 +268,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $("#nonRepeatingSeriesTableDiv").removeClass('d-none');
       $("#checkIsRepeating").prop('checked', false);
       $(".endDateStyle, #repeatingTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('show');
+      $('#nonRepeatingSeries').modal('show');
       //hides the non multiple offering time and dates and replace
       $('#nonSeriesTime, #nonSeriesDate').addClass('d-none'); 
     }
@@ -278,7 +278,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $(".endDatePicker").prop('required', false);
       //set page UI back to default
       $("#nonRepeatingSeriesTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('hide');
+      $('#nonRepeatingSeries').modal('hide');
       $('#nonSeriesTime, #nonSeriesDate').removeClass('d-none');
       $(".startDatePicker").prop('required', true);
     }
@@ -290,7 +290,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $("#checkIsSeries").prop('checked', false);
       $('#nonSeriesTime, #nonSeriesDate').removeClass('d-none');
       $("#nonRepeatingSeriesTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('hide');
+      $('#nonRepeatingSeries').modal('hide');
       $('.extraSlots').children().not(':first').remove();
     }
     pendingmultipleEvents.forEach(function(element){
@@ -299,13 +299,13 @@ $(".startDatePicker, .endDatePicker").change(function () {
     });
   });
   
-  /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
-  the ID of the deleteMultipleOfferingEvent so that when the trash icon is clicked, that specific row will be deleted*/
+  /*cloning the div with ID nonRepeatingSeriesEvent and cloning, changing the ID of each clone going up by 1. This also changes 
+  the ID of the deleteNonRepeatingSeriesEvent so that when the trash icon is clicked, that specific row will be deleted*/
   let counterAdd = 0 // counter to add customized ids into the newly created slots
   $(".addMultipleOfferingEvent").click(function(){
-    let clonedMultipleOffering = $("#multipleOfferingEvent").clone();
-    let newMultipleObject = clonedMultipleOffering.attr("id", "multipleOfferingEvent" + counterAdd)
-    clonedMultipleOffering.find("#deleteMultipleOfferingEvent").attr("id", "deleteMultipleOfferingEvent" + counterAdd).removeClass('d-none');
+    let clonedMultipleOffering = $("#nonRepeatingSeriesEvent").clone();
+    let newMultipleObject = clonedMultipleOffering.attr("id", "nonRepeatingSeriesEvent" + counterAdd)
+    clonedMultipleOffering.find("#deleteNonRepeatingSeriesEvent").attr("id", "deleteNonRepeatingSeriesEvent" + counterAdd).removeClass('d-none');
     $(".extraSlots").append(clonedMultipleOffering);
     pendingmultipleEvents.push(newMultipleObject);
     //stripes event sections in event modal
@@ -317,10 +317,10 @@ $(".startDatePicker, .endDatePicker").change(function () {
       }
       counterAdd += 1
     //this is so that the trash icon can be used to delete the event
-    clonedMultipleOffering.on("click", "[id^=deleteMultipleOfferingEvent]", function() {
+    clonedMultipleOffering.on("click", "[id^=deleteNonRepeatingSeriesEvent]", function() {
       // Extract the numeric part from the id
       var id = $(this).attr('id').match(/\d+/)[0]; 
-      $("#multipleOfferingEvent" + id).remove(); 
+      $("#nonRepeatingSeriesEvent" + id).remove(); 
     });
   });
 

@@ -453,7 +453,7 @@
   </div>
 </form>
 <!--multiple offering event modal-->
-<div class="modal fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
+<div class="modal fade float-start col" data-bs-backdrop='static' id="nonRepeatingSeries">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
@@ -467,7 +467,7 @@
           <br>
         </div>
         <div class="extraSlots"><!--addition slot for data start time and end time-->
-          <div class="row mb-2 divStripes pt-3 pb-4" id="multipleOfferingEvent">
+          <div class="row mb-2 divStripes pt-3 pb-4" id="nonRepeatingSeriesEvent">
             <br>
             <div class="form-group mb-3">
               <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
@@ -478,7 +478,7 @@
             <div class="form-group col-md-5">
               <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event
                   Date</strong></label>
-              <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
+              <div class='input-group date' id="multipleOfferingDate-{{pageLocation}}"
                 data-page-location="{{pageLocation}}">
                 <input autocomplete="off" type='date'
                   class="form-control datePicker multipleOfferingDatePicker readonly"
@@ -518,7 +518,7 @@
                     class="bi bi-clock"></i></span>
               </div>
             </div>
-            <div class="delete_row d-none col-md-1" id="deleteMultipleOfferingEvent"> <!--delete div icon-->
+            <div class="delete_row d-none col-md-1" id="deleteNonRepeatingSeriesEvent"> <!--delete div icon-->
               <br />
               <i class="bi bi-trash btn-danger btn-lg px-2 py-1 deleteRow"></i>
             </div>
@@ -535,7 +535,7 @@
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
           id="cancelModalPreview">Cancel</button>
         {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-        <button type="submit" name="submitParticipant" class="btn btn-primary multipleOfferingSave" {{disableSave}}
+        <button type="submit" name="submitParticipant" class="btn btn-primary" {{disableSave}}
           id="submitParticipant">Save</button> <!--check if text box empty upon save-->
       </div> 
   </div>
