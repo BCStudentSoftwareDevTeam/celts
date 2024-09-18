@@ -430,7 +430,7 @@ def calculateRepeatingEventFrequency(event):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
     if event['endDate'] == event['startDate']:
-        raise Exception("This event is not a recurring event")
+        raise Exception("This event is not a repeating event")
     
     return [ {'name': f"{event['name']} Week {counter+1}",
               'date': event['startDate'] + timedelta(days=7*counter),

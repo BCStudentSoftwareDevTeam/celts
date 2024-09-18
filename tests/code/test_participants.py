@@ -203,7 +203,7 @@ def test_trainedParticipants():
                                                  isTraining = 1,
                                                  isService = 0,
                                                  startDate= "2021-12-12",
-                                                 recurringId = None,
+                                                 seriesId = None,
                                                  program = Program.get_by_id(1))
         
         # Create a new training event that will be canceled to verify the canceled event will not be a prerequisite.
@@ -217,7 +217,7 @@ def test_trainedParticipants():
                                           isTraining = 1,
                                           isService = 0,
                                           startDate= "2021-12-12",
-                                          recurringId = None,
+                                          seriesId = None,
                                           program = Program.get_by_id(1))
         
         # To meet the requirements to participante in an event from program one, a volunteer needs to attend 
@@ -390,7 +390,7 @@ def test_getParticipationStatusForTrainings():
                                     isTraining = 1,
                                     isService = 0,
                                     startDate= "2021-12-12",
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = Program.get_by_id(8))
 
         allProgramTrainings = (Event.select()
@@ -452,7 +452,7 @@ def test_getParticipationStatusForTrainings():
                                     isTraining = 1,
                                     isService = 0,
                                     startDate= f"{futureYear}-12-12",
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = Program.get_by_id(8))
 
           

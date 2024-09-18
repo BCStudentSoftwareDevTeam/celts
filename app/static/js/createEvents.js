@@ -252,7 +252,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
 
     if (seriesStatus == true && repeatingStatus == true){
-      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
+      msgFlash("You may not toggle repeating event and multiple time offering event at the same time!", "danger");
       $(event.target).prop('checked', false);
       return; 
     }

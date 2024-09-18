@@ -32,7 +32,7 @@ def setup():
                                     isService = 0,
                                     startDate =  "2021-12-12",
                                     endDate =  "2021-12-13",
-                                    recurringId = None,
+                                    seriesId = None,
                                     program=2)
 
     EventParticipant.create(user = testUser,
@@ -53,7 +53,7 @@ def setup():
                                   isService = 0,
                                   startDate =  "2021-12-12",
                                   endDate =  "2021-12-13",
-                                  recurringId = None,
+                                  seriesId = None,
                                   program= 5)
     
     EventParticipant.create(user = testUser,
@@ -93,7 +93,7 @@ def setup():
                                    isService = 0,
                                    startDate =  "2021-12-12",
                                    endDate =  "2021-12-13",
-                                   recurringId = None,
+                                   seriesId = None,
                                    program= 1)
 
     EventParticipant.create(user = testUser,
@@ -114,7 +114,7 @@ def setup():
                                       isService = 0,
                                       startDate =  "2021-12-12",
                                       endDate =  "2021-12-13",
-                                      recurringId = None,
+                                      seriesId = None,
                                       program = 9)
     
     EventParticipant.create(user = testUser,

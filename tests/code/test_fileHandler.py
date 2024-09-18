@@ -20,7 +20,7 @@ eventFileStorageObject= [FileStorage(filename= "eventfile.pdf")]
 
 handledEventFile = FileHandler(eventFileStorageObject, eventId=15)
 
-handledEventFileRecurring = FileHandler(eventFileStorageObject, eventId=16)
+handledEventFileRepeating = FileHandler(eventFileStorageObject, eventId=16)
 
 # creates base object for course tests
 courseFileStorageObject= [FileStorage(filename= "coursefile.pdf")]
@@ -66,12 +66,12 @@ def test_saveFiles():
         
         assert AttachmentUpload.select().where(AttachmentUpload.fileName == '15/eventfile.pdf').exists()
         
-        # test saving 2nd event in a hypothetical recurring series
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        # test saving 2nd event in a hypothetical Repeating series
+        handledEventFileRepeating.saveFiles(saveOriginalFile = Event.get_by_id(15))
         assert AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').exists()
         assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
         
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFileRepeating.saveFiles(saveOriginalFile = Event.get_by_id(15))
         assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
 
         # test course
@@ -103,8 +103,8 @@ def test_retrievePath():
         path = paths['15/eventfile.pdf'][0]
         assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
-        # test recurring event
-        # this tests that the recurring events are referencing the same file directory as the first event.
+        # test Repeating event
+        # this tests that the Repeating events are referencing the same file directory as the first event.
         eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 16)
         paths = handledEventFile.retrievePath(eventfiles)
         path = paths['15/eventfile.pdf'][0]
@@ -124,8 +124,8 @@ def test_deleteFile():
         # creates file in event file directory for deletion
         handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
 
-        # creates a second file to simulate recurring events
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        # creates a second file to simulate Repeating events
+        handledEventFileRepeating.saveFiles(saveOriginalFile = Event.get_by_id(15))
         
         # creates a course file for deletion
         handledCourseFile.saveFiles()

@@ -111,7 +111,7 @@ def createEvent(templateid, programid):
                 eventData['contactEmail'] = program.contactEmail
 
     # Try to save the form
-    # RepeatingImplementation: Not sure why multiple offerings is saved differently from recurring?
+    # RepeatingImplementation: Not sure why multiple offerings is saved differently from repeating?
     if request.method == "POST":
         eventData.update(request.form.copy())
         
@@ -154,7 +154,7 @@ def createEvent(templateid, programid):
            
             if program:
                 if eventData.get('isRepeating'):
-                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createActivityLog(f"Created a repeating event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 elif len(savedEventsList) >= 1 and eventData.get('isSeries'):
                         modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
                         
@@ -347,7 +347,7 @@ def eventDisplay(eventId):
         eventCountdown = getCountdownToEvent(event)
  
 
-        # Identify the next event in a recurring series
+        # Identify the next event in a repeating series
         if event.isRepeating:
             eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
