@@ -20,6 +20,7 @@ class Event(baseModel):
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
     multipleOfferingId = IntegerField(null=True)
+    seriesId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program)
@@ -53,9 +54,18 @@ class Event(baseModel):
         return bool(self.recurringId)
 
     @property
+    def isRepeating(self):
+        return bool(self.seriesId)
+
+    @property
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
+    
+    @property
+    def isFirstRepeatingEvent(self):
+        firstRepeatingEvent = Event.select().where(Event.seriesId==self.seriesId).order_by(Event.id).get()
+        return firstRepeatingEvent.id == self.id
 
     @property
     def isMultipleOffering(self):
