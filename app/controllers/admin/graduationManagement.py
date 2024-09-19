@@ -11,7 +11,7 @@ def gradManagement():
     if not g.current_user.isAdmin:
         abort(403)
 
-    users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
+    users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName, User.isBonnerScholar).where(User.classLevel=='Senior')
     selectedTerm = getAllTerms()
 
     return render_template('/admin/graduationManagement.html', users = users, 
