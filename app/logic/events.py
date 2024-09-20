@@ -36,27 +36,60 @@ def cancelEvent(eventId):
     createActivityLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 
+# def deleteEvent(eventId):
+#     """
+#     Deletes an event, if it is a recurring event, rename all following events
+#     to make sure there is no gap in weeks.
+#     """
+#     event = Event.get_or_none(Event.id == eventId)
+
+#     if event:
+#         if event.recurringId:
+#             recurringId = event.recurringId
+#             recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
+#             eventDeleted = False
+
+#             # once the deleted event is detected, change all other names to the previous event's name
+#             for recurringEvent in recurringEvents:
+#                 if eventDeleted:
+#                     Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
+#                     newEventName = recurringEvent.name
+
+#                 if recurringEvent == event:
+#                     newEventName = recurringEvent.name
+#                     eventDeleted = True
+
+#         program = event.program 
+
+#         if program:
+#             createActivityLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+#         else:
+#             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
+#         Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
+
 def deleteEvent(eventId):
     """
-    Deletes an event, if it is a recurring event, rename all following events
+    Deletes an event, if it is a repeating event, rename all following events
     to make sure there is no gap in weeks.
+    
     """
     event = Event.get_or_none(Event.id == eventId)
 
     if event:
-        if event.recurringId:
-            recurringId = event.recurringId
-            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
+        if event.isRepeating:
+            seriesId = event.seriesId
+            repeatingEvents = list(Event.select().where(Event.seriesId==seriesId).order_by(Event.id)) # orders for tests
             eventDeleted = False
 
             # once the deleted event is detected, change all other names to the previous event's name
-            for recurringEvent in recurringEvents:
+            for repeatingEvent in repeatingEvents:
                 if eventDeleted:
-                    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
-                    newEventName = recurringEvent.name
+                    Event.update({Event.name:newEventName}).where(Event.id==repeatingEvent.id).execute()
+                    newEventName = repeatingEvent.name
 
-                if recurringEvent == event:
-                    newEventName = recurringEvent.name
+                if repeatingEvent == event:
+                    newEventName = repeatingEvent.name
                     eventDeleted = True
 
         program = event.program 
@@ -67,33 +100,59 @@ def deleteEvent(eventId):
             createActivityLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where(Event.id == event.id).execute()
-
+        
+# def deleteEventAndAllFollowing(eventId):
+#         """
+#         Deletes a recurring event and all the recurring events after it.
+#         Modified to also apply to the case of events with multiple offerings
+#         """
+#         event = Event.get_or_none(Event.id == eventId)
+#         if event:
+#             if event.recurringId:
+#                 recurringId = event.recurringId
+#                 recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+#                 deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
+#                 Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+#                 return deletedEventList
 
 def deleteEventAndAllFollowing(eventId):
         """
-        Deletes a recurring event and all the recurring events after it.
-        Modified to also apply to the case of events with multiple offerings
+        Deletes an event in the series and all events after it
+        
         """
         event = Event.get_or_none(Event.id == eventId)
-        if event:
-            if event.recurringId:
-                recurringId = event.recurringId
-                recurringSeries = list(Event.select(Event.id).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
-                deletedEventList = [recurringEvent.id for recurringEvent in recurringSeries]                
-                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)).execute()
+        if event.seriesId:
+                seriesId = event.seriesId
+                eventSeries = list(Event.select(Event.id).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)))
+                deletedEventList = [event.id for event in eventSeries]                
+                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)).execute()
                 return deletedEventList
 
-def deleteAllRecurringEvents(eventId):
+# def deleteAllRecurringEvents(eventId):
+#         """
+#         Deletes all recurring events.
+#         Modified to also apply for events with multiple offerings
+#         """
+#         event = Event.get_or_none(Event.id == eventId)
+#         if event:
+#             if event.recurringId:
+#                 recurringId = event.recurringId
+#             allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
+#             eventId = allRecurringEvents[0].id
+#         return deleteEventAndAllFollowing(eventId)
+
+#replaces: deleteAllRecurringEvents()
+def deleteAllEventsInSeries(eventId):
         """
-        Deletes all recurring events.
-        Modified to also apply for events with multiple offerings
+         Deletes all events in a series by getting the first event in the series and calling deleteEventAndAllFollowing().
+         
         """
         event = Event.get_or_none(Event.id == eventId)
         if event:
-            if event.recurringId:
-                recurringId = event.recurringId
-            allRecurringEvents = list(Event.select(Event.id).where(Event.recurringId == recurringId).order_by(Event.startDate))
-            eventId = allRecurringEvents[0].id
+            if event.seriesId:
+                seriesId = event.seriesId
+            allSeriesEvents = list(Event.select(Event.id).where(Event.seriesId == seriesId).order_by(Event.startDate))
+            eventId = allSeriesEvents[0].id
         return deleteEventAndAllFollowing(eventId)
         
 def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
@@ -114,7 +173,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     allSavesWereSuccessful = True
     
     # Creates a shared multipleOfferingId for all offerings to have
-    multipleOfferingId = calculateNewMultipleOfferingId()
+    seriesId = calculateNewSeriesId()
 
     # Create separate event data inheriting from the original eventData
     multipleOfferingData = eventData.get('multipleOfferingData')
@@ -126,7 +185,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
-                'multipleOfferingId': multipleOfferingId
+                'seriesId': seriesId
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
@@ -186,25 +245,26 @@ def saveEventToDb(newEventData, renewedEvent = False):
 
     
     eventsToCreate = []
-    recurringSeriesId = None
-    multipleSeriesId = None
-    if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
+    # recurringSeriesId = None
+    # multipleSeriesId = None
+    seriesId = None
+    if (isNewEvent and newEventData['isRepeating']) and not renewedEvent:
         eventsToCreate = getRecurringEventsData(newEventData)
-        recurringSeriesId = calculateNewrecurringId()
+        seriesId = calculateNewSeriesId()
         
     #temporarily applying the append for single events for now to tests  
-    elif(isNewEvent and newEventData['isMultipleOffering']) and not renewedEvent:
+    elif(isNewEvent and newEventData['isSeries']) and not renewedEvent:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-        multipleSeriesId = newEventData['multipleOfferingId']
+        # multipleSeriesId = newEventData['multipleOfferingId']
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
         if renewedEvent:
-            recurringSeriesId = newEventData.get('recurringId')
+            seriesId = newEventData.get('seriesId')
     eventRecords = []
     for eventInstance in eventsToCreate: 
         with mainDB.atomic():
@@ -231,8 +291,9 @@ def saveEventToDb(newEventData, renewedEvent = False):
             # it is a new event. 
             if isNewEvent:
                 eventData['program'] = newEventData['program']
-                eventData['recurringId'] = recurringSeriesId
-                eventData['multipleOfferingId'] = multipleSeriesId
+                # eventData['recurringId'] = recurringSeriesId
+                # eventData['multipleOfferingId'] = multipleSeriesId
+                eventData['seriesId'] = seriesId if seriesId else newEventData.get('seriesId')
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
@@ -357,19 +418,15 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     events = events.order_by(Event.startDate, Event.timeStart)
 
     eventsList = []
-    shownRecurringEventList = []
-    shownMultipleOfferingEventList = []
+    seriesEventsList = []
 
-    # removes all recurring events except for the next upcoming one
+    # removes all events in series except for the next upcoming one
     for event in events:
-        if event.recurringId or event.multipleOfferingId:
+        if event.seriesId:
             if not event.isCanceled:
-                if event.recurringId not in shownRecurringEventList:
+                if event.seriesId not in seriesEventsList:
                     eventsList.append(event)
-                    shownRecurringEventList.append(event.recurringId)
-                if event.multipleOfferingId not in shownMultipleOfferingEventList:
-                    eventsList.append(event)
-                    shownMultipleOfferingEventList.append(event.multipleOfferingId)
+                    seriesEventsList.append(event.seriesId)
         else:
             if not event.isCanceled:
                 eventsList.append(event)
@@ -410,10 +467,13 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
+    # if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
+    #     return (False, "Raw form data passed to validate method. Preprocess first.")
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating'], data['isSeries']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
-    if data['isRecurring'] and data['endDate']  <  data['startDate']:
+    # if data['isRecurring'] and data['endDate']  <  data['startDate']:
+    if data['isRepeating'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -430,7 +490,7 @@ def validateNewEventData(data):
         sameEventListCopy = sameEventList.copy()
 
         for event in sameEventListCopy:
-            if event.isCanceled or event.recurringId:   
+            if event.isCanceled or event.seriesId:   
                 sameEventList.remove(event)
 
         try:
@@ -443,50 +503,75 @@ def validateNewEventData(data):
     data['valid'] = True
     return (True, "All inputs are valid.")
 
-def calculateNewrecurringId():
-    """
-    Gets the highest recurring Id so that a new recurring Id can be assigned
-    """
-    recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
-    if recurringId:
-        return recurringId + 1
-    else:
-        return 1
-def calculateNewMultipleOfferingId():
-    """
-    Gets the highest recurring Id so that a new recurring Id can be assigned
-    """
-    multipleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
-    if multipleOfferingId:
-        return multipleOfferingId + 1
-    else:
-        return 1
+# def calculateNewrecurringId():
+#     """
+#     Gets the highest recurring Id so that a new recurring Id can be assigned
+#     """
+#     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
+#     if recurringId:
+#         return recurringId + 1
+#     else:
+#         return 1
+# def calculateNewMultipleOfferingId():
+#     """
+#     Gets the highest recurring Id so that a new recurring Id can be assigned
+#     """
+#     multipleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
+#     if multipleOfferingId:
+#         return multipleOfferingId + 1
+#     else:
+#         return 1
 
-def getPreviousRecurringEventData(recurringId):
+# RepeatingImplementation: Remove function above
+# replaces calculateNewMultipleOfferingId() and calculateNewrecurringId()
+def calculateNewSeriesId():
     """
-    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
+    Gets the max series ID so that new seriesId can be assigned.
+    """
+    maxSeriesId = Event.select(fn.MAX(Event.seriesId)).scalar()
+    if maxSeriesId:
+        return maxSeriesId + 1
+    return 1
+
+
+# def getPreviousRecurringEventData(recurringId):
+#     """
+#     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
+#     """
+#     previousEventVolunteers = (User.select(User).distinct()
+#                                    .join(EventParticipant)
+#                                    .join(Event)
+#                                    .where(Event.recurringId==recurringId))
+#     return previousEventVolunteers
+
+# def getPreviousMultipleOfferingEventData(multipleOfferingId):
+#     """
+#     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
+#     """
+#     previousEventVolunteers = (User.select(User).distinct()
+#                                    .join(EventParticipant)
+#                                    .join(Event)
+#                                    .where(Event.multipleOfferingId == multipleOfferingId))
+#     return previousEventVolunteers
+
+#replaces: getPreviousRecurringEventData(recurringId)
+
+def getPreviousRepeatingEventData(seriesId):
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event.
+    
     """
     previousEventVolunteers = (User.select(User).distinct()
                                    .join(EventParticipant)
                                    .join(Event)
-                                   .where(Event.recurringId==recurringId))
-    return previousEventVolunteers
-
-def getPreviousMultipleOfferingEventData(multipleOfferingId):
-    """
-    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
-    """
-    previousEventVolunteers = (User.select(User).distinct()
-                                   .join(EventParticipant)
-                                   .join(Event)
-                                   .where(Event.multipleOfferingId == multipleOfferingId))
+                                   .where(Event.seriesId==seriesId))
     return previousEventVolunteers
 
 def getRecurringEventsData(eventData):
     """
-        Calculate the events to create based on a recurring event start and end date. Takes a
+        Calculate the events to create based on a repeating event start and end date. Takes a
         dictionary of event data.
-
+        
         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
 
         Return a list of events to create from the event data.
@@ -514,7 +599,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isMultipleOffering', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isSeries', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
@@ -532,9 +617,8 @@ def preprocessEventData(eventData):
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
     
-    # If we aren't recurring, all of our events are single-day or mutliple offerings, which also have the same start and end date
-    if not eventData['isRecurring']:
-        eventData['endDate'] = eventData['startDate']
+    # If we aren't repeating, all of our events are single-day or mutliple offerings, which also have the same start and end date
+    if not eventData['isRepeating']:
     
     # Process multipleOfferingData
     if 'multipleOfferingData' not in eventData:
