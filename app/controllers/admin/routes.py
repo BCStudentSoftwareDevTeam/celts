@@ -30,7 +30,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -425,9 +425,9 @@ def deleteEventAndAllFollowingRoute(eventId):
         return "", 500
     
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
-def deleteAllRecurringEventsRoute(eventId):
+def deleteAllEventsInSeriesRoute(eventId):
     try:
-        session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
+        session["lastDeletedEvent"] = deleteAllEventsInSeries(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -437,7 +437,7 @@ def deleteAllRecurringEventsRoute(eventId):
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
-    recurringEvents = getRecurringEventsData(preprocessEventData(request.form.copy()))
+    recurringEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
 

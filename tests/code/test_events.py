@@ -23,10 +23,10 @@ from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import preprocessEventData, validateNewEventData, getRecurringEventsData
+from app.logic.events import preprocessEventData, validateNewEventData, getRepeatingEventsData
 from app.logic.events import attemptSaveEvent, attemptSaveMultipleOfferings, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
-from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
+from app.logic.events import calculateNewSeriesId, getPreviousSeriesEventData, getUpcomingEventsForUser, calculateNewSeriesId
+from app.logic.events import deleteEventAndAllFollowing, deleteAllEventsInSeries, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -388,7 +388,7 @@ def test_calculateRecurringEventFrequency():
                  'endDate': parser.parse("03/9/2023")}
 
     # test correct response
-    returnedEvents = getRecurringEventsData(eventInfo)
+    returnedEvents = getRepeatingEventsData(eventInfo)
     assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
     assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
     assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
@@ -396,13 +396,13 @@ def test_calculateRecurringEventFrequency():
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = getRecurringEventsData(eventInfo)
+        returnedEvents = getRepeatingEventsData(eventInfo)
 
     # test non-recurring
     eventInfo["startDate"] = '2021/06/07'
     eventInfo["endDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = getRecurringEventsData(eventInfo)
+        returnedEvents = getRepeatingEventsData(eventInfo)
 
 @pytest.mark.integration
 def test_attemptSaveEvent():
@@ -788,7 +788,7 @@ def test_deleteEvent():
         transaction.rollback()
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deleteAllRecurringEvents(eventIdToDelete)
+            deleteAllEventsInSeries(eventIdToDelete)
             newTotalRecurringEvents = len(Event.select().where((Event.recurringId == recurringId)& (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRecurringEvents == 0
         transaction.rollback()
@@ -1076,25 +1076,25 @@ def test_format24HourTime():
         assert format24HourTime('Clever String')
 
 @pytest.mark.integration
-def test_calculateNewrecurringId():
+def test_calculateNewSeriesId():
 
     maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if maxRecurringId == None:
         maxRecurringId = 1
     else:
         maxRecurringId += 1
-    assert calculateNewrecurringId() == maxRecurringId
+    assert calculateNewSeriesId() == maxRecurringId
 
 
 @pytest.mark.integration
-def test_calculateNewMultipleOfferingId():
+def test_calculateNewSeriesId():
 
     maxMulitpleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
     if maxMulitpleOfferingId == None:
         maxMulitpleOfferingId = 1
     else:
         maxMulitpleOfferingId += 1
-    assert calculateNewMultipleOfferingId() == maxMulitpleOfferingId
+    assert calculateNewSeriesId() == maxMulitpleOfferingId
 
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
@@ -1150,7 +1150,7 @@ def test_getPreviousRecurringEventData():
                                                       event = testingEvent2.id,
                                                       hoursEarned = None)
 
-        val = getPreviousRecurringEventData(testingEvent3.recurringId)
+        val = getPreviousSeriesEventData(testingEvent3.recurringId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
@@ -1199,7 +1199,7 @@ def test_getPreviousMultipleOfferingEventData():
                                                       event = testingEvent1.id,
                                                       hoursEarned = None)
 
-        val = getPreviousMultipleOfferingEventData(testingEvent2.multipleOfferingId)
+        val = getPreviousSeriesEventData(testingEvent2.multipleOfferingId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"

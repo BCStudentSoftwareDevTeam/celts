@@ -449,7 +449,7 @@ def calculateNewSeriesId():
     return 1
 
 #replaces: getPreviousRecurringEventData(recurringId) and getPreviousMultipleOfferingEventData(multipleOfferingId):
-def getPreviousRepeatingEventData(seriesId):
+def getPreviousSeriesEventData(seriesId):
     """
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event.
     
