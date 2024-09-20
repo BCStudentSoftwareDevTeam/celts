@@ -74,12 +74,13 @@ def deleteEventAndAllFollowing(eventId):
         
         """
         event = Event.get_or_none(Event.id == eventId)
-        if event.seriesId:
-                seriesId = event.seriesId
-                eventSeries = list(Event.select(Event.id).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)))
-                deletedEventList = [event.id for event in eventSeries]                
-                Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)).execute()
-                return deletedEventList
+        if event:
+            if event.seriesId:
+                    seriesId = event.seriesId
+                    eventSeries = list(Event.select(Event.id).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)))
+                    deletedEventList = [event.id for event in eventSeries]                
+                    Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)).execute()
+                    return deletedEventList
 
 #replaces: deleteAllRecurringEvents()
 def deleteAllEventsInSeries(eventId):
@@ -186,7 +187,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
     
     eventsToCreate = []
     seriesId = None
-    if (isNewEvent and newEventData['isRepeating']) and not renewedEvent:
+    if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = getRepeatingEventsData(newEventData)
         seriesId = calculateNewSeriesId()
         
@@ -405,10 +406,10 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating'], data['isSeries']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isSeries']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
-    if data['isRepeating'] and data['endDate']  <  data['startDate']:
+    if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -493,7 +494,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isSeries', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isSeries', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
@@ -512,7 +513,7 @@ def preprocessEventData(eventData):
             eventData[eventDate] = ''
     
     # If we aren't repeating, all of our events are single-day or mutliple offerings, which also have the same start and end date
-    if not eventData['isRepeating']:
+    if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
         
     # Process multipleOfferingData
