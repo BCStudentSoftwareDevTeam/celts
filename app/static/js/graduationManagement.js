@@ -9,18 +9,13 @@ $(document).ready(function() {
     $('.dropdown-item').click(function() {
         var filterType = $(this).data('filter'); 
 
-        console.log('Filter type selected:', filterType);
-
         if (filterType === 'all') {
-            console.log('Showing all students');
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
                 $(this.node()).show();  
             });
             gradStudentsTable.draw(); 
         } else if (filterType === 'bonner') {
-            console.log('Showing only Bonner students');
-
             gradStudentsTable.rows().every(function() {
                 var studentType = $(this.node()).data('student-type'); 
                 if (studentType === 'bonner') {
