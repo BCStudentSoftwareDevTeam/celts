@@ -221,19 +221,25 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   $("#saveEvent").on('submit', function (event) {
-    let trainingStatus = $("#checkIsTraining").is(":checked")
-    let serviceHourStatus = $("#checkServiceHours").is(":checked")
-    let bonnersStatus = $("#checkBonners").is(":checked")
-    //check if user has selected a toggle, cancel form submission if not
-    if(trainingStatus || serviceHourStatus || bonnersStatus || $("#pageTitle").text() == 'Create All Volunteer Training'){
-      // Disable button when we are ready to submit
-      $(this).find("input[type=submit]").prop("disabled", true);
-    }
-    else {
-      msgFlash("You must toggle event is a training, event earns service hours, or is a Bonners Scholars event!", "danger");
-      event.preventDefault();
-    } 
-  });
+    let bonnersStatus = $("#checkBonners").is(":checked");
+    let eventData = {
+        // other event data
+        bonnersStatus: bonnersStatus
+    };
+    // Now save the bonnersStatus to the backend along with other event data
+    $.ajax({
+        type: 'POST',
+        url: '/saveEvent', // your save event API endpoint
+        data: eventData,
+        success: function(response) {
+            console.log('Event saved successfully!');
+        },
+        error: function(err) {
+            console.error('Error saving event:', err);
+        }
+    });
+});
+
   
   let modalOpenedByEditButton = false;
   
@@ -446,4 +452,33 @@ $(document).ready(function () {
 function clearSelectedCohorts() {
   sessionStorage.removeItem("selectedCohorts"); 
   $("input[name='cohorts[]']").prop("checked", false); 
+}
+$(document).ready(function() {
+  // Retrieve the saved bonners status from the event object
+  let savedBonnersStatus = getSavedBonnersStatusFromBackend(); // Replace with actual logic to get saved state
+
+  // Set the checkbox state based on the saved status
+  if (savedBonnersStatus) {
+      $("#checkBonners").prop('checked', true);
+  } else {
+      $("#checkBonners").prop('checked', false);
+  }
+});
+
+// Function to get the saved bonners status from the backend
+function getSavedBonnersStatusFromBackend() {
+  // Make an AJAX call to get the event data
+  let bonnersStatus;
+  $.ajax({
+      type: 'GET',
+      url: '/getEvent', // your API endpoint to get event data
+      async: false,
+      success: function(response) {
+          bonnersStatus = response.bonnersStatus; // Assume this comes back in the event data
+      },
+      error: function(err) {
+          console.error('Error fetching event data:', err);
+      }
+  });
+  return bonnersStatus;
 }
