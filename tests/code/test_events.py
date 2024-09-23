@@ -47,7 +47,7 @@ def test_event_end():
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=1),
                                     endDate = datetime.now() + timedelta(days=2),
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
 
@@ -68,7 +68,7 @@ def test_event_end():
                                     isService = 0,
                                     startDate = datetime.now(),
                                     endDate = datetime.now() + timedelta(days=1),
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
 
@@ -89,7 +89,7 @@ def test_event_end():
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=-3),
                                     endDate = datetime.now() + timedelta(days=-1),
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
 
@@ -407,7 +407,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'seriesId':None, 'isMultipleOffering':False,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
@@ -437,7 +437,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_attemptSaveMultipleOfferings():
     baseEventData =  {
-                    'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
+                    'isTraining':'on', 'isRecurring':False, 'seriesId':None, 'isMultipleOffering':True,
                     'startDate': '2021-12-12',
                     'rsvpLimit': None,
                     'endDate':'2022-06-12', 'location':"a big room",
@@ -502,6 +502,7 @@ def test_attemptSaveMultipleOfferings():
         
         # test duplicated data
         succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(duplicatedMultipleOfferingData, None)
+        print( attemptSaveMultipleOfferings(duplicatedMultipleOfferingData, None))
         assert succeeded == False
         assert len(savedEvents) == 0
         assert len(failedSavedOfferings) == 1
@@ -513,7 +514,7 @@ def test_attemptSaveMultipleOfferings():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'seriesId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
@@ -548,7 +549,7 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'isMultipleOffering':False, 'multipleOfferingId':None, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': True, 'seriesId':1, 'isMultipleOffering':False, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -567,19 +568,19 @@ def test_saveEventToDb_multipleOffering():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -598,9 +599,9 @@ def test_saveEventToDb_multipleOffering():
                 saveEventToDb(eventInfo_3)
             ]
             assert len(createdEvents) == 3
-            assert eventInfo_1['multipleOfferingId'] == 1
-            assert eventInfo_2['multipleOfferingId'] == 1
-            assert eventInfo_3['multipleOfferingId'] == 1
+            assert eventInfo_1['seriesId'] == 1
+            assert eventInfo_2['seriesId'] == 1
+            assert eventInfo_3['seriesId'] == 1
 
             transaction.rollback()
 
@@ -626,9 +627,8 @@ def test_saveEventToDb_update():
                         "location": "House",
                         'isFoodProvided': False,
                         'isRecurring': True,
-                        'recurringId': 3,
+                        'seriesId': 3,
                         'isMultipleOffering': False,
-                        'multipleOfferingId': None,
                         'isTraining': True,
                         'isRsvpRequired': True,
                         'rsvpLimit': None,
@@ -649,7 +649,7 @@ def test_saveEventToDb_update():
         assert afterUpdate.isRsvpRequired == True
         
         assert afterUpdate.program == Program.get_by_id(2)
-        assert afterUpdate.recurringId is None
+        assert afterUpdate.seriesId is None
         assert afterUpdate.isAllVolunteerTraining == False
         assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
@@ -709,7 +709,7 @@ def test_deleteEvent():
                                     isService = 0,
                                     startDate = "2021-12-12",
                                     endDate = " ",
-                                    recurringId = None,
+                                    seriesId = None,
                                     program = 9)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
@@ -732,7 +732,7 @@ def test_deleteEvent():
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
                       'isRecurring': True,
-                      'recurringId': 20,
+                      'seriesId': 20,
                       'startDate': parser.parse('12-12-2021'),
                       'endDate': parser.parse('01-18-2022'),
                       'location': "Your pet rubber ducks little pond",
@@ -748,10 +748,10 @@ def test_deleteEvent():
         eventInfo['program'] = Program.get_by_id(1)
         createdEvents = saveEventToDb(eventInfo)
         event = Event.get_by_id(createdEvents[0].id)
-        recurringId = event.recurringId
+        seriesId = event.seriesId
 
         # check how many events exist before event deletion and isDeleted should be false since they are not deleted yet
-        recurringEventsBefore = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
+        recurringEventsBefore = list(Event.select().where((Event.seriesId==seriesId)&(Event.deletionDate == None)).order_by(Event.seriesId))
         for counter, recurring in enumerate(recurringEventsBefore):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
             assert recurring.isDeleted == False
@@ -764,7 +764,7 @@ def test_deleteEvent():
 
         # check how many events exist after event deletion
         # event that got deleted now have a deletion date which is not None
-        recurringEventsAfter = list(Event.select().where((Event.recurringId==recurringId)&(Event.deletionDate == None)).order_by(Event.recurringId))
+        recurringEventsAfter = list(Event.select().where((Event.seriesId==seriesId)&(Event.deletionDate == None)).order_by(Event.seriesId))
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
@@ -775,21 +775,21 @@ def test_deleteEvent():
         eventInfo['program'] = Program.get_by_id(1)
         recurringEvents = saveEventToDb(eventInfo)
         eventIdToDelete = Event.get_by_id(recurringEvents[3].id)
-        recurringId = event.recurringId
+        seriesId = event.seriesId
 
-        totalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
+        totalRecurringEvents = len(Event.select().where(Event.seriesId == seriesId))
         #checks the number of all recurring events that will take place after a recurring event plus the event itself.
-        eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= eventIdToDelete.startDate)))
+        eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.seriesId == seriesId) & (Event.startDate >= eventIdToDelete.startDate)))
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteEventAndAllFollowing(eventIdToDelete)
-            totalRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId)&(Event.deletionDate == None)))
+            totalRecurringEventsAfter = len(Event.select().where((Event.seriesId == seriesId)&(Event.deletionDate == None)))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deleteAllEventsInSeries(eventIdToDelete)
-            newTotalRecurringEvents = len(Event.select().where((Event.recurringId == recurringId)& (Event.startDate >= eventIdToDelete.startDate)))
+            newTotalRecurringEvents = len(Event.select().where((Event.seriesId == seriesId)& (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRecurringEvents == 0
         transaction.rollback()
 
@@ -804,7 +804,7 @@ def test_deleteEvent():
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
                       'isMultipleOffering': True,
-                      'multipleOfferingId': 10,
+                      'seriesId': 10,
                       'startDate': parser.parse('12-12-2021'),
                       'endDate': parser.parse('01-18-2022'),
                       'location': "Your pet rubber ducks little pond",
@@ -896,7 +896,7 @@ def test_upcomingEvents():
                                          location = "The sun",
                                          startDate = date(2021,12,12),
                                          endDate = date(2021,12,14),
-                                         recurringId = 1,
+                                         seriesId = 1,
                                          program= programForInterest)
 
         newRecurringSecond = Event.create(name = "Recurring second event",
@@ -905,7 +905,7 @@ def test_upcomingEvents():
                                           location = "The sun",
                                           startDate = date(2021,12,14),
                                           endDate = date(2021,12,15),
-                                          recurringId = 1,
+                                          seriesId = 1,
                                           program= programForInterest)
 
         newRecurringDifferentId = Event.create(name = "Recurring different Id",
@@ -914,16 +914,16 @@ def test_upcomingEvents():
                                                location = "The sun",
                                                startDate = date(2021,12,13),
                                                endDate = date(2021,12,13),
-                                               recurringId = 2,
+                                               seriesId = 2,
                                                program= programForInterest)
         
-        multipleOfferingEvent = Event.create(name = "Mltiple Offering Id",
+        multipleOfferingEvent = Event.create(name = "Multiple Offering Id",
                                             term = 2,
                                             description = "Test multiple offering event",
                                             location = "The moon",
                                             startDate = date(2021,12,13),
                                             endDate = date(2021,12,13),
-                                            multipleOfferingId = 2,
+                                            seriesId = 2,
                                             program= programForMultiple)
 
         # User has not RSVPd and is Interested
@@ -1078,23 +1078,12 @@ def test_format24HourTime():
 @pytest.mark.integration
 def test_calculateNewSeriesId():
 
-    maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
-    if maxRecurringId == None:
-        maxRecurringId = 1
+    maxSeriesId = Event.select(fn.MAX(Event.seriesId)).scalar()
+    if maxSeriesId == None:
+        maxSeriesId = 1
     else:
-        maxRecurringId += 1
-    assert calculateNewSeriesId() == maxRecurringId
-
-
-@pytest.mark.integration
-def test_calculateNewSeriesId():
-
-    maxMulitpleOfferingId = Event.select(fn.MAX(Event.multipleOfferingId)).scalar()
-    if maxMulitpleOfferingId == None:
-        maxMulitpleOfferingId = 1
-    else:
-        maxMulitpleOfferingId += 1
-    assert calculateNewSeriesId() == maxMulitpleOfferingId
+        maxSeriesId += 1
+    assert calculateNewSeriesId() == maxSeriesId
 
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
@@ -1111,7 +1100,7 @@ def test_getPreviousRecurringEventData():
                                      isService = 0,
                                      startDate = "2021-12-5",
                                      endDate = "2022-12-5",
-                                     recurringId = 3,
+                                     seriesId = 3,
                                      program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
                                      term = 2,
@@ -1124,7 +1113,7 @@ def test_getPreviousRecurringEventData():
                                      isService = 0,
                                      startDate = "2022-12-12",
                                      endDate = "2022-12-12",
-                                     recurringId = 3,
+                                     seriesId = 3,
                                      program = 9)
         testingEvent3 = Event.create(name = "Testing delete event",
                                      term = 2,
@@ -1137,7 +1126,7 @@ def test_getPreviousRecurringEventData():
                                      isService = 0,
                                      startDate = "2022-12-19",
                                      endDate = "2022-12-19",
-                                     recurringId = 3,
+                                     seriesId = 3,
                                      program = 9)
 
         EventParticipant.create(user = User.get_by_id("neillz"),
@@ -1150,7 +1139,7 @@ def test_getPreviousRecurringEventData():
                                                       event = testingEvent2.id,
                                                       hoursEarned = None)
 
-        val = getPreviousSeriesEventData(testingEvent3.recurringId)
+        val = getPreviousSeriesEventData(testingEvent3.seriesId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
@@ -1173,7 +1162,7 @@ def test_getPreviousMultipleOfferingEventData():
                                      isService = 0,
                                      startDate = "2022-12-12",
                                      endDate = "2022-12-12",
-                                     multipleOfferingId = 3,
+                                     seriesId = 3,
                                      program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
                                      term = 2,
@@ -1186,7 +1175,7 @@ def test_getPreviousMultipleOfferingEventData():
                                      isService = 0,
                                      startDate = "2022-12-19",
                                      endDate = "2022-12-19",
-                                     multipleOfferingId = 3,
+                                     seriesId = 3,
                                      program = 9)
 
         EventParticipant.create(user = User.get_by_id("neillz"),
@@ -1199,7 +1188,7 @@ def test_getPreviousMultipleOfferingEventData():
                                                       event = testingEvent1.id,
                                                       hoursEarned = None)
 
-        val = getPreviousSeriesEventData(testingEvent2.multipleOfferingId)
+        val = getPreviousSeriesEventData(testingEvent2.seriesId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
