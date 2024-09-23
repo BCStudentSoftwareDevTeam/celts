@@ -230,8 +230,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
             # it is a new event. 
             if isNewEvent:
                 eventData['program'] = newEventData['program']
-                # eventData['recurringId'] = recurringSeriesId
-                # eventData['multipleOfferingId'] = multipleSeriesId
                 eventData['seriesId'] = seriesId if seriesId else newEventData.get('seriesId')
                 eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)

@@ -159,7 +159,7 @@ def createEvent(templateid, programid):
                     createActivityLog(f"Created events {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
-                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog(f"Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
@@ -226,7 +226,7 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId']),
+                    'isRecurring': bool(priorEvent['seriesId']),
                     'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
@@ -338,8 +338,8 @@ def eventDisplay(eventId):
  
 
         # Identify the next event in a recurring series
-        if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+        if event.seriesId:
+            eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
                                         .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
@@ -386,8 +386,8 @@ def undoEvent():
         for eventId in events: 
             Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-        recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
-        if event.recurringId is not None:
+        recurringEvents = list(Event.select().where((Event.seriesId==event.seriesId) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.seriesId is not None:
             nameCounter = 1
             for recurringEvent in recurringEvents:
                 newEventNameList = recurringEvent.name.split()
