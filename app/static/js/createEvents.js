@@ -384,10 +384,21 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
     });
   });
+
+  $("#checkIsRepeating").change(function() {
+    if ($(this).is(':checked')) {
+      $('.addMultipleOfferingEvent').hide();
+      $("#repeatingEventsDiv").removeClass('d-none');
+    } else {
+      $('.addMultipleOfferingEvent').show(); 
+      $("#repeatingEventsDiv").addClass('d-none');
+    }
+  })    
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(createOfferingModalRow)
+   
 
   $("#allowPastStart").click(function() {
     var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()

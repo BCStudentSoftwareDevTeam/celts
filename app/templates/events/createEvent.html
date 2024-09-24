@@ -462,12 +462,70 @@
         <div class="form-group" id="textNotifierPadding">
           <br>
         </div>
-
+        
         <!-- Template eventOffering row -->
-        <div class="d-flex justify-content-center">
-          <label class="p-1"><strong>This series repeats weekly</strong></label>
-          <input class="form-check-input" type="checkbox" id="checkIsRepeating" name="isRepeating" />
+        <div class="d-flex justify-content-start ms-1 form-check form-switch">
+          <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
+          <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
         </div>
+        
+        <!-- Repeating Event Date Picker -->
+        <div class="d-none mb-2" id="repeatingEventsDiv">
+          <div class="row col-md-12 my-3">
+            <div class="form-group col-md-3">
+              <label class="required form-label me-2" for="startDatePicker-repeatingEventsDiv"><strong>Start Date</strong></label>
+              <div class='input-group date startDate' id="startDate-repeatingEventsDiv" data-page-location="repeatingEventsDiv">
+                <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly"
+                  name="startDate" placeholder="Pick date" id='startDatePicker-repeatingEventsDiv'
+                  data-page-location="repeatingEventsDiv" required>
+                <div class="input-group-text" id="calendarIconStart-repeatingEventsDiv"
+                  onclick="$('#startDatePicker-repeatingEventsDiv').datepicker('show')">
+                  <span><i class="bi bi-calendar-plus-fill"></i></span>
+                </div>
+              </div>
+            </div>
+          
+            <div class="form-group col-md-3" id="endDatePicker-repeatingEventsDiv">
+              <label class="required form-label me-2" for="endDate-repeatingEventsDiv"><strong>End Date</strong></label>
+              <div class='input-group date endDate' id="endDate-repeatingEventsDiv" data-page-location="repeatingEventsDiv">
+                <input autocomplete="off" type='text' class="form-control datePicker endDatePicker"
+                  id='endDatePicker-repeatingEventsDiv'
+                  name="endDate" placeholder="Pick date" data-page-location="repeatingEventsDiv">
+                <div class="input-group-text" id="calendarIconEnd-repeatingEventsDiv"
+                  onclick="$('#endDatePicker-repeatingEventsDiv').datepicker('show')">
+                  <span><i class="bi bi-calendar-plus-fill"></i></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Start and End Time -->
+            <div class="form-group col-md-3">
+              <label class="form-label me-2" for="startTime-repeatingEventsDiv"><strong>Start Time</strong></label>
+              <div class="input-group">
+                <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}"
+                  name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-repeatingEventsDiv"
+                  data-page-location="repeatingEventsDiv" required />
+                <span class="input-group-text timeIcons" id="timeIcon1-repeatingEventsDiv" hidden><i
+                    class="bi bi-clock"></i></span>
+              </div>
+            </div>
+            <div class='form-group col-md-3'>
+              <label class="form-label me-2" for="endTime-repeatingEventsDiv"><strong>End Time</strong></label>
+              <div class="input-group">
+                <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd"
+                  aria-describedby="timeIcon2" placeholder="Pick an end time" class="startTime" id="endTime-repeatingEventsDiv"
+                  data-page-location="repeatingEventsDiv" required />
+                <span class="input-group-text timeIcons" id="timeIcon2-repeatingEventsDiv" hidden><i
+                    class="bi bi-clock"></i></span>
+              </div>
+            </div>
+            <!-- <div class="d-flex justify-content-center mt-2">
+              <button class="btn btn-primary btn-md"> Generate </button>
+            </div> -->
+          </div>
+        </div>
+
+
         <div class="eventOffering row mb-2 divStripes pt-3 pb-4 d-none" id="multipleOfferingEvent">
           <br>
           <div class="form-group mb-3">
