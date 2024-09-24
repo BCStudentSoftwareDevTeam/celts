@@ -1,13 +1,19 @@
 #selectAll-container {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  .btn {
-    margin-top: 10px;
-  }
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+}
 
 .btn-group {
-  text-align: center;
+  margin-right: 10px; /* Space between the dropdown and the buttons */
+}
 
-  margin-top: 500px;
+h1 {
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.container {
+  margin-bottom: 20px; /* Adjust this as needed for proper spacing */
 }

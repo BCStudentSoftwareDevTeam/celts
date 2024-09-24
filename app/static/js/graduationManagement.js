@@ -8,6 +8,9 @@ $(document).ready(function() {
     
     $('.dropdown-item').click(function() {
         var filterType = $(this).data('filter'); 
+        var buttonText = $(this).text();
+
+        $('.dropdown-toggle').text(buttonText);
 
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();
@@ -56,10 +59,7 @@ $(document).ready(function() {
             checkboxes.prop('checked', false).change();
             $(this).text('Select All');
         }
-        selectAllMode = !selectAllMode; // Toggle the state
+        selectAllMode = !selectAllMode; 
     });
-
-    //handle filter
-
     
 });

@@ -30,21 +30,23 @@
   </div>
 </center>
 <h2>Graduating/Graduated Students</h2>
-<div class="container">
+<div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          All
-      </button>
-      <div class="dropdown-menu">
-          <a class="dropdown-item" data-filter="all">All</a>
-          <a class="dropdown-item" data-filter="bonner">Bonner Students</a>
-      </div>
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      All
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" data-filter="all">All</a>
+      <a class="dropdown-item" data-filter="bonner">Bonner Students</a>
+    </div>
+  </div>
+
+  <div id="selectAll-container" class="btn-group">
+    <button class="btn btn-primary" id="selectAll">Select All</button>
+    <button class="btn btn-success" id="export">Export</button>
   </div>
 </div>
-<div id="selectAll-container">
-  <button class="btn btn-primary" id="selectAll">Select All</button>
-  <button class="btn btn-success" id="export">Export</button>
-</div>
+
 <table class="display" id="gradStudentsTable">
     <thead>
         <tr>
