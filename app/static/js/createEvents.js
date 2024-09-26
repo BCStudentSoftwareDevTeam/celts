@@ -225,16 +225,34 @@ $('#multipleOfferingSave').on('click', function() {
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
   let offerings = [];
-  $("#multipleOfferingSlots").children().each(function(index, element) {
-      let rowData = $.map($(element).find("input"), (el) => $(el).val());
-
+  let isRepeatingStatus = $("#checkIsRepeating").val();
+  $("#generatedEventsTable").children().each(function(index, element) {
+    let rowData = $.map($(element).find("input"), (el) => $(el).val());
+    let repeatingStartTime = $("#repeatingEventsStartTime").val();
+    let repeatingEndTime = $("#repeatingEventsEndTime").val();
+    let repeatingName = $("#repeatingEventsNamePicker").val();
+    console.log(repeatingStartTime, repeatingEndTime);
+    console.log(rowData)
+    rowData.forEach((data) =>{
       offerings.push({
-          eventName: rowData[0],
-          eventDate: rowData[1],
-          startTime: rowData[2],
-          endTime: rowData[3]
-      });
-  });
+        eventName: repeatingName,
+        eventDate: data,
+        startTime: repeatingStartTime,
+        endTime: repeatingEndTime
+    })    
+    console.log(offerings)
+    });
+});
+  // $("#multipleOfferingSlots").children().each(function(index, element) {
+  //     let rowData = $.map($(element).find("input"), (el) => $(el).val());
+  //     console.log(rowData)
+  //     offerings.push({
+  //         eventName: rowData[0],
+  //         eventDate: rowData[1],
+  //         startTime: rowData[2],
+  //         endTime: rowData[3]
+  //     });
+  // });
   $('#multipleOfferingSlots').children().remove();
   let offeringsJson = JSON.stringify(offerings);
   $("#multipleOfferingData").val(offeringsJson);
@@ -267,7 +285,7 @@ function verifyRepeatingFields(){
 function updateOfferingsTable() {
   let offerings = JSON.parse($("#multipleOfferingData").val())
 
-  var multipleOfferingTable = $("#multipleOfferingEventsTable");
+  var multipleOfferingTable = $("#seriesTable");
   multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
     //fromat to 12hr time for display
@@ -446,7 +464,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
     let attachedRow = $(this).closest(".eventOffering")
-    console.log("are you hitting?")
     attachedRow.animate({
       opacity: 0,
       height: '0px'
