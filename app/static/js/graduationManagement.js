@@ -18,6 +18,7 @@ $(document).ready(function() {
                 $(this.node()).show();  
             });
             gradStudentsTable.draw(); 
+            
         } else if (filterType === 'bonner') {
             gradStudentsTable.rows().every(function() {
                 var studentType = $(this.node()).data('student-type'); 
@@ -28,6 +29,18 @@ $(document).ready(function() {
                 }
             });
             gradStudentsTable.draw();
+        
+        } else if (filterType === 'cce') {
+            gradStudentsTable.rows().every(function() {
+                var studentType = $(this.node()).data('student-type'); 
+                if (studentType === 'cce') {
+                    $(this.node()).show(); 
+                } else {
+                    $(this.node()).hide();
+                }
+            });
+            gradStudentsTable.draw();
+        
         }
     });
 

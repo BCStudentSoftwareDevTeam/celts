@@ -20,16 +20,6 @@
 {% block app_content %}
 <h1 class="text-center mb-5">Graduation Management</h1>
 <div class="col-md-3 me-auto"></div>
-  <div class="form-group">
-  <center>
-    <select class="w-25" name='eventTerm' id='inputTerm' onchange="location=this.value">
-      {% for term in selectedTerm %}
-        <option value="{{selectedTerm}}">{{term.description}}</option>
-      {% endfor %}
-    </select>
-  </div>
-</center>
-<h2>Graduating/Graduated Students</h2>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group">
     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -38,6 +28,7 @@
     <div class="dropdown-menu">
       <a class="dropdown-item" data-filter="all">All</a>
       <a class="dropdown-item" data-filter="bonner">Bonner Students</a>
+      <a class="dropdown-item" data-filter="cce">CCE Minor</a>
     </div>
   </div>
 
