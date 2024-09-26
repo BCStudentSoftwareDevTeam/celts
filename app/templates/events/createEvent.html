@@ -472,47 +472,42 @@
         <!-- Repeating Event Date Picker -->
         <div class="d-none mb-2" id="repeatingEventsDiv">
           <div class="row col-md-12 my-3">
-            <div class="form-group col-md-3">
-              <label class="required form-label me-2" for="startDatePicker-repeatingEventsDiv"><strong>Start Date</strong></label>
-              <div class='input-group date startDate' id="startDate-repeatingEventsDiv" data-page-location="repeatingEventsDiv">
-                <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly"
-                  name="startDate" placeholder="Pick date" id='startDatePicker-repeatingEventsDiv'
-                  data-page-location="repeatingEventsDiv" required>
-                <div class="input-group-text" id="calendarIconStart-repeatingEventsDiv"
-                  onclick="$('#startDatePicker-repeatingEventsDiv').datepicker('show')">
-                  <span><i class="bi bi-calendar-plus-fill"></i></span>
-                </div>
+
+            <div class="form-group">
+              <label class="form-label me-2 mb-0" for="repeatingEventsName"><strong>Event Name</strong></label>
+              <div class='input-group date'>
+                <input autocomplete="off" type='text'
+                  class="form-control repeatingEventsField"
+                  name="repeatingEventsName" placeholder="Enter name"
+                  id='repeatingEventsNamePicker' />
               </div>
             </div>
-          
-            <div class="form-group col-md-3" id="endDatePicker-repeatingEventsDiv">
-              <label class="required form-label me-2" for="endDate-repeatingEventsDiv"><strong>End Date</strong></label>
-              <div class='input-group date endDate' id="endDate-repeatingEventsDiv" data-page-location="repeatingEventsDiv">
-                <input autocomplete="off" type='text' class="form-control datePicker endDatePicker"
-                  id='endDatePicker-repeatingEventsDiv'
-                  name="endDate" placeholder="Pick date" data-page-location="repeatingEventsDiv">
-                <div class="input-group-text" id="calendarIconEnd-repeatingEventsDiv"
-                  onclick="$('#endDatePicker-repeatingEventsDiv').datepicker('show')">
-                  <span><i class="bi bi-calendar-plus-fill"></i></span>
-                </div>
+
+            <div class="form-group col-md-4">
+              <label class="form-label me-2 mb-0" for="repeatingEventsStartDate"><strong>Start Date</strong></label>
+              <div class='input-group date'>
+                <input autocomplete="off" type='date'
+                  class="form-control repeatingEventsField readonly"
+                  name="repeatingEventsStartDate" placeholder="Pick a start date"
+                  id='repeatingEventsStartDatePicker' />
               </div>
             </div>
             
             <!-- Start and End Time -->
-            <div class="form-group col-md-3">
-              <label class="form-label me-2" for="startTime-repeatingEventsDiv"><strong>Start Time</strong></label>
+            <div class="form-group col-md-4">
+              <label class="form-label me-2 mb-0" for="startTime-repeatingEventsDiv"><strong>Start Time</strong></label>
               <div class="input-group">
-                <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}"
+                <input autocomplete="off" type="time" class="form-control timepicker startTime repeatingEventsField" value="{{startTime}}"
                   name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-repeatingEventsDiv"
                   data-page-location="repeatingEventsDiv" required />
                 <span class="input-group-text timeIcons" id="timeIcon1-repeatingEventsDiv" hidden><i
                     class="bi bi-clock"></i></span>
               </div>
             </div>
-            <div class='form-group col-md-3'>
-              <label class="form-label me-2" for="endTime-repeatingEventsDiv"><strong>End Time</strong></label>
+            <div class='form-group col-md-4'>
+              <label class="form-label me-2 mb-0" for="endTime-repeatingEventsDiv"><strong>End Time</strong></label>
               <div class="input-group">
-                <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd"
+                <input autocomplete="off" type="time" class="form-control timepicker endTime repeatingEventsField" value="{{endTime}}" name="timeEnd"
                   aria-describedby="timeIcon2" placeholder="Pick an end time" class="startTime" id="endTime-repeatingEventsDiv"
                   data-page-location="repeatingEventsDiv" required />
                 <span class="input-group-text timeIcons" id="timeIcon2-repeatingEventsDiv" hidden><i
@@ -522,7 +517,28 @@
             <!-- <div class="d-flex justify-content-center mt-2">
               <button class="btn btn-primary btn-md"> Generate </button>
             </div> -->
+            <div class="form-group">
+              <label class="form-label me-2 mb-0" for="repeatingEventsEndDate"><strong>Last Event Date</strong></label>
+              <div class='input-group date'>
+                <input autocomplete="off" type='date'
+                  class="form-control repeatingEventsEndDate repeatingEventsField readonly"
+                  name="repeatingEventsEndDate" placeholder="Pick a start date"
+                  id='repeatingEventsEndDatePicker' />
+              </div>
+            </div>
           </div>
+          <div class="d-none" id="generatedEvents">
+          <h3 class="mt-1 d-flex justify-content-center" id="generated-events-header"> Generated Events: </h3>
+          <table class="table table-striped" id="generatedEventsTable">
+            <thead>
+              <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
         </div>
 
 

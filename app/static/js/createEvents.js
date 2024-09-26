@@ -35,27 +35,56 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-function calculateRecurringEventFrequency(){
-  var eventDatesAndName = {name:$("#inputEventName").val(),
+// function calculateRecurringEventFrequency(){
+//   var eventDatesAndName = {name:$("#inputEventName").val(),
+//                             isRecurring: true,
+//                             startDate:$(".startDatePicker")[0].value,
+//                             endDate:$(".endDatePicker")[0].value}
+//   $.ajax({
+//     type:"POST",
+//     url: "/makeRecurringEvents",
+//     //get the startDate, endDate and name as a dictionary
+//     data: eventDatesAndName,
+//     success: function(jsonData){
+//       var recurringEvents = JSON.parse(jsonData)
+//       var recurringTable = $("#recurringEventsTable")
+//       $("#recurringEventsTable tbody tr").remove();
+//       for(var event of recurringEvents){
+//         var eventdate = new Date(event.date).toLocaleDateString()
+//         recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
+//         }
+//     },
+//     error: function(error){
+//       console.log(error)
+//     }
+//   });
+// }
+
+function calculateRepeatingEventFrequency(){
+  var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
                             isRecurring: true,
-                            startDate:$(".startDatePicker")[0].value,
-                            endDate:$(".endDatePicker")[0].value}
+                            startDate:$("#repeatingEventsStartDatePicker").val(),
+                            endDate:$("#repeatingEventsEndDatePicker").val()}
+  console.log(eventDatesAndName)
   $.ajax({
     type:"POST",
     url: "/makeRecurringEvents",
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
     success: function(jsonData){
-      var recurringEvents = JSON.parse(jsonData)
-      var recurringTable = $("#recurringEventsTable")
-      $("#recurringEventsTable tbody tr").remove();
-      for(var event of recurringEvents){
+      console.log(jsonData)
+      var generatedEvents = JSON.parse(jsonData)
+      var eventsTable = $("#generatedEventsTable")
+      $("#generatedEventsTable tbody tr").remove();
+      for(var event of generatedEvents){
         var eventdate = new Date(event.date).toLocaleDateString()
-        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
+        eventsTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
         }
+      $("#generatedEvents").removeClass("d-none");
     },
     error: function(error){
       console.log(error)
+      displayNotification("Failed to generate events.");
     }
   });
 }
@@ -226,6 +255,20 @@ function loadOfferingsToModal(){
   })    
 }
 
+function verifyRepeatingFields(){
+  // verifies all fields in the repeating table are not empty.
+  let repeatingFields = $(".repeatingEventsField");
+  let allFieldsFilled = true;
+  repeatingFields.each(function() {
+    let value = $(this).val();
+    if (value === "" || value == null){
+      allFieldsFilled = false;
+      return false;
+    }
+  })
+  return allFieldsFilled
+}
+
 // Update the table of offerings with the offerings from the hidden input field
 function updateOfferingsTable() {
   let offerings = JSON.parse($("#multipleOfferingData").val())
@@ -294,7 +337,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   updateDate(this);
 });
   if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
-    calculateRecurringEventFrequency();
+    calculateRepeatingEventFrequency();
   }
     handleFileSelection("attachmentObject")
 
@@ -393,7 +436,19 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $('.addMultipleOfferingEvent').show(); 
       $("#repeatingEventsDiv").addClass('d-none');
     }
-  })    
+  })
+  
+  $("#repeatingEventsDiv").change(function() {
+    if (verifyRepeatingFields()){
+      let startDate = new Date($("#repeatingEventsStartDatePicker").val());
+      let endDate = new Date ($("#repeatingEventsEndDatePicker").val());
+      if (endDate <= startDate){
+        displayNotification("Invalid dates.");
+        return;
+      }
+      calculateRepeatingEventFrequency();
+    }
+  })
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
@@ -446,7 +501,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(".startDatePicker, .endDatePicker").change(function () {
     if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
-      calculateRecurringEventFrequency();
+      calculateRepeatingEventFrequency();
     }
   });
 
