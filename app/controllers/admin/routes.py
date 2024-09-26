@@ -136,12 +136,12 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isRepeating') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
            
             if program:
-                if len(savedEvents) > 1 and eventData.get('isRecurring'):
+                if len(savedEvents) > 1 and eventData.get('isRepeating'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
                 elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
@@ -226,7 +226,7 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['seriesId']),
+                    'isRepeating': bool(priorEvent['seriesId']),
                     'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)

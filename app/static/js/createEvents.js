@@ -62,7 +62,7 @@ function format24to12HourTime(timeStr) {
 
 function calculateRepeatingEventFrequency(){
   var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
-                            isRecurring: true,
+                            isRepeating: true,
                             startDate:$("#repeatingEventsStartDatePicker").val(),
                             endDate:$("#repeatingEventsEndDatePicker").val()}
   console.log(eventDatesAndName)
