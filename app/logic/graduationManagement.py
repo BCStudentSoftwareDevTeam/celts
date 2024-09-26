@@ -34,10 +34,3 @@ def removeGraduatedStudent(username):
         return True
     return False
 
-def getAllTerms():
-    """
-        Return a list of all terms
-    """
-    allTerms = list(Term.select().order_by(Term.termOrder))
-
-    return allTerms

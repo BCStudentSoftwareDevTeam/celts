@@ -44,6 +44,25 @@ $(document).ready(function() {
         }
     });
 
+    $('.dropdown-item-new').click(function() {
+
+        var BfilterType = $(this).data('filter');
+
+        if (BfilterType === 'bonnercohort') {
+            gradStudentsTable.rows().every(function() {
+                var studentType = $(this.node()).data('student-type'); 
+                if (studentType === 'bonnercohort') {
+                    $(this.node()).show(); 
+                } else {
+                    $(this.node()).hide();
+                }
+            });
+            gradStudentsTable.draw();
+
+
+        }
+    });
+
     $('.graduated-checkbox').change(function() {
         let hasGraduated = $(this).is(':checked');
         let username = $(this).data('username');
