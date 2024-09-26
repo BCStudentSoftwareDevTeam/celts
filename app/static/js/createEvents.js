@@ -72,13 +72,18 @@ function calculateRepeatingEventFrequency(){
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
     success: function(jsonData){
-      console.log(jsonData)
       var generatedEvents = JSON.parse(jsonData)
       var eventsTable = $("#generatedEventsTable")
       $("#generatedEventsTable tbody tr").remove();
       for(var event of generatedEvents){
         var eventdate = new Date(event.date).toLocaleDateString()
-        eventsTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
+        eventsTable.append(
+          "<tr class='eventOffering'>" +
+          "<td>"+event.name+"</td>" + 
+          "<td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td>" +
+          "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
+          "</tr>"
+        );           
         }
       $("#generatedEvents").removeClass("d-none");
     },
@@ -127,17 +132,6 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   $("#multipleOfferingSlots").append(clonedMultipleOffering);
   pendingmultipleEvents.push(clonedMultipleOffering);
 
-  //this is so that the trash icon can be used to delete the event
-  clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
-    let attachedRow = $(this).closest(".eventOffering")
-    attachedRow.animate({
-        opacity: 0,
-        height: '0px'
-    }, 500, function() {
-        // After the animation completes, remove the row
-        attachedRow.remove();
-    });
-  });
   return clonedMultipleOffering
 }
 
@@ -436,7 +430,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $('.addMultipleOfferingEvent').show(); 
       $("#repeatingEventsDiv").addClass('d-none');
     }
-  })
+  });
   
   $("#repeatingEventsDiv").change(function() {
     if (verifyRepeatingFields()){
@@ -449,6 +443,18 @@ $(".startDatePicker, .endDatePicker").change(function () {
       calculateRepeatingEventFrequency();
     }
   })
+
+  $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
+    let attachedRow = $(this).closest(".eventOffering")
+    console.log("are you hitting?")
+    attachedRow.animate({
+      opacity: 0,
+      height: '0px'
+    }, 500, function() {
+        // After the animation completes, remove the row
+        attachedRow.remove();
+    });
+  });
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
