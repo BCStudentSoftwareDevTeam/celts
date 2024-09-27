@@ -35,31 +35,6 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-// function calculateRecurringEventFrequency(){
-//   var eventDatesAndName = {name:$("#inputEventName").val(),
-//                             isRecurring: true,
-//                             startDate:$(".startDatePicker")[0].value,
-//                             endDate:$(".endDatePicker")[0].value}
-//   $.ajax({
-//     type:"POST",
-//     url: "/makeRecurringEvents",
-//     //get the startDate, endDate and name as a dictionary
-//     data: eventDatesAndName,
-//     success: function(jsonData){
-//       var recurringEvents = JSON.parse(jsonData)
-//       var recurringTable = $("#recurringEventsTable")
-//       $("#recurringEventsTable tbody tr").remove();
-//       for(var event of recurringEvents){
-//         var eventdate = new Date(event.date).toLocaleDateString()
-//         recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
-//         }
-//     },
-//     error: function(error){
-//       console.log(error)
-//     }
-//   });
-// }
-
 function calculateRepeatingEventFrequency(){
   var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
                             isRepeating: true,
@@ -73,18 +48,10 @@ function calculateRepeatingEventFrequency(){
     data: eventDatesAndName,
     success: function(jsonData){
       var generatedEvents = JSON.parse(jsonData)
-      var eventsTable = $("#generatedEventsTable")
       $("#generatedEventsTable tbody tr").remove();
       for(var event of generatedEvents){
-        var eventdate = new Date(event.date).toLocaleDateString()
-        eventsTable.append(
-          "<tr class='eventOffering'>" +
-          "<td id='offeringName'>"+event.name+"</td>" + 
-          "<td id='offeringDate'><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td>" +
-          "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
-          "</tr>"
-        );           
-        }
+        loadRepeatingOfferingToModal(event)
+      }
       $("#generatedEvents").removeClass("d-none");
     },
     error: function(error){
@@ -133,7 +100,6 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   pendingmultipleEvents.push(clonedMultipleOffering);
 
   return clonedMultipleOffering
-  //RepeatingImplementation: Honestly, just see if the functionality can be merged here? I'm not even too sure tbh.
 }
 
 $('#multipleOfferingSave').on('click', function() {
@@ -255,15 +221,6 @@ function saveOfferingsFromModal() {
   $("#seriesData").val(offeringsJson); // huh?
 }
 
-function loadOfferingsToModal(){
-  let offerings = JSON.parse($("#seriesData").val())
-  offerings.forEach((offering, i) =>{
-    let newOfferingModalRow = createOfferingModalRow(offering)
-    //stripes odd event sections in event modal
-    newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
-  })    
-}
-
 function verifyRepeatingFields(){
   // verifies all fields in the repeating table are not empty.
   let repeatingFields = $(".repeatingEventsField");
@@ -278,14 +235,35 @@ function verifyRepeatingFields(){
   return allFieldsFilled
 }
 
-function loadRepeatingSeriesInModal(series){
+function loadOfferingsToModal(){
+  let offerings = JSON.parse($("#seriesData").val())
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
+  offerings.forEach((offering, i) =>{
+    if (isRepeatingStatus){
+      loadRepeatingOfferingToModal(offering);
+    } else {
+      let newOfferingModalRow = createOfferingModalRow(offering);
+      //stripes odd event sections in event modal
+      newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
+    }})
+}
 
+function loadRepeatingOfferingToModal(offering){
+  var seriesTable = $("#generatedEventsTable");
+  var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
+  seriesTable.append(
+    "<tr class='eventOffering'>" +
+    "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
+    "<td id='offeringDate'>" + eventDate + "</td>" +
+    "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
+    "</tr>"
+  );
 }
 
 // Update the table of offerings with the offerings from the hidden input field
 function updateOfferingsTable() {
   let offerings = JSON.parse($("#seriesData").val())
-
   var offeringsTable = $("#offeringsTable");
   offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
@@ -302,7 +280,6 @@ function updateOfferingsTable() {
                                 );
   });
 }
-
 
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
