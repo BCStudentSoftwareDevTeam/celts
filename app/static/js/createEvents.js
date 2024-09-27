@@ -79,8 +79,8 @@ function calculateRepeatingEventFrequency(){
         var eventdate = new Date(event.date).toLocaleDateString()
         eventsTable.append(
           "<tr class='eventOffering'>" +
-          "<td>"+event.name+"</td>" + 
-          "<td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td>" +
+          "<td id='offeringName'>"+event.name+"</td>" + 
+          "<td id='offeringDate'><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td>" +
           "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
           "</tr>"
         );           
@@ -133,6 +133,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   pendingmultipleEvents.push(clonedMultipleOffering);
 
   return clonedMultipleOffering
+  //RepeatingImplementation: Honestly, just see if the functionality can be merged here? I'm not even too sure tbh.
 }
 
 $('#multipleOfferingSave').on('click', function() {
@@ -212,7 +213,7 @@ $('#multipleOfferingSave').on('click', function() {
     saveOfferingsFromModal();
     updateOfferingsTable();
     pendingmultipleEvents = [];
-    $("#checkIsMultipleOffering").prop('checked', true);
+    $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalMultipleOffering').modal('hide');
     $('.invalidFeedback').css('display', 'none');
@@ -251,11 +252,11 @@ function saveOfferingsFromModal() {
 
   $(dataTable).children().remove();
   let offeringsJson = JSON.stringify(offerings);
-  $("#multipleOfferingData").val(offeringsJson); // huh?
+  $("#seriesData").val(offeringsJson); // huh?
 }
 
 function loadOfferingsToModal(){
-  let offerings = JSON.parse($("#multipleOfferingData").val())
+  let offerings = JSON.parse($("#seriesData").val())
   offerings.forEach((offering, i) =>{
     let newOfferingModalRow = createOfferingModalRow(offering)
     //stripes odd event sections in event modal
@@ -277,9 +278,13 @@ function verifyRepeatingFields(){
   return allFieldsFilled
 }
 
+function loadRepeatingSeriesInModal(series){
+
+}
+
 // Update the table of offerings with the offerings from the hidden input field
 function updateOfferingsTable() {
-  let offerings = JSON.parse($("#multipleOfferingData").val())
+  let offerings = JSON.parse($("#seriesData").val())
 
   var offeringsTable = $("#offeringsTable");
   offeringsTable.find("tbody tr").remove(); // Clear existing rows
@@ -378,20 +383,20 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   updateOfferingsTable();
   
-  if ($("#checkIsMultipleOffering").is(":checked")){
+  if ($("#checkIsSeries").is(":checked")){
     setViewForMultipleOffering();
   }
   
   let modalOpenedByEditButton = false;
-  //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
+  //#checkIsRecurring, #checkIsSeries are attributes for the toggle buttons on create event page
+  $("#checkIsRecurring, #checkIsSeries, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
     let recurringStatus = $("#checkIsRecurring").is(":checked")
-    let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
+    let multipleOfferingStatus = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
 
@@ -402,7 +407,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
     }
     if (recurringStatus == true) {
       $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $("#checkIsSeries").prop('checked', false);
       $('#multipleOfferingTableDiv').addClass('d-none');
       $(".endDatePicker").prop('required', true);
     } 
@@ -427,7 +432,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
       $('#modalMultipleOffering').modal('hide');
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $("#checkIsSeries").prop('checked', false);
       setViewForSingleOffering()
     }
     pendingmultipleEvents.forEach(function(element){

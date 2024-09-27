@@ -115,12 +115,12 @@ def createEvent(templateid, programid):
         savedEvents = None
         eventData.update(request.form.copy())
         eventData = preprocessEventData(eventData)
-        if eventData.get('isMultipleOffering'):
-            eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
+        if eventData.get('isSeries'):
+            eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
             if not succeeded:
                 for index, validationErrorMessage in failedSavedOfferings:
-                    eventData['multipleOfferingData'][index]['isDuplicate'] = True
+                    eventData['seriesData'][index]['isDuplicate'] = True
                 validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
                 print(f"Failed to save offerings {failedSavedOfferings}")
         else:
@@ -136,15 +136,15 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = ((eventData.get('isRepeating') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isSeries')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
            
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRepeating'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-                
-                elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
+                # RepeatingImplementation: Fix this
+                elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
 
                     eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
@@ -229,6 +229,7 @@ def renewEvent(eventId):
                     'isRepeating': bool(priorEvent['seriesId']),
                     'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
                     })
+        # RepeatingImplementation: Fix the above.
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
             flash(message, "danger")

@@ -252,10 +252,10 @@ def test_preprocessEventData_requirement():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_preprocessEventData_multipleOfferingData():
-    # When there is no multipleOfferingData we should get a jsonified empty list
+def test_preprocessEventData_seriesData():
+    # When there is no seriesData we should get a jsonified empty list
     eventData = preprocessEventData({})
-    assert eventData['multipleOfferingData'] == json.dumps([])
+    assert eventData['seriesData'] == json.dumps([])
 
     # Test parsing from list
     offeringData = [
@@ -267,8 +267,8 @@ def test_preprocessEventData_multipleOfferingData():
                             'isDuplicate': False
                         }
                     ]
-    eventData = preprocessEventData({'multipleOfferingData': offeringData})
-    assert eventData['multipleOfferingData'] == json.dumps(offeringData)
+    eventData = preprocessEventData({'seriesData': offeringData})
+    assert eventData['seriesData'] == json.dumps(offeringData)
 
     # Test when data is missing/invalid
     offeringData = [
@@ -281,14 +281,14 @@ def test_preprocessEventData_multipleOfferingData():
                             'isDuplicate': True
                         }
                     ]
-    eventData = preprocessEventData({'multipleOfferingData': offeringData})
-    offering = json.loads(eventData['multipleOfferingData'])[1]
+    eventData = preprocessEventData({'seriesData': offeringData})
+    offering = json.loads(eventData['seriesData'])[1]
     assert offering['eventName'] == 'Offering 1'
     assert offering['startDate'] == 'Today'
     assert offering['timeStart'] == ''
     assert offering['timeEnd'] == ''
     assert offering['isDuplicate'] == True
-    defaultOffering = json.loads(eventData['multipleOfferingData'])[0]
+    defaultOffering = json.loads(eventData['seriesData'])[0]
     assert defaultOffering['eventName'] == ''
     assert defaultOffering['startDate'] == ''
     assert defaultOffering['timeStart'] == ''
@@ -307,8 +307,8 @@ def test_preprocessEventData_multipleOfferingData():
                             'isDuplicate': False
                         }
                     ])
-    eventData = preprocessEventData({'multipleOfferingData': offeringData})
-    offering = json.loads(eventData['multipleOfferingData'])[0]
+    eventData = preprocessEventData({'seriesData': offeringData})
+    offering = json.loads(eventData['seriesData'])[0]
     assert offering == json.loads(offeringData)[0]
 
 
@@ -449,8 +449,8 @@ def test_attemptSaveMultipleOfferings():
     
     baseEventData['program'] = Program.get_by_id(1)
 
-    validMultipleOfferingData = baseEventData.copy()
-    validMultipleOfferingData['multipleOfferingData'] = [{ 
+    validseriesData = baseEventData.copy()
+    validseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
                             'startTime': '09:00 PM',
@@ -469,8 +469,8 @@ def test_attemptSaveMultipleOfferings():
                             'endTime': '10:00 PM', 
                           }]
     
-    duplicatedMultipleOfferingData = baseEventData.copy()
-    duplicatedMultipleOfferingData['multipleOfferingData'] = [{ 
+    duplicatedseriesData = baseEventData.copy()
+    duplicatedseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
                             'startTime': '09:00 PM',
@@ -493,7 +493,7 @@ def test_attemptSaveMultipleOfferings():
     
     with mainDB.atomic() as transaction:
         # test valid data
-        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(validMultipleOfferingData, None)
+        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(validseriesData, None)
         assert succeeded == True
         assert len(savedEvents) == 3
         assert len(failedSavedOfferings) == 0
@@ -501,8 +501,8 @@ def test_attemptSaveMultipleOfferings():
         transaction.rollback()
         
         # test duplicated data
-        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(duplicatedMultipleOfferingData, None)
-        print( attemptSaveMultipleOfferings(duplicatedMultipleOfferingData, None))
+        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(duplicatedseriesData, None)
+        print( attemptSaveMultipleOfferings(duplicatedseriesData, None))
         assert succeeded == False
         assert len(savedEvents) == 0
         assert len(failedSavedOfferings) == 1

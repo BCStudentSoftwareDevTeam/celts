@@ -117,9 +117,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data inheriting from the original eventData
-    multipleOfferingData = eventData.get('multipleOfferingData')
+    seriesData = eventData.get('seriesData')
     with mainDB.atomic() as transaction:
-        for index, event in enumerate(multipleOfferingData):
+        for index, event in enumerate(seriesData):
             multipleOfferingDict = eventData.copy()
             multipleOfferingDict.update({
                 'name': event['eventName'],
@@ -488,7 +488,7 @@ def preprocessEventData(eventData):
         - checkboxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
-        - multipleOfferingData should be a JSON string
+        - seriesData should be a JSON string
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
@@ -514,28 +514,28 @@ def preprocessEventData(eventData):
     if not eventData['isRepeating']:
         eventData['endDate'] = eventData['startDate']
         
-    # Process multipleOfferingData
-    if 'multipleOfferingData' not in eventData:
-        eventData['multipleOfferingData'] = json.dumps([])
-    elif type(eventData['multipleOfferingData']) is str:
+    # Process seriesData
+    if 'seriesData' not in eventData:
+        eventData['seriesData'] = json.dumps([])
+    elif type(eventData['seriesData']) is str:
         try:
-            multipleOfferingData = json.loads(eventData['multipleOfferingData'])
-            eventData['multipleOfferingData'] = multipleOfferingData
-            if type(multipleOfferingData) != list:
-                eventData['multipleOfferingData'] = json.dumps([])
+            seriesData = json.loads(eventData['seriesData'])
+            eventData['seriesData'] = seriesData
+            if type(seriesData) != list:
+                eventData['seriesData'] = json.dumps([])
         except json.decoder.JSONDecodeError as e:
-            eventData['multipleOfferingData'] = json.dumps([])
-    if type(eventData['multipleOfferingData']) is list:
+            eventData['seriesData'] = json.dumps([])
+    if type(eventData['seriesData']) is list:
         # validate the list data. Make sure there is 'eventName', 'startDate', 'timeStart', 'timeEnd', and 'isDuplicate' data
-        multipleOfferingData = eventData['multipleOfferingData']
-        for offeringDatum in multipleOfferingData:    
+        seriesData = eventData['seriesData']
+        for offeringDatum in seriesData:    
             for attribute in ['eventName', 'startDate', 'timeStart', 'timeEnd']:
                 if type(offeringDatum.get(attribute)) != str:
                     offeringDatum[attribute] = ''
             if type(offeringDatum.get('isDuplicate')) != bool:
                     offeringDatum['isDuplicate'] = False
 
-        eventData['multipleOfferingData'] = json.dumps(eventData['multipleOfferingData'])
+        eventData['seriesData'] = json.dumps(eventData['seriesData'])
     
     # Process terms
     if 'term' in eventData:

@@ -170,10 +170,10 @@
                   event.</strong></label>
               <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if
                 eventData.isCheckRecurring}} />
-              <label class="custom-control-label" for='checkIsMultipleOffering'><strong>This is an event with multiple
+              <label class="custom-control-label" for='checkIsSeries'><strong>This is an event with multiple
                   time offerings.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsMultipleOffering" name="isMultipleOffering"
-                {{"checked" if eventData.isMultipleOffering}} />
+              <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
+                {{"checked" if eventData.isSeries}} />
             </fieldset>
           </div>
           {% endif %}
@@ -218,7 +218,7 @@
         </table>
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
-      <input type="hidden" name="multipleOfferingData" value="{{ eventData.multipleOfferingData }}" id="multipleOfferingData">
+      <input type="hidden" name="seriesData" value="{{ eventData.seriesData }}" id="seriesData">
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
@@ -537,7 +537,14 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="generatedEventsList"></tbody>
+            <tbody id="generatedEventsList">
+              <tr class="d-none" id="repeatingOffering">
+                <td id="offeringName"></td>
+                <td id="offeringDate"></td>
+                <td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>
+              </tr>
+              <!-- RepeatingImplementation: Next step here would be to move this to a function, like createOfferingModal -->
+            </tbody>
           </table>
         </div>
         </div>
