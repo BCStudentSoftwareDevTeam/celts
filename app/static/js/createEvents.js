@@ -63,8 +63,8 @@ function format24to12HourTime(timeStr) {
 function calculateRepeatingEventFrequency(){
   var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
                             isRepeating: true,
-                            startDate:$("#repeatingEventsStartDatePicker").val(),
-                            endDate:$("#repeatingEventsEndDatePicker").val()}
+                            startDate:$("#repeatingEventsStartDate").val(),
+                            endDate:$("#repeatingEventsEndDate").val()}
   console.log(eventDatesAndName)
   $.ajax({
     type:"POST",
@@ -225,37 +225,33 @@ $('#multipleOfferingSave').on('click', function() {
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
   let offerings = [];
-  let isRepeatingStatus = $("#checkIsRepeating").val();
-  $("#generatedEventsTable").children().each(function(index, element) {
-    let rowData = $.map($(element).find("input"), (el) => $(el).val());
-    let repeatingStartTime = $("#repeatingEventsStartTime").val();
-    let repeatingEndTime = $("#repeatingEventsEndTime").val();
-    let repeatingName = $("#repeatingEventsNamePicker").val();
-    console.log(repeatingStartTime, repeatingEndTime);
-    console.log(rowData)
-    rowData.forEach((data) =>{
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
+  $(dataTable).children().each(function(index, element) {
+    let rowData;
+    if (isRepeatingStatus){
+      rowData = $.map($(element).find("td"), function(td){
+        let input = $(td).find("input");
+        if (input.length){
+          return input.val();
+        } else {
+          return $(td).text().trim();
+        }
+      })}
+    else {
+      rowData = $.map($(element).find("input"), (el) => $(el).val());
+    }
       offerings.push({
-        eventName: repeatingName,
-        eventDate: data,
-        startTime: repeatingStartTime,
-        endTime: repeatingEndTime
-    })    
-    console.log(offerings)
-    });
-});
-  // $("#multipleOfferingSlots").children().each(function(index, element) {
-  //     let rowData = $.map($(element).find("input"), (el) => $(el).val());
-  //     console.log(rowData)
-  //     offerings.push({
-  //         eventName: rowData[0],
-  //         eventDate: rowData[1],
-  //         startTime: rowData[2],
-  //         endTime: rowData[3]
-  //     });
-  // });
-  $('#multipleOfferingSlots').children().remove();
+        eventName: rowData[0],
+        eventDate: rowData[1],
+        startTime: isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2],
+        endTime: isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+    })
+  });
+
+  $(dataTable).children().remove();
   let offeringsJson = JSON.stringify(offerings);
-  $("#multipleOfferingData").val(offeringsJson);
+  $("#multipleOfferingData").val(offeringsJson); // huh?
 }
 
 function loadOfferingsToModal(){
@@ -285,14 +281,14 @@ function verifyRepeatingFields(){
 function updateOfferingsTable() {
   let offerings = JSON.parse($("#multipleOfferingData").val())
 
-  var multipleOfferingTable = $("#seriesTable");
-  multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
+  var offeringsTable = $("#offeringsTable");
+  offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
-    multipleOfferingTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
+    offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
                                     "<td>" + offering.eventName + "</td>" +
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
@@ -452,8 +448,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
   
   $("#repeatingEventsDiv").change(function() {
     if (verifyRepeatingFields()){
-      let startDate = new Date($("#repeatingEventsStartDatePicker").val());
-      let endDate = new Date ($("#repeatingEventsEndDatePicker").val());
+      let startDate = new Date($("#repeatingEventsStartDate").val());
+      let endDate = new Date ($("#repeatingEventsEndDate").val());
       if (endDate <= startDate){
         displayNotification("Invalid dates.");
         return;

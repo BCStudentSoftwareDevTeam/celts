@@ -203,7 +203,7 @@
         </table>
       </div>
       <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
-        <table class="table table-striped" id="seriesTable">
+        <table class="table table-striped" id="offeringsTable">
           <thead>
             <tr>
               <th>Event Name</th>
@@ -489,7 +489,7 @@
                 <input autocomplete="off" type='date'
                   class="form-control repeatingEventsField readonly"
                   name="repeatingEventsStartDate" placeholder="Pick a start date"
-                  id='repeatingEventsStartDatePicker' />
+                  id='repeatingEventsStartDate' />
               </div>
             </div>
             
@@ -523,12 +523,12 @@
                 <input autocomplete="off" type='date'
                   class="form-control repeatingEventsEndDate repeatingEventsField readonly"
                   name="repeatingEventsEndDate" placeholder="Pick a start date"
-                  id='repeatingEventsEndDatePicker' />
+                  id='repeatingEventsEndDate' />
               </div>
             </div>
           </div>
           <div class="d-none" id="generatedEvents">
-          <h3 class="mt-1 d-flex justify-content-center" id="generated-events-header"> Generated Events: </h3>
+          <h3 class="mt-1 d-flex justify-content-center"> Generated Events: </h3>
           <table class="table table-striped" id="generatedEventsTable">
             <thead>
               <tr>
@@ -537,7 +537,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="generatedEventsList"></tbody>
           </table>
         </div>
         </div>
