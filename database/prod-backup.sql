@@ -921,35 +921,6 @@ INSERT INTO `note` VALUES (1,'lyonss','2023-03-30 13:23:33','Notes are not visib
 UNLOCK TABLES;
 
 --
--- Table structure for table `outsideparticipant`
---
-
-DROP TABLE IF EXISTS `outsideparticipant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `outsideparticipant` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `event_id` int NOT NULL,
-  `firstName` varchar(255) NOT NULL,
-  `lastName` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `phoneNumber` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `outsideparticipant_event_id` (`event_id`),
-  CONSTRAINT `outsideparticipant_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `outsideparticipant`
---
-
-LOCK TABLES `outsideparticipant` WRITE;
-/*!40000 ALTER TABLE `outsideparticipant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `outsideparticipant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `partner`
 --
 
