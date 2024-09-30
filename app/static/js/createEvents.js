@@ -84,6 +84,13 @@ function displayNotification(message) {
   });
 }
 
+function isDateInPast(dateString) {
+  const date = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date < today;
+}
+
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
   // Parameters are in the format: {'test name', '2024-09-11', '12:00', '13:00'}
 
@@ -122,6 +129,9 @@ $('#multipleOfferingSave').on('click', function() {
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
+  let hasPastDates = false;
+  const allowPastStart = $("#allowPastStart").is(":checked");
+
 
   // Check if the input field is empty
   eventNameInputs.each((index, eventNameInput) => {
@@ -142,6 +152,7 @@ $('#multipleOfferingSave').on('click', function() {
       $(datePickerInput).removeClass('border-red');
     }
   });  
+
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
@@ -173,37 +184,69 @@ $('#multipleOfferingSave').on('click', function() {
     }
   }
 
+  // Add past date validation
+  datePickerInputs.each(function(index, element) {
+    if (!allowPastStart && isDateInPast($(element).val())) {
+      $(element).addClass('border-red');
+      hasPastDates = true;
+    } else {
+      $(element).removeClass('border-red');
+    }
+  }); 
+
   if (isEmpty){
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
   }
-  else if(!hasValidTimes){
+  else if (!hasValidTimes) {
     let invalidTimeMessage = "Event end time must be after start time";
     displayNotification(invalidTimeMessage);
   }
-  else if (hasDuplicateListings){
+  else if (hasDuplicateListings) {
     let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
     displayNotification(eventConflictMessage);
   }
+  else if (hasPastDates) {
+    showModalFlashMessage("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
+  }
   else {
-    saveOfferingsFromModal();
+    let offerings = [];
+    eventOfferings.each(function(index, element) {
+      offerings.push({
+        eventName: $(element).find('.multipleOfferingNameField').val(),
+        eventDate: $(element).find('.multipleOfferingDatePicker').val(),
+        startTime: $(element).find('.multipleOfferingStartTime').val(),
+        endTime: $(element).find('.multipleOfferingEndTime').val()
+      });
+    });
+
+    let offeringsJson = JSON.stringify(offerings);
+    $("#multipleOfferingData").val(offeringsJson);
+
     updateOfferingsTable();
     pendingmultipleEvents = [];
     $("#checkIsMultipleOffering").prop('checked', true);
-    // Remove the modal and overlay from the DOM
     $('#modalMultipleOffering').modal('hide');
-    $('.invalidFeedback').css('display', 'none');
-    $('#textNotifierPadding').removeClass('pt-5');
     msgFlash("Multiple time offering events saved!", "success");
   }
 });
-
+function showModalFlashMessage(message, type) {
+  $('#textNotifier').removeClass().addClass('alert alert-' + type).text(message).show();
+  $('#textNotifierPadding').addClass('pt-5');
+  setTimeout(function() {
+    $('#textNotifier').hide();
+    $('#textNotifierPadding').removeClass('pt-5');
+  }, 5000);
+}
 
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
   let offerings = [];
+  let hasPastDates = false;
+  const allowPastStart = $("#allowPastStart").is(":checked");
+
   $("#multipleOfferingSlots").children().each(function(index, element) {
-      let rowData = $.map($(element).find("input"), (el) => $(el).val());
+    let rowData = $.map($(element).find("input"), (el) => $(el).val());
 
       offerings.push({
           eventName: rowData[0],
@@ -211,10 +254,21 @@ function saveOfferingsFromModal() {
           startTime: rowData[2],
           endTime: rowData[3]
       });
+
+    if (!allowPastStart && isDateInPast(rowData[1])) {
+      hasPastDates = true;
+    }
   });
+
+  if (hasPastDates) {
+    msgFlash("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
+    return false;
+  }
+
   $('#multipleOfferingSlots').children().remove();
   let offeringsJson = JSON.stringify(offerings);
   $("#multipleOfferingData").val(offeringsJson);
+  return true;
 }
 
 function loadOfferingsToModal(){
