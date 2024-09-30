@@ -422,9 +422,13 @@ $(".startDatePicker, .endDatePicker").change(function () {
     if ($(this).is(':checked')) {
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
+      $("#multipleOfferingSlots").children().remove();
+      $("#multipleOfferingSlots").addClass('d-none');
     } else {
       $('.addMultipleOfferingEvent').show(); 
       $("#repeatingEventsDiv").addClass('d-none');
+      $("#multipleOfferingSlots").removeClass('d-none');
+
     }
   });
   
