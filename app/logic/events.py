@@ -121,6 +121,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
             multipleOfferingDict = eventData.copy()
+            print (event.get('isRepeating'), "baaaaaaa")
             multipleOfferingDict.update({
                 'name': event['eventName'],
                 'startDate': event['eventDate'],
@@ -182,65 +183,45 @@ def saveEventToDb(newEventData, renewedEvent = False):
     if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
     
-    
     isNewEvent = ('id' not in newEventData)
 
-    # events to create will always have one event in it.
-    eventsToCreate = []
-    seriesId = None
-    if (isNewEvent and newEventData['isRepeating']) and not renewedEvent:
-        eventsToCreate = getRepeatingEventsData(newEventData)
-        seriesId = calculateNewSeriesId()
-        
-    #temporarily applying the append for single events for now to tests  
-    elif(isNewEvent and newEventData['isMultipleOffering']) and not renewedEvent:
-        eventsToCreate.append({'name': f"{newEventData['name']}",
-                                'date':newEventData['startDate'],
-                                "week":1})
-        
-    else:
-        eventsToCreate.append({'name': f"{newEventData['name']}",
-                                'date':newEventData['startDate'],
-                                "week":1})
-        if renewedEvent:
-            seriesId = newEventData.get('seriesId')
     eventRecords = []
-    for eventInstance in eventsToCreate: 
-        with mainDB.atomic():
-           
-            eventData = {
-                    "term": newEventData['term'],
-                    "name": eventInstance['name'],
-                    "description": newEventData['description'],
-                    "timeStart": newEventData['timeStart'],
-                    "timeEnd": newEventData['timeEnd'],
-                    "location": newEventData['location'],
-                    "isFoodProvided" : newEventData['isFoodProvided'],
-                    "isTraining": newEventData['isTraining'],
-                    "isRsvpRequired": newEventData['isRsvpRequired'],
-                    "isService": newEventData['isService'],
-                    "startDate": eventInstance['date'],
-                    "rsvpLimit": newEventData['rsvpLimit'],
-                    "endDate": eventInstance['date'],
-                    "contactEmail": newEventData['contactEmail'],
-                    "contactName": newEventData['contactName']
-                }
+    with mainDB.atomic():
+        
+        eventData = {
+                "term": newEventData['term'],
+                "name": newEventData['name'],
+                "description": newEventData['description'],
+                "timeStart": newEventData['timeStart'],
+                "timeEnd": newEventData['timeEnd'],
+                "location": newEventData['location'],
+                "isFoodProvided" : newEventData['isFoodProvided'],
+                "isTraining": newEventData['isTraining'],
+                "isRsvpRequired": newEventData['isRsvpRequired'],
+                "isService": newEventData['isService'],
+                "startDate": newEventData['startDate'],
+                "rsvpLimit": newEventData['rsvpLimit'],
+                "endDate": newEventData['startDate'],
+                "contactEmail": newEventData['contactEmail'],
+                "contactName": newEventData['contactName']
+            }
 
-            # The three fields below are only relevant during event creation so we only set/change them when 
-            # it is a new event. 
-            if isNewEvent:
-                eventData['program'] = newEventData['program']
-                eventData['seriesId'] = seriesId if seriesId else newEventData.get('seriesId')
-                eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
-                eventRecord = Event.create(**eventData)
-            else:
-                eventRecord = Event.get_by_id(newEventData['id'])
-                Event.update(**eventData).where(Event.id == eventRecord).execute()
+        # The three fields below are only relevant during event creation so we only set/change them when 
+        # it is a new event. 
+        if isNewEvent:
+            eventData['program'] = newEventData['program']
+            eventData['seriesId'] = newEventData.get('seriesId')
+            eventData['isRepeating'] = bool(newEventData.get('isRepeating'))
+            eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
+            eventRecord = Event.create(**eventData)
+        else:
+            eventRecord = Event.get_by_id(newEventData['id'])
+            Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
-                updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
+        if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
+            updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
-            eventRecords.append(eventRecord)
+        eventRecords.append(eventRecord)
     return eventRecords
 
 def getStudentLedEvents(term):
@@ -404,7 +385,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating'], data['isMultipleOffering']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRepeating'] and data['endDate']  <  data['startDate']:
@@ -492,7 +473,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isMultipleOffering', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
