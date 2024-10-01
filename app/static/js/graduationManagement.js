@@ -10,7 +10,7 @@ $(document).ready(function() {
         var filterType = $(this).data('filter'); 
         var buttonText = $(this).text();
 
-        $('.dropdown-toggle').text(buttonText);
+        $('.dropdown-toggle').first().text(buttonText);
 
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();
@@ -45,32 +45,30 @@ $(document).ready(function() {
     });
 
     $('.dropdown-item-new').click(function() {
+        
+        var cohortYear = $(this).data('cohort-year');
+        var buttonText = $(this).text();
 
-        var BfilterType = $(this).data('newfilter');
-        var year = $(this).text();
+        $('.dropdown-toggle.bonner-filter').text(buttonText);
+        
+        gradStudentsTable.rows().every(function() {
+            var studentYear = $(this.node()).data('cohort-year');
+            if (studentYear == cohortYear) {
+                $(this.node()).show(); 
+            } else {
+                $(this.node()).hide();
+            }
+        });
+        gradStudentsTable.draw();
 
-        year = year.substring(0,4)
-
-        msgFlash(year)
-
-        year = Integer.parseInt(year);
-
-
-
-
-        if (BfilterType === 'bonnercohort') {
-            gradStudentsTable.rows().every(function() {
-                var studentType = $(this.node()).data('student-type'); 
-                if (studentType === 'bonnercohort') {
-                    $(this.node()).show(); 
-                } else {
-                    $(this.node()).hide();
-                }
-            });
-            gradStudentsTable.draw();
-
-
-        }
+        $('.dropdown-menu .dropdown-item-new').each(function() {
+            var itemYear = $(this).data('cohort-year');
+            if (itemYear == cohortYear) {
+              $(this).addClass('active');
+            } else {
+              $(this).removeClass('active');
+            }
+        });
     });
 
     $('.graduated-checkbox').change(function() {

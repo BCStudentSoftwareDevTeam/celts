@@ -4,7 +4,7 @@ from app.controllers.admin import admin_bp
 from app.logic.bonner import getBonnerCohorts
 from app.models.bonnerCohort import BonnerCohort
 
-#from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent, getAllTerms
+from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent
 
 
 @admin_bp.route('/admin/graduationManagement', methods=['GET'])
@@ -14,12 +14,10 @@ def gradManagement():
         abort(403)
 
     users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
-    #selectedTerm = getAllTerms()
 
     bonnercohorts = getBonnerCohorts()
     
     return render_template('/admin/graduationManagement.html', users = users, 
-                           #selectedTerm = selectedTerm,
                            bonnercohorts = bonnercohorts)
 
 
