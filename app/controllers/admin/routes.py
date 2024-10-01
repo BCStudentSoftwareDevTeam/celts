@@ -146,7 +146,6 @@ def createEvent(templateid, programid):
                 # RepeatingImplementation: Fix this
                 elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
-
                     eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
 
                     if len(savedEvents) > 1:

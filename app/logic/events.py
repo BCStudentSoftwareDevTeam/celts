@@ -185,7 +185,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
     
     isNewEvent = ('id' not in newEventData)
 
-    
+    # events to create will always have one event in it.
     eventsToCreate = []
     seriesId = None
     if (isNewEvent and newEventData['isRepeating']) and not renewedEvent:
@@ -197,7 +197,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-        # multipleSeriesId = newEventData['multipleOfferingId']
         
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
