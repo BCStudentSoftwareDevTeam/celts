@@ -19,7 +19,7 @@ $(document).ready(function() {
             });
             gradStudentsTable.draw(); 
             
-        } else if (filterType === 'bonner') {
+        } else if (filterType === 'bonner' )  {
             gradStudentsTable.rows().every(function() {
                 var studentType = $(this.node()).data('student-type'); 
                 if (studentType === 'bonner') {
@@ -46,7 +46,17 @@ $(document).ready(function() {
 
     $('.dropdown-item-new').click(function() {
 
-        var BfilterType = $(this).data('filter');
+        var BfilterType = $(this).data('newfilter');
+        var year = $(this).text();
+
+        year = year.substring(0,4)
+
+        msgFlash(year)
+
+        year = Integer.parseInt(year);
+
+
+
 
         if (BfilterType === 'bonnercohort') {
             gradStudentsTable.rows().every(function() {
