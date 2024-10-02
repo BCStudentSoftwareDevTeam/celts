@@ -68,5 +68,5 @@ def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
     if currentUser.isCeltsAdmin:
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
-    else:
+    else:          
         return []
