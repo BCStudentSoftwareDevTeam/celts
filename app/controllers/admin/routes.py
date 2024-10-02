@@ -30,8 +30,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -73,7 +72,7 @@ def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/template_selector.html",
+        return render_template("/events/templateSelector.html",
                                 programs=allprograms,
                                 celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
@@ -83,7 +82,6 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    savedEventsList = []
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -100,7 +98,6 @@ def createEvent(templateid, programid):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-
     eventData['program'] = program
 
     if request.method == "GET":
@@ -115,32 +112,22 @@ def createEvent(templateid, programid):
 
     # Try to save the form
     if request.method == "POST":
+        savedEvents = None
         eventData.update(request.form.copy())
+        eventData = preprocessEventData(eventData)
         if eventData.get('isMultipleOffering'):
-            multipleOfferingId = calculateNewMultipleOfferingId()
-
-            multipleOfferingData = json.loads(eventData.get('multipleOfferingData'))
-            for event in multipleOfferingData:
-                multipleOfferingDict = eventData.copy()
-                multipleOfferingDict.update({
-                    'name': event['eventName'],
-                    'startDate': event['eventDate'],
-                    'timeStart': event['startTime'],
-                    'timeEnd': event['endTime'],
-                    'multipleOfferingId': multipleOfferingId
-                    })
-                try:
-                    savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, getFilesFromRequest(request))
-                    savedEventsList.append(savedEvents)
-                    
-                except Exception as e:
-                    print("Failed saving multi event", e)
-
+            eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
+            succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
+            if not succeeded:
+                for index, validationErrorMessage in failedSavedOfferings:
+                    eventData['multipleOfferingData'][index]['isDuplicate'] = True
+                validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
+                print(f"Failed to save offerings {failedSavedOfferings}")
         else:
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
-                    print("Failed saving regular event", e)
+                print("Failed saving regular event", e)
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
@@ -157,21 +144,19 @@ def createEvent(templateid, programid):
                 if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 
-                elif len(savedEventsList) >= 1 and eventData.get('isMultipleOffering'):
-                    modifiedSavedEvents = [item for sublist in savedEventsList for item in sublist]
-                    
-                    event_dates = [event_data[0].startDate.strftime('%m/%d/%Y') for event_data in savedEventsList]
+                elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
+                    eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
 
-                    event_list = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in modifiedSavedEvents)
+                    eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
 
-                    if len(modifiedSavedEvents) > 1:
+                    if len(savedEvents) > 1:
                         #creates list of events created in a multiple series to display in the logs
-                        event_list = ', '.join(event_list.split(', ')[:-1]) + f', and ' + event_list.split(', ')[-1]
+                        eventList = ', '.join(eventList.split(', ')[:-1]) + f', and ' + eventList.split(', ')[-1]
                         #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
-                        last_event_date = event_dates[-1]
-                        event_dates = ', '.join(event_dates[:-1]) + f', and {last_event_date}'
+                        lastEventDate = eventDates[-1]
+                        eventDates = ', '.join(eventDates[:-1]) + f', and {lastEventDate}'
 
-                    createActivityLog(f"Created events {event_list} for {program.programName}, with start dates of {event_dates}.")
+                    createActivityLog(f"Created events {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
                     createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
@@ -192,7 +177,7 @@ def createEvent(templateid, programid):
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-    return render_template(f"/admin/{template.templateFile}",
+    return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
                            futureTerms = futureTerms,
@@ -334,7 +319,7 @@ def eventDisplay(eventId):
 
     # Event Edit
     if 'edit' in rule.rule:
-        return render_template("admin/createEvent.html",
+        return render_template("events/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 event = event,
@@ -365,7 +350,7 @@ def eventDisplay(eventId):
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
-        return render_template("eventView.html",
+        return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,
                                 userHasRSVPed=userHasRSVPed,
@@ -452,7 +437,7 @@ def deleteAllRecurringEventsRoute(eventId):
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
-    recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
+    recurringEvents = getRecurringEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
 
@@ -472,13 +457,6 @@ def studentSearchPage():
     if g.current_user.isAdmin:
         return render_template("/admin/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/addParticipants', methods = ['GET'])
-def addParticipants():
-    '''Renders the page, will be removed once merged with full page'''
-
-    return render_template('addParticipants.html',
-                            title="Add Participants")
 
 @admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
 def activityLogs():
