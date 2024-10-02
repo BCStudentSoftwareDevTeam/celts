@@ -118,17 +118,17 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
 
     # Create separate event data inheriting from the original eventData
     seriesData = eventData.get('seriesData')
+    isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
             multipleOfferingDict = eventData.copy()
-            print (event.get('isRepeating'), "baaaaaaa")
             multipleOfferingDict.update({
                 'name': event['eventName'],
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
                 'seriesId': seriesId,
-                'isRepeating': bool(event.get('isRepeating'))
+                'isRepeating': bool(isRepeating)
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
@@ -388,7 +388,7 @@ def validateNewEventData(data):
     if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
-    if data['isRepeating'] and data['endDate']  <  data['startDate']:
+    if data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -491,9 +491,7 @@ def preprocessEventData(eventData):
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
     
-    # If we aren't repeating, all of our events are single-day or mutliple offerings, which also have the same start and end date
-    if not eventData['isRepeating']:
-        eventData['endDate'] = eventData['startDate']
+    eventData['endDate'] = eventData['startDate']
         
     # Process seriesData
     if 'seriesData' not in eventData:

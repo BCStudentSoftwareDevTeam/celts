@@ -193,6 +193,7 @@ $('#multipleOfferingSave').on('click', function() {
 function saveOfferingsFromModal() {
   let offerings = [];
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  $("#formIsRepeating").prop("checked", isRepeatingStatus);
   let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
   $(dataTable).children().each(function(index, element) {
     let rowData;

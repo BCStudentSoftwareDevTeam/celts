@@ -219,6 +219,7 @@
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
       <input type="hidden" name="seriesData" value="{{ eventData.seriesData }}" id="seriesData">
+      <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" hidden />
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
