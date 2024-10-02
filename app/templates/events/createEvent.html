@@ -78,10 +78,10 @@
       </div>
     </div>
   </div>
-
-  <div class="form-group col-md-6 {{hideDate}} endDateStyle" id="endDateStyle-{{pageLocation}}">
+  <!--end dates no longer needed on the main form, since repeating events are now moved inside the modal -->
+  <!-- <div class="form-group col-md-6 {{hideDate}} endDateStyle" id="endDateStyle-{{pageLocation}}"-->
     <!--datePicker for End date-->
-    <label class="required form-label me-2" for="endDate-{{pageLocation}}"><strong>End Date</strong></label>
+    <!--<label class="required form-label me-2" for="endDate-{{pageLocation}}"><strong>End Date</strong></label>
     <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
       <input autocomplete="off" type='text' class="form-control datePicker endDatePicker"
         id='endDatePicker-{{pageLocation}}'
@@ -91,7 +91,7 @@
         <span><i class="bi bi-calendar-plus-fill"></i></span>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
 <br>
 <!-- Start and End Time -->
@@ -166,12 +166,11 @@
           {% if template.tag != 'all-volunteer' %}
           <div class="form-check form-switch pb-1">
             <fieldset>
-              <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring
-                  event.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if
-                eventData.isCheckRecurring}} />
-              <label class="custom-control-label" for='checkIsSeries'><strong>This is an event with multiple
-                  time offerings.</strong></label>
+              <!-- <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring
+                  event.</strong></label> -->
+              <!-- <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if
+                eventData.isCheckRecurring}} /> -->
+              <label class="custom-control-label" for='checkIsSeries'><strong>This is not a single event.</strong></label>
               <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
                 {{"checked" if eventData.isSeries}} />
             </fieldset>
@@ -181,17 +180,22 @@
       </div>
       {% endif %}
 
-      {% if eventData.isRecurring == True and isNewEvent %}
+      <!-- {% if eventData.isRepeating == True and isNewEvent %}
         {% set hideDate = "" %}
         {% set hideMultipleOffering = "d-none" %}
       {% else %}
         {% set hideDate = "d-none" %}
         {% set hideMultipleOffering = "d-none" %}
-      {% endif %}
+      {% endif %} -->
+      {% if isNewEvent %}
+      {% set hideMultipleOffering = "" %}
+    {% else %}
+      {% set hideMultipleOffering = "d-none" %}
+    {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
 
-      <div class="{{hideDate}}" id="recurringTableDiv">
+      <!-- <div class="{{hideDate}}" id="recurringTableDiv">
         <table class="table table-striped" id="recurringEventsTable">
           <thead>
             <tr>
@@ -201,7 +205,7 @@
           </thead>
           <tbody></tbody>
         </table>
-      </div>
+      </div> -->
       <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
         <table class="table table-striped" id="offeringsTable">
           <thead>
@@ -386,7 +390,7 @@
         <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      {% if eventData.recurringId%}
+      {% if eventData.seriesId%}
       <div class="modal-body">
         <div class="container-fluid">
           <p>This action is irreversible. </p>
@@ -398,7 +402,7 @@
             <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
               <button type="submit" class="btn btn-danger">Delete This and All Following</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+            <form action="/event/{{eventData.id}}/deleteAllEventsInSeries" method='post'>
               <button type="submit" class="btn btn-danger">Delete Series </button>
             </form>
           </div>
@@ -449,7 +453,7 @@
     </div>
   </div>
 </form>
-<!--multiple offering event modal-->
+<!--series event modal-->
 <div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">

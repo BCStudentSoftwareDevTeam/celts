@@ -42,7 +42,7 @@ function calculateRepeatingEventFrequency(){
                             endDate:$("#repeatingEventsEndDate").val()}
   $.ajax({
     type:"POST",
-    url: "/makeRecurringEvents",
+    url: "/makeRepeatingEvents",
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
     success: function(jsonData){
@@ -63,14 +63,14 @@ function calculateRepeatingEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+  // $(".endDateStyle, #recurringTableDiv").addClass('d-none'); //will no longer exist
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
 }
 
 function setViewForMultipleOffering(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+  // $(".endDateStyle, #recurringTableDiv").addClass('d-none'); //will no longer exist
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
 }
 
@@ -363,44 +363,45 @@ $(".startDatePicker, .endDatePicker").change(function () {
   }
   
   let modalOpenedByEditButton = false;
-  //#checkIsRecurring, #checkIsSeries are attributes for the toggle buttons on create event page
-  $("#checkIsRecurring, #checkIsSeries, #edit_modal").click(function(event) { 
+  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
+  $("#checkIsRepeating, #checkIsSeries, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
     // retrieves toggle status, 'on' or undefined
-    let recurringStatus = $("#checkIsRecurring").is(":checked")
+    // let recurringStatus = $("#checkIsRecurring").is(":checked") //will no longer exist
     let multipleOfferingStatus = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-
-    if (multipleOfferingStatus == true && recurringStatus == true){
-      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
-      $(event.target).prop('checked', false);
-      return; 
-    }
-    if (recurringStatus == true) {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
-      $("#checkIsSeries").prop('checked', false);
-      $('#multipleOfferingTableDiv').addClass('d-none');
-      $(".endDatePicker").prop('required', true);
-    } 
-    else if (multipleOfferingStatus == true) {
+    //will not be relevant anymore since they are now inside the same toggel and there is conditions for that inside the modal
+    // if (multipleOfferingStatus == true && recurringStatus == true){
+    //   msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
+    //   $(event.target).prop('checked', false);
+    //   return; 
+    // }
+    // if (recurringStatus == true) {
+    //   $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
+    //   $("#checkIsSeries").prop('checked', false);
+    //   $('#multipleOfferingTableDiv').addClass('d-none');
+    //   $(".endDatePicker").prop('required', true);
+    // } 
+    if (multipleOfferingStatus == true) {
       setViewForMultipleOffering();
       loadOfferingsToModal();
       $('#modalMultipleOffering').modal('show');
     }
-    else { 
-      //adds the display none button of bootstrap so that the end-date div disappears for recurring even
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDatePicker").prop('required', false);
-      //set page UI back to default
-      $("#multipleOfferingTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('hide');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-      $(".startDatePicker").prop('required', true);
-    }
+    //may not be relevant anymore since endDate will no longer exist outside the modal
+    // else { 
+    //   //adds the display none button of bootstrap so that the end-date div disappears for recurring even
+    //   $(".endDateStyle, #recurringTableDiv").addClass('d-none');
+    //   $(".endDatePicker").prop('required', false);
+    //   //set page UI back to default
+    //   $("#multipleOfferingTableDiv").addClass('d-none');
+    //   $('#modalMultipleOffering').modal('hide');
+    //   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+    //   $(".startDatePicker").prop('required', true);
+    // }
   });
 
   //untoggles the button when the modal cancel or close button is clicked

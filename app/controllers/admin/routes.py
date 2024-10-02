@@ -337,7 +337,7 @@ def eventDisplay(eventId):
         eventCountdown = getCountdownToEvent(event)
  
 
-        # Identify the next event in a recurring series
+        # Identify the next event in a repeating series
         if event.seriesId:
             eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
@@ -386,14 +386,14 @@ def undoEvent():
         for eventId in events: 
             Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-        recurringEvents = list(Event.select().where((Event.seriesId==event.seriesId) & (Event.deletionDate == None)).order_by(Event.id))          
+        repeatingEvents = list(Event.select().where((Event.seriesId==event.seriesId) & (Event.deletionDate == None)).order_by(Event.id))          
         if event.seriesId is not None:
             nameCounter = 1
-            for recurringEvent in recurringEvents:
-                newEventNameList = recurringEvent.name.split()
+            for repeatingEvent in repeatingEvents:
+                newEventNameList = repeatingEvent.name.split()
                 newEventNameList[-1] = f"{nameCounter}"
                 newEventNameList = " ".join(newEventNameList)
-                Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
+                Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvents.id).execute()
                 nameCounter += 1 
         flash("Deletion successfully undone.", "success")
         return redirect('/eventsList/' + str(g.current_term))
@@ -424,7 +424,7 @@ def deleteEventAndAllFollowingRoute(eventId):
         print('Error while canceling event:', e)
         return "", 500
     
-@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
+@admin_bp.route('/event/<eventId>/deleteAllEventsInSeries', methods=['POST'])
 def deleteAllEventsInSeriesRoute(eventId):
     try:
         session["lastDeletedEvent"] = deleteAllEventsInSeries(eventId)
@@ -435,10 +435,10 @@ def deleteAllEventsInSeriesRoute(eventId):
         print('Error while canceling event:', e)
         return "", 500
 
-@admin_bp.route('/makeRecurringEvents', methods=['POST'])
-def addRecurringEvents():
-    recurringEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
-    return json.dumps(recurringEvents, default=str)
+@admin_bp.route('/makeRepeatingEvents', methods=['POST'])
+def addRepeatingEvents():
+    repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
+    return json.dumps(repeatingEvents, default=str)
 
 
 @admin_bp.route('/userProfile', methods=['POST'])
