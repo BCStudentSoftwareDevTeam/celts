@@ -207,7 +207,7 @@ $('#multipleOfferingSave').on('click', function() {
     displayNotification(eventConflictMessage);
   }
   else if (hasPastDates) {
-    showModalFlashMessage("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
+    showModalFlashMessage ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
   }
   else {
     let offerings = [];
