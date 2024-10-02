@@ -494,10 +494,15 @@
               </div>
             </div>
             
-            <!-- Start and End Time -->
+            <!-- Repeating Event Start and End Time -->
             <div class="form-group col-md-4">
-              <label class="form-label me-2 mb-0" for="startTime-repeatingEventsDiv"><strong>Start Time</strong></label>
+              <label class="form-label me-2 mb-0" for="repeatingEventsStartTime"><strong>Start Time</strong></label>
               <div class="input-group">
+                {% if eventData.repeatingEventsStartTime %}
+                {% set startTime = eventData.repeatingEventsStartTime %}
+                {% else %}
+                {% set startTime = "12:00" %}
+                {% endif %}
                 <input autocomplete="off" type="time" class="form-control timepicker startTime repeatingEventsField" value="{{startTime}}"
                   name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" id="repeatingEventsStartTime"
                   data-page-location="repeatingEventsDiv" required />
@@ -506,8 +511,13 @@
               </div>
             </div>
             <div class='form-group col-md-4'>
-              <label class="form-label me-2 mb-0" for="endTime-repeatingEventsDiv"><strong>End Time</strong></label>
+              <label class="form-label me-2 mb-0" for="repeatingEventsEndTime"><strong>End Time</strong></label>
               <div class="input-group">
+                {% if eventData.repeatingEventsEndTime %}
+                {% set endTime = eventData.repeatingEventsEndTime %}
+                {%else%}
+                {% set endTime = "13:00" %}
+                {% endif %}
                 <input autocomplete="off" type="time" class="form-control timepicker endTime repeatingEventsField" value="{{endTime}}" name="timeEnd"
                   aria-describedby="timeIcon2" placeholder="Pick an end time" class="startTime" id="repeatingEventsEndTime"
                   data-page-location="repeatingEventsDiv" required />
