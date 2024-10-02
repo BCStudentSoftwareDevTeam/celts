@@ -387,9 +387,10 @@ def validateNewEventData(data):
 
     if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
-
-    if data['endDate']  <  data['startDate']:
-        return (False, "Event start date is after event end date.")
+    
+    #replaces: date check happening on frontend??
+    # if data['endDate']  <  data['startDate']:
+    #     return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
         return (False, "Event end time must be after start time.")
@@ -450,11 +451,12 @@ def getRepeatingEventsData(eventData):
 
         Return a list of events to create from the event data.
     """
-    if not isinstance(eventData['endDate'], date) or not isinstance(eventData['startDate'], date):
-        raise Exception("startDate and endDate must be datetime.date objects.")
+    #replaces endDate check; no endDate
+    # if not isinstance(eventData['endDate'], date) or not isinstance(eventData['startDate'], date):
+    #     raise Exception("startDate and endDate must be datetime.date objects.")
 
-    if eventData['endDate'] == eventData['startDate']:
-        raise Exception("This event is not a repeating event")
+    # if eventData['endDate'] == eventData['startDate']:
+    #     raise Exception("This event is not a repeating event")
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
@@ -490,8 +492,6 @@ def preprocessEventData(eventData):
             eventData[eventDate] = parser.parse(eventData[eventDate])
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
-    
-    eventData['endDate'] = eventData['startDate']
         
     # Process seriesData
     if 'seriesData' not in eventData:

@@ -40,7 +40,6 @@ function calculateRepeatingEventFrequency(){
                             isRepeating: true,
                             startDate:$("#repeatingEventsStartDate").val(),
                             endDate:$("#repeatingEventsEndDate").val()}
-  console.log(eventDatesAndName)
   $.ajax({
     type:"POST",
     url: "/makeRecurringEvents",
@@ -327,9 +326,7 @@ $(".datePicker").datepicker({
 $(".startDatePicker, .endDatePicker").change(function () {
   updateDate(this);
 });
-  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
-    calculateRepeatingEventFrequency();
-  }
+
     handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
@@ -503,12 +500,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
-  });
-
-  $(".startDatePicker, .endDatePicker").change(function () {
-    if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
-      calculateRepeatingEventFrequency();
-    }
   });
 
   var facilitatorArray = []
