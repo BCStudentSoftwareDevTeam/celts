@@ -452,11 +452,6 @@ def getRepeatingEventsData(eventData):
         Return a list of events to create from the event data.
     """
     #replaces endDate check; no endDate
-    # if not isinstance(eventData['endDate'], date) or not isinstance(eventData['startDate'], date):
-    #     raise Exception("startDate and endDate must be datetime.date objects.")
-
-    # if eventData['endDate'] == eventData['startDate']:
-    #     raise Exception("This event is not a repeating event")
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
