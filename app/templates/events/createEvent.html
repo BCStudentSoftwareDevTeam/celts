@@ -78,20 +78,6 @@
       </div>
     </div>
   </div>
-  <!--end dates no longer needed on the main form, since repeating events are now moved inside the modal -->
-  <!-- <div class="form-group col-md-6 {{hideDate}} endDateStyle" id="endDateStyle-{{pageLocation}}"-->
-    <!--datePicker for End date-->
-    <!--<label class="required form-label me-2" for="endDate-{{pageLocation}}"><strong>End Date</strong></label>
-    <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
-      <input autocomplete="off" type='text' class="form-control datePicker endDatePicker"
-        id='endDatePicker-{{pageLocation}}'
-        value="{{eventData.endDate.strftime('%Y-%m-%d') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}"
-        name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
-      <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}">
-        <span><i class="bi bi-calendar-plus-fill"></i></span>
-      </div>
-    </div>
-  </div> -->
 </div>
 <br>
 <!-- Start and End Time -->
@@ -223,7 +209,7 @@
         <div><button type="button" class="btn btn-secondary" id="edit_modal">Edit</button></div>
       </div>
       <input type="hidden" name="seriesData" value="{{ eventData.seriesData }}" id="seriesData">
-      <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" hidden />
+      <input class="form-check-input align-items-center" type="checkbox" id="formIsRepeating" name="isRepeating" hidden />
       {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
       <div class="row col-md-12 mb-4">
         <div class="form-group">
@@ -539,9 +525,6 @@
                     class="bi bi-clock"></i></span>
               </div>
             </div>
-            <!-- <div class="d-flex justify-content-center mt-2">
-              <button class="btn btn-primary btn-md"> Generate </button>
-            </div> -->
           </div>
           <div class="d-none" id="generatedEvents">
           <h3 class="mt-1 d-flex justify-content-center"> Generated Events: </h3>
@@ -555,7 +538,7 @@
             </thead>
             <tbody id="generatedEventsList"></tbody>
           </table>
-        </div>
+          </div>
         </div>
 
 

@@ -63,14 +63,12 @@ function calculateRepeatingEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  // $(".endDateStyle, #recurringTableDiv").addClass('d-none'); //will no longer exist
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
 }
 
 function setViewForMultipleOffering(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  // $(".endDateStyle, #recurringTableDiv").addClass('d-none'); //will no longer exist
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
 }
 
@@ -323,7 +321,7 @@ $(".datePicker").datepicker({
 });
 
 // Update datepicker min and max dates on change
-$(".startDatePicker, .endDatePicker").change(function () {
+$(".startDatePicker").change(function () {
   updateDate(this);
 });
 
@@ -364,7 +362,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   
   let modalOpenedByEditButton = false;
   //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
-  $("#checkIsRepeating, #checkIsSeries, #edit_modal").click(function(event) { 
+  $("#checkIsSeries, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
@@ -390,6 +388,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
       setViewForMultipleOffering();
       loadOfferingsToModal();
       $('#modalMultipleOffering').modal('show');
+    } else {
+      setViewForSingleOffering()
     }
     //may not be relevant anymore since endDate will no longer exist outside the modal
     // else { 
@@ -413,7 +413,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
     }
     pendingmultipleEvents.forEach(function(element){
       element.remove();
-
     });
   });
 
@@ -427,7 +426,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $('.addMultipleOfferingEvent').show(); 
       $("#repeatingEventsDiv").addClass('d-none');
       $("#multipleOfferingSlots").removeClass('d-none');
-
     }
   });
   
