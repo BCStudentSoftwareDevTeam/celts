@@ -103,8 +103,8 @@
                         <p>This event does not require RSVP.</p>
                     {% endif %}
 
-                    {% if eventData.recurringId %}
-                        <p>This event is a recurring event.
+                    {% if eventData.isRepeating %}
+                        <p>This event is in a repeating series.
                             {% if eventData.nextRecurringEvent %}
                                 The next event in the series occurs on <a href="/event/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
                             {% else %}

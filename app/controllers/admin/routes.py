@@ -338,7 +338,7 @@ def eventDisplay(eventId):
  
 
         # Identify the next event in a repeating series
-        if event.seriesId:
+        if event.isRepeating:
             eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
                                         .order_by(Event.startDate))

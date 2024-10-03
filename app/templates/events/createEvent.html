@@ -156,7 +156,7 @@
                   event.</strong></label> -->
               <!-- <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if
                 eventData.isCheckRecurring}} /> -->
-              <label class="custom-control-label" for='checkIsSeries'><strong>This is not a single event.</strong></label>
+              <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
               <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
                 {{"checked" if eventData.isSeries}} />
             </fieldset>
@@ -166,33 +166,15 @@
       </div>
       {% endif %}
 
-      <!-- {% if eventData.isRepeating == True and isNewEvent %}
-        {% set hideDate = "" %}
-        {% set hideMultipleOffering = "d-none" %}
-      {% else %}
-        {% set hideDate = "d-none" %}
-        {% set hideMultipleOffering = "d-none" %}
-      {% endif %} -->
       {% if isNewEvent %}
-      {% set hideMultipleOffering = "" %}
-    {% else %}
-      {% set hideMultipleOffering = "d-none" %}
-    {% endif %}
+        {% set hideMultipleOffering = "" %}
+      {% else %}
+        {% set hideMultipleOffering = "d-none" %}
+      {% endif %}
 
       {{locationTimeMacro(eventData, hideDate, 'main')}}
 
-      <!-- <div class="{{hideDate}}" id="recurringTableDiv">
-        <table class="table table-striped" id="recurringEventsTable">
-          <thead>
-            <tr>
-              <th>Event Name</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div> -->
-      <div class="{{hideMultipleOffering}}" id="multipleOfferingTableDiv">
+      <div class="d-none" id="multipleOfferingTableDiv">
         <table class="table table-striped" id="offeringsTable">
           <thead>
             <tr>

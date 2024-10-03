@@ -390,6 +390,7 @@ $(".startDatePicker").change(function () {
       $('#modalMultipleOffering').modal('show');
     } else {
       setViewForSingleOffering()
+      $('#multipleOfferingTableDiv').addClass('d-none');
     }
     //may not be relevant anymore since endDate will no longer exist outside the modal
     // else { 

@@ -48,12 +48,7 @@ class Event(baseModel):
 
     @property
     def isPastEnd(self):
-        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd) 
-
-    @property
-    def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
-        return firstRecurringEvent.id == self.id
+        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd)
     
     @property
     def isFirstRepeatingEvent(self):
