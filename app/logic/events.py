@@ -35,6 +35,7 @@ def cancelEvent(eventId):
     program = event.program
     createActivityLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event.id)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
+#NEEDS FIXING:  process not working properly for repeating events when two events are deleted consecutively
 def deleteEvent(eventId):
     """
     Deletes an event, if it is a repeating event, rename all following events
