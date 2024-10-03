@@ -311,6 +311,26 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   $("#saveEvent").on('submit', function (event) {
+
+    let bonnersStatus = $("#checkBonners").is(":checked");
+    let eventData = {
+        // other event data
+        bonnersStatus: bonnersStatus
+    };
+    // Now save the bonnersStatus to the backend along with other event data
+    $.ajax({
+        type: 'POST',
+        url: '/saveEvent', // your save event API endpoint
+        data: eventData,
+        success: function(response) {
+            console.log('Event saved successfully!');
+        },
+        error: function(err) {
+            console.error('Error saving event:', err);
+        }
+    });
+});
+
     let trainingStatus = $("#checkIsTraining").is(":checked")
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
@@ -326,6 +346,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   updateOfferingsTable();
+
   
   if ($("#checkIsMultipleOffering").is(":checked")){
     setViewForMultipleOffering();
@@ -488,20 +509,58 @@ $(".startDatePicker, .endDatePicker").change(function () {
 function saveSelectedCohorts() {
   const selectedCohorts = [];
   $("input[name='cohorts[]']:checked").each(function () {
-    selectedCohorts.push($(this).val());
+    selectedCohorts.push($(this).val()); 
   });
-  localStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts));
+  sessionStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts)); 
 }
 
-// Attach the change event to all cohort checkboxes
 $(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
-
 function loadSelectedCohorts() {
-  const selectedCohorts = JSON.parse(localStorage.getItem("selectedCohorts")) || [];
-  selectedCohorts.forEach(function (year) {
-    $(`input[name='cohorts[]'][value='${year}']`).prop("checked", true);
+  const selectedCohorts = JSON.parse(sessionStorage.getItem("selectedCohorts")) || []; 
+  selectedCohorts.forEach(function (cohort) {
+    $("input[name='cohorts[]'][value='" + cohort + "']").prop("checked", true);
   });
 }
 
-// Call the function to load selected checkboxes when the page loads
-$(document).ready(loadSelectedCohorts);
+ 
+$(document).ready(function () {
+  loadSelectedCohorts();   
+
+ 
+  $("#createNewEventButton").on("click", function () {
+    clearSelectedCohorts(); // 
+  });
+});
+function clearSelectedCohorts() {
+  sessionStorage.removeItem("selectedCohorts"); 
+  $("input[name='cohorts[]']").prop("checked", false); 
+}
+$(document).ready(function() {
+  // Retrieve the saved bonners status from the event object
+  let savedBonnersStatus = getSavedBonnersStatusFromBackend(); // Replace with actual logic to get saved state
+
+  // Set the checkbox state based on the saved status
+  if (savedBonnersStatus) {
+      $("#checkBonners").prop('checked', true);
+  } else {
+      $("#checkBonners").prop('checked', false);
+  }
+});
+
+// Function to get the saved bonners status from the backend
+function getSavedBonnersStatusFromBackend() {
+  // Make an AJAX call to get the event data
+  let bonnersStatus;
+  $.ajax({
+      type: 'GET',
+      url: '/getEvent', // your API endpoint to get event data
+      async: false,
+      success: function(response) {
+          bonnersStatus = response.bonnersStatus; // Assume this comes back in the event data
+      },
+      error: function(err) {
+          console.error('Error fetching event data:', err);
+      }
+  });
+  return bonnersStatus;
+}
