@@ -344,7 +344,7 @@ def eventDisplay(eventId):
                                         .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
-                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+                eventData["nextRepeatingEvent"] = eventSeriesList[eventIndex + 1]
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
