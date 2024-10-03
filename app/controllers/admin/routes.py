@@ -382,21 +382,22 @@ def cancelRoute(eventId):
 @admin_bp.route('/event/undo', methods=['GET'])
 def undoEvent():
     try:
-        events = session['lastDeletedEvent']
-        for eventId in events: 
+        eventIds = session['lastDeletedEvent'] #list of Ids of the events that got deleted
+        for eventId in eventIds: 
             Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-        repeatingEvents = list(Event.select().where((Event.seriesId==event.seriesId) & (Event.deletionDate == None)).order_by(Event.id))          
-        if event.seriesId is not None:
+        repeatingEvents = list(Event.select().where((Event.isRepeating) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.isRepeating:
             nameCounter = 1
             for repeatingEvent in repeatingEvents:
                 newEventNameList = repeatingEvent.name.split()
                 newEventNameList[-1] = f"{nameCounter}"
                 newEventNameList = " ".join(newEventNameList)
-                Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvents.id).execute()
+                Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvent.id).execute()
                 nameCounter += 1 
         flash("Deletion successfully undone.", "success")
-        return redirect('/eventsList/' + str(g.current_term))
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+        
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
@@ -405,7 +406,7 @@ def undoEvent():
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
-        session['lastDeletedEvent'] = [eventId]
+        session['lastDeletedEvent'] = [eventId] 
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
