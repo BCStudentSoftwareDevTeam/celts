@@ -341,11 +341,11 @@
         </div>
         <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
           {% if event.isRepeating and not event.isFirstRepeatingEvent%}
-            {% if recurringVolunteers %}
-              {%for participant in recurringVolunteers%}
+            {% if repeatingingVolunteers %}
+              {%for participant in repeatingVolunteers%}
                 <li>
-                  <input class="recurringVolunteer" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
-                  <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                  <input class="repeatingVolunteer" type="checkbox" id ="repeatingingVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                  <label class="form-check-label" for="repeatingingVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
                   <label class="text-dark" data-toggle="previousVolunteerHover">*</label>
                 </li>
               {% endfor %}
@@ -355,7 +355,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        {% if event.isRepeating and recurringVolunteers and not event.isFirstRepeatingEvent  %}
+        {% if event.isRepeating and repeatingVolunteers and not event.isFirstRepeatingEvent  %}
         <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% endif %}
         {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteer") %}
