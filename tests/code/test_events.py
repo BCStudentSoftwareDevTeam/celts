@@ -1,4 +1,5 @@
 import pytest
+import json
 from flask import g, session
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
@@ -22,8 +23,8 @@ from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
-from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
+from app.logic.events import preprocessEventData, validateNewEventData, getRecurringEventsData
+from app.logic.events import attemptSaveEvent, attemptSaveMultipleOfferings, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.volunteers import updateEventParticipants
@@ -251,6 +252,67 @@ def test_preprocessEventData_requirement():
         transaction.rollback()
 
 @pytest.mark.integration
+def test_preprocessEventData_multipleOfferingData():
+    # When there is no multipleOfferingData we should get a jsonified empty list
+    eventData = preprocessEventData({})
+    assert eventData['multipleOfferingData'] == json.dumps([])
+
+    # Test parsing from list
+    offeringData = [
+                        {
+                            'eventName': 'Offering 1',
+                            'startDate': 'Today',
+                            'timeStart': '01:00 PM',
+                            'timeEnd': '02:00 PM',
+                            'isDuplicate': False
+                        }
+                    ]
+    eventData = preprocessEventData({'multipleOfferingData': offeringData})
+    assert eventData['multipleOfferingData'] == json.dumps(offeringData)
+
+    # Test when data is missing/invalid
+    offeringData = [
+                        {}, # Empty event offering should be filled with defaults
+                        {
+                            'eventName': 'Offering 1',
+                            'startDate': 'Today',
+                            'timeStart': 1, # Wrong format and type
+                            #'timeEnd': '02:00 PM'  (No end time provided)
+                            'isDuplicate': True
+                        }
+                    ]
+    eventData = preprocessEventData({'multipleOfferingData': offeringData})
+    offering = json.loads(eventData['multipleOfferingData'])[1]
+    assert offering['eventName'] == 'Offering 1'
+    assert offering['startDate'] == 'Today'
+    assert offering['timeStart'] == ''
+    assert offering['timeEnd'] == ''
+    assert offering['isDuplicate'] == True
+    defaultOffering = json.loads(eventData['multipleOfferingData'])[0]
+    assert defaultOffering['eventName'] == ''
+    assert defaultOffering['startDate'] == ''
+    assert defaultOffering['timeStart'] == ''
+    assert defaultOffering['timeEnd'] == ''
+    assert defaultOffering['isDuplicate'] == False
+    
+
+
+    # Test when data is already valid and stringified
+    offeringData = json.dumps([
+                        {
+                            'eventName': 'Offering 1',
+                            'startDate': 'Today',
+                            'timeStart': '01:00 PM',
+                            'timeEnd': '02:00 PM',
+                            'isDuplicate': False
+                        }
+                    ])
+    eventData = preprocessEventData({'multipleOfferingData': offeringData})
+    offering = json.loads(eventData['multipleOfferingData'])[0]
+    assert offering == json.loads(offeringData)[0]
+
+
+@pytest.mark.integration
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
@@ -326,7 +388,7 @@ def test_calculateRecurringEventFrequency():
                  'endDate': parser.parse("03/9/2023")}
 
     # test correct response
-    returnedEvents = calculateRecurringEventFrequency(eventInfo)
+    returnedEvents = getRecurringEventsData(eventInfo)
     assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
     assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
     assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
@@ -334,13 +396,13 @@ def test_calculateRecurringEventFrequency():
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
+        returnedEvents = getRecurringEventsData(eventInfo)
 
     # test non-recurring
     eventInfo["startDate"] = '2021/06/07'
     eventInfo["endDate"] = '2021/06/07'
     with pytest.raises(Exception):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
+        returnedEvents = getRecurringEventsData(eventInfo)
 
 @pytest.mark.integration
 def test_attemptSaveEvent():
@@ -358,8 +420,8 @@ def test_attemptSaveEvent():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            success, errorMessage = attemptSaveEvent(eventInfo)
-        if not success:
+            savedEvents, errorMessage = attemptSaveEvent(eventInfo)
+        if not savedEvents:
             pytest.fail(f"Save failed: {errorMessage}")
 
         try:
@@ -370,6 +432,82 @@ def test_attemptSaveEvent():
 
         finally:
             transaction.rollback() # undo our database changes
+
+
+@pytest.mark.integration
+def test_attemptSaveMultipleOfferings():
+    baseEventData =  {
+                    'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
+                    'startDate': '2021-12-12',
+                    'rsvpLimit': None,
+                    'endDate':'2022-06-12', 'location':"a big room",
+                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
+                    'description':"Empty Bowls Spring 2021",
+                    'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
+                    'contactEmail': 'boorclark@gmail.com'
+                    }
+    
+    baseEventData['program'] = Program.get_by_id(1)
+
+    validMultipleOfferingData = baseEventData.copy()
+    validMultipleOfferingData['multipleOfferingData'] = [{ 
+                            'eventName': 'Offering 1',
+                            'eventDate': '2022-06-12', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          },
+                          {
+                            'eventName': 'Offering 2',
+                            'eventDate': '2022-06-13', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          },
+                          {
+                            'eventName': 'Offering 3',
+                            'eventDate': '2022-06-16', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          }]
+    
+    duplicatedMultipleOfferingData = baseEventData.copy()
+    duplicatedMultipleOfferingData['multipleOfferingData'] = [{ 
+                            'eventName': 'Offering 1',
+                            'eventDate': '2022-06-12', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          },
+                          {
+                            'eventName': 'Offering 1',
+                            'eventDate': '2022-06-12', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          },
+                          {
+                            'eventName': 'Offering 3',
+                            'eventDate': '2022-06-16', 
+                            'startTime': '09:00 PM',
+                            'endTime': '10:00 PM', 
+                          }]
+    
+    
+    
+    with mainDB.atomic() as transaction:
+        # test valid data
+        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(validMultipleOfferingData, None)
+        assert succeeded == True
+        assert len(savedEvents) == 3
+        assert len(failedSavedOfferings) == 0
+
+        transaction.rollback()
+        
+        # test duplicated data
+        succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(duplicatedMultipleOfferingData, None)
+        assert succeeded == False
+        assert len(savedEvents) == 0
+        assert len(failedSavedOfferings) == 1
+
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_saveEventToDb_create():

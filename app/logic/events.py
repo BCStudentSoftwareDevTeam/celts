@@ -4,6 +4,7 @@ from dateutil import parser
 from datetime import timedelta, date, datetime
 from dateutil.relativedelta import relativedelta
 from werkzeug.datastructures import MultiDict
+import json
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
@@ -95,6 +96,51 @@ def deleteAllRecurringEvents(eventId):
             eventId = allRecurringEvents[0].id
         return deleteEventAndAllFollowing(eventId)
         
+def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
+    """
+    Tries to save an event with multiple offerings to the database:
+    Creates separate event data inheriting from the original eventData
+    with the specifics of each offering.
+    Calls attemptSaveEvent on each of the newly created datum
+    If any data is not valid it will return a validation error.
+
+    Returns:
+    allSavesWereSuccessful : bool | Whether or not all offering saves were successful
+    savedOfferings : List[event] | A list of event objects holding all offerings that were saved. If allSavesWereSuccessful is False then this list will be empty.
+    failedSavedOfferings : List[(int, str), ...] | Tuples containing the indicies of failed saved offerings and the associated validation error message. 
+    """
+    savedOfferings = []
+    failedSavedOfferings = []
+    allSavesWereSuccessful = True
+    
+    # Creates a shared multipleOfferingId for all offerings to have
+    multipleOfferingId = calculateNewMultipleOfferingId()
+
+    # Create separate event data inheriting from the original eventData
+    multipleOfferingData = eventData.get('multipleOfferingData')
+    with mainDB.atomic() as transaction:
+        for index, event in enumerate(multipleOfferingData):
+            multipleOfferingDict = eventData.copy()
+            multipleOfferingDict.update({
+                'name': event['eventName'],
+                'startDate': event['eventDate'],
+                'timeStart': event['startTime'],
+                'timeEnd': event['endTime'],
+                'multipleOfferingId': multipleOfferingId
+                })
+            # Try to save each offering
+            savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
+            if validationErrorMessage:
+                failedSavedOfferings.append((index, validationErrorMessage))
+                allSavesWereSuccessful = False
+            else:
+                savedEvent = savedEvents[0]
+                savedOfferings.append(savedEvent)
+        if not allSavesWereSuccessful:
+            savedOfferings = []
+            transaction.rollback()
+
+    return allSavesWereSuccessful, savedOfferings, failedSavedOfferings
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
@@ -105,7 +151,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     If it is not valid it will return a validation error.
 
     Returns:
-    Created events and an error message.
+    The saved event, created events and an error message if an error occurred.
     """
 
     # Manually set the value of RSVP Limit if it is and empty string since it is
@@ -116,9 +162,8 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     newEventData = preprocessEventData(eventData)
     
     isValid, validationErrorMessage = validateNewEventData(newEventData)
-    
     if not isValid:
-        return False, validationErrorMessage
+        return [], validationErrorMessage
 
     try:
         events = saveEventToDb(newEventData, renewedEvent)
@@ -129,7 +174,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
         return events, ""
     except Exception as e:
         print(f'Failed attemptSaveEvent() with Exception: {e}')
-        return False, e
+        return [], e
 
 def saveEventToDb(newEventData, renewedEvent = False):
     
@@ -144,7 +189,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
     recurringSeriesId = None
     multipleSeriesId = None
     if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
-        eventsToCreate = calculateRecurringEventFrequency(newEventData)
+        eventsToCreate = getRecurringEventsData(newEventData)
         recurringSeriesId = calculateNewrecurringId()
         
     #temporarily applying the append for single events for now to tests  
@@ -309,27 +354,27 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     if program:
         events = events.where(Event.program == program)
 
-    events = events.order_by(Event.startDate, Event.name)
+    events = events.order_by(Event.startDate, Event.timeStart)
 
-    events_list = []
-    shown_recurring_event_list = []
-    shown_multiple_offering_event_list = []
+    eventsList = []
+    shownRecurringEventList = []
+    shownMultipleOfferingEventList = []
 
     # removes all recurring events except for the next upcoming one
     for event in events:
         if event.recurringId or event.multipleOfferingId:
             if not event.isCanceled:
-                if event.recurringId not in shown_recurring_event_list:
-                    events_list.append(event)
-                    shown_recurring_event_list.append(event.recurringId)
-                if event.multipleOfferingId not in shown_multiple_offering_event_list:
-                    events_list.append(event)
-                    shown_multiple_offering_event_list.append(event.multipleOfferingId)
+                if event.recurringId not in shownRecurringEventList:
+                    eventsList.append(event)
+                    shownRecurringEventList.append(event.recurringId)
+                if event.multipleOfferingId not in shownMultipleOfferingEventList:
+                    eventsList.append(event)
+                    shownMultipleOfferingEventList.append(event.multipleOfferingId)
         else:
             if not event.isCanceled:
-                events_list.append(event)
+                eventsList.append(event)
 
-    return events_list
+    return eventsList
 
 def getParticipatedEventsForUser(user):
     """
@@ -437,7 +482,7 @@ def getPreviousMultipleOfferingEventData(multipleOfferingId):
                                    .where(Event.multipleOfferingId == multipleOfferingId))
     return previousEventVolunteers
 
-def calculateRecurringEventFrequency(event):
+def getRecurringEventsData(eventData):
     """
         Calculate the events to create based on a recurring event start and end date. Takes a
         dictionary of event data.
@@ -446,16 +491,16 @@ def calculateRecurringEventFrequency(event):
 
         Return a list of events to create from the event data.
     """
-    if not isinstance(event['endDate'], date) or not isinstance(event['startDate'], date):
+    if not isinstance(eventData['endDate'], date) or not isinstance(eventData['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
-    if event['endDate'] == event['startDate']:
+    if eventData['endDate'] == eventData['startDate']:
         raise Exception("This event is not a recurring event")
     
-    return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + timedelta(days=7*counter),
+    return [ {'name': f"{eventData['name']} Week {counter+1}",
+              'date': eventData['startDate'] + timedelta(days=7*counter),
               "week": counter+1}
-            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
+            for counter in range(0, ((eventData['endDate']-eventData['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
     """
@@ -465,6 +510,7 @@ def preprocessEventData(eventData):
         - checkboxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
+        - multipleOfferingData should be a JSON string
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
@@ -479,16 +525,39 @@ def preprocessEventData(eventData):
     ## Process dates
     eventDates = ['startDate', 'endDate']
     for eventDate in eventDates:
-        if eventDate not in eventData:
+        if eventDate not in eventData:  # There is no date given
             eventData[eventDate] = ''
-        elif type(eventData[eventDate]) is str and eventData[eventDate]:
+        elif type(eventData[eventDate]) is str and eventData[eventDate]:  # The date is a nonempty string 
             eventData[eventDate] = parser.parse(eventData[eventDate])
-        elif not isinstance(eventData[eventDate], date):
+        elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
     
     # If we aren't recurring, all of our events are single-day or mutliple offerings, which also have the same start and end date
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
+    
+    # Process multipleOfferingData
+    if 'multipleOfferingData' not in eventData:
+        eventData['multipleOfferingData'] = json.dumps([])
+    elif type(eventData['multipleOfferingData']) is str:
+        try:
+            multipleOfferingData = json.loads(eventData['multipleOfferingData'])
+            eventData['multipleOfferingData'] = multipleOfferingData
+            if type(multipleOfferingData) != list:
+                eventData['multipleOfferingData'] = json.dumps([])
+        except json.decoder.JSONDecodeError as e:
+            eventData['multipleOfferingData'] = json.dumps([])
+    if type(eventData['multipleOfferingData']) is list:
+        # validate the list data. Make sure there is 'eventName', 'startDate', 'timeStart', 'timeEnd', and 'isDuplicate' data
+        multipleOfferingData = eventData['multipleOfferingData']
+        for offeringDatum in multipleOfferingData:    
+            for attribute in ['eventName', 'startDate', 'timeStart', 'timeEnd']:
+                if type(offeringDatum.get(attribute)) != str:
+                    offeringDatum[attribute] = ''
+            if type(offeringDatum.get('isDuplicate')) != bool:
+                    offeringDatum['isDuplicate'] = False
+
+        eventData['multipleOfferingData'] = json.dumps(eventData['multipleOfferingData'])
     
     # Process terms
     if 'term' in eventData:
