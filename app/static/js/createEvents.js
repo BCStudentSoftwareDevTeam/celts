@@ -506,9 +506,7 @@ function clearSelectedCohorts() {
 }
 
 $(document).ready(function () {
-  // Check if we're on the template selector page
   if (window.location.pathname.includes('/eventTemplates')) {
-    // Add click event listeners to all program and template links
     $('.list-group-item').on('click', function(e) {
       e.preventDefault();
       clearSelectedCohorts();
@@ -520,10 +518,8 @@ $(document).ready(function () {
     loadSelectedCohorts();
   }
 
-  // Existing event listeners
   $(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
 
-  // Keep the existing button listener if you have a separate "Create New Event" button elsewhere
   $("#createNewEventButton").on("click", function () {
     clearSelectedCohorts();
   });
