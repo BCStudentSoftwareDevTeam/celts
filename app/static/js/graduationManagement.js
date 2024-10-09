@@ -52,12 +52,15 @@ $(document).ready(function() {
         $('.dropdown-toggle.bonner-filter').text(buttonText);
         
         gradStudentsTable.rows().every(function() {
-            var studentYear = $(this.node()).data('cohort-year');
-            if (studentYear == cohortYear) {
+            var studentCohort = $(this.node()).data('student-cohort');
+            console.log(studentCohort)
+            if (studentCohort == cohortYear) {
                 $(this.node()).show(); 
+                console.log("+++++++++++++++++++++++++", studentCohort);
             } else {
                 $(this.node()).hide();
             }
+            
         });
         gradStudentsTable.draw();
 

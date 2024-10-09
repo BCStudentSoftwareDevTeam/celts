@@ -36,8 +36,15 @@
       Bonner Cohorts
     </button>
     <div class="dropdown-menu">
-      {%for year in bonnercohorts%}
+      {% for year, students in bonnercohorts.items() %}
         <a class="dropdown-item dropdown-item-new" data-cohort-year="{{year}}">{{year}}-{{year+1}}</a> 
+        {% for student in students %}
+            <tr data-student-cohort="{{student.cohortYear}}">
+              <td id="{{student.username}}" class="align-middle">
+                  <a href="/profile/{{student.username}}?accordion=bonner">{{student.firstName}} {{student.lastName}}</a>
+              </td>
+            </tr>
+          {% endfor %}
       {%endfor%}
     </div>
   </div>
