@@ -92,7 +92,6 @@ function isDateInPast(dateString) {
 }
 
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
-  // Parameters are in the format: {'test name', '2024-09-11', '12:00', '13:00'}
 
   let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   // insert values for the newly created row
@@ -129,7 +128,7 @@ $('#multipleOfferingSave').on('click', function() {
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
-  let hasPastDates = false;
+  let hasInvalidDates = false;
   const allowPastStart = $("#allowPastStart").is(":checked");
 
 
@@ -188,7 +187,7 @@ $('#multipleOfferingSave').on('click', function() {
   datePickerInputs.each(function(index, element) {
     if (!allowPastStart && isDateInPast($(element).val())) {
       $(element).addClass('border-red');
-      hasPastDates = true;
+      hasInvalidDates = true;
     } else {
       $(element).removeClass('border-red');
     }
@@ -206,7 +205,7 @@ $('#multipleOfferingSave').on('click', function() {
     let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
     displayNotification(eventConflictMessage);
   }
-  else if (hasPastDates) {
+  else if (hasInvalidDates) {
     showModalFlashMessage ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
   }
   else {
@@ -230,6 +229,7 @@ $('#multipleOfferingSave').on('click', function() {
     msgFlash("Multiple time offering events saved!", "success");
   }
 });
+
 function showModalFlashMessage(message, type) {
   $('#textNotifier').removeClass().addClass('alert alert-' + type).text(message).show();
   $('#textNotifierPadding').addClass('pt-5');
@@ -242,7 +242,7 @@ function showModalFlashMessage(message, type) {
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
   let offerings = [];
-  let hasPastDates = false;
+  let hasInvalidDates = false;
   const allowPastStart = $("#allowPastStart").is(":checked");
 
   $("#multipleOfferingSlots").children().each(function(index, element) {
@@ -256,11 +256,11 @@ function saveOfferingsFromModal() {
       });
 
     if (!allowPastStart && isDateInPast(rowData[1])) {
-      hasPastDates = true;
+      hasInvalidDates = true;
     }
   });
 
-  if (hasPastDates) {
+  if (hasInvalidDates) {
     msgFlash("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
     return false;
   }
