@@ -1,11 +1,14 @@
 {% set title = "Graduation Management" %}
 {% extends "base.html" %}
+{% set bonnerCo = bonnercohorts %}
 
 {% block scripts %}
   {{super()}}
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="/static/js/graduationManagement.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+
 
   {% block styles %}
     {{super()}}
@@ -18,6 +21,7 @@
 
 
 {% block app_content %}
+<meta id="user-year" data-year="{{bonnerCo}}" >
 <h1 class="text-center mb-5">Graduation Management</h1>
 <div class="col-md-3 me-auto"></div>
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -37,7 +41,7 @@
     </button>
     <div class="dropdown-menu">
       {%for year in bonnercohorts%}
-        <a class="dropdown-item dropdown-item-new" data-cohort-year="{{year}}">{{year}}-{{year+1}}</a> 
+        <a class="dropdown-item dropdown-item-new" data-cohort-year="{{year}}" data-cohort-users ="{{bonnerCo[year]}}">{{year}}-{{year+1}}</a> 
       {%endfor%}
     </div>
   </div>

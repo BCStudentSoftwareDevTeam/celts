@@ -5,6 +5,8 @@ $(document).ready(function() {
         info: true
     });
     let selectAllMode = true;
+
+    
     
     $('.dropdown-item').click(function() {
         var filterType = $(this).data('filter'); 
@@ -48,6 +50,16 @@ $(document).ready(function() {
         
         var cohortYear = $(this).data('cohort-year');
         var buttonText = $(this).text();
+
+        var cohortusers = $(this).data('cohort-users');
+
+        // dictionary = $('#user-year').data();
+
+        // console.log(dictionary)
+
+        console.log(cohortYear)
+        console.log(cohortusers)
+    
 
         $('.dropdown-toggle.bonner-filter').text(buttonText);
         
