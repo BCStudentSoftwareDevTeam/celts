@@ -11,10 +11,10 @@ function msgFlash(flash_message, status){
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
         ${flashMessageResponse(flash_message)}
-        <button type="button" class="btn-close kiosk-hide"  id="flashResponded"  aria-label="Close"></button>
+        <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
       </div>`);
-    $("#flashResponded").click(function(){
-      $(".alert").delay(1000).fadeOut();
+    $(".close-alert").click(function(){
+      $(this).closest(".alert").delay(1000).fadeOut();
     })
 }
 
