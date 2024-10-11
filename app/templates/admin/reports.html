@@ -14,7 +14,7 @@
 {% block app_content %}
 <div class="download-container mt-50 text-center d-flex flex-column align-items-center">
     <h1 class="mb-3">Annual Report</h1>
-    <form method="post" action="/admin/reports/download" class="form-group col-md-6 d-flex flex-column align-items-center">
+    <form method="post" action="/admin/reports/visualize" class="form-group col-md-6 d-flex flex-column align-items-center">
         <div class="d-flex flex-column text-center justify-content-center align-items-center">
             <div class="col-12 col-md-10 mb-3 d-flex justify-content-center">
                 <select id="academicYear" name="academicYear" class="form-select w-100" 
@@ -42,13 +42,18 @@
                     <p class="mb-0 py-0 ms-2">Download</p>
                 </button>
 
-                <button id = "open-viz-modal" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
+                <!-- <form method="post" action="/admin/reports/visualize"> 
+                    e
+
+                </form> -->
+
+                <!-- <button id = "open-viz-modal" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
                         <circle fill="#FF7D5F" cx="24" cy="24" r="11.722"></circle>
                         <path fill="#FFDA88" d="M15 19l6 10-6 10h18l-6-10 6-10H15z"></path>
                     </svg>
                     <p class="mb-0 py-0 ms-2">Visualize</p>
-                </button>
+                </button> -->
             </div>
         </div>
     </form>

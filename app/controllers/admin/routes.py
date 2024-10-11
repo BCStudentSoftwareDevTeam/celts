@@ -40,6 +40,7 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 
 from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
+from app.logic.reportsCharts import generateReportsChartsDataJson 
 
 
 @admin_bp.route('/admin/reports')
@@ -54,7 +55,13 @@ def downloadFile():
     filepath = os.path.abspath(createSpreadsheet(academicYear))
     return send_file(filepath, as_attachment=True)
 
-
+@admin_bp.route('/admin/reports/visualize', methods=['POST'])
+def visualizeData():
+    selectedYear = request.form.get('academicYear')
+    reportsChartsDataJson = generateReportsChartsDataJson(selectedYear)
+    print("test", reportsChartsDataJson)
+    return reportsChartsDataJson
+    
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
