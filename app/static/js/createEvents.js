@@ -206,7 +206,7 @@ $('#multipleOfferingSave').on('click', function() {
     displayNotification(eventConflictMessage);
   }
   else if (hasInvalidDates) {
-    showModalFlashMessage ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
+    displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
   }
   else {
     let offerings = [];
@@ -230,18 +230,8 @@ $('#multipleOfferingSave').on('click', function() {
   }
 });
 
-// Custom flash for modal: ensures message visibility when modal is open
-function showModalFlashMessage(message, type) {
-  $('#textNotifier').removeClass().addClass('alert alert-' + type).text(message).show();
-  $('#textNotifierPadding').addClass('pt-5');
-  setTimeout(function() {
-    $('#textNotifier').hide();
-    $('#textNotifierPadding').removeClass('pt-5');
-  }, 5000);
-}
 
 // Save the offerings from the modal to the hidden input field
-
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#multipleOfferingData").val())
   offerings.forEach((offering, i) =>{
