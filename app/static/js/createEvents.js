@@ -230,6 +230,7 @@ $('#multipleOfferingSave').on('click', function() {
   }
 });
 
+// Custom flash for modal: ensures message visibility when modal is open
 function showModalFlashMessage(message, type) {
   $('#textNotifier').removeClass().addClass('alert alert-' + type).text(message).show();
   $('#textNotifierPadding').addClass('pt-5');
@@ -240,36 +241,6 @@ function showModalFlashMessage(message, type) {
 }
 
 // Save the offerings from the modal to the hidden input field
-function saveOfferingsFromModal() {
-  let offerings = [];
-  let hasInvalidDates = false;
-  const allowPastStart = $("#allowPastStart").is(":checked");
-
-  $("#multipleOfferingSlots").children().each(function(index, element) {
-    let rowData = $.map($(element).find("input"), (el) => $(el).val());
-
-      offerings.push({
-          eventName: rowData[0],
-          eventDate: rowData[1],
-          startTime: rowData[2],
-          endTime: rowData[3]
-      });
-
-    if (!allowPastStart && isDateInPast(rowData[1])) {
-      hasInvalidDates = true;
-    }
-  });
-
-  if (hasInvalidDates) {
-    msgFlash("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
-    return false;
-  }
-
-  $('#multipleOfferingSlots').children().remove();
-  let offeringsJson = JSON.stringify(offerings);
-  $("#multipleOfferingData").val(offeringsJson);
-  return true;
-}
 
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#multipleOfferingData").val())
@@ -532,7 +503,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
      updateDate(this)
   });
 
-  $("#inputCharacters").keyup(function (event) {
+  $("#inputCharacters").keyup(function () {
     setCharacterLimit(this, "#remainingCharacters");
   });
 
