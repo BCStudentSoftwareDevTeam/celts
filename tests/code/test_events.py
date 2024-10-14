@@ -143,27 +143,20 @@ def test_preprocessEventData_checkboxes():
     # test for no keys
     eventData = {}
     newData = preprocessEventData(eventData)
+    assert newData['isFoodProvided'] == False
     assert newData['isRsvpRequired'] == False
-    assert newData['isService'] == False
     assert newData['isTraining'] == False
-    assert newData['isMultipleOffering'] == False
+    assert newData['isService'] == False
+    assert newData['isRepeating'] == False
+    
 
     
-    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True}
+    eventData = {'isRsvpRequired':'', 'isRepeating': 'on', 'isService':True}
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
-    assert newData['isRecurring'] == True
-    assert newData['isMultipleOffering'] == False
-
-    eventData = {'isRsvpRequired':'', 'isMultipleOffering': 'on', 'isService':False }
-    newData = preprocessEventData(eventData)
-    assert newData['isTraining'] == False
-    assert newData['isRsvpRequired'] == False
-    assert newData['isService'] == False
-    assert newData['isRecurring'] == False
-    assert newData['isMultipleOffering'] == True
+    assert newData['isRepeating'] == True
 
 @pytest.mark.integration
 def test_preprocessEventData_dates():
@@ -173,32 +166,31 @@ def test_preprocessEventData_dates():
     assert newData['startDate'] == ''
     assert newData['endDate'] == ''
 
-    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
 
     # test different date formats
-    eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
+    eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == ''
 
-    # endDate should match startDate for non-recurring events
-    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08'}
+    # non-repeating events do not have any end dates
+    eventData = {'startDate':'09/07/21', 'endDate': ''}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == newData['endDate']
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == ''
 
-    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    #repeating events have end dates
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
     assert newData['startDate'] != newData['endDate']
 
-    eventData = {'startDate':'09/07/21', 'endDate': '', 'isMultipleOffering': 'on'}
-    newData = preprocessEventData(eventData)
-    assert newData['startDate'] == newData['endDate']
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-
-
+    
 @pytest.mark.integration
 def test_preprocessEventData_term():
 
@@ -316,12 +308,12 @@ def test_preprocessEventData_seriesData():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isRecurring': False, 'isMultipleOffering': False,'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isRepeating': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
-    eventData['isMultipleOffering'] = False
+    eventData['isRepeating'] = False
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
     assert eventErrorMessage == "All inputs are valid."
@@ -329,18 +321,18 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'isMultipleOffering': False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRepeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
      
-    eventData['isRecurring'] = True
+    eventData['isRepeating'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
     eventData['endDate'] = parser.parse('2021-06-12')
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "Event start date is after event end date."
 
-    eventData['isMultipleOffering'] = True
+    eventData['isSeries'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
     eventData['endDate'] = parser.parse('2021-06-12')
     isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -350,7 +342,7 @@ def test_wrongValidateNewEventData():
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
     eventData['endDate'] = parser.parse('2022-06-12')
-    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring', 'isMultipleOffering']:
+    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRepeating']:
         eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
         assert isValid == False
@@ -407,7 +399,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'seriesId':None, 'isMultipleOffering':False,
+    eventInfo =  { 'isTraining':'on', 'isRepeating':False, 'seriesId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
@@ -437,7 +429,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_attemptSaveMultipleOfferings():
     baseEventData =  {
-                    'isTraining':'on', 'isRecurring':False, 'seriesId':None, 'isMultipleOffering':True,
+                    'isTraining':'on', 'isRepeating':False, 'seriesId': 1,
                     'startDate': '2021-12-12',
                     'rsvpLimit': None,
                     'endDate':'2022-06-12', 'location':"a big room",
@@ -514,7 +506,7 @@ def test_attemptSaveMultipleOfferings():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'seriesId':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRepeating': False,'isAllVolunteerTraining': True, 'seriesId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
@@ -549,7 +541,7 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'seriesId':1, 'isMultipleOffering':False, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRepeating': True, 'seriesId': 1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -568,19 +560,19 @@ def test_saveEventToDb_multipleOffering():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'isMultipleOffering':True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -626,9 +618,8 @@ def test_saveEventToDb_update():
                         "certRequirement": 9,
                         "location": "House",
                         'isFoodProvided': False,
-                        'isRecurring': True,
+                        'isRepeating': True,
                         'seriesId': 3,
-                        'isMultipleOffering': False,
                         'isTraining': True,
                         'isRsvpRequired': True,
                         'rsvpLimit': None,
@@ -731,7 +722,7 @@ def test_deleteEvent():
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
-                      'isRecurring': True,
+                      'isRepeating': True,
                       'seriesId': 20,
                       'startDate': parser.parse('12-12-2021'),
                       'endDate': parser.parse('01-18-2022'),
@@ -803,7 +794,7 @@ def test_deleteEvent():
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
-                      'isMultipleOffering': True,
+                      'isRepeating': False,
                       'seriesId': 10,
                       'startDate': parser.parse('12-12-2021'),
                       'endDate': parser.parse('01-18-2022'),
