@@ -82,7 +82,7 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term: Term.get_by_id(currentTerm)
+    term: Term = Term.get_by_id(currentTerm)
 
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
