@@ -324,20 +324,20 @@ def test_wrongValidateNewEventData():
                   'isTraining':True, 'isRepeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
-     
-    eventData['isRepeating'] = True
-    eventData['startDate'] = parser.parse('2021-12-12')
-    eventData['endDate'] = parser.parse('2021-06-12')
-    isValid, eventErrorMessage = validateNewEventData(eventData)
-    assert isValid == False
-    assert eventErrorMessage == "Event start date is after event end date."
-
+    
+    #repeating event 
     eventData['isSeries'] = True
-    eventData['startDate'] = parser.parse('2021-12-12')
-    eventData['endDate'] = parser.parse('2021-06-12')
+    eventData['isRepeating'] = True
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
-    assert eventErrorMessage == "Event start date is after event end date."
+    assert eventErrorMessage == "Event end time must be after start time."
+    
+    #non-repeating series event
+    eventData['isSeries'] = True
+    eventData['isRepeating'] = False
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == False
+    assert eventErrorMessage == "Event end time must be after start time."
 
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
@@ -494,7 +494,6 @@ def test_attemptSaveMultipleOfferings():
         
         # test duplicated data
         succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(duplicatedseriesData, None)
-        print( attemptSaveMultipleOfferings(duplicatedseriesData, None))
         assert succeeded == False
         assert len(savedEvents) == 0
         assert len(failedSavedOfferings) == 1
@@ -537,21 +536,47 @@ def test_saveEventToDb_create():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_saveEventToDb_recurring():
+def test_saveEventToDb_repeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRepeating': True, 'seriesId': 1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
-            eventInfo['valid'] = True
-            eventInfo['program'] = Program.get_by_id(1)
+            eventInfo_1['valid'] = True
+            eventInfo_2['valid'] = True
+            eventInfo_3['valid'] = True
+            eventInfo_1['program'] = Program.get_by_id(1)
+            eventInfo_2['program'] = Program.get_by_id(1)
+            eventInfo_3['program'] = Program.get_by_id(1)
 
             g.current_user = User.get_by_id("ramsayb2")
-            createdEvents = saveEventToDb(eventInfo)
-            assert len(createdEvents) == 6
+            createdEvents = [
+                saveEventToDb(eventInfo_1),
+                saveEventToDb(eventInfo_2),
+                saveEventToDb(eventInfo_3)
+            ]
+            assert len(createdEvents) == 3
+            assert eventInfo_1['seriesId'] == 1
+            assert eventInfo_2['seriesId'] == 1
+            assert eventInfo_3['seriesId'] == 1
+            assert eventInfo_1['isRepeating'] == 1
+            assert eventInfo_2['isRepeating'] == 1
+            assert eventInfo_3['isRepeating'] == 1
 
             transaction.rollback()
 
@@ -594,6 +619,9 @@ def test_saveEventToDb_multipleOffering():
             assert eventInfo_1['seriesId'] == 1
             assert eventInfo_2['seriesId'] == 1
             assert eventInfo_3['seriesId'] == 1
+            assert eventInfo_1['isRepeating'] == 0
+            assert eventInfo_2['isRepeating'] == 0
+            assert eventInfo_3['isRepeating'] == 0
 
             transaction.rollback()
 
@@ -688,7 +716,7 @@ def test_cancelEvent():
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
-        # creates non recurring event
+        # creates non repeating event
         testingEvent = Event.create(name = "Testing delete event",
                                     term = 2,
                                     description = "This Event is Created to be Deleted.",
@@ -715,36 +743,43 @@ def test_deleteEvent():
 
         transaction.rollback()
 
-        # creates a recurring event
-        eventInfo =  {'isFoodProvided': False,
-                      'isRsvpRequired': False,
-                      'rsvpLimit': None,
-                      'isService': False,
-                      'isAllVolunteerTraining': True,
-                      'isTraining': True,
-                      'isRepeating': True,
-                      'seriesId': 20,
-                      'startDate': parser.parse('12-12-2021'),
-                      'endDate': parser.parse('01-18-2022'),
-                      'location': "Your pet rubber ducks little pond",
-                      'timeEnd': '09:00 PM',
-                      'timeStart': '06:00 PM',
-                      'description': "Empty Bowls Spring 2021",
-                      'name': 'Not Empty Bowls Spring',
-                      'term': 1,
-                      'contactEmail': '',
-                      'contactName': ''}
+        # create repeating events
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring Week 2','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+            
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring Week 3','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
-        eventInfo['valid'] = True
-        eventInfo['program'] = Program.get_by_id(1)
-        createdEvents = saveEventToDb(eventInfo)
-        event = Event.get_by_id(createdEvents[0].id)
+        event_1['valid'] = True
+        event_2['valid'] = True
+        event_3['valid'] = True
+        event_1['program'] = Program.get_by_id(1)
+        event_2['program'] = Program.get_by_id(1)
+        event_3['program'] = Program.get_by_id(1)
+        createdEvents = [
+                saveEventToDb(event_1),
+                saveEventToDb(event_2),
+                saveEventToDb(event_3)
+            ]
+        event = Event.get_by_id(createdEvents[0])
         seriesId = event.seriesId
 
         # check how many events exist before event deletion and isDeleted should be false since they are not deleted yet
         recurringEventsBefore = list(Event.select().where((Event.seriesId==seriesId)&(Event.deletionDate == None)).order_by(Event.seriesId))
         for counter, recurring in enumerate(recurringEventsBefore):
-            assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
+            assert recurring.name == ("Empty Bowls Spring Week " + str(counter + 1))
             assert recurring.isDeleted == False
 
         with app.app_context():
@@ -756,16 +791,24 @@ def test_deleteEvent():
         # check how many events exist after event deletion
         # event that got deleted now have a deletion date which is not None
         recurringEventsAfter = list(Event.select().where((Event.seriesId==seriesId)&(Event.deletionDate == None)).order_by(Event.seriesId))
-        for count, recurring in enumerate(recurringEventsAfter):
-            assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
+        for counter, recurring in enumerate(recurringEventsAfter):
+            assert recurring.name == ("Empty Bowls Spring Week " + str(counter + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
         transaction.rollback()
 
-        #creating recurring event again to test def deleteRecurringSeries()
-        eventInfo['valid'] = True
-        eventInfo['program'] = Program.get_by_id(1)
-        recurringEvents = saveEventToDb(eventInfo)
-        eventIdToDelete = Event.get_by_id(recurringEvents[3].id)
+        #creating recurring event again to test deleteEventandAll
+        event_1['valid'] = True
+        event_2['valid'] = True
+        event_3['valid'] = True
+        event_1['program'] = Program.get_by_id(1)
+        event_2['program'] = Program.get_by_id(1)
+        event_3['program'] = Program.get_by_id(1)
+        createdEvents = [
+                saveEventToDb(event_1),
+                saveEventToDb(event_2),
+                saveEventToDb(event_3)
+            ]
+        eventIdToDelete = Event.get_by_id(createdEvents[2])
         seriesId = event.seriesId
 
         totalRecurringEvents = len(Event.select().where(Event.seriesId == seriesId))
@@ -783,29 +826,6 @@ def test_deleteEvent():
             newTotalRecurringEvents = len(Event.select().where((Event.seriesId == seriesId)& (Event.startDate >= eventIdToDelete.startDate)))
         assert newTotalRecurringEvents == 0
         transaction.rollback()
-
-
-        '''testing the deletion of multiple offering events individually and all at once'''
-        '''saveEventToDB is not working propoerly yet for multiple offering events; change will need to be made in the events.py in loogic'''
-        # creates a multiple offering event
-        eventInfo =  {'isFoodProvided': False,
-                      'isRsvpRequired': False,
-                      'rsvpLimit': None,
-                      'isService': False,
-                      'isAllVolunteerTraining': True,
-                      'isTraining': True,
-                      'isRepeating': False,
-                      'seriesId': 10,
-                      'startDate': parser.parse('12-12-2021'),
-                      'endDate': parser.parse('01-18-2022'),
-                      'location': "Your pet rubber ducks little pond",
-                      'timeEnd': '09:00 PM',
-                      'timeStart': '06:00 PM',
-                      'description': "Empty Bowls Spring 2021",
-                      'name': 'Not Empty Bowls Spring',
-                      'term': 1,
-                      'contactEmail': '',
-                      'contactName': ''}
 
 
 @pytest.mark.integration
