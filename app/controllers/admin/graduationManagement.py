@@ -15,6 +15,7 @@ def gradManagement():
 
     users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
 
+
     bonnercohorts = getBonnerCohorts()
     
     return render_template('/admin/graduationManagement.html', users = users, 
