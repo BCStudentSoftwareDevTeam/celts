@@ -407,7 +407,7 @@ def validateNewEventData(data):
         sameEventListCopy = sameEventList.copy()
 
         for event in sameEventListCopy:
-            if event.isCanceled or event.seriesId:   
+            if event.isCanceled or (event.seriesId and event.isRepeating):   
                 sameEventList.remove(event)
 
         try:
