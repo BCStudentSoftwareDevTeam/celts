@@ -52,7 +52,22 @@ $(document).ready(function() {
         var cohortusers = $(this).data('cohort-users');
         var buttonText = $(this).text();
         
+<<<<<<< HEAD
         //Make list of users from cohort users
+=======
+        gradStudentsTable.rows().every(function() {
+            var studentCohort = $(this.node()).data('student-cohort');
+            console.log(studentCohort)
+            if (studentCohort == cohortYear) {
+                $(this.node()).show(); 
+                console.log("+++++++++++++++++++++++++", studentCohort);
+            } else {
+                $(this.node()).hide();
+            }
+            
+        });
+        gradStudentsTable.draw();
+>>>>>>> 1de2f16b8f419eba209b109101579007940e333c
 
         const cleanedString = cohortusers
             .replace(/^\[|\]$/g, '') // Remove the square brackets
