@@ -934,7 +934,7 @@ def test_upcomingEvents():
                                             location = "The moon",
                                             startDate = date(2021,12,13),
                                             endDate = date(2021,12,13),
-                                            seriesId = 2,
+                                            seriesId = 3,
                                             program= programForMultiple)
 
         # User has not RSVPd and is Interested
