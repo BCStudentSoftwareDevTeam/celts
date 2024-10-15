@@ -1,92 +1,561 @@
-{%set title = "Student Minor Page"%}
+{% set title = "Student Minor Page" %}
 {% extends "base.html" %}
 
 {% block scripts %}
-  {{super()}}
+  {{ super() }}
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/cceMinorProfilePage.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/cceMinorProfilePage.js') }}?u={{ lastStaticUpdate }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 {% endblock %}
 
+
 {% block styles %}
-  {{super()}}
-  <link rel="stylesheet" href="{{url_for('static', filename ='css/minor.css') }}?u={{lastStaticUpdate}}">
-  {% endblock %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/minor.css') }}?u={{ lastStaticUpdate }}">
+{% endblock %}
 
 {% block app_content %}
+  <div class="row">
+    <input id="username" value="{{ user.username }}" hidden />
+    <div name="Header" class="row text-center">
+      <h1>{{ user.firstName }} {{ user.lastName }}'s CCE Minor Profile</h1>
+    </div>
     <div class="row">
-      <input id="username" value="{{user.username}}" hidden/>
-      <div name="Header" class="row">
-          <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor Profile</h2>
-      </div>
-      <div name="Sustained Community Engagement Section">
-        <div class="row">
-          <h3 class="col-md-auto {% if totalSustainedEngagements >= 4 %}bi bi-check2 {% endif %}">Sustained Community Engagement</h3>&nbsp
-          <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{user.username}}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>              
-        </div>
-        <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+      <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+        <li class="col-md-3 col-12 nav-item" role="presentation">
+          <button class="nav-link {{ 'active' if activeTab == 'studentLedEvents' or activeTab is not defined else '' }}" id="studentLedEvents"
+            data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Sustained Community Engagements</button>
+        </li>
+        <li class="col-md-3 col-12 nav-item" role="presentation">
+          <button class="nav-link {{ 'active' if activeTab == 'trainingEvents' else '' }}" id="trainingEvents"
+            data-bs-toggle="pill" data-bs-target="#pills-training" type="button" role="tab" aria-controls="pills-training" aria-selected="false">Summer Experience</button>
+        </li>
+        {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isBonnerScholar %}
+        <li class="col-md-3 col-12 nav-item" role="presentation">
+          <button class="nav-link {{ 'active' if activeTab == 'bonnerScholarsEvents' else '' }}" id="bonnerScholarsEvents"
+            data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Requesting Other Engagement</button>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show {{ 'active' if activeTab == 'studentLedEvents' or activeTab is not defined else '' }}" id="pills-student-led" role="tabpanel" aria-labelledby="studentLedEvents">
+        <p class="pt-2">Requires twenty hours of engagement over the ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
         <div class="accordion" id="communityEngagement">
           {% if sustainedEngagementByTerm %}
-            {% for term, engagements in sustainedEngagementByTerm.items() %}
-            <div class="accordion-item">
-              <h3 class="accordion-header" id="headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
-                  {{term[0]}}
-                </button>
-                </h3>
-                <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#communityEngagement">
-                  <div class="accordion-body">
-                    <div class="container-fluid col-10">
-                      <div class="row d-flex justify-content-center mb-3">
-                        <div class="col-md-6 mb-3">
-                          <table class="table mb-3">
-                            <thead>
-                              <tr>
-                                <th scope="col">Community Engagement Activity</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {% for engagement in engagements %}
-                              <tr class="engagement-row" data-engagement-data='{{engagement|tojson}}'>
-                                <td>
-                                  <input type="checkbox" {{'checked' if engagement['matched'] else ''}} />
-                                  <button type="button" class="btn btn-link">{{engagement["name"]}}</button>
-                                </td>
-                              </tr>
-                              {% endfor %}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div class="col-md-6 p-3" id="set{{term[1]}}">
-                          Click on an engagement entry to see your event history or course information.
-                        </div>
-                      </div>
+          {% for term, engagements in sustainedEngagementByTerm.items() %}
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                {{ term[0] }}
+              </button>
+            </h3>
+            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#communityEngagement">
+              <div class="accordion-body">
+                <div class="container-fluid col-10">
+                  <div class="row d-flex justify-content-center mb-3">
+                    <div class="col-md-6 mb-3">
+                      <table class="table mb-3">
+                        <thead>
+                          <tr>
+                            <th scope="col">Community Engagement Activity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for engagement in engagements %}
+                          <tr class="engagement-row" data-engagement-data='{{ engagement|tojson }}'>
+                            <td>
+                              <input type="checkbox" {{ 'checked' if engagement['matched'] else '' }} />
+                              <button type="button" class="btn btn-link">{{ engagement["name"] }}</button>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-md-6 p-3" id="set{{ term[1] }}">
+                      Click on an engagement entry to see your event history or course information.
                     </div>
                   </div>
                 </div>
               </div>
-              {% endfor %}
-            {% else %}
-              <h2>You have not participated in any service learning events or courses.</h2>
-            {% endif %}
-          </div>
-        </div>
-
-        <div name="Community-Engaged Summer Experience" class="pt-4">
-          <h3 class="col-md-auto {% if summerExperience %}bi bi-check2 {% endif %}">Community-Engaged Summer Experience</h3>
-          <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
-          <div class="row-auto col-md-6">
-            <div class="input-group">
-              <select class="form-select" name='term' id='summerExperienceTerm' required>
-                {% for term in summerTerms %}
-                  <option value="{{selectedSummerTerm}}" {{"selected" if term.description == selectedSummerTerm}}>{{term.description}}</option>
-                {% endfor %}
-              </select>
-              <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{summerExperience}}' type="text"/>
-              <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
-              <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>
             </div>
           </div>
+          {% endfor %}
+          {% else %}
+          <h2>You have not participated in any service learning events or courses.</h2>
+          {% endif %}
         </div>
-    </div>
-{% endblock %}
+      </div>
+      <div class="tab-pane fade show {{ 'active' if activeTab == 'trainingEvents' else '' }}" id="pills-training" role="tabpanel" aria-labelledby="trainingEvents">
+        <div name="Community-Engaged Summer Experience" class="pt-4">
+          {% if summer_experience %}
+          <!-- Display summer experience details -->
+          <form id='editSummerExperienceForm' enctype="multipart/form-data" role='form' action="{{ url_for('minor.updateSummerExperience', username=user.username) }}" method="POST">
+            <div class='row'>
+                <div class="container">
+                    <div class='form-group mb-4 text-center'>
+                        <h4>Proposal for Community-Engaged Summer Experience</h4>
+                        <p>
+                            The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
+                        </p>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <h4>Student Information</h4>
+                        <hr>
+                    </div>
+        
+                    <input type="hidden" name="experience_id" value="{{ summer_experience.id }}">
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label"><strong>Student Name</strong></label>
+                            <div class="input-group">
+                                <input type="text" id="studentName" name="studentName" value="{{ summer_experience.studentName }}" class="form-control" placeholder="Student's Name" autocomplete="off" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label"><strong>Email</strong></label>
+                            <input class="form-control" id="studentEmail" placeholder="Student's email" name="studentEmail" value="{{ user.email }}" readonly>
+                            <br>
+                        </div>
+                    </div>
+        
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label me-2" for="summerYear"><strong>Summer Year</strong></label>
+                            <select class="form-select" id="summerYear" name="summerYear" required>
+                                <option value="" disabled>Select Year</option>
+                                <option value="2023" {% if summer_experience.summerYear == '2023' %}selected{% endif %}>2023</option>
+                                <option value="2024" {% if summer_experience.summerYear == '2024' %}selected{% endif %}>2024</option>
+                                <option value="2025" {% if summer_experience.summerYear == '2025' %}selected{% endif %}>2025</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label me-2" for="dateCreated"><strong>Submission Date</strong></label>
+                            <br>
+                            <input class="form-control" type="date" id="date" name="date" value="{{ summer_experience.created_at }}" required>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <h4>Company/Organization Information</h4>
+                        <hr>
+                    </div>
+        
+                    <div class="form-group">
+                        <label class="form-label" for="company"><strong>Name</strong></label>
+                        <input class="form-control" id="company" name="company" placeholder="Company or organization's name" value="{{ summer_experience.company }}" required>
+                    </div>
+        
+                    <br>
+        
+                    <div class="form-group">
+                        <label class="form-label" for="companyAddress"><strong>Address</strong></label>
+                        <input class="form-control" id="companyAddress" name="companyAddress" placeholder="Company or organization's physical address" value="{{ summer_experience.companyAddress }}" required>
+                    </div>
+        
+                    <br>
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label" for="companyPhone"><strong>Phone Number</strong></label>
+                            <input class="form-control phone-input" id="companyPhone" name="companyPhone" placeholder="Company or organization's phone number" value="{{ summer_experience.companyPhone }}" required>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label" for="companyWebsite"><strong>Website</strong></label>
+                            <input class="form-control" id="companyWebsite" name="companyWebsite" placeholder="Company or organization's website" value="{{ summer_experience.companyWebsite }}" required>
+                        </div>
+                    </div>
+        
+                    <br> 
+        
+                    <div class="form-group">
+                        <br>
+                        <h4> Supervisor Information </h4>
+                        <hr>
+                    </div>
+        
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label class="form-label" for="directSupervisor"> <strong>Direct Supervisor Name (or "Yet to be determined")</strong> </label>
+                            <input class="form-control" id="directSupervisor" placeholder="Name of Direct Supervisor" name="directSupervisor" value="{{ summer_experience.supervisorName }}" required>
+                        </div>
+                    </div>
 
+                    <br>
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label" for="supervisorPhone"><strong>Phone Number</strong></label>
+                            <input class="form-control phone-input" id="supervisorPhone" name="supervisorPhone" placeholder="Supervisor's phone number" value="{{ summer_experience.supervisorPhone }}" required>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label" for="supervisorEmail"><strong>Email</strong></label>
+                            <input class="form-control email-input" id="supervisorEmail" name="supervisorEmail" placeholder="Supervisor's email" value="{{ summer_experience.supervisorEmail }}" required>
+                            <br>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
+                            Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector)
+                            that is responsive to community-identified initiatives or needs:</strong></label>
+                        <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" required>{{ summer_experience.roleDescription }}</textarea><br>
+                    </div>
+        
+                    <div class="form-group">
+                        <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
+                        <input type="radio" id="internship" name="experienceType" value="Internship" {% if summer_experience.experienceType == 'Internship' %}checked{% endif %} required>
+                        <label for="internship">Internship</label><br>
+                        <input type="radio" id="cbr" name="experienceType" value="Community-based research" {% if summer_experience.experienceType == 'Community-based research' %}checked{% endif %}>
+                        <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
+                        <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position" {% if summer_experience.experienceType == 'Community-Based Labor Position' %}checked{% endif %}>
+                        <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
+                        <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship" {% if summer_experience.experienceType == 'EPG Summer Internship' %}checked{% endif %}>
+                        <label for="epgInternship">EPG Summer Internship</label><br>
+                        <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service" {% if summer_experience.experienceType == 'Bonner Scholar Summer of Service' %}checked{% endif %}>
+                        <label for="bonnerService">Bonner Scholar Summer of Service</label>
+                        <br>
+                        <input type="radio" id="otherExperience" name="experienceType" value="Other" {% if summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}checked{% endif %} required>
+                        <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+                        <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" {% if summer_experience.experienceType in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}style="display:none;"{% endif %}>{{ summer_experience.experienceType if summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] else '' }}</textarea><br>
+                    </div>
+        
+                    <div class="form-group">
+                        <label><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please select all that apply.</strong></label><br>
+                        <input type="checkbox" id="powerInequality" name="contentArea" value="Power and inequality" {% if 'Power and inequality' in summer_experience.CceMinorContentArea %}checked{% endif %}>
+                        <label for="powerInequality">Power and inequality</label><br>
+                        <input type="checkbox" id="communityIdentity" name="contentArea" value="Community and identity" {% if 'Community and identity' in summer_experience.CceMinorContentArea %}checked{% endif %}>
+                        <label for="communityIdentity">Community and identity</label><br>
+                        <input type="checkbox" id="civicLiteracy" name="contentArea" value="Civic literacy" {% if 'Civic literacy' in summer_experience.CceMinorContentArea %}checked{% endif %}>
+                        <label for="civicLiteracy">Civic literacy</label><br>
+                        <input type="checkbox" id="civicSkills" name="contentArea" value="Civic skills" {% if 'Civic skills' in summer_experience.CceMinorContentArea %}checked{% endif %}>
+                        <label for="civicSkills">Civic skills</label><br><br>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
+                        <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" {% if summer_experience.experienceHoursOver300 %}checked{% endif %} onclick="toggleTextarea()">
+                        <label for="yes300hours">Yes</label><br>
+                        <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" {% if not summer_experience.experienceHoursOver300 %}checked{% endif %} onclick="toggleTextarea()">
+                        <label for="no300hours">No</label>
+                        <div id="hoursBelow300Container" {% if summer_experience.experienceHoursOver300 %}style="display:none;"{% endif %}>
+                            <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks.">{{ summer_experience.experienceHoursBelow300 }}</textarea>
+                        </div>
+                    </div>
+        
+                    <br><br>
+        
+                    <div class="text-center mt-3" id="edit-buttons" style="display: none;">
+                      <input class="btn btn-primary" type="submit" value="Update Proposal"/> 
+                      <button type="button" class="btn btn-secondary" id="cancel-edit-button">Cancel</button>
+                    </div>
+                    <div class="text-center mt-3" id="view-buttons">
+                      <button type="button" class="btn btn-info text-white" id="edit-proposal-button">Edit Proposal</button>
+                      <input type="hidden" id="experience-id" value="{{ summer_experience.id }}">
+                      <button type="button" class="btn btn-danger" id="withdraw-button">Withdraw Proposal</button>
+                  </div>
+                  
+
+                </div>
+            </div>
+        </form>
+        
+        
+          {% else %}
+          <!-- Display summer experience form -->
+          <form id='summer-experience-form' enctype="multipart/form-data" role='form' action="{{ url_for('minor.addASummerExperience', username=user.username) }}" method="POST">
+            <div class='row'>
+                <div class="container">
+                    <div class='form-group mb-4 text-center'>
+                        <h4>Proposal for Community-Engaged Summer Experience</h4>
+                        <p>
+                            The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
+                        </p>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <h4> Student Information </h4>
+                        <hr>
+                    </div>
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label"><strong>Student Name</strong></label>
+                            <div class="input-group">
+                                <input type="text" id="studentName" name="studentName" value="{{user.fullName}}" class="form-control" placeholder="Student's Name" autocomplete="off" readonly />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label"><strong>Email</strong></label>
+                            <input class="form-control" id="studentEmail" placeholder="Student's email" name="studentEmail" value="{{user.email}}" readonly />
+                            <br>
+                        </div>
+                    </div>
+        
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label me-2" for="summerYear"><strong>Summer Year</strong></label>
+                            <select class="form-select" id="summerYear" name="summerYear" required>
+                                <option value="" disabled selected>Select Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label me-2" for="dateCreated"><strong>Submission Date</strong></label>
+                            <br>
+                            <input class="form-control" type="date" id="date" name="date" required>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <h4>Company/Organization Information</h4>
+                        <hr>
+                    </div>
+        
+                    <div class="form-group">
+                        <label class="form-label" for="company"><strong>Name</strong></label>
+                        <input class="form-control" id="company" name="company" placeholder="Company or organization's name" required/>
+                    </div>
+        
+                    <br>
+        
+                    <div class="form-group">
+                        <label class="form-label" for="companyAddress"><strong>Address</strong></label>
+                        <input class="form-control" id="companyAddress" name="companyAddress" placeholder="Company or organization's physical address" required/>
+                    </div>
+        
+                    <br>
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label" for="companyPhone"><strong>Phone Number</strong></label>
+                            <input class="form-control phone-input" id="companyPhone" name="companyPhone" placeholder="Company or organization's phone number" required/>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label" for="companyWebsite"><strong>Website</strong></label>
+                            <input class="form-control" id="companyWebsite" name="companyWebsite" placeholder="Company or organization's website" required/>
+                        </div>
+                    </div>
+        
+                    <br> 
+        
+                    <div class="form-group">
+                        <br>
+                        <h4> Supervisor Information </h4>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label class="form-label" for="directSupervisor"> <strong>Direct Supervisor Name (or "Yet to be determined")</strong> </label>
+                            <input class="form-control" id="directSupervisor" placeholder="Name of Direct Supervisor" name="directSupervisor" required>
+                        </div>
+                    </div>
+
+                    <br>
+        
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label" for="supervisorPhone"><strong>Phone Number</strong></label>
+                            <input class="form-control phone-input" id="supervisorPhone" name="supervisorPhone" placeholder="Supervisor's phone number" required/>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label" for="supervisorEmail"><strong>Email</strong></label>
+                            <input class="form-control email-input" id="supervisorEmail" name="supervisorEmail" placeholder="Supervisor's email" required/>
+                            <br>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <br>
+                        <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
+                            Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector)
+                            that is responsive to community-identified initiatives or needs:</strong></label>
+                        <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Enter your role description" required></textarea><br>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
+                        <input type="radio" id="internship" name="experienceType" value="Internship" required>
+                        <label for="internship">Internship</label><br>
+                        <input type="radio" id="cbr" name="experienceType" value="Community-based research">
+                        <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
+                        <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position">
+                        <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
+                        <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship">
+                        <label for="epgInternship">EPG Summer Internship</label><br>
+                        <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service">
+                        <label for="bonnerService">Bonner Scholar Summer of Service</label>
+                        <br>
+                        <input type="radio" id="otherExperience" name="experienceType" value="Other" required>
+                        <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+                        <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" placeholder="Enter your summer experience" style="display:none;"></textarea><br>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please select all that apply.</strong></label><br>
+                        <input type="checkbox" id="powerInequality" name="contentArea" value="Power and inequality">
+                        <label for="powerInequality">Power and inequality</label><br>
+                        <input type="checkbox" id="communityIdentity" name="contentArea" value="Community and identity">
+                        <label for="communityIdentity">Community and identity</label><br>
+                        <input type="checkbox" id="civicLiteracy" name="contentArea" value="Civic literacy">
+                        <label for="civicLiteracy">Civic literacy</label><br>
+                        <input type="checkbox" id="civicSkills" name="contentArea" value="Civic skills">
+                        <label for="civicSkills">Civic skills</label><br><br>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
+                        <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" onclick="toggleTextarea()">
+                        <label for="yes300hours">Yes</label><br>
+                        <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" onclick="toggleTextarea()">
+                        <label for="no300hours">No</label>
+                        <div id="hoursBelow300Container" style="display:none;">
+                            <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks."></textarea>
+                        </div>
+                    </div>
+                    
+                    <br><br>
+              
+                    <div class="text-center">
+                        <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+                    </div>
+                </div>
+            </div>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      <div class="tab-pane fade show{{ 'active' if activeTab == 'bonnerscholarsevents' else '' }}" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="bonnerscholarsevents">
+        <!-- <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{% if other_experience %}{{ url_for('minor.edit_other_engagement', username=user.username) }}{% else %}{{ url_for('minor.addOtherEngagement', username=user.username) }}{% endif %}" method="post" data-term-id="{{ other_experience.term.id if other_experience else '' }}"> -->
+        <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' action="{% if other_experience %}{{ url_for('minor.edit_other_engagement', username=user.username) }}?tab=otherEngagement{% else %}{{ url_for('minor.addOtherEngagement', username=user.username) }}?tab=otherEngagement{% endif %}" method="post" data-term-id="{{ other_experience.term.id if other_experience else '' }}">
+
+          <div class='row'>
+              <div class="container text-center">
+                  <div class='form-group mb-4'>
+                      <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
+                      <input type="hidden" value="{{ user }}" name="user"/>
+                      <input type="hidden" id="other-experience-id" name="experience-id" value="{{ other_experience.id if other_experience else '' }}">
+                  </div>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="inputTerm"><strong>Term</strong></label>
+                  <select class="form-select" name="term" id="inputTerm" required {% if other_experience %}disabled{% endif %}>
+                      <!-- Options will be dynamically generated by JavaScript -->
+                  </select>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="experienceName"><strong>Experience Title</strong></label>
+                  <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" value="{{ other_experience.activity if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="form-group">
+                  <br>
+                  <h4>Company/Organization Information</h4>
+                  <hr>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="companyOrOrg"><strong>Name</strong></label>
+                  <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="companyOrOrg" value="{{ other_experience.company if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="otherCompanyAddress"><strong>Address</strong></label>
+                  <input class="form-control" id="otherCompanyAddress" placeholder="Company or organization's physical address" name="otherCompanyAddress" value="{{ other_experience.company_address if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="row">
+                  <div class="form-group col-6">
+                      <label class="form-label" for="otherCompanyPhone"><strong>Phone Number</strong></label>
+                      <input class="form-control phone-input" id="otherCompanyPhone" placeholder="Company or organization's phone number" name="otherCompanyPhone" value="{{ other_experience.company_phone if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+                  </div>
+                  <div class="form-group col-6">
+                      <label class="form-label" for="otherCompanyWebsite"><strong>Website</strong></label>
+                      <input class="form-control" id="otherCompanyWebsite" placeholder="Company or organization's website" name="otherCompanyWebsite" value="{{ other_experience.company_website if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+                  </div>
+              </div>
+      
+              <div class="form-group">
+                  <br>
+                  <h4>Supervisor Information</h4>
+                  <hr>
+              </div>
+      
+              <div class="row">
+                  <div class="form-group col-12">
+                      <label class="form-label" for="otherDirectSupervisor"><strong>Direct Supervisor Name (or "Yet to be determined")</strong></label>
+                      <input class="form-control" id="otherDirectSupervisor" placeholder="Name of Direct Supervisor" name="otherDirectSupervisor" value="{{ other_experience.supervisor_name if other_experience else '' }}" {% if other_experience %}disabled{% endif %}>
+                  </div>
+              </div>
+      
+              <div class="row">
+                  <div class="form-group col-6">
+                      <label class="form-label" for="otherSupervisorPhone"><strong>Phone Number</strong></label>
+                      <input class="form-control phone-input" id="otherSupervisorPhone" placeholder="Supervisor's phone number" name="otherSupervisorPhone" value="{{ other_experience.supervisor_phone if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+                  </div>
+                  <div class="form-group col-6">
+                      <label class="form-label" for="otherSupervisorEmail"><strong>Email</strong></label>
+                      <input class="form-control email-input" id="otherSupervisorEmail" placeholder="Supervisor's email" name="otherSupervisorEmail" value="{{ other_experience.supervisor_email if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+                  </div>
+              </div>
+      
+              <div class="form-group">
+                  <label class="mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
+                  <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="form-group">
+                  <br>
+                  <h4>Experience Information</h4>
+                  <hr>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="totalHours"><strong>Total Hours</strong></label>
+                  <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours" value="{{ other_experience.hours if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
+                  <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              </div>
+      
+              <div class="form-group">
+                  <label class="form-label" for="experienceDescription"><strong>Experience Description</strong></label>
+                  <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="description" {% if other_experience %}disabled{% endif %}>{{ other_experience.service if other_experience else '' }}</textarea>
+              </div>
+              
+              <br><br>
+
+              <div class="text-center">
+                <input class="btn btn-primary" type="submit" value="Send Request for Approval" {% if other_experience %}style="display: none;"{% endif %}/> 
+              </div>
+            
+            <div class="text-center mt-3" id="edit-other-buttons" style="display: none;">
+                <input class="btn btn-primary" type="submit" value="Update Proposal"/> 
+                <button type="button" class="btn btn-secondary" id="cancel-other-edit-button">Cancel</button>
+            </div>
+            
+            <div class="text-center mt-3" id="view-other-buttons" {% if not other_experience %}style="display: none;"{% endif %}>
+                <button type="button" class="btn btn-info text-white" id="edit-other-proposal-button">Edit Proposal</button>
+                <button type="button" class="btn btn-danger" id="withdraw-other-button">Withdraw Proposal</button>
+            </div>
+            
+          </div>
+      </form>
+     
+      </div>
+    </div>
+  </div>
+{% endblock %}

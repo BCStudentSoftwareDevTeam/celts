@@ -4,7 +4,8 @@ import pprint
 from flask import Flask, render_template
 from playhouse.shortcuts import model_to_dict, dict_to_model
 from app.logic.config import load_config_files
-
+app = Flask(__name__)
+app.debug = True  # Enable debug mode
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
@@ -116,3 +117,7 @@ def handle_bad_request(e):
 def handle_bad_request(e):
     return render_template("/errors/500error.html",
                             supportEmail = supportContactEmail)
+
+
+if __name__ == '__main__':
+    app.run()
