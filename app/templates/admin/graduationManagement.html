@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 {% set bonnerCo = bonnercohorts %}
 
+
 {% block scripts %}
   {{super()}}
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -21,7 +22,6 @@
 
 
 {% block app_content %}
-<meta id="user-year" data-year="{{bonnerCo}}" >
 <h1 class="text-center mb-5">Graduation Management</h1>
 <div class="col-md-3 me-auto"></div>
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -41,7 +41,7 @@
     </button>
     <div class="dropdown-menu">
       {%for year in bonnercohorts%}
-        <a class="dropdown-item dropdown-item-new" data-cohort-year="{{year}}" data-cohort-users ="{{bonnerCo[year]}}">{{year}}-{{year+1}}</a> 
+        <a class="dropdown-item dropdown-item-new" data-filter="bonner" data-cohort-year="{{year}}" data-cohort-users ="{{bonnerCo[year]}}">{{year}}-{{year+1}}</a> 
       {%endfor%}
     </div>
   </div>
@@ -62,7 +62,7 @@
     </thead>
   <tbody>
     {% for user in users %}
-    <tr data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}">
+    <tr data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }} </a><svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
       </svg></td>
       <td><input type="checkbox" class="graduated-checkbox" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>

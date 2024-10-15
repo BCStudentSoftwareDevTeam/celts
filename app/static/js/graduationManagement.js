@@ -47,40 +47,58 @@ $(document).ready(function() {
     });
 
     $('.dropdown-item-new').click(function() {
-        
+
         var cohortYear = $(this).data('cohort-year');
-        var buttonText = $(this).text();
-
         var cohortusers = $(this).data('cohort-users');
+        var buttonText = $(this).text();
+        
+        //Make list of users from cohort users
 
-        // dictionary = $('#user-year').data();
+        const cleanedString = cohortusers
+            .replace(/^\[|\]$/g, '') // Remove the square brackets
+            .replace(/<User:\s*|>/g, '') // Remove "<User: " and ">"
+            .trim(); // Trim any leading or trailing whitespace
 
-        // console.log(dictionary)
+        const CohortArray = cleanedString.split(',').map(user => user.trim());
 
-        console.log(cohortYear)
-        console.log(cohortusers)
+        
+
     
-
         $('.dropdown-toggle.bonner-filter').text(buttonText);
         
         gradStudentsTable.rows().every(function() {
-            var studentYear = $(this.node()).data('cohort-year');
-            if (studentYear == cohortYear) {
-                $(this.node()).show(); 
-            } else {
-                $(this.node()).hide();
-            }
+            var studentUserName = $(this.node()).data('username');
+
+            console.log('Cohort List: ', CohortArray)
+            
+            for ( let i = 0 ; i < CohortArray.length ; i++){
+                
+                console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
+            
+                var studentType = $(this.node()).data('student-type'); 
+                if (studentType === 'bonner'&& studentUserName == CohortArray[i]) {
+                    $(this.node()).show(); 
+                    console.log("True")
+                } else {
+                    $(this.node()).hide();
+                    console.log("false")
+                }
+
+
+
+
+                // if (studentUserName == CohortArray[i]) {
+                //     $(this.node()).show();
+                //     console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
+                //     console.log(" TRUE ") 
+                // } else {
+                //     $(this.node()).hide();
+                //     console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
+                //     console.log(" FALSE ")   
+                // }   
+            }            
         });
         gradStudentsTable.draw();
-
-        $('.dropdown-menu .dropdown-item-new').each(function() {
-            var itemYear = $(this).data('cohort-year');
-            if (itemYear == cohortYear) {
-              $(this).addClass('active');
-            } else {
-              $(this).removeClass('active');
-            }
-        });
     });
 
     $('.graduated-checkbox').change(function() {
