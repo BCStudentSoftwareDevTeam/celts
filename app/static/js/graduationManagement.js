@@ -51,7 +51,12 @@ $(document).ready(function() {
         var cohortYear = $(this).data('cohort-year');
         var cohortusers = $(this).data('cohort-users');
         var buttonText = $(this).text();
-        
+
+        // clear table
+        gradStudentsTable.rows().every(function(){
+            $(this.node()).hide();
+        })
+
         //Make list of users from cohort users
 
         const cleanedString = cohortusers
@@ -61,15 +66,12 @@ $(document).ready(function() {
 
         const CohortArray = cleanedString.split(',').map(user => user.trim());
 
-        
-
-    
         $('.dropdown-toggle.bonner-filter').text(buttonText);
 
-        
+        //if list isnt empty then add users on list        
         gradStudentsTable.rows().every(function() {
             var studentUserName = $(this.node()).data('username');
-            
+
             for ( let i = 0 ; i < CohortArray.length ; i++){
                 
                 var studentType = $(this.node()).data('student-type'); 
@@ -79,7 +81,8 @@ $(document).ready(function() {
                 } else {
                     $(this.node()).hide();
                 }
-            }            
+            }  
+                  
         });
  
         gradStudentsTable.draw();
