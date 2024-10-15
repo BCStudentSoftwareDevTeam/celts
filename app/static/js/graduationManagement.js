@@ -65,39 +65,23 @@ $(document).ready(function() {
 
     
         $('.dropdown-toggle.bonner-filter').text(buttonText);
-        
+
+ 
         gradStudentsTable.rows().every(function() {
             var studentUserName = $(this.node()).data('username');
-
-            console.log('Cohort List: ', CohortArray)
             
             for ( let i = 0 ; i < CohortArray.length ; i++){
                 
-                console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
-            
                 var studentType = $(this.node()).data('student-type'); 
-                if (studentType === 'bonner'&& studentUserName == CohortArray[i]) {
+                if (studentType === 'bonner' && studentUserName == CohortArray[i]) {
                     $(this.node()).show(); 
-                    console.log("True")
+                    { break; }
                 } else {
                     $(this.node()).hide();
-                    console.log("false")
                 }
-
-
-
-
-                // if (studentUserName == CohortArray[i]) {
-                //     $(this.node()).show();
-                //     console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
-                //     console.log(" TRUE ") 
-                // } else {
-                //     $(this.node()).hide();
-                //     console.log('found: ', studentUserName, ' looking for: ', CohortArray[i])
-                //     console.log(" FALSE ")   
-                // }   
             }            
         });
+ 
         gradStudentsTable.draw();
     });
 
