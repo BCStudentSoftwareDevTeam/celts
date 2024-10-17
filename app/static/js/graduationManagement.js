@@ -12,7 +12,7 @@ $(document).ready(function() {
         var filterType = $(this).data('filter'); 
         var buttonText = $(this).text();
 
-        $('.dropdown-toggle').first().text(buttonText);
+        $('#main-filter').first().text(buttonText);
 
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();
@@ -48,9 +48,10 @@ $(document).ready(function() {
 
     $('.dropdown-item-new').click(function() {
 
-        var cohortYear = $(this).data('cohort-year');
         var cohortusers = $(this).data('cohort-users');
         var buttonText = $(this).text();
+
+        $('.dropdown-toggle.bonner-filter').text(buttonText);
 
         // clear table
         gradStudentsTable.rows().every(function(){
@@ -66,8 +67,6 @@ $(document).ready(function() {
 
         const CohortArray = cleanedString.split(',').map(user => user.trim());
 
-        $('.dropdown-toggle.bonner-filter').text(buttonText);
-
         //if list isnt empty then add users on list        
         gradStudentsTable.rows().every(function() {
             var studentUserName = $(this.node()).data('username');
@@ -81,8 +80,7 @@ $(document).ready(function() {
                 } else {
                     $(this.node()).hide();
                 }
-            }  
-                  
+            }         
         });
  
         gradStudentsTable.draw();
