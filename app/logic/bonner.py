@@ -90,4 +90,4 @@ def addBonnerCohortToRsvpLog(year, event):
                                     .where(BonnerCohort.year == year))
     for bonner in bonnerCohort:
         fullName = bonner.fullName
-        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")
+        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.") 
