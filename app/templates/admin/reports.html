@@ -9,12 +9,23 @@
 {% block scripts %}
 {{ super() }}
 <script src="/static/js/reports.js"></script>
+
+<script>
+    // Set the form action based on which button is clicked
+    document.getElementById('download-btn').addEventListener('click', function() {
+        document.getElementById('reportForm').action = '/admin/reports/download';
+    });
+
+    document.getElementById('visualize-btn').addEventListener('click', function() {
+        document.getElementById('reportForm').action = '/admin/reports/visualize';
+    });
+</script>
 {% endblock %}
 
 {% block app_content %}
 <div class="download-container mt-50 text-center d-flex flex-column align-items-center">
     <h1 class="mb-3">Annual Report</h1>
-    <form method="post" action="/admin/reports/visualize" class="form-group col-md-6 d-flex flex-column align-items-center">
+    <form id="reportForm" method="post" class="form-group col-md-6 d-flex flex-column align-items-center">
         <div class="d-flex flex-column text-center justify-content-center align-items-center">
             <div class="col-12 col-md-10 mb-3 d-flex justify-content-center">
                 <select id="academicYear" name="academicYear" class="form-select w-100" 
@@ -25,8 +36,10 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="d-flex gap-3 justify-content-between">
-                <button type="submit" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
+                <!-- Download Button -->
+                <button type="submit" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;" id="download-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
                         <defs>
                             <linearGradient id="G7C1BuhajJQaEWHVlNUzHa_BEMhRoRy403e_gr1" x1="6" x2="27" y1="24" y2="24" data-name="Gradient" gradientUnits="userSpaceOnUse">
@@ -42,18 +55,14 @@
                     <p class="mb-0 py-0 ms-2">Download</p>
                 </button>
 
-                <!-- <form method="post" action="/admin/reports/visualize"> 
-                    e
-
-                </form> -->
-
-                <!-- <button id = "open-viz-modal" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;">
+                <!-- Visualize Button -->
+                <button type="submit" class="btn btn-primary btn-m d-flex justify-content-center align-items-center" style="max-width: 200px;" id="visualize-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
                         <circle fill="#FF7D5F" cx="24" cy="24" r="11.722"></circle>
-                        <path fill="#FFDA88" d="M15 19l6 10-6 10h18l-6-10 6-10H15z"></path>
+                        <path fill="#FFDA88" d="M15 19l6 10-6 10H15z"></path>
                     </svg>
                     <p class="mb-0 py-0 ms-2">Visualize</p>
-                </button> -->
+                </button>
             </div>
         </div>
     </form>
@@ -65,17 +74,17 @@
         <div class="visualization-container">
             <div class="row d-flex justify-content-center">
                 <div class="col-12 col-md-6 visualiztion-div">
-                <canvas id="chart1" class="chart-canvas"></canvas>
+                    <canvas id="chart1" class="chart-canvas"></canvas>
+                </div>
+                <div class="row d-flex justify-content-center">
+                    <div class="col-12 col-md-6 visualiztion-div">
+                        <canvas id="chart2" class="chart-canvas"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="row d-flex justify-content-center">
-                <div class="col-12 col-md-6 visualiztion-div">
-                <canvas id="chart2" class="chart-canvas"></canvas>
-            </div>
-        </div>
         </div>
     </div>
 </div>
-
 
 <style>
 .chart-canvas {
@@ -84,9 +93,4 @@
     aspect-ratio: 1 / 1; /* Ensures a perfect square canvas for pie charts */
 }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
 {% endblock %}
-
