@@ -128,7 +128,7 @@ $(document).ready(function(){
     $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
-    $("#removeFromTranscriptDiv").hide();
+    // $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if(banValue == "Unban"){

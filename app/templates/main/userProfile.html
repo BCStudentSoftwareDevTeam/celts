@@ -193,8 +193,7 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
-                  <th scope="col">Edit Eligibility</th>
-                  <th scope="col">Show on Transcript</th>
+                  
                 {% endif %}
                 <th scope="col"></th>
               </tr>
@@ -228,7 +227,7 @@
                       <button type="button" class="banEdit btn btn-primary" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
                     {% endif %}
                     </td>
-                    <td><input class="form-check-input notifyInput" id="removefromTranscript?" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                    
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -599,7 +598,7 @@
           </div>
           <div class="form-check" id="removeFromTranscriptDiv">
             <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscriptCheckbox" id="removeFromTranscriptCheckbox" type="checkbox" data-username="{{volunteer.username}}" />
-            <label class="form-check-label" for="removeFromTranscriptCheckbox">Remove from Transcript</label>
+            <label class="form-check-label" for="removeFromTranscriptCheckbox">Remove from Transcript </label>
           </div>
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget col-xs-10">
