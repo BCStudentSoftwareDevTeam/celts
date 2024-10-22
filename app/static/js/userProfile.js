@@ -135,9 +135,10 @@ $(document).ready(function(){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      $("#removeFromTranscriptDiv").show();
+      // $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
+    else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
   });
 
 
