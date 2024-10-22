@@ -5,6 +5,7 @@ from app.logic.bonner import getBonnerCohorts
 from app.models.bonnerCohort import BonnerCohort
 
 from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent
+from app.logic.minor import getMinorProgress
 
 
 @admin_bp.route('/admin/graduationManagement', methods=['GET'])
@@ -15,11 +16,14 @@ def gradManagement():
 
     users = User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName).where(User.classLevel=='Senior')
 
+    CCEusers = getMinorProgress()
 
     bonnercohorts = getBonnerCohorts()
-    
-    return render_template('/admin/graduationManagement.html', users = users, 
-                           bonnercohorts = bonnercohorts)
+
+    return render_template('/admin/graduationManagement.html', 
+                           users = users, 
+                           bonnercohorts = bonnercohorts,
+                           CCEstudents = CCEusers)
 
 
 @admin_bp.route('/<username>/hasGraduated/', methods=['POST'])

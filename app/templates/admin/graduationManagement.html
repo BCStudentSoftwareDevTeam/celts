@@ -1,6 +1,7 @@
 {% set title = "Graduation Management" %}
 {% extends "base.html" %}
 {% set bonnerCo = bonnercohorts %}
+{% set CCEusers = CCEstudents %}
 
 
 {% block scripts %}
@@ -22,26 +23,26 @@
 
 
 {% block app_content %}
-<h1 class="text-center mb-5">Graduation Management</h1>
+<h1 class="text-center mb-5">Graduation Managment</h1>
 <div class="col-md-3 me-auto"></div>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="btn-group">
-    <button type="button" class="btn btn-primary dropdown-toggle" id = "main-filter "data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+    <button type="button" class="btn btn-primary dropdown-toggle" id = "main-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
       All
     </button>
     <div class="dropdown-menu">
-      <a class="dropdown-item" data-filter="all"  >All</a>
+      <a class="dropdown-item" data-filter="all" >All</a>
       <a class="dropdown-item" data-filter="bonner" >Bonner Students</a>
-      <a class="dropdown-item" data-filter="cce" >CCE Minor</a>
+      <a class="dropdown-item" data-filter="cce" data-cce = "{{CCEusers}}" >CCE Minor</a>
     </div>
   </div>
   <div class="btn-group">
-    <button type="button" class="btn btn-primary dropdown-toggle bonner-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+    <button type="button" class="btn btn-primary dropdown-toggle bonner-filter" id = "cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
       Bonner Cohorts
     </button>
     <div class="dropdown-menu">
       {%for year in bonnercohorts%}
-        <a class="dropdown-item dropdown-item-new" data-filter= "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnerCo[year]}}" >{{year}}-{{year+1}}</a> 
+        <a class="dropdown-item dropdown-item-new" data-filter = "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnerCo[year]}}" >{{year}}-{{year+1}}</a> 
       {%endfor%}
     </div>
   </div>
