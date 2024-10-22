@@ -216,15 +216,15 @@
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
-                      <td class="programBan"> Eligible </td>
+                      <td class="programBan"> Eligible
                       {% set label = "Ban" %}
                     {% else %}
-                      <td class="programBan text-danger"> Banned </td>
+                      <td class="programBan text-danger"> Banned
                       {% set label = "Unban" %}
                     {% endif %}
-                    <td>
+
                     {% if g.current_user.isCeltsAdmin %}
-                      <button type="button" class="banEdit btn btn-primary" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                      <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}"><i class="bi bi-pencil"></i></button>
                     {% endif %}
                     </td>
                     
