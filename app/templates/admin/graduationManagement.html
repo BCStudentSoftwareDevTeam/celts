@@ -1,7 +1,5 @@
 {% set title = "Graduation Management" %}
 {% extends "base.html" %}
-{% set bonnerCo = bonnercohorts %}
-{% set CCEusers = CCEstudents %}
 
 
 {% block scripts %}
@@ -33,7 +31,7 @@
     <div class="dropdown-menu">
       <a class="dropdown-item" data-filter="all" >All</a>
       <a class="dropdown-item" data-filter="bonner" >Bonner Students</a>
-      <a class="dropdown-item" data-filter="cce" data-cce = "{{CCEusers}}" >CCE Minor</a>
+      <a class="dropdown-item" data-filter="cce" data-cce = "{{CCEstudents}}" >CCE Minor</a>
     </div>
   </div>
   <div class="btn-group">
@@ -42,7 +40,7 @@
     </button>
     <div class="dropdown-menu">
       {%for year in bonnercohorts%}
-        <a class="dropdown-item dropdown-item-new" data-filter = "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnerCo[year]}}" >{{year}}-{{year+1}}</a> 
+        <a class="dropdown-item dropdown-item-new" data-filter = "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnercohorts[year]}}" >{{year}}-{{year+1}}</a> 
       {%endfor%}
     </div>
   </div>

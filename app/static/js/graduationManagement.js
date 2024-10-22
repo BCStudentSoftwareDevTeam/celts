@@ -15,6 +15,10 @@ $(document).ready(function() {
 
         $('#main-filter').first().text(buttonText);
         $('#cohortFilter').text('Bonner Cohort');
+
+
+        $('#selectAll').text('Select All');
+        selectAllMode = true
         
 
 
@@ -40,65 +44,56 @@ $(document).ready(function() {
             
             var cceUsers = $(this).data('cce'); 
 
-            console.log('Raw string',cceUsers)
-
-            const dataString = `[{'username': 'ayisie', 'firstName': 'Ebenezer', 'lastName': 'Ayisi', 'hasGraduated': False, 'engagementCount': Decimal('2'), 'hasCommunityEngagementRequest': 0, 'hasSummer': 'Incomplete'}, {'username': 'khatts', 'firstName': 'Sreynit', 'lastName': 'Khatt', 'hasGraduated': False, 'engagementCount': Decimal('1'), 'hasCommunityEngagementRequest': 0, 'hasSummer': 'Completed'}, {'username': 'bledsoef', 'firstName': 'Finn', 'lastName': 'Bledsoe', 'hasGraduated': False, 'engagementCount': Decimal('1'), 'hasCommunityEngagementRequest': 0, 'hasSummer': 'Incomplete'}]`;
-
-            // Step 1: Clean the string
-            const sanitizedString = dataString
-              .replace(/'/g, '"') // Replace single quotes with double quotes
-              .replace(/False/g, 'false') // Replace False with false
-              .replace(/Decimal\('(\d+)'\)/g, '$1'); // Replace Decimal('x') with x
+            const sanitizedString = cceUsers
+              .replace(/'/g, '"') 
+              .replace(/False/g, 'false') 
+              .replace(/Decimal\('(\d+)'\)/g, '$1'); 
             
-            // Step 2: Initialize the result object
-            const result = {};
+            const CCElist = {};
             
-            // Step 3: Split the string into individual user items
             const userItems = sanitizedString.slice(1, -1).split('}, {');
             
             userItems.forEach(item => {
-              // Remove curly braces and extra whitespace
+  
               item = item.replace(/[{}/]/g, '').trim();
             
-              // Split into key-value pairs
+
               const pairs = item.split(', ');
             
               let username, engagementCount;
             
               pairs.forEach(pair => {
-                const [key, value] = pair.split(': '); // Split into key and value
+                const [key, value] = pair.split(': '); 
                 if (key.trim() === '"username"') {
-                  username = value.replace(/"/g, ''); // Clean username
+                  username = value.replace(/"/g, '');
                 } else if (key.trim() === '"engagementCount"') {
-                  engagementCount = parseFloat(value); // Convert engagement count to a number
-                  console.log('attempt to parse: ',value)
+                  engagementCount = parseFloat(value[9]); 
                   
                 }
               });
             
-              // Add to result if both username and engagementCount were found
+              
               if (username && engagementCount !== undefined) {
-                result[username] = engagementCount; // Populate the result object
+                CCElist[username] = engagementCount; 
               }
             });
             
-            console.log(result);
-            
-            
-
 
             gradStudentsTable.rows().every(function() {
-                var studentType = $(this.node()).data('student-type');
+                var studentUserName = $(this.node()).data('username');
                 
-
-                if (studentType === 'cce') {
-                    $(this.node()).show(); 
-                } else {
-                    $(this.node()).hide();
+                for ( const [key, value] of Object.entries(CCElist)){
+                    var username = key;
+                    
+                    if ( studentUserName == username && CCElist[key] > 0 ) {
+                        $(this.node()).show(); 
+                        { break; }
+                    } else {
+                        $(this.node()).hide();
+                    }
                 }
             });
             gradStudentsTable.draw();
-        
         }
 
     });
@@ -111,22 +106,21 @@ $(document).ready(function() {
         $('#cohortFilter').text(buttonText);
         $('#main-filter').first().text('All');
 
-        // clear table
+        $('#selectAll').text('Select All');
+        selectAllMode = true
+
         gradStudentsTable.rows().every(function(){
             $(this.node()).hide();
         })
         
-        console.log(cohortusers)
-        //Make list of users from cohort users
 
         const cleanedString = cohortusers
-            .replace(/^\[|\]$/g, '') // Remove the square brackets
-            .replace(/<User:\s*|>/g, '') // Remove "<User: " and ">"
-            .trim(); // Trim any leading or trailing whitespace
+            .replace(/^\[|\]$/g, '') 
+            .replace(/<User:\s*|>/g, '') 
+            .trim(); 
 
         const CohortArray = cleanedString.split(',').map(user => user.trim());
 
-        //if list isnt empty then add users on list        
         gradStudentsTable.rows().every(function() {
             var studentUserName = $(this.node()).data('username');
 
@@ -140,16 +134,6 @@ $(document).ready(function() {
                     $(this.node()).hide();
                 }
             }         
-        });
-
-        gradStudentsTable.rows().every(function() {
-            // Use jQuery to check visibility
-            var rowNode = this.node(); // Get the row node
-            if ($(rowNode).is(':visible')) {
-                console.log('Row is visible');
-            } else {
-                console.log('Row is hidden');
-            }
         });
  
         gradStudentsTable.draw();
@@ -174,27 +158,13 @@ $(document).ready(function() {
             }
         });
     });
-    // $('#selectAll').click(function() {
-    //     let checkboxes = $('.graduated-checkbox');
-    //     if (selectAllMode) {
-    //         checkboxes.prop('checked', true).change();
-    //         $(this).text('Deselect All');
-    //     } else {
-    //         checkboxes.prop('checked', false).change();
-    //         $(this).text('Select All');
-    //     }
-    //     selectAllMode = !selectAllMode; 
-    // });
-    
 
     $('#selectAll').click(function() {
 
         if (selectAllMode) {
             gradStudentsTable.rows().every(function() {
-                // Use jQuery to check visibility
-                var rowNode = this.node(); // Get the row node
+                var rowNode = this.node(); 
                 if ($(rowNode).is(':visible')) {
-                    console.log('Row is visible');
                     $(rowNode).find('.graduated-checkbox').prop('checked', true ).change();
                 } 
             });
@@ -202,10 +172,8 @@ $(document).ready(function() {
         } else {
 
             gradStudentsTable.rows().every(function() {
-                // Use jQuery to check visibility
-                var rowNode = this.node(); // Get the row node
+                var rowNode = this.node(); 
                 if ($(rowNode).is(':visible')) {
-                    console.log('Row is visible');
                     $(rowNode).find('.graduated-checkbox').prop('checked', false ).change();
                 } 
             });
