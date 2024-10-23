@@ -83,7 +83,6 @@ def deleteEventAndAllFollowing(eventId):
                     Event.update({Event.deletionDate: datetime.now(), Event.deletedBy: g.current_user}).where((Event.seriesId == seriesId) & (Event.startDate >= event.startDate)).execute()
                     return deletedEventList
 
-#replaces: deleteAllRecurringEvents()
 def deleteAllEventsInSeries(eventId):
         """
          Deletes all events in a series by getting the first event in the series and calling deleteEventAndAllFollowing().
@@ -114,7 +113,6 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     failedSavedOfferings = []
     allSavesWereSuccessful = True
     
-    # Creates a shared multipleOfferingId for all offerings to have
     seriesId = calculateNewSeriesId()
 
     # Create separate event data inheriting from the original eventData
@@ -388,10 +386,6 @@ def validateNewEventData(data):
 
     if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
-    
-    #replaces: date check happening on frontend??
-    # if data['endDate']  <  data['startDate']:
-    #     return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
         return (False, "Event end time must be after start time.")
@@ -420,7 +414,6 @@ def validateNewEventData(data):
     data['valid'] = True
     return (True, "All inputs are valid.")
 
-# replaces calculateNewMultipleOfferingId() and calculateNewrecurringId()
 def calculateNewSeriesId():
     """
     Gets the max series ID so that new seriesId can be assigned.
@@ -430,7 +423,6 @@ def calculateNewSeriesId():
         return maxSeriesId + 1
     return 1
 
-#replaces: getPreviousRecurringEventData(recurringId) and getPreviousMultipleOfferingEventData(multipleOfferingId):
 def getPreviousSeriesEventData(seriesId):
     """
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event.
@@ -442,7 +434,6 @@ def getPreviousSeriesEventData(seriesId):
                                    .where(Event.seriesId==seriesId))
     return previousEventVolunteers
 
-#replaces getRecurringEventsData(eventData)
 def getRepeatingEventsData(eventData):
     """
         Calculate the events to create based on a repeating event start and end date. Takes a
@@ -452,7 +443,6 @@ def getRepeatingEventsData(eventData):
 
         Return a list of events to create from the event data.
     """
-    #replaces endDate check; no endDate
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
