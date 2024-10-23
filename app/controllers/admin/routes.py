@@ -228,7 +228,6 @@ def renewEvent(eventId):
                     'isRepeating': bool(priorEvent['isRepeating']),
                     'seriesId': priorEvent['seriesId'],
                     })
-        # RepeatingImplementation: Fix the above.
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
             flash(message, "danger")

@@ -66,7 +66,7 @@ function setViewForSingleOffering(){
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
 }
 
-function setViewForMultipleOffering(){
+function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
@@ -91,18 +91,18 @@ function isDateInPast(dateString) {
 
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
 
-  let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+  let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   // insert values for the newly created row
-  if (eventName) {clonedMultipleOffering.find('.multipleOfferingNameField').val(eventName)}
-  if (eventDate) {clonedMultipleOffering.find('.multipleOfferingDatePicker').val(eventDate)}
-  if (startTime) {clonedMultipleOffering.find('.multipleOfferingStartTime').val(startTime)}
-  if (endTime) {clonedMultipleOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (isDuplicate) {clonedMultipleOffering.addClass('border-red')}
+  if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
+  if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
+  if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
+  if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
+  if (isDuplicate) {clonedOffering.addClass('border-red')}
 
-  $("#multipleOfferingSlots").append(clonedMultipleOffering);
-  pendingmultipleEvents.push(clonedMultipleOffering);
+  $("#multipleOfferingSlots").append(clonedOffering);
+  pendingmultipleEvents.push(clonedOffering);
 
-  return clonedMultipleOffering
+  return clonedOffering
 }
 
 $('#multipleOfferingSave').on('click', function() {
@@ -379,7 +379,7 @@ $(".startDatePicker").change(function () {
   updateOfferingsTable();
   
   if ($("#checkIsSeries").is(":checked")){
-    setViewForMultipleOffering();
+    setViewForSeries();
   }
   
   let modalOpenedByEditButton = false;
@@ -393,7 +393,7 @@ $(".startDatePicker").change(function () {
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (multipleOfferingStatus == true) {
-      setViewForMultipleOffering();
+      setViewForSeries();
       loadOfferingsToModal();
       $('#modalMultipleOffering').modal('show');
     } else {

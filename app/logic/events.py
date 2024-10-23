@@ -120,8 +120,8 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
-            multipleOfferingDict = eventData.copy()
-            multipleOfferingDict.update({
+            eventInfo = eventData.copy()
+            eventInfo.update({
                 'name': event['eventName'],
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
@@ -130,7 +130,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'isRepeating': bool(isRepeating)
                 })
             # Try to save each offering
-            savedEvents, validationErrorMessage = attemptSaveEvent(multipleOfferingDict, attachmentFiles)
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
             if validationErrorMessage:
                 failedSavedOfferings.append((index, validationErrorMessage))
                 allSavesWereSuccessful = False
