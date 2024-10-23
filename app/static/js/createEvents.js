@@ -196,19 +196,8 @@ $('#multipleOfferingSave').on('click', function() {
     displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
   }
   else {
-    let offerings = [];
-    eventOfferings.each(function(index, element) {
-      offerings.push({
-        eventName: $(element).find('.multipleOfferingNameField').val(),
-        eventDate: $(element).find('.multipleOfferingDatePicker').val(),
-        startTime: $(element).find('.multipleOfferingStartTime').val(),
-        endTime: $(element).find('.multipleOfferingEndTime').val()
-      });
-    });
-
-    let offeringsJson = JSON.stringify(offerings);
-    $("#multipleOfferingData").val(offeringsJson);
-
+    saveOfferingsFromModal();
+    $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
     $("#checkIsSeries").prop('checked', true);
