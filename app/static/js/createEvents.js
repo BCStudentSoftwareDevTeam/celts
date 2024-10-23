@@ -82,8 +82,14 @@ function displayNotification(message) {
   });
 }
 
+function isDateInPast(dateString) {
+  const date = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date < today;
+}
+
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
-  // Parameters are in the format: {'test name', '2024-09-11', '12:00', '13:00'}
 
   let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   // insert values for the newly created row
@@ -109,6 +115,9 @@ $('#multipleOfferingSave').on('click', function() {
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
+  let hasInvalidDates = false;
+  const allowPastStart = $("#allowPastStart").is(":checked");
+
 
   // Check if the input field is empty
   eventNameInputs.each((index, eventNameInput) => {
@@ -129,6 +138,7 @@ $('#multipleOfferingSave').on('click', function() {
       $(datePickerInput).removeClass('border-red');
     }
   });  
+
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
@@ -160,27 +170,50 @@ $('#multipleOfferingSave').on('click', function() {
     }
   }
 
+  // Add past date validation
+  datePickerInputs.each(function(index, element) {
+    if (!allowPastStart && isDateInPast($(element).val())) {
+      $(element).addClass('border-red');
+      hasInvalidDates = true;
+    } else {
+      $(element).removeClass('border-red');
+    }
+  }); 
+
   if (isEmpty){
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
   }
-  else if(!hasValidTimes){
+  else if (!hasValidTimes) {
     let invalidTimeMessage = "Event end time must be after start time";
     displayNotification(invalidTimeMessage);
   }
-  else if (hasDuplicateListings){
+  else if (hasDuplicateListings) {
     let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
     displayNotification(eventConflictMessage);
   }
+  else if (hasInvalidDates) {
+    displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
+  }
   else {
-    saveOfferingsFromModal();
+    let offerings = [];
+    eventOfferings.each(function(index, element) {
+      offerings.push({
+        eventName: $(element).find('.multipleOfferingNameField').val(),
+        eventDate: $(element).find('.multipleOfferingDatePicker').val(),
+        startTime: $(element).find('.multipleOfferingStartTime').val(),
+        endTime: $(element).find('.multipleOfferingEndTime').val()
+      });
+    });
+
+    let offeringsJson = JSON.stringify(offerings);
+    $("#multipleOfferingData").val(offeringsJson);
+
     updateOfferingsTable();
     pendingmultipleEvents = [];
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalMultipleOffering').modal('hide');
-    $('.invalidFeedback').css('display', 'none');
-    $('#textNotifierPadding').removeClass('pt-5');
     msgFlash("Multiple time offering events saved!", "success");
   }
 });
@@ -516,7 +549,7 @@ $(".startDatePicker").change(function () {
      updateDate(this)
   });
 
-  $("#inputCharacters").keyup(function (event) {
+  $("#inputCharacters").keyup(function () {
     setCharacterLimit(this, "#remainingCharacters");
   });
 
