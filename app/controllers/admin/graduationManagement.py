@@ -1,10 +1,10 @@
-from flask import render_template, g, abort, request, redirect, url_for, flash
+from flask import render_template, g, abort, request, redirect, url_for, flash, send_file
 from app.models.user import User
 from app.controllers.admin import admin_bp
 from app.logic.bonner import getBonnerCohorts
 from app.models.bonnerCohort import BonnerCohort
 
-from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent
+from app.logic.graduationManagement import getGraduatedStudent, removeGraduatedStudent, makeGraduatedXls
 from app.logic.minor import getMinorProgress
 
 
@@ -61,4 +61,11 @@ def hasNotGraduated(username):
         print(e)
         return "Error Updating Graduation Status", 500
 
+@admin_bp.route("/GraduatedStudents.xlsx")
+def gradsxlsx():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newfile = makeGraduatedXls()
+    return send_file(open(newfile, 'rb'), download_name='GraduatedStudents.xlsx', as_attachment=True)
 
