@@ -1,32 +1,55 @@
-CREATE PROCEDURE AddSeriesId()
-BEGIN
-    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'event' AND COLUMN_NAME = 'seriesId')
-    THEN
-        ALTER TABLE event ADD seriesId INT NULL;
-    END IF;
+DELIMITER //
 
-    SET @row_id = 0;
-    set @seriesId_value = COALESCE((SELECT MAX(seriesId) FROM event), 0);
-    set @seriesId_value = @seriesId_value + 1;
+create procedure handleSeries()
+begin
+    declare mofferingid int default 0;
+    declare seriesIdvalue int default 0;
+    declare done int default 0;
+    declare cur1 cursor for select distinct multipleOfferingId from event where multipleOfferingId is not null;
+    declare continue handler for sqlstate '02000' set done = 1;
+    update event set seriesId=recurringId where recurringId is not null;
+    set seriesIdvalue = coalesce((select max(seriesId) from event), 0) + 1;
 
-    DECLARE series_cursor CURSOR FOR
-        SELECT id FROM event WHERE recurringId IS NOT NULL OR multipleOfferingId IS NOT NULL ORDER BY id
+    INSERT INTO event (contactEmail, contactName, deletedBy, 
+    deletionDate, description, endDate, 
+    id, isAllVolunteerTraining, isCanceled, 
+    isFoodProvided, isRsvpRequired, isService, isTraining, 
+    location, multipleOfferingId, name, program_id, rsvpLimit, startDate, term_id, timeEnd, 
+    timeStart) 
+    VALUES 
+    ('contact@example.com', 'James', '5', 
+    '2024-10-29', 'New script test.', '2024-10-29', 989, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, '123 Event Location', 3, 
+    'Test Event', 1, 100, '2024-10-22', 19, '18:00:00', '10:00:00'), 
+    ('contact@example.com', 'James', '5', 
+    '2024-10-29', 'New script test.', '2024-10-29', 67676, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, '123 Event Location', 3, 
+    'Test Event', 1, 100, '2024-10-22', 19, '18:00:00', '10:00:00'), 
+    ('contact@example.com', 'Anna', '5', 
+    '2024-10-29', 'New script test.', '2024-10-29', 45454545, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, '123 Event Location', 4, 
+    'Test Event', 1, 100, '2024-10-22', 19, '18:00:00', '10:00:00'), 
+    ('contact@example.com', 'Anna', '5', 
+    '2024-10-29', 'New script test.', '2024-10-29', 846756, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, '123 Event Location', 4, 
+    'Test Event', 1, 100, '2024-10-22', 19, '18:00:00', '10:00:00'),
+    ('contact@example.com', 'Brian', '5', 
+    '2024-10-29', 'New script test.', '2024-10-29', 9090909, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, '123 Event Location', 5, 
+    'Test Event', 1, 100, '2024-10-22', 19, '18:00:00', '10:00:00');
 
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET @row_id = NULL;
 
-    OPEN series_cursor;
+    update event set seriesId=recurringId, isRepeating=1 where recurringId is not null;
+    open cur1;
 
-    FETCH series_cursor INTO @row_id;
+    fetch cur1 into mofferingid;
+    while done = 0 DO
+        
+        select mofferingid;
+        update event set seriesId = seriesIdvalue where multipleOfferingId = mofferingid;
+        set seriesIdvalue = seriesIdvalue + 1;
+        fetch cur1 into mofferingid;
 
-    WHILE @row_id IS NOT NULL DO
-        UPDATE event
-        SET seriesId = @seriesId_value
-        WHERE id = @row_id;
+    end while;
+    close cur1;
 
-        set @seriesId_value = @seriesId_value + 1;
-        FETCH series_cursor INTO @row_id;
-    END WHILE;
-    CLOSE series_cursor;
-END;
+END //
 
-CALL AddSeriesId()
+DELIMITER ;
+
+call handleSeries()
