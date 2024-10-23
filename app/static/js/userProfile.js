@@ -139,6 +139,8 @@ $(document).ready(function(){
       banNote.text($(this).data("note"))
     }
     else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
+    var removeFromTranscript = $('.removeFromTranscriptCheckbox').is(':checked');
+    console.log("value", removeFromTranscript)
   });
 
 
