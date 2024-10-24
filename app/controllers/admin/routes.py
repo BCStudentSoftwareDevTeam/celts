@@ -143,7 +143,6 @@ def createEvent(templateid, programid):
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRepeating'):
                     createActivityLog(f"Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-                # RepeatingImplementation: Fix this
                 elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
                     eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)

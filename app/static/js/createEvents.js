@@ -63,13 +63,13 @@ function calculateRepeatingEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+  $('#eventTime, #eventDate').removeClass('d-none');
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
+  $('#eventTime, #eventDate').addClass('d-none');
 }
 
 function displayNotification(message) {
@@ -105,7 +105,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   return clonedOffering
 }
 
-$('#multipleOfferingSave').on('click', function() {
+$('#saveSeries').on('click', function() {
   //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
@@ -202,8 +202,8 @@ $('#multipleOfferingSave').on('click', function() {
     pendingmultipleEvents = [];
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
-    $('#modalMultipleOffering').modal('hide');
-    msgFlash("Multiple time offering events saved!", "success");
+    $('#modalSeries').modal('hide');
+    msgFlash("Events saved!", "success");
   }
 });
 
@@ -389,13 +389,13 @@ $(".startDatePicker").change(function () {
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
-    let multipleOfferingStatus = $("#checkIsSeries").is(":checked")
+    let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-    if (multipleOfferingStatus == true) {
+    if (isSeries) {
       setViewForSeries();
       loadOfferingsToModal();
-      $('#modalMultipleOffering').modal('show');
+      $('#modalSeries').modal('show');
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -406,7 +406,7 @@ $(".startDatePicker").change(function () {
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-      $('#modalMultipleOffering').modal('hide');
+      $('#modalSeries').modal('hide');
       $("#checkIsSeries").prop('checked', false);
       setViewForSingleOffering()
     }

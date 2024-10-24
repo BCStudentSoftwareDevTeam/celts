@@ -64,7 +64,7 @@
     value="{{eventData.location}}" required>
 </div>
 <!-- Non-Series Start Datepicker -->
-<div class="row col-md-12" id="nonMultipleOfferingDate">
+<div class="row col-md-12" id="eventDate">
   <div class="form-group col-md-6">
     <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
     <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
@@ -81,7 +81,7 @@
 </div>
 <br>
 <!-- Non-Series Start Time -->
-<div class="mb-4" id="nonMultipleOfferingTime">
+<div class="mb-4" id="eventTime">
   <div class="row col-md-12">
     <div class="form-group col-md-6">
       <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
@@ -419,7 +419,7 @@
   </div>
 </form>
 <!--series event modal-->
-<div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalMultipleOffering">
+<div class="modal modalMultipleOfferingEvent fade float-start col" data-bs-backdrop='static' id="modalSeries">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
@@ -593,8 +593,8 @@
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
           id="cancelModalPreview">Cancel</button>
         {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-        <button type="submit" name="multipleOfferingSave" class="btn btn-primary multipleOfferingSave" {{disableSave}}
-          id="multipleOfferingSave">Save</button> <!--check if text box empty upon save-->
+        <button type="submit" name="saveSeries" class="btn btn-primary saveSeries" {{disableSave}}
+          id="saveSeries">Save</button> <!--check if text box empty upon save-->
       </div> 
   </div>
 </div>
