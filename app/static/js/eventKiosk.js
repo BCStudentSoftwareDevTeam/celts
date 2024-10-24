@@ -158,12 +158,12 @@ function submitData() {
             } else {
                 msgFlash(`${resultID.user} successfully signed in!`, "success");
             }
-            $("#submitScannerData").val("").blur();
+            $("#submitScannerData").val("").focus();
         },
         error: function(request, status, error) {
             console.log(status, error);
             msgFlash("See Attendant; Unable to sign in.", "danger");
-            $("#submitScannerData").val("").blur();
+            $("#submitScannerData").val("").focus();
         }
     });
 }
