@@ -35,27 +35,27 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-function calculateRecurringEventFrequency(){
-  var eventDatesAndName = {name:$("#inputEventName").val(),
-                            isRecurring: true,
-                            startDate:$(".startDatePicker")[0].value,
-                            endDate:$(".endDatePicker")[0].value}
+function calculateRepeatingEventFrequency(){
+  var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
+                            isRepeating: true,
+                            startDate:$("#repeatingEventsStartDate").val(),
+                            endDate:$("#repeatingEventsEndDate").val()}
   $.ajax({
     type:"POST",
-    url: "/makeRecurringEvents",
+    url: "/makeRepeatingEvents",
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
     success: function(jsonData){
-      var recurringEvents = JSON.parse(jsonData)
-      var recurringTable = $("#recurringEventsTable")
-      $("#recurringEventsTable tbody tr").remove();
-      for(var event of recurringEvents){
-        var eventdate = new Date(event.date).toLocaleDateString()
-        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
-        }
+      var generatedEvents = JSON.parse(jsonData)
+      $("#generatedEventsTable tbody tr").remove();
+      for(var event of generatedEvents){
+        loadRepeatingOfferingToModal(event)
+      }
+      $("#generatedEvents").removeClass("d-none");
     },
     error: function(error){
       console.log(error)
+      displayNotification("Failed to generate events.");
     }
   });
 }
@@ -63,15 +63,13 @@ function calculateRecurringEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+  $('#eventTime, #eventDate').removeClass('d-none');
 }
 
-function setViewForMultipleOffering(){
+function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
+  $('#eventTime, #eventDate').addClass('d-none');
 }
 
 function displayNotification(message) {
@@ -93,32 +91,21 @@ function isDateInPast(dateString) {
 
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
 
-  let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+  let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   // insert values for the newly created row
-  if (eventName) {clonedMultipleOffering.find('.multipleOfferingNameField').val(eventName)}
-  if (eventDate) {clonedMultipleOffering.find('.multipleOfferingDatePicker').val(eventDate)}
-  if (startTime) {clonedMultipleOffering.find('.multipleOfferingStartTime').val(startTime)}
-  if (endTime) {clonedMultipleOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (isDuplicate) {clonedMultipleOffering.addClass('border-red')}
+  if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
+  if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
+  if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
+  if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
+  if (isDuplicate) {clonedOffering.addClass('border-red')}
 
-  $("#multipleOfferingSlots").append(clonedMultipleOffering);
-  pendingmultipleEvents.push(clonedMultipleOffering);
+  $("#multipleOfferingSlots").append(clonedOffering);
+  pendingmultipleEvents.push(clonedOffering);
 
-  //this is so that the trash icon can be used to delete the event
-  clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
-    let attachedRow = $(this).closest(".eventOffering")
-    attachedRow.animate({
-        opacity: 0,
-        height: '0px'
-    }, 500, function() {
-        // After the animation completes, remove the row
-        attachedRow.remove();
-    });
-  });
-  return clonedMultipleOffering
+  return clonedOffering
 }
 
-$('#multipleOfferingSave').on('click', function() {
+$('#saveSeries').on('click', function() {
   //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
@@ -209,50 +196,102 @@ $('#multipleOfferingSave').on('click', function() {
     displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
   }
   else {
-    let offerings = [];
-    eventOfferings.each(function(index, element) {
-      offerings.push({
-        eventName: $(element).find('.multipleOfferingNameField').val(),
-        eventDate: $(element).find('.multipleOfferingDatePicker').val(),
-        startTime: $(element).find('.multipleOfferingStartTime').val(),
-        endTime: $(element).find('.multipleOfferingEndTime').val()
-      });
-    });
-
-    let offeringsJson = JSON.stringify(offerings);
-    $("#multipleOfferingData").val(offeringsJson);
-
+    saveOfferingsFromModal();
+    $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
-    $("#checkIsMultipleOffering").prop('checked', true);
-    $('#modalMultipleOffering').modal('hide');
-    msgFlash("Multiple time offering events saved!", "success");
+    $("#checkIsSeries").prop('checked', true);
+    // Remove the modal and overlay from the DOM
+    $('#modalSeries').modal('hide');
+    msgFlash("Events saved!", "success");
   }
 });
 
 
 // Save the offerings from the modal to the hidden input field
+function saveOfferingsFromModal() {
+  let offerings = [];
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  $("#formIsRepeating").prop("checked", isRepeatingStatus);
+  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
+  $(dataTable).children().each(function(index, element) {
+    let rowData;
+    if (isRepeatingStatus){
+      rowData = $.map($(element).find("td"), function(td){
+        let input = $(td).find("input");
+        if (input.length){
+          return input.val();
+        } else {
+          return $(td).text().trim();
+        }
+      })}
+    else {
+      rowData = $.map($(element).find("input"), (el) => $(el).val());
+    }
+      offerings.push({
+        eventName: rowData[0],
+        eventDate: rowData[1],
+        startTime: isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2],
+        endTime: isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+    })
+  });
+
+  $(dataTable).children().remove();
+  let offeringsJson = JSON.stringify(offerings);
+  $("#seriesData").val(offeringsJson); // huh?
+}
+
+function verifyRepeatingFields(){
+  // verifies all fields in the repeating table are not empty.
+  let repeatingFields = $(".repeatingEventsField");
+  let allFieldsFilled = true;
+  repeatingFields.each(function() {
+    let value = $(this).val();
+    if (value === "" || value == null){
+      allFieldsFilled = false;
+      return false;
+    }
+  })
+  return allFieldsFilled
+}
+
 function loadOfferingsToModal(){
-  let offerings = JSON.parse($("#multipleOfferingData").val())
+  let offerings = JSON.parse($("#seriesData").val())
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
   offerings.forEach((offering, i) =>{
-    let newOfferingModalRow = createOfferingModalRow(offering)
-    //stripes odd event sections in event modal
-    newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
-  })    
+    if (isRepeatingStatus){
+      loadRepeatingOfferingToModal(offering);
+    } else {
+      let newOfferingModalRow = createOfferingModalRow(offering);
+      //stripes odd event sections in event modal
+      newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
+    }})
+}
+
+function loadRepeatingOfferingToModal(offering){
+  var seriesTable = $("#generatedEventsTable");
+  var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
+  seriesTable.append(
+    "<tr class='eventOffering'>" +
+    "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
+    "<td id='offeringDate'>" + eventDate + "</td>" +
+    "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
+    "</tr>"
+  );
 }
 
 // Update the table of offerings with the offerings from the hidden input field
 function updateOfferingsTable() {
-  let offerings = JSON.parse($("#multipleOfferingData").val())
-
-  var multipleOfferingTable = $("#multipleOfferingEventsTable");
-  multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
+  let offerings = JSON.parse($("#seriesData").val())
+  var offeringsTable = $("#offeringsTable");
+  offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
     //fromat to 12hr time for display
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
-    multipleOfferingTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
+    offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
                                     "<td>" + offering.eventName + "</td>" +
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
@@ -261,7 +300,6 @@ function updateOfferingsTable() {
                                 );
   });
 }
-
 
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
@@ -305,12 +343,10 @@ $(".datePicker").datepicker({
 });
 
 // Update datepicker min and max dates on change
-$(".startDatePicker, .endDatePicker").change(function () {
+$(".startDatePicker").change(function () {
   updateDate(this);
 });
-  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
-    calculateRecurringEventFrequency();
-  }
+
     handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
@@ -342,61 +378,76 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   updateOfferingsTable();
   
-  if ($("#checkIsMultipleOffering").is(":checked")){
-    setViewForMultipleOffering();
+  if ($("#checkIsSeries").is(":checked")){
+    setViewForSeries();
   }
   
   let modalOpenedByEditButton = false;
-  //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
+  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
+  $("#checkIsSeries, #edit_modal").click(function(event) { 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
-    // retrieves toggle status, 'on' or undefined
-    let recurringStatus = $("#checkIsRecurring").is(":checked")
-    let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
+    let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-
-    if (multipleOfferingStatus == true && recurringStatus == true){
-      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
-      $(event.target).prop('checked', false);
-      return; 
-    }
-    if (recurringStatus == true) {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
-      $("#checkIsMultipleOffering").prop('checked', false);
-      $('#multipleOfferingTableDiv').addClass('d-none');
-      $(".endDatePicker").prop('required', true);
-    } 
-    else if (multipleOfferingStatus == true) {
-      setViewForMultipleOffering();
+    if (isSeries) {
+      setViewForSeries();
       loadOfferingsToModal();
-      $('#modalMultipleOffering').modal('show');
+      $('#modalSeries').modal('show');
+    } else {
+      setViewForSingleOffering()
+      $('#multipleOfferingTableDiv').addClass('d-none');
     }
-    else { 
-      //adds the display none button of bootstrap so that the end-date div disappears for recurring even
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDatePicker").prop('required', false);
-      //set page UI back to default
-      $("#multipleOfferingTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('hide');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-      $(".startDatePicker").prop('required', true);
-    }
+ 
   });
 
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-      $('#modalMultipleOffering').modal('hide');
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $('#modalSeries').modal('hide');
+      $("#checkIsSeries").prop('checked', false);
       setViewForSingleOffering()
     }
     pendingmultipleEvents.forEach(function(element){
       element.remove();
+    });
+  });
 
+  $("#checkIsRepeating").change(function() {
+    if ($(this).is(':checked')) {
+      $('.addMultipleOfferingEvent').hide();
+      $("#repeatingEventsDiv").removeClass('d-none');
+      $("#multipleOfferingSlots").children().remove();
+      $("#multipleOfferingSlots").addClass('d-none');
+    } else {
+      $('.addMultipleOfferingEvent').show(); 
+      $("#repeatingEventsDiv").addClass('d-none');
+      $("#multipleOfferingSlots").removeClass('d-none');
+    }
+  });
+  
+  $("#repeatingEventsDiv").change(function() {
+    if (verifyRepeatingFields()){
+      let startDate = new Date($("#repeatingEventsStartDate").val());
+      let endDate = new Date ($("#repeatingEventsEndDate").val());
+      if (endDate <= startDate){
+        displayNotification("Invalid dates.");
+        return;
+      }
+      calculateRepeatingEventFrequency();
+    }
+  })
+
+  $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
+    let attachedRow = $(this).closest(".eventOffering")
+    attachedRow.animate({
+      opacity: 0,
+      height: '0px'
+    }, 500, function() {
+        // After the animation completes, remove the row
+        attachedRow.remove();
     });
   });
   
@@ -446,12 +497,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
-  });
-
-  $(".startDatePicker, .endDatePicker").change(function () {
-    if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
-      calculateRecurringEventFrequency();
-    }
   });
 
   var facilitatorArray = []

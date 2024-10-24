@@ -30,7 +30,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -115,12 +115,12 @@ def createEvent(templateid, programid):
         savedEvents = None
         eventData.update(request.form.copy())
         eventData = preprocessEventData(eventData)
-        if eventData.get('isMultipleOffering'):
-            eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
+        if eventData.get('isSeries'):
+            eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
             if not succeeded:
                 for index, validationErrorMessage in failedSavedOfferings:
-                    eventData['multipleOfferingData'][index]['isDuplicate'] = True
+                    eventData['seriesData'][index]['isDuplicate'] = True
                 validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
                 print(f"Failed to save offerings {failedSavedOfferings}")
         else:
@@ -136,17 +136,15 @@ def createEvent(templateid, programid):
                 addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
 
-            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
+            noun = ((eventData.get('isSeries')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             
            
             if program:
-                if len(savedEvents) > 1 and eventData.get('isRecurring'):
-                    createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
-                
-                elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
+                if len(savedEvents) > 1 and eventData.get('isRepeating'):
+                    createActivityLog(f"Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
-
                     eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
 
                     if len(savedEvents) > 1:
@@ -156,10 +154,10 @@ def createEvent(templateid, programid):
                         lastEventDate = eventDates[-1]
                         eventDates = ', '.join(eventDates[:-1]) + f', and {lastEventDate}'
 
-                    createActivityLog(f"Created events {eventList} for {program.programName}, with start dates of {eventDates}.")
+                    createActivityLog(f"Created series {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
-                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog(f"Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
@@ -226,8 +224,8 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId']),
-                    'isMultipleOffering': bool(priorEvent['multipleOfferingId']),
+                    'isRepeating': bool(priorEvent['isRepeating']),
+                    'seriesId': priorEvent['seriesId'],
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
@@ -337,14 +335,14 @@ def eventDisplay(eventId):
         eventCountdown = getCountdownToEvent(event)
  
 
-        # Identify the next event in a recurring series
-        if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+        # Identify the next event in a repeating series
+        if event.isRepeating:
+            eventSeriesList = list(Event.select().where(Event.seriesId == event.seriesId)
                                         .where((Event.isCanceled == False) | (Event.id == event.id))
                                         .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
-                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+                eventData["nextRepeatingEvent"] = eventSeriesList[eventIndex + 1]
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
@@ -382,21 +380,22 @@ def cancelRoute(eventId):
 @admin_bp.route('/event/undo', methods=['GET'])
 def undoEvent():
     try:
-        events = session['lastDeletedEvent']
-        for eventId in events: 
+        eventIds = session['lastDeletedEvent'] #list of Ids of the events that got deleted
+        for eventId in eventIds: 
             Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-        recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
-        if event.recurringId is not None:
+        repeatingEvents = list(Event.select().where((Event.isRepeating) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.isRepeating:
             nameCounter = 1
-            for recurringEvent in recurringEvents:
-                newEventNameList = recurringEvent.name.split()
+            for repeatingEvent in repeatingEvents:
+                newEventNameList = repeatingEvent.name.split()
                 newEventNameList[-1] = f"{nameCounter}"
                 newEventNameList = " ".join(newEventNameList)
-                Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
+                Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvent.id).execute()
                 nameCounter += 1 
         flash("Deletion successfully undone.", "success")
-        return redirect('/eventsList/' + str(g.current_term))
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+        
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
@@ -405,7 +404,7 @@ def undoEvent():
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
-        session['lastDeletedEvent'] = [eventId]
+        session['lastDeletedEvent'] = [eventId] 
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -424,10 +423,10 @@ def deleteEventAndAllFollowingRoute(eventId):
         print('Error while canceling event:', e)
         return "", 500
     
-@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
-def deleteAllRecurringEventsRoute(eventId):
+@admin_bp.route('/event/<eventId>/deleteAllEventsInSeries', methods=['POST'])
+def deleteAllEventsInSeriesRoute(eventId):
     try:
-        session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
+        session["lastDeletedEvent"] = deleteAllEventsInSeries(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -435,10 +434,10 @@ def deleteAllRecurringEventsRoute(eventId):
         print('Error while canceling event:', e)
         return "", 500
 
-@admin_bp.route('/makeRecurringEvents', methods=['POST'])
-def addRecurringEvents():
-    recurringEvents = getRecurringEventsData(preprocessEventData(request.form.copy()))
-    return json.dumps(recurringEvents, default=str)
+@admin_bp.route('/makeRepeatingEvents', methods=['POST'])
+def addRepeatingEvents():
+    repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
+    return json.dumps(repeatingEvents, default=str)
 
 
 @admin_bp.route('/userProfile', methods=['POST'])
