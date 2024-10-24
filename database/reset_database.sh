@@ -45,7 +45,7 @@ if [ $BACKUP -eq 1 ]; then
     mysql -u root -proot celts < prod-backup.sql
 else
     echo " empty"
-    ./migrate_db.sh
+    ./migrate_db.sh no-backup
 fi
 
 # remove so we do a fresh migration next time
