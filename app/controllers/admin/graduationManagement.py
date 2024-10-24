@@ -61,11 +61,11 @@ def hasNotGraduated(username):
         print(e)
         return "Error Updating Graduation Status", 500
 
-@admin_bp.route("/GraduatedStudents.xlsx")
-def gradsxlsx():
+@admin_bp.route("/gradStudentsxls")
+def gradsxls():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    newfile = makeGraduatedXls()
+    newfile = makeGraduatedXls("all")
     return send_file(open(newfile, 'rb'), download_name='GraduatedStudents.xlsx', as_attachment=True)
 

@@ -6,9 +6,6 @@ $(document).ready(function() {
     });
     let selectAllMode = true;
 
-
-
-    
     $('.dropdown-item').click(function() {
         var filterType = $(this).data('filter'); 
         var buttonText = $(this).text();
@@ -16,11 +13,8 @@ $(document).ready(function() {
         $('#main-filter').first().text(buttonText);
         $('#cohortFilter').text('Bonner Cohort');
 
-
         $('#selectAll').text('Select All');
         selectAllMode = true
-        
-
 
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();

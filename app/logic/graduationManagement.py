@@ -3,8 +3,12 @@ from typing import List, Dict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 import xlsxwriter
+from app import app
 
 from app.models.user import User
+from app.logic.minor import getMinorProgress
+from app.logic.bonner import getBonnerCohorts
+from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 
 
@@ -35,7 +39,7 @@ def removeGraduatedStudent(username):
         return True
     return False
 
-def makeGraduatedXls():
+def makeGraduatedXls(filterType='all'):
     """
     Create and save a GraduatedStudent.xlsx file with all of the graduated students.
     Working with XLSX files: https://xlsxwriter.readthedocs.io/index.html
@@ -43,41 +47,42 @@ def makeGraduatedXls():
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
+    CCEusers = getMinorProgress()
+    bonnercohorts = getBonnerCohorts()
+
     filepath = app.config['files']['base_path'] + '/GraduatedStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
     worksheet = workbook.add_worksheet('students')
     bold = workbook.add_format({'bold': True})
 
-    worksheet.write('B1', 'Student', bold)
-    worksheet.set_column('B:B', 20)
-    worksheet.write('C1', 'B-Number', bold)
-    worksheet.set_column('C:C', 10)
-    worksheet.write('D1', 'Student Email', bold)
-    worksheet.set_column('D:D', 20)
+    worksheet.write('A1', 'Graduated Students', bold)
+    worksheet.set_column('A:A', 20)
 
-    # Modify query based on filter type
+    row = 1
+
     if filterType == 'all':
         students = User.select().where(User.hasGraduated == True)
     elif filterType == 'cce':
-        students = User.select().join(CCEModel).where(CCEModel.engagementCount > 0)  # Example for CCE students
+        students = [student for student in CCEusers if student['hasGraduated']]
     elif filterType == 'bonner':
-        students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+        students = BonnerCohort.select(BonnerCohort, User).join(User).where(User.hasGraduated == True)
     elif filterType == 'bonnercohorts':
-        students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+        students = [student for student in bonnercohorts if student['hasGraduated']]
     else:
         students = User.select()
 
-    prev_year = 0
-    row = 1
     for student in students:
         if filterType == 'bonner' and prev_year != student.year:
             row += 1
             prev_year = student.year
             worksheet.write(row, 0, f"{student.year} - {student.year+1}", bold)
 
-        worksheet.write(row, 1, student.fullName)
-        worksheet.write(row, 2, student.bnumber)
-        worksheet.write(row, 3, student.email)
+        if filterType == 'cce':
+            worksheet.write(row, 0, student['firstName'])
+            worksheet.write(row, 1, student['lastName'])
+        else:
+            worksheet.write(row, 0, student.firstName)
+            worksheet.write(row, 1, student.lastName)
 
         row += 1
 
