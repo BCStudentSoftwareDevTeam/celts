@@ -57,7 +57,7 @@ def landingPage():
     # Limit returned list to events in the future
     futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
 
-    return render_template("/main/landingPage.html", 
+    return render_template("/main/landingPage.html",
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList = futureEvents)
@@ -77,20 +77,20 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
-    
+
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term: Term = Term.get_by_id(currentTerm) 
-    
+    term: Term = Term.get_by_id(currentTerm)
+
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session    
@@ -189,7 +189,7 @@ def viewUsersProfile(username):
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try: 
+            try:
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -245,7 +245,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-    
+
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -253,6 +253,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
+
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
@@ -288,6 +289,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
+
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
@@ -300,7 +302,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-   
+
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -495,6 +497,47 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
+@main_bp.route('/profile/<username>/removeFromTranscript/<program_id>', methods=['GET'])
+def isRemovedFromTranscript(username, program_id):
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+
+    try:
+        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        # If the user is banned, check if it's marked for removal from transcript
+        if bannedProgramsForUser.removeFromTranscript:
+            return jsonify({'removedFromTranscript': True})
+        else:
+            return jsonify({'removedFromTranscript': False})
+    except ProgramBan.DoesNotExist:
+        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
+
+@main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
+def updateTranscript(username, program_id):
+    # Check user permissions
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    # Get the data sent from the client-side JavaScript
+    data = request.json
+
+    # Retrieve removeFromTranscript value from the request data
+    removeFromTranscript = data.get('removeFromTranscript')
+
+    # Update the ProgramBan object matching the program_id and username
+    try:
+        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        bannedProgramsForUser.removeFromTranscript = removeFromTranscript
+        bannedProgramsForUser.save()
+        return jsonify({'status': 'success'})
+    except ProgramBan.DoesNotExist:
+        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
+
+
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
@@ -520,10 +563,10 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-    
+
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user) 
+        userInfo = User.get(User.username == user)
         if len(dietInfo) > 0:
             createActivityLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:

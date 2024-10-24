@@ -9,3 +9,6 @@ class ProgramBan(baseModel):
     endDate = DateField(null=True)
     banNote = ForeignKeyField(Note, null=False)
     unbanNote = ForeignKeyField(Note, null=True)
+    removeFromTranscript = BooleanField(default=False)
+
+    

@@ -14,7 +14,7 @@ $(document).ready(function(){
           msgToast("Error!", "Failed to save changes!")
         }
     });
-  })    
+  })
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -25,7 +25,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-  
+
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -42,6 +42,26 @@ $(document).ready(function(){
       }
     });
   });
+
+  $('.removeFromTranscriptCheckbox').click(function() {
+    var removeFromTranscript = $(this).is(':checked');
+    var username = $(this).data('username');
+
+
+    $.ajax({
+        type: "POST",
+        url: `/profile/${username}/updateTranscript/${programID}`,
+        contentType: "application/json",
+        data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
+        success: function(response) {
+
+        },
+        error: function(error) {
+            console.error("An error occurred:", error);
+        }
+    });
+  });
+
 
   function changeAction(e){
     let profileAction = $(this).val()
@@ -74,33 +94,53 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
-  $(".ban").click(function() {
+
+
+  var programID;
+  $(".banEdit").click(function() {
+    $.ajax({
+      url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
+      type: "GET",
+      success: function(response) {
+        // Check if the program is marked for removal from transcript
+        $('#removeFromTranscriptCheckbox').prop('checked', response.removedFromTranscript)
+      },
+      error: function(error, status) {
+          console.log(error, status);
+      }
+    });
+
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
-                                     //Should only diplay when the modal is going to unban a user
+    banNoteDiv.hide();                //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
+    var banValue = $(this).val()
 
-    banButton.text($(this).val() + " Volunteer");
-    banButton.data("programID", $(this).data("programid"))
-    banButton.data("username", $("#notifyInput").data("username"))
-    banButton.data("banOrUnban", $(this).val());
+    banButton.text(banValue + " Volunteer");
+    programID = $(this).data("programid"); // Assign value to programID variable
+    banButton.data("programID", programID)
+    banButton.data("username", $(".banEdit").data("username"))
+    banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title").text($(this).val() + " Volunteer");
+    $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
-    banNoteDiv.hide();
+    // $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
-    if( $(this).val()=="Unban"){
+    if(banValue == "Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
+      // $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
-
+    else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
+    var removeFromTranscript = $('.removeFromTranscriptCheckbox').is(':checked');
+    console.log("value", removeFromTranscript)
   });
 
 
@@ -148,9 +188,9 @@ $(document).ready(function(){
         $("#noteModal").modal("toggle")
     });
 
-    $("#addVisibility").click(function() { 
+    $("#addVisibility").click(function() {
         var bonnerChecked = $("input[name='bonner']:checked").val()
-    
+
         if (bonnerChecked == 'on') {
             bonnerNoteOn()
         } else {
@@ -198,7 +238,7 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () { 
+    $(".savebtn").click(function () {
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
@@ -320,4 +360,3 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
-

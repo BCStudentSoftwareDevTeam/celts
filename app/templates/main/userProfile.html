@@ -16,7 +16,7 @@
 {% block app_content %}
 {% if volunteer.isStudent and not totalSustainedEngagements%}
   <div class="float-end rounded d-none d-lg-block minorInfoBox">
-    <p for="expressInterest">Did you know we have a Civic and Community Engagement Minor? Click 
+    <p for="expressInterest">Did you know we have a Civic and Community Engagement Minor? Click
       <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
       for more information.
     </p>
@@ -45,7 +45,7 @@
     <div>{{volunteer.major}}</div>
     {% endif %}
     {% if volunteer.classLevel -%}
-    <div>{{volunteer.classLevel}}</div> 
+    <div>{{volunteer.classLevel}}</div>
     {% endif %}
     {% if volunteer.cpoNumber %}
       <div>
@@ -193,6 +193,7 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
+                  
                 {% endif %}
                 <th scope="col"></th>
               </tr>
@@ -215,17 +216,18 @@
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
-                      <td class="programBan"> Eligible </td>
+                      <td class="programBan"> Eligible
                       {% set label = "Ban" %}
                     {% else %}
-                      <td class="programBan text-danger"> Banned </td>
+                      <td class="programBan text-danger"> Banned
                       {% set label = "Unban" %}
                     {% endif %}
-                    <td>
+
                     {% if g.current_user.isCeltsAdmin %}
-                      <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                      <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}"><i class="bi bi-pencil"></i></button>
                     {% endif %}
                     </td>
+                    
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -254,7 +256,7 @@
             <div class="col-md-6">
               <h5>CELTS Labor History:</h5>
               {% for program, term in participatedInLabor.items() %}
-                <p>{{term}}: {{program}}</p> 
+                <p>{{term}}: {{program}}</p>
               {% endfor %}
             </div>
             {% endif %}
@@ -536,9 +538,9 @@
               <label class="form-label" style="display:none" for='inputEventTerm' id="bonnerStatement"><strong>Bonner notes are visible to {{volunteer.firstName}} and CELTS administrators.</strong></label>
               <label class="form-label {{vis}}" for='inputEventTerm' id="visibilityLabel"><strong>Visibility</strong></label>
               <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
-              
 
-                
+
+
                   {% if g.current_user.isCeltsAdmin %}
                     <option value='3'>Admins</option>
                   {% endif %}
@@ -547,8 +549,8 @@
                   {% endif %}
                   <option value='1' selected>Everyone</option>
                 </select>
-               
-              <div id="addVisibility"> 
+
+              <div id="addVisibility">
                 {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
                   <div class="form-check form-switch pt-4">
                     <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
@@ -556,7 +558,7 @@
                   </div>
                 {% endif %}
               </div>
-              
+
               <br>
             </div>
             <div class="form-group input-group-x form-outline ui-widget">
@@ -580,7 +582,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Ban Volunteer</h5>
+          <h5 class="modal-title-ban">Ban Volunteer</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="align=center">
@@ -593,6 +595,10 @@
           </div>
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
+          </div>
+          <div class="form-check" id="removeFromTranscriptDiv">
+            <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscriptCheckbox" id="removeFromTranscriptCheckbox" type="checkbox" data-username="{{volunteer.username}}" />
+            <label class="form-check-label" for="removeFromTranscriptCheckbox">Remove from Transcript </label>
           </div>
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget col-xs-10">
