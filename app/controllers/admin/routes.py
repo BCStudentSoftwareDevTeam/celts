@@ -128,6 +128,7 @@ def createEvent(templateid, programid):
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
                 print("Failed saving regular event", e)
+                validationErrorMessage = "Failed to save event."
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
