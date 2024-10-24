@@ -407,7 +407,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOfferingId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
@@ -437,7 +437,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_attemptSaveMultipleOfferings():
     baseEventData =  {
-                    'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOffeirngId':None,
+                    'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOfferingId':None,
                     'startDate': '2021-12-12',
                     'rsvpLimit': None,
                     'endDate':'2022-06-12', 'location':"a big room",
