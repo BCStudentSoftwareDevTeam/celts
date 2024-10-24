@@ -44,6 +44,7 @@ def test_event_end():
                                     location = "No Where",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
+                                    isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=1),
                                     endDate = datetime.now() + timedelta(days=2),
@@ -65,6 +66,7 @@ def test_event_end():
                                     location = "No Where",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
+                                    isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now(),
                                     endDate = datetime.now() + timedelta(days=1),
@@ -86,6 +88,7 @@ def test_event_end():
                                     location = "No Where",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
+                                    isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=-3),
                                     endDate = datetime.now() + timedelta(days=-1),
@@ -152,14 +155,16 @@ def test_preprocessEventData_checkboxes():
     eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True}
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
+    assert newData['isEngagement'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
     assert newData['isRecurring'] == True
     assert newData['isMultipleOffering'] == False
 
-    eventData = {'isRsvpRequired':'', 'isMultipleOffering': 'on', 'isService':False }
+    eventData = {'isRsvpRequired':'', 'isMultipleOffering': 'on', 'isService':False,'isEngagement': 'on' }
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
+    assert newData['isEngagement'] == True
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == False
     assert newData['isRecurring'] == False
@@ -316,7 +321,7 @@ def test_preprocessEventData_multipleOfferingData():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isRecurring': False, 'isMultipleOffering': False,'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isEngagement': False,'isRecurring': False, 'isMultipleOffering': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
@@ -329,7 +334,7 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'isMultipleOffering': False, 'programId':1, 'location':"a big room",
+                  'isTraining':True,'isEngagement': False, 'isRecurring':False, 'isMultipleOffering': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
      
@@ -350,7 +355,7 @@ def test_wrongValidateNewEventData():
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
     eventData['endDate'] = parser.parse('2022-06-12')
-    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring', 'isMultipleOffering']:
+    for boolKey in ['isRsvpRequired', 'isTraining', 'isEngagement','isService', 'isRecurring', 'isMultipleOffering']:
         eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
         assert isValid == False
@@ -513,7 +518,7 @@ def test_attemptSaveMultipleOfferings():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isEngagement': False,'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
@@ -548,7 +553,7 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'isMultipleOffering':False, 'multipleOfferingId':None, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True, 'isEngagement': False, 'isRecurring': True, 'recurringId':1, 'isMultipleOffering':False, 'multipleOfferingId':None, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -567,19 +572,19 @@ def test_saveEventToDb_multipleOffering():
     with mainDB.atomic() as transaction:
         with app.app_context():
             eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                          'isTraining':True,'isEngagement': False, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                            'isTraining':True,'isEngagement': False, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
             eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
+                            'isTraining':True, 'isEngagement': False,'isRecurring': False, 'recurringId':None, 'isMultipleOffering':True, 'multipleOfferingId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':'', 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
@@ -630,6 +635,7 @@ def test_saveEventToDb_update():
                         'isMultipleOffering': False,
                         'multipleOfferingId': None,
                         'isTraining': True,
+                        'isEngagement': False,
                         'isRsvpRequired': True,
                         'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
@@ -676,6 +682,7 @@ def test_cancelEvent():
                                     location = "Somewhere",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
+                                    isEngagement = 1,
                                     isService = 0,
                                     startDate = "2021-12-12",
                                     endDate = "2022-6-12",
@@ -706,6 +713,7 @@ def test_deleteEvent():
                                     location = "No Where",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
+                                    isEngagement = 1,
                                     isService = 0,
                                     startDate = "2021-12-12",
                                     endDate = " ",
@@ -731,6 +739,7 @@ def test_deleteEvent():
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
+                      'isEngagement': False,
                       'isRecurring': True,
                       'recurringId': 20,
                       'startDate': parser.parse('12-12-2021'),
