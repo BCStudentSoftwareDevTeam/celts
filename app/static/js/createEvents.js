@@ -503,3 +503,43 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
+
+function saveSelectedCohorts() {
+  const selectedCohorts = [];
+  $("input[name='cohorts[]']:checked").each(function () {
+    selectedCohorts.push($(this).val()); 
+  });
+  sessionStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts)); 
+}
+
+function loadSelectedCohorts() {
+  const selectedCohorts = JSON.parse(sessionStorage.getItem("selectedCohorts")) || []; 
+  selectedCohorts.forEach(function (cohort) {
+    $("input[name='cohorts[]'][value='" + cohort + "']").prop("checked", true);
+  });
+}
+
+function clearSelectedCohorts() {
+  sessionStorage.removeItem("selectedCohorts"); 
+  $("input[name='cohorts[]']").prop("checked", false); 
+}
+
+$(document).ready(function () {
+  if (window.location.pathname.includes('/eventTemplates')) {
+    $('.list-group-item').on('click', function(e) {
+      e.preventDefault();
+      clearSelectedCohorts();
+      window.location.href = $(this).attr('href');
+    });
+  } else if (window.location.pathname.includes('/event/create')) {
+    clearSelectedCohorts();
+  } else {
+    loadSelectedCohorts();
+  }
+
+  $(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
+
+  $("#createNewEventButton").on("click", function () {
+    clearSelectedCohorts();
+  });
+});
