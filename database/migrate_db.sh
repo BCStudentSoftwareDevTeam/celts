@@ -3,31 +3,28 @@
 # Create a database backup and then migrate the database
 #########################################################
 
-if [ "$1" == "backup" ]
-then
-	# Get credentials
-	echo -n "Database/Schema Name: "
-	read DB
+# Get credentials
+echo -n "Database/Schema Name: "
+read DB
 
-	echo -n "Application User: "
-	read USER
+echo -n "Application User: "
+read USER
 
-	echo -n "Application Password: "
-	read -s PASS
-	echo
+echo -n "Application Password: "
+read -s PASS
+echo
 
-	CONN="-u $USER"
+CONN="-u $USER"
 
-	BACKUP_DIR="tmp-backups"
-	mkdir "$BACKUP_DIR"
-	BACKUP_FILE="$BACKUP_DIR/`date +%F`-backup.sql"
+BACKUP_DIR="tmp-backups"
+mkdir "$BACKUP_DIR"
+BACKUP_FILE="$BACKUP_DIR/`date +%F`-backup.sql"
 
-	echo -n -e "\nCreating database backup $BACKUP_FILE ... "
-	export MYSQL_PWD="$PASS"
-	mysqldump $CONN $DB > $BACKUP_FILE
-	export MYSQL_PWD=""
-	echo -e "done.\n"
-fi
+echo -n -e "\nCreating database backup $BACKUP_FILE ... "
+export MYSQL_PWD="$PASS"
+mysqldump $CONN $DB > $BACKUP_FILE
+export MYSQL_PWD=""
+echo -e "done.\n"
 
 pem init
 
