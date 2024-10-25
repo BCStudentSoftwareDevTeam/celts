@@ -16,6 +16,8 @@ $(document).ready(function() {
         $('#selectAll').text('Select All');
         selectAllMode = true
 
+        $('#export').attr('href', `/gradStudentsxls?filterType=${filterType}`);
+
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
@@ -35,7 +37,6 @@ $(document).ready(function() {
             gradStudentsTable.draw();
         
         } else if (filterType === 'cce') {
-            
             var cceUsers = $(this).data('cce'); 
 
             const sanitizedString = cceUsers
@@ -75,13 +76,11 @@ $(document).ready(function() {
 
             gradStudentsTable.rows().every(function() {
                 var studentUserName = $(this.node()).data('username');
-                
                 for ( const [key, value] of Object.entries(CCElist)){
                     var username = key;
-                    
                     if ( studentUserName == username && CCElist[key] > 0 ) {
                         $(this.node()).show(); 
-                        { break; }
+                        break;
                     } else {
                         $(this.node()).hide();
                     }
@@ -103,6 +102,8 @@ $(document).ready(function() {
         $('#selectAll').text('Select All');
         selectAllMode = true
 
+        $('#export').attr('href', `/gradStudentsxls?filterType=${filterType}`);
+
         gradStudentsTable.rows().every(function(){
             $(this.node()).hide();
         })
@@ -123,7 +124,7 @@ $(document).ready(function() {
                 var studentType = $(this.node()).data('student-type'); 
                 if (studentType === 'bonner' && studentUserName == CohortArray[i]) {
                     $(this.node()).show(); 
-                    { break; }
+                    break;
                 } else {
                     $(this.node()).hide();
                 }

@@ -39,7 +39,7 @@ def removeGraduatedStudent(username):
         return True
     return False
 
-def makeGraduatedXls(filterType='all'):
+def makeGraduatedXls(filterType):
     """
     Create and save a GraduatedStudent.xlsx file with all of the graduated students.
     Working with XLSX files: https://xlsxwriter.readthedocs.io/index.html
@@ -78,11 +78,9 @@ def makeGraduatedXls(filterType='all'):
             worksheet.write(row, 0, f"{student.year} - {student.year+1}", bold)
 
         if filterType == 'cce':
-            worksheet.write(row, 0, student['firstName'])
-            worksheet.write(row, 1, student['lastName'])
+            worksheet.write(row, 0, f"{student['firstName']} {student['lastName']}")
         else:
-            worksheet.write(row, 0, student.firstName)
-            worksheet.write(row, 1, student.lastName)
+            worksheet.write(row, 0, f"{student.firstName} {student.lastName}")
 
         row += 1
 
