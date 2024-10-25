@@ -133,25 +133,74 @@ $(document).ready(function() {
         gradStudentsTable.draw();
     });
 
-    $('.graduated-checkbox').change(function() {
-        let hasGraduated = $(this).is(':checked');
-        let username = $(this).data('username');
-        let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
-        let graduationURL = "/" + username + "/" + routeUrl + "/"
+    // $('.graduated-checkbox').change(function() {
+    //     let hasGraduated = $(this).is(':checked');
+    //     let username = $(this).data('username');
+    //     let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
+    //     let graduationURL = "/" + username + "/" + routeUrl + "/"
 
-        $.ajax({
-            type: "POST", 
-            url: graduationURL,
-            success: function(response) {
-                msgFlash("Graduation status updated successfully!", "success")
+    //     $.ajax({
+    //         type: "POST", 
+    //         url: graduationURL,
+    //         success: function(response) {
+    //             msgFlash("Graduation status updated successfully!", "success")
+    //             console.log("Graduation status updated successfully!");
+    //         },
+    //         error: function(status, error) {
+    //             msgFlash("Graduation status updated successfully!", "error")
+    //             console.error("Error updating graduation status:", error);
+    //         }
+    //     });
+    // });
+
+$('.graduated-checkbox').change(function() {
+    let hasGraduated = $(this).is(':checked');
+    let username = $(this).data('username');
+    let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
+    let graduationURL = "/" + username + "/" + routeUrl + "/";
+    var msgshown = $(this).data('msgshown')
+
+    
+
+    // console.log($(this).data('msgshown'))
+
+    // $(this).data('msgshown','true');
+
+  
+
+    // Reset the flag when the checkbox is changed
+
+    $.ajax({
+        type: "POST",
+        url: graduationURL,
+        success: function(response) {
+
+            console.log('success', msgshown)
+
+            if ((msgshown == false )) {
+
+                console.log($(this).data('msgshown'))
+
+                $('#gradCheck').data('msgshown', true);
+                
+                // msgFlash("Graduation status updated successfully!", "success");
                 console.log("Graduation status updated successfully!");
-            },
-            error: function(status, error) {
-                msgFlash("Graduation status updated successfully!", "error")
-                console.error("Error updating graduation status:", error);
+                msgFlash("Graduation status updated successfully!", "success");
+
+                MessageDelay()
+                
             }
-        });
+        },
+        error: function(status, error) {
+            // if (!messageDisplayed) {
+            //     msgFlash("Error updating graduation status.", "error");
+            //     console.error("Error updating graduation status:", error);
+            //     messageDisplayed = true; // Set the flag to true after displaying the message
+            // }
+        }
     });
+});
+
 
     $('#selectAll').click(function() {
 
@@ -176,3 +225,21 @@ $(document).ready(function() {
         selectAllMode = !selectAllMode; 
     });
 });
+
+function MessageDelay(){
+
+    //for loop, close each message except for the last one
+    $('.alert').alert('close'); 
+
+
+
+     return setTimeout(ResetTimer,5000)
+}
+
+function ResetTimer(){
+    console.log($('.alert').length)
+    
+    $('.alert').fadeOut('fast'); 
+    console.log("reset timer")
+    $('#gradCheck').data('msgshown',false);
+}
