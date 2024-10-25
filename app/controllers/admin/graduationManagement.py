@@ -66,6 +66,7 @@ def gradsxls():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    newfile = makeGraduatedXls("all")
+    filterType = request.args.get('filterType', 'all')
+    newfile = makeGraduatedXls(filterType)
     return send_file(open(newfile, 'rb'), download_name='GraduatedStudents.xlsx', as_attachment=True)
 
