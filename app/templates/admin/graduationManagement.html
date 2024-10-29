@@ -69,7 +69,7 @@
     <tr data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }} </a><svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
       </svg></td>
-      <td><input type="checkbox" class="graduated-checkbox" id = "gradCheck" data-username ="{{ user.username }}" data-msgshown = "false" {% if user.hasGraduated %}checked{% endif %}></td>
+      <td><input type="checkbox" class="graduated-checkbox" id = "gradCheck" data-username ="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td>{{ user.classLevel }}</td>
 
     </tr>

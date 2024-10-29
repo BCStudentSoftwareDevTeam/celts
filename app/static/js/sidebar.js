@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  $('.alert').alert('close');// close excess flash messages from graduation managment
+
     // fetch the number of interested students and unapproved courses and display them in the sidebar if there are any
     // and add hovers to describe what the numbers we are adding to the sidebar mean.
     $.ajax({
