@@ -10,6 +10,7 @@ from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
+from app.models.eventCohort import EventCohort
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.course import Course
@@ -40,6 +41,57 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
 
+
+@admin_bp.route('/event/<eventId>/invite-cohorts', methods=['POST'])
+def inviteCohorts(eventId):
+    if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(Event.get_by_id(eventId))):
+        abort(403)
+        
+    try:
+        event = Event.get_by_id(eventId)
+        cohort_years = request.json.get('cohorts', [])
+        
+        for year in cohort_years:
+            try:
+                EventCohort.create(
+                    event=event,
+                    year=int(year),
+                    invited=True,
+                    invited_at=datetime.now()
+                )
+                addBonnerCohortToRsvpLog(int(year), event.id)
+                rsvpForBonnerCohort(int(year), event.id)
+                
+            except IntegrityError:
+                continue
+                
+        createActivityLog(f"Invited Bonner cohorts {', '.join(map(str, cohort_years))} to event {event.name}")
+        return jsonify({
+            "success": True,
+            "message": "Cohorts successfully invited",
+            "invited_cohorts": cohort_years
+        })
+        
+    except Exception as e:
+        print(f"Error inviting cohorts: {e}")
+        return jsonify({
+            "success": False,
+            "message": "Error inviting cohorts"
+        }), 500
+
+@admin_bp.route('/event/<eventId>/cohort-status', methods=['GET'])
+def getCohortStatus(eventId):
+    try:
+        invited_cohorts = EventCohort.select().where(
+            EventCohort.event_id == eventId,
+            EventCohort.invited == True
+        )
+        return jsonify({
+            "invited_cohorts": [{"year": inv.year, "invited_at": inv.invited_at} for inv in invited_cohorts]
+        })
+    except Exception as e:
+        print(f"Error getting cohort status: {e}")
+        return jsonify({"error": "Error fetching cohort status"}), 500
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -314,6 +366,14 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
+
+        invited_cohorts = list(EventCohort.select().where(
+            EventCohort.event_id == eventId,
+            EventCohort.invited == True
+        ))
+        invited_years = [inv.year for inv in invited_cohorts]
+    else:
+        requirements, bonnerCohorts, invited_years = [], [], []
     
     rule = request.url_rule
 
@@ -325,6 +385,7 @@ def eventDisplay(eventId):
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
+                                invited_years = invited_years, 
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)

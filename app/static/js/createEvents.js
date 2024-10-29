@@ -485,42 +485,87 @@ $(".startDatePicker, .endDatePicker").change(function () {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
-function saveSelectedCohorts() {
-  const selectedCohorts = [];
-  $("input[name='cohorts[]']:checked").each(function () {
-    selectedCohorts.push($(this).val()); 
+function inviteCohorts(eventId, selectedCohorts) {
+  return $.ajax({
+    type: "POST",
+    url: `/event/${eventId}/invite-cohorts`,
+    contentType: "application/json",
+    data: JSON.stringify({
+      cohorts: selectedCohorts
+    }),
+    success: function(response) {
+      if (response.success) {
+        msgFlash("Cohorts successfully invited!", "success");
+        updateCohortStatus(eventId);
+      } else {
+        msgFlash("Error inviting cohorts", "danger");
+      }
+    }
   });
-  sessionStorage.setItem("selectedCohorts", JSON.stringify(selectedCohorts)); 
 }
 
-function loadSelectedCohorts() {
-  const selectedCohorts = JSON.parse(sessionStorage.getItem("selectedCohorts")) || []; 
-  selectedCohorts.forEach(function (cohort) {
-    $("input[name='cohorts[]'][value='" + cohort + "']").prop("checked", true);
+function getCohortStatus(eventId) {
+  return $.ajax({
+    type: "GET",
+    url: `/event/${eventId}/cohort-status`,
+    success: function(response) {
+      displayCohortStatus(response.invited_cohorts);
+    }
   });
 }
 
-function clearSelectedCohorts() {
-  sessionStorage.removeItem("selectedCohorts"); 
-  $("input[name='cohorts[]']").prop("checked", false); 
+function displayCohortStatus(invitedCohorts) {
+  $(".cohort-status").remove();
+  
+  invitedCohorts.forEach(cohort => {
+    const invitedDate = new Date(cohort.invited_at).toLocaleDateString();
+    const cohortElement = $(`#cohort-${cohort.year}`);
+    
+    if (cohortElement.length) {
+      const statusHtml = `
+        <div class="cohort-status mt-1 ml-4">
+          <small class="text-success">
+            <i class="fas fa-check-circle"></i>
+            Invited on ${invitedDate}
+          </small>
+        </div>
+      `;
+      cohortElement.closest('.form-check').append(statusHtml);
+      cohortElement.prop('disabled', true);
+      cohortElement.closest('.form-check-label').addClass('text-muted');
+    }
+  });
 }
 
-$(document).ready(function () {
-  if (window.location.pathname.includes('/eventTemplates')) {
-    $('.list-group-item').on('click', function(e) {
-      e.preventDefault();
-      clearSelectedCohorts();
-      window.location.href = $(this).attr('href');
-    });
-  } else if (window.location.pathname.includes('/event/create')) {
-    clearSelectedCohorts();
-  } else {
-    loadSelectedCohorts();
+function updateCohortStatus(eventId) {
+  getCohortStatus(eventId);
+}
+
+$(document).ready(function() {
+  const eventId = $("#eventId").val();
+  
+  if (eventId) {
+    updateCohortStatus(eventId);
   }
 
-  $(document).on("change", "input[name='cohorts[]']", saveSelectedCohorts);
-
-  $("#createNewEventButton").on("click", function () {
-    clearSelectedCohorts();
+  $("#inviteCohortForm").on("submit", function(e) {
+    e.preventDefault();
+    
+    const selectedCohorts = [];
+    $("input[name='cohorts[]']:checked").each(function() {
+      selectedCohorts.push($(this).val());
+    });
+    
+    if (selectedCohorts.length === 0) {
+      msgFlash("Please select at least one cohort to invite", "warning");
+      return;
+    }
+    
+    inviteCohorts(eventId, selectedCohorts).then(() => {
+      $("input[name='cohorts[]']:checked").each(function() {
+        $(this).prop('checked', false);
+      });
+      saveSelectedCohorts();
+    });
   });
 });
