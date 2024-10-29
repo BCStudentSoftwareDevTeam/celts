@@ -185,25 +185,27 @@ def saveEventToDb(newEventData, renewedEvent = False):
     isNewEvent = ('id' not in newEventData)
 
     eventRecords = []
-    with mainDB.atomic():
-        
-        eventData = {
-                "term": newEventData['term'],
-                "name": newEventData['name'],
-                "description": newEventData['description'],
-                "timeStart": newEventData['timeStart'],
-                "timeEnd": newEventData['timeEnd'],
-                "location": newEventData['location'],
-                "isFoodProvided" : newEventData['isFoodProvided'],
-                "isTraining": newEventData['isTraining'],
-                "isRsvpRequired": newEventData['isRsvpRequired'],
-                "isService": newEventData['isService'],
-                "startDate": newEventData['startDate'],
-                "rsvpLimit": newEventData['rsvpLimit'],
-                "endDate": newEventData['startDate'],
-                "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName']
-            }
+    for eventInstance in eventsToCreate: 
+        with mainDB.atomic():
+           
+            eventData = {
+                    "term": newEventData['term'],
+                    "name": eventInstance['name'],
+                    "description": newEventData['description'],
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
+                    "location": newEventData['location'],
+                    "isFoodProvided" : newEventData['isFoodProvided'],
+                    "isTraining": newEventData['isTraining'],
+                    "isEngagement": newEventData['isEngagement'],
+                    "isRsvpRequired": newEventData['isRsvpRequired'],
+                    "isService": newEventData['isService'],
+                    "startDate": eventInstance['date'],
+                    "rsvpLimit": newEventData['rsvpLimit'],
+                    "endDate": eventInstance['date'],
+                    "contactEmail": newEventData['contactEmail'],
+                    "contactName": newEventData['contactName']
+                }
 
         # The three fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
@@ -384,7 +386,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRepeating']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -461,7 +463,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRepeating', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
