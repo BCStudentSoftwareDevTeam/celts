@@ -7,6 +7,7 @@ class Program(baseModel):
     instagramUrl = TextField(null=True)
     facebookUrl = TextField(null=True)
     bereaUrl = TextField(null=True)
+    coverImage = TextField()
     programDescription = TextField()
     partner = CharField(null=True)
     isStudentLed = BooleanField(default=False)
