@@ -11,3 +11,5 @@ class EventCohort(baseModel):
     
     class Meta:
         indexes = ( (('event', 'year'), True), )
+
+#wouldn't it be more logic to add columns in the bonnerCohort table instead?
