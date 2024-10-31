@@ -166,16 +166,13 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     if not isValid:
         return [], validationErrorMessage
 
-    try:
-        events = saveEventToDb(newEventData, renewedEvent)
-        if attachmentFiles:
-            for event in events:
-                addFile = FileHandler(attachmentFiles, eventId=event.id)
-                addFile.saveFiles(saveOriginalFile=events[0])
-        return events, ""
-    except Exception as e:
-        print(f'Failed attemptSaveEvent() with Exception: {e}')
-        return [], e
+    events = saveEventToDb(newEventData, renewedEvent)
+    if attachmentFiles:
+        for event in events:
+            addFile = FileHandler(attachmentFiles, eventId=event.id)
+            addFile.saveFiles(saveOriginalFile=events[0])
+    return events, ""
+
 
 def saveEventToDb(newEventData, renewedEvent = False):
     
@@ -185,27 +182,26 @@ def saveEventToDb(newEventData, renewedEvent = False):
     isNewEvent = ('id' not in newEventData)
 
     eventRecords = []
-    for eventInstance in eventsToCreate: 
-        with mainDB.atomic():
-           
-            eventData = {
-                    "term": newEventData['term'],
-                    "name": eventInstance['name'],
-                    "description": newEventData['description'],
-                    "timeStart": newEventData['timeStart'],
-                    "timeEnd": newEventData['timeEnd'],
-                    "location": newEventData['location'],
-                    "isFoodProvided" : newEventData['isFoodProvided'],
-                    "isTraining": newEventData['isTraining'],
-                    "isEngagement": newEventData['isEngagement'],
-                    "isRsvpRequired": newEventData['isRsvpRequired'],
-                    "isService": newEventData['isService'],
-                    "startDate": eventInstance['date'],
-                    "rsvpLimit": newEventData['rsvpLimit'],
-                    "endDate": eventInstance['date'],
-                    "contactEmail": newEventData['contactEmail'],
-                    "contactName": newEventData['contactName']
-                }
+    with mainDB.atomic():
+        
+        eventData = {
+                "term": newEventData['term'],
+                "name": newEventData['name'],
+                "description": newEventData['description'],
+                "timeStart": newEventData['timeStart'],
+                "timeEnd": newEventData['timeEnd'],
+                "location": newEventData['location'],
+                "isFoodProvided" : newEventData['isFoodProvided'],
+                "isTraining": newEventData['isTraining'],
+                "isEngagement": newEventData['isEngagement'],
+                "isRsvpRequired": newEventData['isRsvpRequired'],
+                "isService": newEventData['isService'],
+                "startDate": newEventData['startDate'],
+                "rsvpLimit": newEventData['rsvpLimit'],
+                "endDate": newEventData['startDate'],
+                "contactEmail": newEventData['contactEmail'],
+                "contactName": newEventData['contactName']
+            }
 
         # The three fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
