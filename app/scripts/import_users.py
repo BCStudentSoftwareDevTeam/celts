@@ -90,7 +90,7 @@ def addToDb(userList):
 
         except peewee.IntegrityError as e:
             if user['username']:
-                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'])
+                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'], cpoNumber = user['cpoNumber'])
                      .where(user['bnumber'] == User.bnumber)).execute()
             else:
                 print(f"No username for {user['bnumber']}!", user)
