@@ -83,7 +83,6 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
-        coverImage = FileStorage(filename="test_image.jpg", content_type="image/jpeg")
         programId = 3
         add = {
         "programName" : "Test Event Name",
@@ -113,7 +112,7 @@ def test_changeProgramInfo():
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(programId, coverImage, **add)
+            changeProgramInfo(programId, '/static/images/test_image.jpg', **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
         

@@ -434,7 +434,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 2,
@@ -449,7 +448,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "bereabuddies@berea.edu",
         "contactName": "",
-        "coverImage": None
 
     },
     {
@@ -465,7 +463,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 4,
@@ -480,7 +477,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 5,
@@ -495,7 +491,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 6,
@@ -510,7 +505,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 7,
@@ -525,7 +519,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 8,
@@ -540,7 +533,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 9,
@@ -555,7 +547,6 @@ programs = [
         "isOtherCeltsSponsored": True,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     },
     {
         "id": 10,
@@ -570,7 +561,6 @@ programs = [
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
         "contactName": "",
-        "coverImage": None
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
