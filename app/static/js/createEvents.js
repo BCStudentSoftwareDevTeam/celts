@@ -112,6 +112,12 @@ $('#saveSeries').on('click', function() {
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
+  if ($(dataTable).children().length < 1){
+    displayNotification("Please create events.")
+    return;
+  }
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
@@ -183,6 +189,9 @@ $('#saveSeries').on('click', function() {
   if (isEmpty){
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
+  }
+  else if (eventOfferings.length == 0){
+    displayNotification ("No events created.")
   }
   else if (!hasValidTimes) {
     let invalidTimeMessage = "Event end time must be after start time";
@@ -397,6 +406,9 @@ $(".startDatePicker").change(function () {
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (isSeries) {
+      if (verifyRepeatingFields){
+        handleRepeatingEventsChange()
+      }
       setViewForSeries();
       loadOfferingsToModal();
       $('#modalSeries').modal('show');
@@ -432,17 +444,19 @@ $(".startDatePicker").change(function () {
     }
   });
   
-  $("#repeatingEventsDiv").change(function() {
-    if (verifyRepeatingFields()){
+  $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
+
+  function handleRepeatingEventsChange() {
+    if (verifyRepeatingFields()) {
       let startDate = new Date($("#repeatingEventsStartDate").val());
-      let endDate = new Date ($("#repeatingEventsEndDate").val());
-      if (endDate <= startDate){
+      let endDate = new Date($("#repeatingEventsEndDate").val());
+      if (endDate <= startDate) {
         displayNotification("Invalid dates.");
         return;
       }
       calculateRepeatingEventFrequency();
     }
-  })
+  }
 
   $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
     let attachedRow = $(this).closest(".eventOffering")
