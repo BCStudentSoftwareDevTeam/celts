@@ -128,7 +128,6 @@ def test_changeProgramInfo():
         assert currentProgramInfo.facebookUrl == add["facebookUrl"]
         assert currentProgramInfo.bereaUrl == add["bereaUrl"]
 
-
         transaction.rollback()
 
 @pytest.mark.integration
