@@ -190,9 +190,6 @@ $('#saveSeries').on('click', function() {
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
   }
-  else if (eventOfferings.length == 0){
-    displayNotification ("No events created.")
-  }
   else if (!hasValidTimes) {
     let invalidTimeMessage = "Event end time must be after start time";
     displayNotification(invalidTimeMessage);
