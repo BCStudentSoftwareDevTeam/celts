@@ -218,6 +218,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                     "location": newEventData['location'],
                     "isFoodProvided" : newEventData['isFoodProvided'],
                     "isTraining": newEventData['isTraining'],
+                    "isEngagement": newEventData['isEngagement'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
@@ -410,7 +411,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
@@ -514,7 +515,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isMultipleOffering', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRecurring', 'isMultipleOffering', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
