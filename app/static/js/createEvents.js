@@ -263,6 +263,7 @@ function verifyRepeatingFields(){
 
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#seriesData").val())
+  if (offerings.length < 1) {return;}
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
   offerings.forEach((offering, i) =>{
@@ -403,8 +404,11 @@ $(".startDatePicker").change(function () {
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (isSeries) {
-      if (verifyRepeatingFields){
+      if (verifyRepeatingFields()){
         handleRepeatingEventsChange()
+      }
+      else{
+        $("#generatedEvents").addClass("d-none");
       }
       setViewForSeries();
       loadOfferingsToModal();
