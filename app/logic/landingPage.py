@@ -19,10 +19,10 @@ def getManagerProgramDict(user):
 
     for program in programs:
         managerProgramDict[program] = {"managers": "", "image": os.path.join('static', 'images/logos/celts_symbol.png')}
-        with os.scandir("./app/static/images/landingPage") as it:
+        with os.scandir("./app/static/files/programattachments") as it:
             for entry in it:
                 if entry.name.split('.')[0] == f'{program.id}':
-                    managerProgramDict[program]["image"] = os.path.join('static', f'images/landingPage/{entry.name}')
+                    managerProgramDict[program]["image"] = os.path.join('static', f'files/programattachments/{entry.name}')
                     break
     for row in managerRows:
         if managerProgramDict[row.program]["managers"] == "":
