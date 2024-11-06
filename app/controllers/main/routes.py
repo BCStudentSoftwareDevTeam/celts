@@ -3,7 +3,7 @@ import datetime
 from peewee import JOIN
 from http import cookies
 from playhouse.shortcuts import model_to_dict
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
 
 from app.controllers.main import main_bp
 from app import app
@@ -82,7 +82,7 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
+    term: Term = Term.get_by_id(currentTerm) 
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
@@ -93,7 +93,44 @@ def events(selectedTerm, activeTab, programID):
     
     managersProgramDict = getManagerProgramDict(g.current_user)
 
-    return render_template("/events/event_list.html",
+    # Fetch toggle state from session    
+    toggleState = request.args.get('toggleState', 'unchecked')
+
+    # compile all student led events into one list
+    studentEvents = []
+    for studentEvent in studentLedEvents.values():
+        studentEvents += studentEvent # add all contents of studentEvent to the studentEvents list
+
+    # Get the count of all term events for each category to display in the event list page.
+    studentLedEventsCount: int = len(studentEvents)
+    trainingEventsCount: int = len(trainingEvents)
+    bonnerEventsCount: int = len(bonnerEvents)
+    otherEventsCount: int = len(otherEvents)
+
+    # gets only upcoming events to display in indicators
+    if (toggleState == 'unchecked'):
+        studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
+        for event in trainingEvents:
+            if event.isPastEnd:
+                trainingEventsCount -= 1
+        for event in bonnerEvents:
+            if event.isPastEnd:
+                bonnerEventsCount -= 1
+        for event in otherEvents:
+            if event.isPastEnd:
+                otherEventsCount -= 1
+
+    # Handle ajax request for Event category header number notifiers and toggle
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            "studentLedEventsCount": studentLedEventsCount,
+            "trainingEventsCount": trainingEventsCount,
+            "bonnerEventsCount": bonnerEventsCount,
+            "otherEventsCount": otherEventsCount,
+            "toggleStatus": toggleState
+        })
+    
+    return render_template("/events/eventList.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
@@ -107,11 +144,12 @@ def events(selectedTerm, activeTab, programID):
                             activeTab = activeTab,
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
-                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
+                            toggleState = toggleState,
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewUsersProfile(username):
+def viewUsersProfile(username):   
     """
     This function displays the information of a volunteer to the user
     """
@@ -124,7 +162,7 @@ def viewUsersProfile(username):
         else:
             abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
-    if (g.current_user == volunteer) or g.current_user.isAdmin:
+    if (g.current_user == volunteer) or g.current_user.isAdmin: 
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
@@ -197,7 +235,8 @@ def emergencyContactInfo(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
 
-
+    user = User.get(User.username == username)
+    
     if request.method == 'GET':
         readOnly = g.current_user.username != username
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
@@ -214,7 +253,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -229,6 +268,8 @@ def insuranceInfo(username):
     """
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
+    
+    user = User.get(User.username == username)
 
     if request.method == 'GET':
         readOnly = g.current_user.username != username
@@ -247,7 +288,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
-        createActivityLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
         if request.args.get('action') == 'exit':
@@ -493,6 +534,10 @@ def getDietInfo():
 
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    toggleMinorInterest(username)
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        toggleMinorInterest(username)
+
+    else:
+        abort(403)
     
     return ""

@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{{url_for('static', filename ='css/base.css') }}?u={{lastStaticUpdate}}">
     <link rel="stylesheet" href="{{url_for('static', filename ='css/sidebar.css') }}?u={{lastStaticUpdate}}">
   {% endblock %}
-
   <title>
     {% block title %}
       {% if title %}CELTS Link - {{ title }}{% else %}Welcome to CELTS Link{% endif %}
@@ -23,9 +22,9 @@
 {% block content %}
 <div>
   <div class="row g-0">
-    <div class="col-md-auto d-print-none d-none d-lg-block">
+    <div class="col-md-auto d-print-none d-none d-lg-block" id="sideBarContainer">
       <div style="margin-right: 280px">
-        <nav class="position-fixed float-start">
+        <nav class="position-fixed float-start" id="sideBar">
           {% block sidebar %}
             {% include 'sidebar.html' %}
           {% endblock %}
@@ -33,7 +32,7 @@
       </div>
     </div>
     <nav class="col-md-auto d-print-none d-lg-none">
-      <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
+      <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar" >
         <div class="offcanvas-body p-0">
           <button type="button" class="btn btn-dark position-absolute top-0 start-100 rounded-0 rounded-end kiosk-hide" data-bs-dismiss="offcanvas" aria-label="Close">
             <span class="bi bi-x"></span>
@@ -47,11 +46,11 @@
         <div id="maincontent" class="main-content container">
           <div class="flash_container" id="flash_container">
             {% with messages = get_flashed_messages(with_categories=true) %}
-              <script> var flashMessages = {{messages | tojson}} </script>
+            <script> var flashMessages = {{messages | tojson}} </script>
             {% endwith %}
           </div>
           <div class="sidebar-icon d-lg-none position-fixed top-0 start-0 d-print-none">
-            <button class="btn btn-dark rounded-0 rounded-end kiosk-hide" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
+            <button class="btn btn-dark rounded-0 rounded-end kiosk-hide" id="sideBarSandwichUI" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
               <span class="bi bi-list" role="button" aria-label="Sidebar"></span>
             </button>
           </div>

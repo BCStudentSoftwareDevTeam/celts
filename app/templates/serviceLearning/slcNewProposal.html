@@ -26,22 +26,22 @@
       {% include "serviceLearning/slcQuestionnaire.html" %}
   </div>
   <div class="row align-items-end pt-5 pb-5">
-    <div class="col">
+    <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
       <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
       <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
     </div>
-    <div class="col-2 stepsIndicator">
+    <div class="col-2 col-xl-1 col-12 text-sm-center stepsIndicator">
       <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
     </div>
-    <div class="col d-flex flex-nowrap gap-2 justify-content-end">
+    <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
       <button class="btn btn-primary" type="button" id="saveExit">Save and Exit</button>
       <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
       <button class="btn btn-primary" type="button" id="exitButton">Exit</button>
       {% if g.current_user.isCeltsAdmin %}
-        <button class="btn btn-success" type="button" id="submitAndApproveButton"width ='100px'>Submit and Approve</button>
+        <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
       {% endif %}
     </div>
   </div>

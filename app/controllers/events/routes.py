@@ -1,4 +1,4 @@
-from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort
+from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session
 from datetime import datetime
 from peewee import DoesNotExist
 

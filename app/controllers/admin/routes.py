@@ -30,14 +30,30 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
+from app.logic.spreadsheet import createSpreadsheet
+
+
+@admin_bp.route('/admin/reports')
+def reports():
+    academicYears = Term.select(Term.academicYear).distinct().order_by(Term.academicYear.desc())
+    academicYears = list(map(lambda t: t.academicYear, academicYears))
+    return render_template("/admin/reports.html", academicYears=academicYears)
+
+@admin_bp.route('/admin/reports/download', methods=['POST'])
+def downloadFile():
+    academicYear = request.form.get('academicYear')
+    filepath = os.path.abspath(createSpreadsheet(academicYear))
+    return send_file(filepath, as_attachment=True)
+
+
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -56,7 +72,7 @@ def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/template_selector.html",
+        return render_template("/events/templateSelector.html",
                                 programs=allprograms,
                                 celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
@@ -82,7 +98,6 @@ def createEvent(templateid, programid):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-
     eventData['program'] = program
 
     if request.method == "GET":
@@ -97,28 +112,55 @@ def createEvent(templateid, programid):
 
     # Try to save the form
     if request.method == "POST":
+        savedEvents = None
         eventData.update(request.form.copy())
-        try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
-
-        except Exception as e:
-            print("Error saving event:", e)
-            savedEvents = False
-            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+        eventData = preprocessEventData(eventData)
+        if eventData.get('isMultipleOffering'):
+            eventData['multipleOfferingData'] = json.loads(eventData['multipleOfferingData'])
+            succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
+            if not succeeded:
+                for index, validationErrorMessage in failedSavedOfferings:
+                    eventData['multipleOfferingData'][index]['isDuplicate'] = True
+                validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
+                print(f"Failed to save offerings {failedSavedOfferings}")
+        else:
+            try:
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            except Exception as e:
+                print("Failed saving regular event", e)
+                validationErrorMessage = "Failed to save event."
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), savedEvents[0].id)
+                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
 
-            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+
+            noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-
+            
+           
             if program:
-                if len(savedEvents) > 1:
+                if len(savedEvents) > 1 and eventData.get('isRecurring'):
                     createActivityLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                
+                elif len(savedEvents) >= 1 and eventData.get('isMultipleOffering'):
+                    eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
+
+                    eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
+
+                    if len(savedEvents) > 1:
+                        #creates list of events created in a multiple series to display in the logs
+                        eventList = ', '.join(eventList.split(', ')[:-1]) + f', and ' + eventList.split(', ')[-1]
+                        #get last date and stick at the end after 'and' so that it reads like a sentence in admin log
+                        lastEventDate = eventDates[-1]
+                        eventDates = ', '.join(eventDates[:-1]) + f', and {lastEventDate}'
+
+                    createActivityLog(f"Created events {eventList} for {program.programName}, with start dates of {eventDates}.")
+                    
                 else:
-                    createActivityLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog(f"Created events <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
                 createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
@@ -136,7 +178,7 @@ def createEvent(templateid, programid):
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-    return render_template(f"/admin/{template.templateFile}",
+    return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
                            futureTerms = futureTerms,
@@ -149,7 +191,7 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
@@ -185,7 +227,8 @@ def renewEvent(eventId):
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': bool(priorEvent['recurringId'])
+                    'isRecurring': bool(priorEvent['recurringId']),
+                    'isMultipleOffering': bool(priorEvent['multipleOfferingId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
@@ -253,6 +296,7 @@ def eventDisplay(eventId):
             rsvpcohorts = request.form.getlist("cohorts[]")
             for year in rsvpcohorts:
                 rsvpForBonnerCohort(int(year), event.id)
+                addBonnerCohortToRsvpLog(int(year), event.id)
 
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
@@ -276,7 +320,7 @@ def eventDisplay(eventId):
 
     # Event Edit
     if 'edit' in rule.rule:
-        return render_template("admin/createEvent.html",
+        return render_template("events/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 event = event,
@@ -292,7 +336,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
         eventCountdown = getCountdownToEvent(event)
-
+ 
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -307,7 +351,7 @@ def eventDisplay(eventId):
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
-        return render_template("eventView.html",
+        return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,
                                 userHasRSVPed=userHasRSVPed,
@@ -317,7 +361,8 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
-                                eventCountdown=eventCountdown)
+                                eventCountdown=eventCountdown
+                                )
                                 
 
 
@@ -335,10 +380,33 @@ def cancelRoute(eventId):
     else:
         abort(403)
     
+@admin_bp.route('/event/undo', methods=['GET'])
+def undoEvent():
+    try:
+        events = session['lastDeletedEvent']
+        for eventId in events: 
+            Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
+            event = Event.get_or_none(Event.id == eventId)
+        recurringEvents = list(Event.select().where((Event.recurringId==event.recurringId) & (Event.deletionDate == None)).order_by(Event.id))          
+        if event.recurringId is not None:
+            nameCounter = 1
+            for recurringEvent in recurringEvents:
+                newEventNameList = recurringEvent.name.split()
+                newEventNameList[-1] = f"{nameCounter}"
+                newEventNameList = " ".join(newEventNameList)
+                Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
+                nameCounter += 1 
+        flash("Deletion successfully undone.", "success")
+        return redirect('/eventsList/' + str(g.current_term))
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+    
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
+        session['lastDeletedEvent'] = [eventId]
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -349,7 +417,7 @@ def deleteRoute(eventId):
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
-        deleteEventAndAllFollowing(eventId)
+        session["lastDeletedEvent"] = deleteEventAndAllFollowing(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -360,7 +428,7 @@ def deleteEventAndAllFollowingRoute(eventId):
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
-        deleteAllRecurringEvents(eventId)
+        session["lastDeletedEvent"] = deleteAllRecurringEvents(eventId)
         flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
@@ -370,7 +438,7 @@ def deleteAllRecurringEventsRoute(eventId):
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
-    recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
+    recurringEvents = getRecurringEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
 
@@ -390,13 +458,6 @@ def studentSearchPage():
     if g.current_user.isAdmin:
         return render_template("/admin/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/addParticipants', methods = ['GET'])
-def addParticipants():
-    '''Renders the page, will be removed once merged with full page'''
-
-    return render_template('addParticipants.html',
-                            title="Add Participants")
 
 @admin_bp.route('/activityLogs', methods = ['GET', 'POST'])
 def activityLogs():
@@ -588,7 +649,8 @@ def saveRequirements(certid):
 
 @admin_bp.route("/displayEventFile", methods=["POST"])
 def displayEventFile():
-    fileData= request.form
-    eventfile=FileHandler(eventId=fileData["id"])
-    eventfile.changeDisplay(fileData['id'])
+    fileData = request.form
+    eventfile = FileHandler(eventId=fileData["id"])
+    isChecked = fileData.get('checked') == 'true'
+    eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
