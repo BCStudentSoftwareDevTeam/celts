@@ -19,7 +19,7 @@ class FileHandler:
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
-            self.path = os.path.join(app.config['files']['image_path'], app.config['files']['landing_page_path']) 
+            self.path = os.path.join(self.path, app.config['files']['program_attachment_path']) 
         
     def makeDirectory(self):
         try:
