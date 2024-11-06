@@ -1,5 +1,5 @@
 INSERT INTO attachmentupload 
-    (event, course, program, isDisplayed, fileName) 
+    (event_id, course_id, program_id, isDisplayed, fileName) 
 VALUES 
     (null, null, 1, FALSE, '1.jpg'), 
     (null, null, 2, FALSE, '2.jpg'), 
@@ -10,4 +10,3 @@ VALUES
     (null, null, 7, FALSE, '7.jpeg'), 
     (null, null, 8, FALSE, '8.jpeg'), 
     (null, null, 10, FALSE, '10.jpg')
-    
