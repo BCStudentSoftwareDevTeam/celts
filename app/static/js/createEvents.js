@@ -83,7 +83,7 @@ function displayNotification(message) {
 }
 
 function isDateInPast(dateString) {
-  const date = new Date(dateString);
+  const date = new Date(dateString.split('-'));
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return date < today;
@@ -260,6 +260,8 @@ function verifyRepeatingFields(){
   })
   return allFieldsFilled
 }
+
+
 
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#seriesData").val())
@@ -449,10 +451,21 @@ $(".startDatePicker").change(function () {
 
   function handleRepeatingEventsChange() {
     if (verifyRepeatingFields()) {
+      let table = $("#generatedEventsList").children();
       let startDate = new Date($("#repeatingEventsStartDate").val());
       let endDate = new Date($("#repeatingEventsEndDate").val());
+      let startTime = $("#repeatingEventsStartTime").val();
+      let endTime = $("#repeatingEventsEndTime").val();
       if (endDate <= startDate) {
         displayNotification("Invalid dates.");
+        table.each(function(){$(this).remove()})
+        $("#generatedEvents").addClass('d-none');
+        return;
+      }
+      if (endTime <= startTime){
+        displayNotification("Invalid times.");
+        table.each(function(){$(this).remove()})
+        $("#generatedEvents").addClass('d-none');
         return;
       }
       calculateRepeatingEventFrequency();
