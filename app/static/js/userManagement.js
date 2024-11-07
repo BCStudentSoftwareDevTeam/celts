@@ -81,7 +81,7 @@ $(document).ready(function() {
       $("#bereaUrl").val(programInfo.bereaUrl);
       
 
-      handleFileSelection('modalProgramImage');
+      handleFileSelection('modalProgramImage', true);
       // Update the form action URL dynamically
       let updateForm = $('#updateProgramForm');
       updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
