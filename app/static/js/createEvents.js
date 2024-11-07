@@ -244,7 +244,7 @@ function saveOfferingsFromModal() {
 
   $(dataTable).children().remove();
   let offeringsJson = JSON.stringify(offerings);
-  $("#seriesData").val(offeringsJson); // huh?
+  $("#seriesData").val(offeringsJson);
 }
 
 function verifyRepeatingFields(){
@@ -397,7 +397,8 @@ $(".startDatePicker").change(function () {
   
   let modalOpenedByEditButton = false;
   //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
-  $("#checkIsSeries, #edit_modal").click(function(event) { 
+  $("#checkIsSeries, #edit_modal").click(function(event) {
+
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
@@ -415,11 +416,16 @@ $(".startDatePicker").change(function () {
       setViewForSeries();
       loadOfferingsToModal();
       $('#modalSeries').modal('show');
+
+      // Disable single event name field
+      $('#inputEventName').prop('readonly', true)
+      $('#inputEventName').prop('placeholder', '')
+      $('#inputEventName').val('')
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
     }
- 
+    
   });
 
   //untoggles the button when the modal cancel or close button is clicked
@@ -432,6 +438,12 @@ $(".startDatePicker").change(function () {
     pendingmultipleEvents.forEach(function(element){
       element.remove();
     });
+    let isSeries = $("#checkIsSeries").is(":checked")
+    if (!isSeries){
+      // Enable single event name field
+      $('#inputEventName').prop('readonly', false)
+      $('#inputEventName').prop('placeholder', 'Enter event name')
+    }
   });
 
   $("#checkIsRepeating").change(function() {
