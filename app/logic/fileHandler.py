@@ -76,10 +76,10 @@ class FileHandler:
                         os.remove(file_path)
 
                     # Save the new file
-                    AttachmentUpload.create(program=self.programId, fileName=file.filename)
-                    program = Program.get(Program.id == self.programId)
-                    file_type = file.filename.split('.')[-1]
-                    current_programID = f"{program.id}.{file_type}"
+                    fileType = file.filename.split('.')[-1]
+                    fileName = f"{self.programId}.{fileType}"
+                    AttachmentUpload.create(program=self.programId, fileName=fileName)
+                    current_programID = fileName
                     saveFileToFilesystem = current_programID
 
                 else:
@@ -89,7 +89,8 @@ class FileHandler:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
-        except AttributeError:
+        except AttributeError as e:
+            print("i broke, sad", e)
             pass
 
     def retrievePath(self, files):
