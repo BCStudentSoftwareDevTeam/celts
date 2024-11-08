@@ -424,6 +424,9 @@ $(".startDatePicker").change(function () {
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
+      // Enable single event name field
+      $('#inputEventName').prop('readonly', false)
+      $('#inputEventName').prop('placeholder', 'Enter event name')
     }
     
   });
