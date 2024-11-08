@@ -96,7 +96,6 @@ def test_changeProgramInfo():
         "facebookUrl" : "www.facebook.com"}
         
         
-        
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
@@ -115,8 +114,6 @@ def test_changeProgramInfo():
             changeProgramInfo(programId, '/static/images/test_image.jpg', **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
-        
-    
 
         assert currentProgramInfo.programName == add["programName"]
         assert currentProgramInfo.programDescription == add["programDescription"]
