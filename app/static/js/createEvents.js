@@ -283,6 +283,11 @@ $(document).ready(function() {
       $("#checkBonners").prop('checked', true);
   }
 }
+const eventId = $("#eventId").val();
+  if (eventId) {
+    getCohortStatus(eventId);
+  }
+
 // Initialize datepicker with proper options
 $.datepicker.setDefaults({
   dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
@@ -504,10 +509,23 @@ $(".startDatePicker, .endDatePicker").change(function () {
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
+const selectedCohorts = [];
+$("input[name='cohorts[]']:checked").each(function() {
+  selectedCohorts.push($(this).val());
+});
+
+inviteCohorts(eventId, selectedCohorts)
+  .then(() => {
+    $("input[name='cohorts[]']:checked").prop('checked', false);
+  })
+  .catch(error => {
+    msgFlash("Error inviting cohorts: " + error.message, "danger");
+  });
+ 
 function inviteCohorts(eventId, selectedCohorts) {
   return $.ajax({
     type: "POST",
-    url: `/event/${eventId}/invite-cohorts`,
+    url: `/event/${eventId}/inviteCohorts`,
     contentType: "application/json",
     data: JSON.stringify({
       cohorts: selectedCohorts
@@ -515,7 +533,7 @@ function inviteCohorts(eventId, selectedCohorts) {
     success: function(response) {
       if (response.success) {
         msgFlash("Cohorts successfully invited!", "success");
-        updateCohortStatus(eventId);
+        getCohortStatus(eventId);
       } else {
         msgFlash("Error inviting cohorts", "danger");
       }
@@ -526,7 +544,7 @@ function inviteCohorts(eventId, selectedCohorts) {
 function getCohortStatus(eventId) {
   return $.ajax({
     type: "GET",
-    url: `/event/${eventId}/cohort-status`,
+    url: `/event/${eventId}/cohortStatus`,
     success: function(response) {
       displayCohortStatus(response.invited_cohorts);
     }
@@ -534,7 +552,7 @@ function getCohortStatus(eventId) {
 }
 
 function displayCohortStatus(invitedCohorts) {
-  $(".cohort-status").remove();
+  $(".cohortStatus").add();
   
   invitedCohorts.forEach(cohort => {
     const invitedDate = new Date(cohort.invited_at).toLocaleDateString();
@@ -542,7 +560,7 @@ function displayCohortStatus(invitedCohorts) {
     
     if (cohortElement.length) {
       const statusHtml = `
-        <div class="cohort-status mt-1 ml-4">
+        <div class="cohortStatus mt-1 ml-4">
           <small class="text-success">
             <i class="fas fa-check-circle"></i>
             Invited on ${invitedDate}
@@ -555,36 +573,3 @@ function displayCohortStatus(invitedCohorts) {
     }
   });
 }
-
-function updateCohortStatus(eventId) {
-  getCohortStatus(eventId);
-}
-
-$(document).ready(function() {
-  const eventId = $("#eventId").val();
-  
-  if (eventId) {
-    updateCohortStatus(eventId);
-  }
-
-  $("#inviteCohortForm").on("submit", function(e) {
-    e.preventDefault();
-    
-    const selectedCohorts = [];
-    $("input[name='cohorts[]']:checked").each(function() {
-      selectedCohorts.push($(this).val());
-    });
-    
-    if (selectedCohorts.length === 0) {
-      msgFlash("Please select at least one cohort to invite", "warning");
-      return;
-    }
-    
-    inviteCohorts(eventId, selectedCohorts).then(() => {
-      $("input[name='cohorts[]']:checked").each(function() {
-        $(this).prop('checked', false);
-      });
-      saveSelectedCohorts();
-    });
-  });
-});

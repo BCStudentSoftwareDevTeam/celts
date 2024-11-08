@@ -6,7 +6,6 @@ from app.models.bonnerCohort import BonnerCohort
 class EventCohort(baseModel):
     event = ForeignKeyField(Event)
     year = IntegerField()  
-    invited = BooleanField(default=False)
     invited_at = DateTimeField(default=datetime.now)
     
     class Meta:

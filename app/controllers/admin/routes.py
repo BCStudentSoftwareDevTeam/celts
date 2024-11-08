@@ -42,13 +42,13 @@ from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
 
 
-@admin_bp.route('/event/<eventId>/invite-cohorts', methods=['POST'])
+@admin_bp.route('/event/<eventId>/inviteCohorts', methods=['POST'])
 def inviteCohorts(eventId):
     if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(Event.get_by_id(eventId))):
         abort(403)
         
     try:
-        event = Event.get_by_id(eventId)
+        event = Event.get_or_create(id=eventId)[0]
         cohort_years = request.json.get('cohorts', [])
         
         for year in cohort_years:
@@ -56,7 +56,6 @@ def inviteCohorts(eventId):
                 EventCohort.create(
                     event=event,
                     year=int(year),
-                    invited=True,
                     invited_at=datetime.now()
                 )
                 addBonnerCohortToRsvpLog(int(year), event.id)
@@ -65,6 +64,7 @@ def inviteCohorts(eventId):
             except IntegrityError:
                 continue
                 
+        event.save() 
         createActivityLog(f"Invited Bonner cohorts {', '.join(map(str, cohort_years))} to event {event.name}")
         return jsonify({
             "success": True,
@@ -78,20 +78,6 @@ def inviteCohorts(eventId):
             "success": False,
             "message": "Error inviting cohorts"
         }), 500
-
-@admin_bp.route('/event/<eventId>/cohort-status', methods=['GET'])
-def getCohortStatus(eventId):
-    try:
-        invited_cohorts = EventCohort.select().where(
-            EventCohort.event_id == eventId,
-            EventCohort.invited == True
-        )
-        return jsonify({
-            "invited_cohorts": [{"year": inv.year, "invited_at": inv.invited_at} for inv in invited_cohorts]
-        })
-    except Exception as e:
-        print(f"Error getting cohort status: {e}")
-        return jsonify({"error": "Error fetching cohort status"}), 500
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -370,7 +356,6 @@ def eventDisplay(eventId):
 
         invited_cohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,
-            EventCohort.invited == True
         ))
         invited_years = [inv.year for inv in invited_cohorts]
     else:
