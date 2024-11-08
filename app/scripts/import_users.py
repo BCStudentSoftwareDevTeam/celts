@@ -9,9 +9,9 @@ from app.logic.utils import getUsernameFromEmail
 
 # Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logger.INFO)
+logger.setLevel(logging.INFO)
 fileHandler = logging.FileHandler('/home/celts/cron.log')
-fileHandler.setLevel(logger.INFO)
+fileHandler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
@@ -22,7 +22,7 @@ def main():
     This function runs the updateRecords function once the script is run.
     """
     logger.info("Script started.")
-    logger.warning("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
+    logger.info("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
 
     logger.info("Getting Updated Names, Majors, and Class Levels")
     addToDb(getStudentData())
