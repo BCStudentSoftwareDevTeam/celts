@@ -13,7 +13,27 @@ from app.logic.minor import getProgramEngagementHistory, getCourseInformation, g
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, createOtherEngagement
 import logging
 
+@minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
+def viewCceMinor(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin):
+        return abort(403)
 
+    sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
+    selectedSummerTerm, summerExperience = getSummerExperience(username)
+
+    return render_template("minor/profile.html",
+                            user = User.get_by_id(username),
+                            sustainedEngagementByTerm = sustainedEngagementByTerm,
+                            summerExperience = summerExperience if summerExperience else "",
+                            selectedSummerTerm = selectedSummerTerm,
+                            totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
+                            summerTerms = getSummerTerms(),
+                            allTerms = getSummerExperience(username))
+
+    
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
@@ -26,27 +46,6 @@ def addASummerExperience(username):
         flash(f'An error occurred while adding the summer experience: {e}', 'danger')
         logging.error(f'An error occurred while adding the summer experience: {e}')
     return redirect(url_for('minor.viewCceMinor', username=username))
-
-
-
-@minor_bp.route('/cceMinor/<username>/viewProposal', methods=['GET'])
-def viewProposal(username):
-    try:
-        user = User.get(User.username == username)
-        try:
-            summer_experience = (SummerExperience
-                                 .select()
-                                 .where(SummerExperience.user == user)
-                                 .order_by(SummerExperience.id.desc())
-                                 .get())
-        except SummerExperience.DoesNotExist:
-            summer_experience = None  # No summer experience found
-
-        return render_template('minor/profile.html', user=user, summer_experience=summer_experience, activeTab='trainingEvents')
-   
-    except Exception as e:
-        flash(f"Error retrieving proposal: {e}", 'danger')
-        return redirect(url_for('minor.viewCceMinor', username=username))
 
 
 
@@ -184,27 +183,7 @@ def edit_other_engagement(username):
 
 # ###############################################################################
 
-@minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
-def viewCceMinor(username):
-    """
-        Load minor management page with community engagements and summer experience
-    """
-    if not (g.current_user.isAdmin):
-        return abort(403)
 
-    sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    selectedSummerTerm, summerExperience = getSummerExperience(username)
-
-    return render_template("minor/profile.html",
-                            user = User.get_by_id(username),
-                            sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = summerExperience if summerExperience else "",
-                            selectedSummerTerm = selectedSummerTerm,
-                            totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
-                            summerTerms = getSummerTerms(),
-                            allTerms = getSummerExperience(username))
-
-    
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):

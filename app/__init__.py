@@ -112,7 +112,3 @@ def handle_bad_request(e):
 def handle_bad_request(e):
     return render_template("/errors/500error.html",
                             supportEmail = supportContactEmail)
-
-
-if __name__ == '__main__':
-    app.run()
