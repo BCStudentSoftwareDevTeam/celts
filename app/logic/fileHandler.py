@@ -59,23 +59,11 @@ class FileHandler:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                 elif self.programId:
-                    # Delete existing files for the program before saving the new one
-                    existing_files = AttachmentUpload.select().where(
-                        AttachmentUpload.program == self.programId
-                    )
+                    # reomve the existing file
+                    deleteFileObject = AttachmentUpload.select().where(AttachmentUpload.program == self.programId).get()
+                    self.deleteFile(deleteFileObject.id)
 
-                    for existing_file in existing_files:
-                        existing_file.delete_instance()
-
-                    # Remove files from the filesystem
-                    pattern = '*' + Program.get(Program.id == self.programId).programName + '*'
-                    full_pattern = os.path.join(self.path, pattern)
-                    files_to_delete = glob.glob(full_pattern)
-
-                    for file_path in files_to_delete:
-                        os.remove(file_path)
-
-                    # Save the new file
+                    # add the new file
                     fileType = file.filename.split('.')[-1]
                     fileName = f"{self.programId}.{fileType}"
                     AttachmentUpload.create(program=self.programId, fileName=fileName)
@@ -89,8 +77,7 @@ class FileHandler:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
-        except AttributeError as e:
-            print("i broke, sad", e)
+        except AttributeError:
             pass
 
     def retrievePath(self, files):
@@ -102,6 +89,7 @@ class FileHandler:
     def deleteFile(self, fileId):
         file = AttachmentUpload.get_by_id(fileId)
         file.delete_instance()
+        print(file.fileName)
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)

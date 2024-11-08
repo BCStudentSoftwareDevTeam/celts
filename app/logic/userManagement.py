@@ -56,9 +56,6 @@ def changeProgramInfo(programId,
     """Updates the program info and logs that change"""
     program = Program.get_by_id(programId)
     if attachment:
-        deleteFileObject = AttachmentUpload.select().where(AttachmentUpload.program == programId).get()
-        deleteFile: FileHandler = FileHandler(programId=programId)
-        deleteFile.deleteFile(deleteFileObject.id)
         addFile: FileHandler = FileHandler(attachment, programId=programId)
         addFile.saveFiles()
     updatedProgram = Program.update(
