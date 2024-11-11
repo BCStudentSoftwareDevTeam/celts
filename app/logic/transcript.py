@@ -13,7 +13,7 @@ from app.models.event import Event
 
 def getProgramTranscript(username):
     """
-    Returns a Program query object containing all the programs for
+    Returns a Program query object containing all the programs for  ,
     the current user.
     """
     # Add up hours earned in a term for each program they've participated in
@@ -56,8 +56,15 @@ def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
     """
+    # eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
+    #                              .where(EventParticipant.user == username)).scalar()
+    transcriptsRemoved = (ProgramBan.select().where((ProgramBan.user == username) and (ProgramBan.removeFromTranscript)))
     eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-                                 .where(EventParticipant.user == username)).scalar()
+                  .join(Event) 
+                  .where((EventParticipant.user == username) & ((Event.program_id.not_in(transcriptsRemoved))) or (ProgramBan.unbanNote is None))).scalar()
+
+    print("Anna", transcriptsRemoved, "NONO", eventHours)
+    
     courseHours =  (CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned))
                                     .where(CourseParticipant.user == username)).scalar()
 
