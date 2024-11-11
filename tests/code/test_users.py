@@ -151,7 +151,8 @@ def test_banUser():
         note = "Banning user test"
         creator = "ramsayb2"
         banEndDate = "2022-11-29"
-        banUser(program_id, username, note, banEndDate, creator)
+        removeFromTranscript = True
+        banUser(program_id, username, note, banEndDate, removeFromTranscript, creator)
         prg2BannedUsers = list(User.select().join(ProgramBan).where(ProgramBan.program == program_id))
         assert username in prg2BannedUsers
 
@@ -161,8 +162,9 @@ def test_banUser():
         note = "Banning user test"
         creator = "ramsayb2"
         banEndDate = "2022-11-29"
+        removeFromTranscript = True
         with pytest.raises(Exception):
-            status = banUser (program_id, username, note, banEndDate, creator)
+            status = banUser (program_id, username, note, banEndDate, removeFromTranscript, creator)
             assert status == False
 
         transaction.rollback()
@@ -370,7 +372,7 @@ def test_getBannedUsers():
                               bnumber = '03522492',
                               email = 'usert@berea.deu',
                               isStudent = True)
-        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
+        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", True, "ramsayb2")
         assert userToBan in [user.user for user in getBannedUsers(1)]
 
         unbanUser(1, User.get_by_id("usrtst"), "yep", "ramsayb2")  # Test eligible but previously banned user
@@ -394,7 +396,7 @@ def test_isBannedFromEvent():
                               bnumber = '03522492',
                               email = 'usert@berea.deu',
                               isStudent = True)
-        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
+        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", True, "ramsayb2")
         assert isBannedFromEvent("usrtst", 1)
 
         unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user

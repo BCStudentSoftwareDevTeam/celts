@@ -948,9 +948,9 @@ def test_upcomingEvents():
         assert newRecurringSecond not in eventsInUserInterestedProgram
         assert multipleOfferingEvent in eventsInUserInterestedProgram
 
-        # Programs the user is banned from do not have their events showing up in
+        # Programs the user is banned from do not have their events showing up sin
         # their upcoming events
-        banUser(programForBanning.id, user.username, "Test banned program", testDate, "ramsayb2")
+        banUser(programForBanning.id, user.username, "Test banned program", testDate, True, "ramsayb2")
         eventsUserNotBannedFrom = getUpcomingEventsForUser(user, asOf = testDate)
         assert newBannedProgramEvent in eventsInUserInterestedProgram
         assert newBannedProgramEvent not in eventsUserNotBannedFrom
