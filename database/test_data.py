@@ -1472,6 +1472,42 @@ files = [
     {
     "event": 2,
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
+    },
+    {
+    "program_id": 1,
+    "fileName": "1.jpg"
+    },
+    {
+    "program_id": 2,s
+    "fileName": "2.jpg"
+    },
+    {
+    "program_id": 3,
+    "fileName": "3.jpg"
+    },
+    {
+    "program_id": 4,
+    "fileName": "4.jpeg"
+    },
+    {
+    "program_id": 5,
+    "fileName": "5.jpg"
+    },
+    {
+    "program_id": 6,
+    "fileName": "6.jpg"
+    },
+    {
+    "program_id": 7,
+    "fileName": "7.jpeg"
+    },
+    {
+    "program_id": 8,
+    "fileName": "8.jpeg"
+    },
+    {
+    "program_id": 10,
+    "fileName": "10.jpg"
     }
 ]
 AttachmentUpload.insert_many(files).on_conflict_replace().execute()
