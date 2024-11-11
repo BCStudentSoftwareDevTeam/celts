@@ -89,7 +89,6 @@ class FileHandler:
     def deleteFile(self, fileId):
         file = AttachmentUpload.get_by_id(fileId)
         file.delete_instance()
-        print(file.fileName)
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
