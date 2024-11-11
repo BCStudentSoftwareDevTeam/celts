@@ -166,6 +166,7 @@ def createEvent(templateid, programid):
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
                 print("Failed saving regular event", e)
+                validationErrorMessage = "Failed to save event."
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
@@ -265,7 +266,7 @@ def renewEvent(eventId):
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
                     'isRecurring': bool(priorEvent['recurringId']),
-                    'isMultipleOffering': bool(priorEvent['multipleOffeirngId']),
+                    'isMultipleOffering': bool(priorEvent['multipleOfferingId']),
                     })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
