@@ -1478,7 +1478,7 @@ files = [
     "fileName": "1.jpg"
     },
     {
-    "program_id": 2,s
+    "program_id": 2,
     "fileName": "2.jpg"
     },
     {
