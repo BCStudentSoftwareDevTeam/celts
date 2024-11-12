@@ -1466,6 +1466,8 @@ ActivityLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
+    "program": None,
+    "course": None,
     "event": 1,
     "fileName":"Map1.pdf"
     },
@@ -1474,39 +1476,39 @@ files = [
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     },
     {
-    "program_id": 1,
+    "program": 1,
     "fileName": "1.jpg"
     },
     {
-    "program_id": 2,
+    "program": 2,
     "fileName": "2.jpg"
     },
     {
-    "program_id": 3,
+    "program": 3,
     "fileName": "3.jpg"
     },
     {
-    "program_id": 4,
+    "program": 4,
     "fileName": "4.jpeg"
     },
     {
-    "program_id": 5,
+    "program": 5,
     "fileName": "5.jpg"
     },
     {
-    "program_id": 6,
+    "program": 6,
     "fileName": "6.jpg"
     },
     {
-    "program_id": 7,
+    "program": 7,
     "fileName": "7.jpeg"
     },
     {
-    "program_id": 8,
+    "program": 8,
     "fileName": "8.jpeg"
     },
     {
-    "program_id": 10,
+    "program": 10,
     "fileName": "10.jpg"
     }
 ]
