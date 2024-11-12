@@ -9,6 +9,8 @@ from app.models.programManager import ProgramManager
 from app.logic.volunteers import setProgramManager
 from peewee import DoesNotExist
 from app.models import mainDB
+import os
+import time
 from werkzeug.datastructures import FileStorage
 
 @pytest.mark.integration
@@ -85,16 +87,21 @@ def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
         programId = 3
         add = {
-        "programName" : "Test Event Name",
-        "programDescription" : "This is a test Description",
-        "partner" : "Test Partner",
-        "contactName" : "New Test Name",
-        "contactEmail" : 'newtest@email',
-        "location" : "Danforth Tech",
-        "instagramUrl" : "www.instagram.com",
-        "bereaUrl" : "www.berea.edu",
-        "facebookUrl" : "www.facebook.com"}
+            "programName" : "Test Event Name",
+            "programDescription" : "This is a test Description",
+            "partner" : "Test Partner",
+            "contactName" : "New Test Name",
+            "contactEmail" : 'newtest@email',
+            "location" : "Danforth Tech",
+            "instagramUrl" : "www.instagram.com",
+            "bereaUrl" : "www.berea.edu",
+            "facebookUrl" : "www.facebook.com"
+        }
+
+        fileName = "app/static/files/programattachments/test_image.jpg"
         
+        # create a new file
+        open(fileName, "x")
         
         currentProgramInfo = Program.get_by_id(programId)
 
@@ -108,13 +115,18 @@ def test_changeProgramInfo():
         assert currentProgramInfo.bereaUrl != None
         assert currentProgramInfo.facebookUrl != None
        
+        AttachmentUpload.create(program=programId, fileName='test_image.jpg')
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(programId, '/static/images/test_image.jpg', **add)
+            changeProgramInfo(programId, '/static/files/programattachments/test_image.jpg', **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
+        # verify the attachment was successfully deleted
+        testFile = AttachmentUpload.get_or_none(program=programId, fileName="test_image.jpg")
+        
+        assert testFile == None
         assert currentProgramInfo.programName == add["programName"]
         assert currentProgramInfo.programDescription == add["programDescription"]
         assert currentProgramInfo.partner == add["partner"]
