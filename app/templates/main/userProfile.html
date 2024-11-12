@@ -193,6 +193,7 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
+                  <th scope="col">Show on Transcript</th>
                   
                 {% endif %}
                 <th scope="col"></th>
@@ -225,6 +226,14 @@
 
                     {% if g.current_user.isCeltsAdmin %}
                       <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}"><i class="bi bi-pencil"></i></button>
+                    {% endif %}
+                    </td>
+                    <td>
+                    {% if g.current_user.isCeltsAdmin %}
+                    <div class="form-check" id="removeFromTranscriptDiv">
+                      <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscriptCheckbox" id="removeFromTranscriptCheckbox" type="checkbox" data-username="{{volunteer.username}}" />
+                      <label class="form-check-label" for="removeFromTranscriptCheckbox"></label>
+                    </div>  
                     {% endif %}
                     </td>
                     
