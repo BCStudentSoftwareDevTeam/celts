@@ -85,9 +85,20 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
-        programId = 3
-        add = {
-            "programName" : "Test Event Name",
+        baseProgramData = {
+            "programName" : "Test Program Name",
+            "programDescription" : "This is the original test description",
+            "partner" : "Original Test Partner",
+            "contactName" : "",
+            "contactEmail" : '',
+            "location" : "",
+            "instagramUrl" : "",
+            "bereaUrl" : "",
+            "facebookUrl" : ""
+        }
+
+        desiredProgramData = {
+            "programName" : "Test Program Name",
             "programDescription" : "This is a test Description",
             "partner" : "Test Partner",
             "contactName" : "New Test Name",
@@ -97,17 +108,21 @@ def test_changeProgramInfo():
             "bereaUrl" : "www.berea.edu",
             "facebookUrl" : "www.facebook.com"
         }
+        newProgram = Program.create(**baseProgramData)
 
-        fileName = "app/static/files/programattachments/test_image.jpg"
+        currentProgramInfo = Program.get_by_id(newProgram.id)
+        currentProgramID = currentProgramInfo.id
+
+        filePath = f"app/static/files/programattachments/{currentProgramID}.jpg"
         
         # create a new file
-        open(fileName, "x")
-        
-        currentProgramInfo = Program.get_by_id(programId)
+        newFile = open(filePath, "w")
 
-        assert currentProgramInfo.programName == "Adopt-a-Grandparent"
-        assert currentProgramInfo.programDescription != add['programDescription']
-        assert currentProgramInfo.partner != add['partner']
+        AttachmentUpload.create(program=currentProgramID, fileName=f'{currentProgramID}.jpg')
+
+        assert currentProgramInfo.programName == desiredProgramData["programName"]
+        assert currentProgramInfo.programDescription != desiredProgramData['programDescription']
+        assert currentProgramInfo.partner != desiredProgramData['partner']
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
@@ -115,27 +130,26 @@ def test_changeProgramInfo():
         assert currentProgramInfo.bereaUrl != None
         assert currentProgramInfo.facebookUrl != None
        
-        AttachmentUpload.create(program=programId, fileName='test_image.jpg')
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(programId, '/static/files/programattachments/test_image.jpg', **add)
+            changeProgramInfo(currentProgramID, newFile, **desiredProgramData)
 
-        currentProgramInfo = Program.select().where(Program.id==programId).get()
+        currentProgramInfo = Program.select().where(Program.id==currentProgramID).get()
 
         # verify the attachment was successfully deleted
-        testFile = AttachmentUpload.get_or_none(program=programId, fileName="test_image.jpg")
+        testFile = AttachmentUpload.get_or_none(program=currentProgramID, fileName="test_image.jpg")
         
         assert testFile == None
-        assert currentProgramInfo.programName == add["programName"]
-        assert currentProgramInfo.programDescription == add["programDescription"]
-        assert currentProgramInfo.partner == add["partner"]
-        assert currentProgramInfo.contactName == add["contactName"]
-        assert currentProgramInfo.contactEmail == add["contactEmail"]
-        assert currentProgramInfo.defaultLocation == add["location"]
-        assert currentProgramInfo.instagramUrl == add["instagramUrl"]
-        assert currentProgramInfo.facebookUrl == add["facebookUrl"]
-        assert currentProgramInfo.bereaUrl == add["bereaUrl"]
+        assert currentProgramInfo.programName == desiredProgramData["programName"]
+        assert currentProgramInfo.programDescription == desiredProgramData["programDescription"]
+        assert currentProgramInfo.partner == desiredProgramData["partner"]
+        assert currentProgramInfo.contactName == desiredProgramData["contactName"]
+        assert currentProgramInfo.contactEmail == desiredProgramData["contactEmail"]
+        assert currentProgramInfo.defaultLocation == desiredProgramData["location"]
+        assert currentProgramInfo.instagramUrl == desiredProgramData["instagramUrl"]
+        assert currentProgramInfo.facebookUrl == desiredProgramData["facebookUrl"]
+        assert currentProgramInfo.bereaUrl == desiredProgramData["bereaUrl"]
 
         transaction.rollback()
 

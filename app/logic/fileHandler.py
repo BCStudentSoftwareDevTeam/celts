@@ -59,7 +59,7 @@ class FileHandler:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                 elif self.programId:
-                    # reomve the existing file
+                    # remove the existing file
                     deleteFileObject = AttachmentUpload.select().where(AttachmentUpload.program == self.programId).get()
                     self.deleteFile(deleteFileObject.id)
 
