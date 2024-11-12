@@ -21,6 +21,8 @@
 
 
 
+
+
 {% block app_content %}
 <h1 class="text-center mb-5">Graduation Managment</h1>
 <div class="col-md-3 me-auto"></div>
@@ -35,8 +37,8 @@
       <a class="dropdown-item" data-filter="cce" data-cce = "{{CCEstudents}}" >CCE Minor</a>
     </div>
   </div>
-  <div class="btn-group">
-    <button type="button" class="btn btn-primary dropdown-toggle bonner-filter" id = "cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+  <div class="btn-group" id = "bongroup">
+    <button type="button" class="btn btn-primary dropdown-toggle bonner-filter" id = "cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
       Bonner Cohorts
     </button>
     <div class="dropdown-menu">
