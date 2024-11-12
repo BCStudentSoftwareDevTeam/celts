@@ -56,14 +56,13 @@ def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
     """
-    # eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-    #                              .where(EventParticipant.user == username)).scalar()
-    transcriptsRemoved = (ProgramBan.select().where((ProgramBan.user == username) and (ProgramBan.removeFromTranscript)))
+    transcriptsRemoved = [program.program_id for program in ProgramBan.select().where((ProgramBan.user == username) and (ProgramBan.unbanNote.is_null(True)) and (ProgramBan.removeFromTranscript == 1))]
+    
     eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-                  .join(Event) 
-                  .where((EventParticipant.user == username) & ((Event.program_id.not_in(transcriptsRemoved))) or (ProgramBan.unbanNote is None))).scalar()
+                  .join(Event, on=(EventParticipant.event == Event.id))
+                  .where((EventParticipant.user == username) & (Event.program_id.not_in(transcriptsRemoved)))).scalar()
+   
 
-    print("Anna", transcriptsRemoved, "NONO", eventHours)
     
     courseHours =  (CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned))
                                     .where(CourseParticipant.user == username)).scalar()
