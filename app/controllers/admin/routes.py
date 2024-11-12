@@ -42,6 +42,37 @@ from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
 
 
+def invite_cohorts_to_event(event, cohort_years):
+    invited_cohorts = []
+    try:
+        for year in cohort_years:
+            year = int(year)
+            try:
+                EventCohort.create(
+                    event=event,
+                    year=year,
+                    invited_at=datetime.now()
+                )
+                
+                # Handle RSVP and logging
+                addBonnerCohortToRsvpLog(year, event.id)
+                rsvpForBonnerCohort(year, event.id)
+                
+                invited_cohorts.append(year)
+                
+            except IntegrityError:
+                continue
+                
+        if invited_cohorts:
+            cohort_list = ', '.join(map(str, invited_cohorts))
+            createActivityLog(f"Invited Bonner cohorts {cohort_list} to event {event.name}")
+            
+        return True, "Cohorts successfully invited", invited_cohorts
+        
+    except Exception as e:
+        print(f"Error inviting cohorts: {e}")
+        return False, "Error inviting cohorts", []
+
 @admin_bp.route('/event/<eventId>/inviteCohorts', methods=['POST'])
 def inviteCohorts(eventId):
     if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(Event.get_by_id(eventId))):
@@ -51,32 +82,19 @@ def inviteCohorts(eventId):
         event = Event.get_or_create(id=eventId)[0]
         cohort_years = request.json.get('cohorts', [])
         
-        for year in cohort_years:
-            try:
-                EventCohort.create(
-                    event=event,
-                    year=int(year),
-                    invited_at=datetime.now()
-                )
-                addBonnerCohortToRsvpLog(int(year), event.id)
-                rsvpForBonnerCohort(int(year), event.id)
-                
-            except IntegrityError:
-                continue
-                
-        event.save() 
-        createActivityLog(f"Invited Bonner cohorts {', '.join(map(str, cohort_years))} to event {event.name}")
+        success, message, invited_cohorts = invite_cohorts_to_event(event, cohort_years)
+        
         return jsonify({
-            "success": True,
-            "message": "Cohorts successfully invited",
-            "invited_cohorts": cohort_years
-        })
+            "success": success,
+            "message": message,
+            "invited_cohorts": invited_cohorts
+        }), 200 if success else 500
         
     except Exception as e:
-        print(f"Error inviting cohorts: {e}")
+        print(f"Error in inviteCohorts route: {e}")
         return jsonify({
             "success": False,
-            "message": "Error inviting cohorts"
+            "message": "Error processing request"
         }), 500
 
 @admin_bp.route('/admin/reports')
@@ -170,10 +188,10 @@ def createEvent(templateid, programid):
 
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
-            for year in rsvpcohorts:
-                rsvpForBonnerCohort(int(year), savedEvents[0].id)
-                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
-
+            if rsvpcohorts:
+                success, message, invited_cohorts = invite_cohorts_to_event(savedEvents[0], rsvpcohorts)
+                if not success:
+                    flash(message, 'warning')
 
             noun = ((eventData.get('isRecurring') or eventData.get('isMultipleOffering')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')

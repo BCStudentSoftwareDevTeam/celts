@@ -278,14 +278,10 @@ function formatDate(originalDate) {
  */
 $(document).ready(function() {
   //makes sure bonners toggle will stay on between event pages
-  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
-    if ($("#checkBonners")) {
-      $("#checkBonners").prop('checked', true);
-  }
-}
-const eventId = $("#eventId").val();
-  if (eventId) {
-    getCohortStatus(eventId);
+    if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+      if ($("#checkBonners")) {
+        $("#checkBonners").prop('checked', true);
+    }
   }
 
 // Initialize datepicker with proper options
@@ -507,39 +503,42 @@ $(".startDatePicker, .endDatePicker").change(function () {
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
-});
 
-const selectedCohorts = [];
-$("input[name='cohorts[]']:checked").each(function() {
-  selectedCohorts.push($(this).val());
-});
-
-inviteCohorts(eventId, selectedCohorts)
-  .then(() => {
-    $("input[name='cohorts[]']:checked").prop('checked', false);
-  })
-  .catch(error => {
-    msgFlash("Error inviting cohorts: " + error.message, "danger");
-  });
- 
-function inviteCohorts(eventId, selectedCohorts) {
-  return $.ajax({
-    type: "POST",
-    url: `/event/${eventId}/inviteCohorts`,
-    contentType: "application/json",
-    data: JSON.stringify({
-      cohorts: selectedCohorts
-    }),
-    success: function(response) {
-      if (response.success) {
-        msgFlash("Cohorts successfully invited!", "success");
-        getCohortStatus(eventId);
-      } else {
-        msgFlash("Error inviting cohorts", "danger");
+  const eventId = $("#eventId").val();
+  if (eventId) {
+    const selectedCohorts = getSelectedCohorts(eventId);
+    
+    $('input[name="cohorts[]"]').each(function() {
+      const cohortYear = $(this).val();
+      if (selectedCohorts.includes(cohortYear)) {
+        $(this).prop('checked', true);
       }
-    }
-  });
-}
+    });
+    
+    $('input[name="cohorts[]"]').on('change', function() {
+      const selectedCohorts = $('input[name="cohorts[]"]:checked')
+        .map(function() { return $(this).val(); })
+        .get();
+      saveSelectedCohorts(eventId, selectedCohorts);
+    });
+    
+    getCohortStatus(eventId);
+  }
+});
+
+// //const STORAGE_KEY = 'selectedCohorts';
+
+// //function saveSelectedCohorts(eventId, cohorts) {
+//  // const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+//  // storage[eventId] = cohorts;
+//   localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+// }
+
+// function getSelectedCohorts(eventId) {
+//   const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+//   return storage[eventId] || [];
+// }
+
 
 function getCohortStatus(eventId) {
   return $.ajax({
@@ -552,7 +551,7 @@ function getCohortStatus(eventId) {
 }
 
 function displayCohortStatus(invitedCohorts) {
-  $(".cohortStatus").add();
+  $(".cohortStatus").remove(); 
   
   invitedCohorts.forEach(cohort => {
     const invitedDate = new Date(cohort.invited_at).toLocaleDateString();
@@ -568,6 +567,7 @@ function displayCohortStatus(invitedCohorts) {
         </div>
       `;
       cohortElement.closest('.form-check').append(statusHtml);
+      cohortElement.prop('checked', true);
       cohortElement.prop('disabled', true);
       cohortElement.closest('.form-check-label').addClass('text-muted');
     }
