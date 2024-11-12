@@ -111,7 +111,7 @@ def test_changeProgramInfo():
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(programId, '/static/images/test_image.jpg', **add)
+            changeProgramInfo(programId, None, **add)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
