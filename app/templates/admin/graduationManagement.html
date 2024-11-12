@@ -48,14 +48,9 @@
     </div>
   </div>
 
-  <div id="selectAll-container" class="btn-group">
-    <button class="btn btn-primary" id="selectAll">Select All</button>
-    <div class="flex-column ms-2">
-      <a href="/gradStudentsxls" target="_blank">
-        <button class="btn btn-success" id="export">Export</button>
-      </a>
-  </div>
-  </div>
+  <a href="/gradStudentsxls" target="_blank">
+    <button class="btn btn-success" id="export">Export</button>
+  </a>
 </div>
 
 <table class="display" id="gradStudentsTable">
@@ -69,9 +64,9 @@
   <tbody>
     {% for user in users %}
     <tr data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
+      <td><input type="checkbox" class="graduated-checkbox" id = "gradCheck" data-username ="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }} </a><svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
       </svg></td>
-      <td><input type="checkbox" class="graduated-checkbox" id = "gradCheck" data-username ="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td>{{ user.classLevel }}</td>
 
     </tr>
