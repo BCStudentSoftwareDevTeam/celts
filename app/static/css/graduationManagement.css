@@ -25,12 +25,10 @@ h1 {
  }
 
 
-/* #cohortFilter{
-  right: 200px;
+#cohortFilter{
+  position:absolute;
+  right: 170px;
+  top: -19px;
   
-} */
-
-#bongroup{
-  right: 200px;
   
 }
