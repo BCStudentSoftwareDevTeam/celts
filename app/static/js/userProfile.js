@@ -46,7 +46,7 @@ $(document).ready(function(){
   $('.removeFromTranscriptCheckbox').click(function() {
     var removeFromTranscript = $(this).is(':checked');
     var username = $(this).data('username');
-
+    var programID = $(this).data("programid");
 
     $.ajax({
         type: "POST",
@@ -94,9 +94,6 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
-
-
-  var programID;
   $(".banEdit").click(function() {
     $.ajax({
       url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
@@ -128,17 +125,15 @@ $(document).ready(function(){
     $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
-    // $("#removeFromTranscriptDiv").hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if(banValue == "Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      // $("#removeFromTranscriptDiv").show();
       banNote.text($(this).data("note"))
     }
-    else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
+    // else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
   });
 
 
