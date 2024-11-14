@@ -43,6 +43,27 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
+  $('[data-bs-toggle="modal"]').on('click', function() {
+    // Get the JSON data from the data-programinfo attribute
+    const programInfo = JSON.parse($(this).attr('data-programinfo'));
+    // Directly populate modal fields
+    $("#programName").val(programInfo.programName);
+    $("#programDescription").val(programInfo.programDescription);
+    $("#partner").val(programInfo.partner);
+    $("#contactEmail").val(programInfo.contactEmail);
+    $("#contactName").val(programInfo.contactName);
+    $("#location").val(programInfo.location);
+    $("#programid").val(programInfo.programid)
+    $("#instagramUrl").val(programInfo.instagramUrl);
+    $("#facebookUrl").val(programInfo.facebookUrl);
+    $("#bereaUrl").val(programInfo.bereaUrl);
+    $('#modalProgramImage').val('');
+
+    handleFileSelection('modalProgramImage', true);
+    // Update the form action URL dynamically
+    let updateForm = $('#updateProgramForm');
+    updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
+    });
 });
 function submitRequest(method, username){
   let data = {
@@ -63,33 +84,6 @@ function submitRequest(method, username){
     }
   })
 }
-
-$(document).ready(function() {
-  $('[data-bs-toggle="modal"]').on('click', function() {
-      // Get the JSON data from the data-programinfo attribute
-      const programInfo = JSON.parse($(this).attr('data-programinfo'));
-      // Directly populate modal fields
-      $("#programName").val(programInfo.programName);
-      $("#programDescription").val(programInfo.programDescription);
-      $("#partner").val(programInfo.partner);
-      $("#contactEmail").val(programInfo.contactEmail);
-      $("#contactName").val(programInfo.contactName);
-      $("#location").val(programInfo.location);
-      $("#programid").val(programInfo.programid)
-      $("#instagramUrl").val(programInfo.instagramUrl);
-      $("#facebookUrl").val(programInfo.facebookUrl);
-      $("#bereaUrl").val(programInfo.bereaUrl);
-      
-
-      handleFileSelection('modalProgramImage', true);
-      // Update the form action URL dynamically
-      let updateForm = $('#updateProgramForm');
-      updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
-  });
-});
-
-
-  
 
 function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
