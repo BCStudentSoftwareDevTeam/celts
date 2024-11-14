@@ -58,6 +58,7 @@ $(document).ready(function(){
     $("#facebookUrl").val(programInfo.facebookUrl);
     $("#bereaUrl").val(programInfo.bereaUrl);
     $('#modalProgramImage').val('');
+    $('#modalProgramImageContainer').html('');
 
     handleFileSelection('modalProgramImage', true);
     // Update the form action URL dynamically
