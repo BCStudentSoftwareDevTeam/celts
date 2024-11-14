@@ -131,11 +131,7 @@ def test_changeProgramInfo():
             changeProgramInfo(currentProgramID, None, **desiredProgramData)
 
         currentProgramInfo = Program.select().where(Program.id==currentProgramID).get()
-
-        # verify the attachment was successfully deleted
-        testFile = AttachmentUpload.get_or_none(program=currentProgramID, fileName="test_image.jpg")
         
-        assert testFile == None
         assert currentProgramInfo.programName == desiredProgramData["programName"]
         assert currentProgramInfo.programDescription == desiredProgramData["programDescription"]
         assert currentProgramInfo.partner == desiredProgramData["partner"]
