@@ -415,13 +415,14 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    $('input.timepicker').timepicker({
-      timeFormat: 'hh:mm p',
-      scrollbar: true,
-      dropdown: true,
-      dynamic: true,
-      minTime: "08:00am",
-      maxTime: "10:00pm"
+    flatpickr("input.timepicker", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: false,
+      minTime: "08:00",
+      maxTime: "18:00",
+      minuteIncrement: 15
     });
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
