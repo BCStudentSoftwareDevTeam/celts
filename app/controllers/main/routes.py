@@ -356,9 +356,9 @@ def ban(program_id, username):
     postData = request.form
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
-    toRemoveFromTranscript = postData["removeFromTranscript"] =='true'
+    # toRemoveFromTranscript = postData["removeFromTranscript"] =='true'
     try:
-        banUser(program_id, username, banNote, banEndDate, toRemoveFromTranscript, g.current_user)
+        banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
         createActivityLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')

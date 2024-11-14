@@ -43,23 +43,41 @@ $(document).ready(function(){
     });
   });
 
-  $('.removeFromTranscriptCheckbox').click(function() {
-    var removeFromTranscript = $(this).is(':checked');
+  $('.onTranscriptCheckbox').click(function() {
+    var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
     var programID = $(this).data("programid");
+    console.log("onTranscript", onTranscript, programID)
+    //onTranscript and removeFromTrancript have inverse relationship
+    if (onTranscript == true){
+      $.ajax({
+          type: "POST",
+          url: `/profile/${username}/updateTranscript/${programID}`,
+          contentType: "application/json",
+          data: JSON.stringify({ username: username, removeFromTranscript: false, programID: programID }),
+          success: function(response) {
 
-    $.ajax({
-        type: "POST",
-        url: `/profile/${username}/updateTranscript/${programID}`,
-        contentType: "application/json",
-        data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript, programID: programID }),
-        success: function(response) {
+          },
+          error: function(error) {
+              console.error("An error occurred:", error);
+          }
+      });
+    }
 
-        },
-        error: function(error) {
-            console.error("An error occurred:", error);
-        }
-    });
+    else if (onTranscript == false){
+      $.ajax({
+          type: "POST",
+          url: `/profile/${username}/updateTranscript/${programID}`,
+          contentType: "application/json",
+          data: JSON.stringify({ username: username, removeFromTranscript: true, programID: programID }),
+          success: function(response) {
+
+          },
+          error: function(error) {
+              console.error("An error occurred:", error);
+          }
+      });
+    }
   });
 
 
@@ -100,7 +118,7 @@ $(document).ready(function(){
       type: "GET",
       success: function(response) {
         // Check if the program is marked for removal from transcript
-        $('#removeFromTranscriptCheckbox').prop('checked', response.removedFromTranscript)
+        $('#onTranscriptCheckbox').prop('checked', response.onTranscript)
       },
       error: function(error, status) {
           console.log(error, status);
@@ -133,7 +151,7 @@ $(document).ready(function(){
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
-    // else {$('#removeFromTranscriptCheckbox').prop('checked', true);}
+    
   });
 
 
@@ -147,14 +165,14 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
-    var removeFromTranscriptState = $("#removeFromTranscriptCheckbox").is(':checked');
+    // var removeFromTranscriptState = $("#removeFromTranscriptCheckbox").is(':checked');
     
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
       data: {"note": $("#banNoteTxtArea").val(),
              "endDate":$("#banEndDatepicker").val(), //Expected to be a date in this format YYYY-MM-DD
-             "removeFromTranscript": removeFromTranscriptState
+            //  "removeFromTranscript": removeFromTranscriptState
             },
       success: function(response) {
         reloadWithAccordion("programTable")

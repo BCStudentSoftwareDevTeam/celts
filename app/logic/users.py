@@ -66,7 +66,7 @@ def isBannedFromEvent(username, eventId):
     user = User.get(User.username == username)
     return not isEligibleForProgram(program, user)
 
-def banUser(program_id, username, note, banEndDate, toRemoveFromTranscript, creator):
+def banUser(program_id, username, note, banEndDate, creator):
     """
     This function creates an entry in the note table and programBan table in order
     to ban the selected user.
@@ -87,8 +87,7 @@ def banUser(program_id, username, note, banEndDate, toRemoveFromTranscript, crea
     ProgramBan.create(program = program_id,
                       user = username,
                       endDate = banEndDate,
-                      banNote = noteForDb,
-                      removeFromTranscript = toRemoveFromTranscript)
+                      banNote = noteForDb)
 
 def unbanUser(program_id, username, note, creator):
     """
