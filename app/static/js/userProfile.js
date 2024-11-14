@@ -48,6 +48,8 @@ $(document).ready(function(){
     var username = $(this).data('username');
     var programID = $(this).data("programid");
     console.log("onTranscript", onTranscript, programID)
+    console.log("banvalue", $(".banEdit").val()) //ban = not yet banned; unban = already banned
+
     //onTranscript and removeFromTrancript have inverse relationship
     if (onTranscript == true){
       $.ajax({
