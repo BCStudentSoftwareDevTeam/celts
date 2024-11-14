@@ -59,9 +59,11 @@ class FileHandler:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
                 elif self.programId:
+
                     # remove the existing file
-                    deleteFileObject = AttachmentUpload.select().where(AttachmentUpload.program == self.programId).get()
-                    self.deleteFile(deleteFileObject.id)
+                    deleteFileObject = AttachmentUpload.get_or_none(program=self.programId)
+                    if deleteFileObject:
+                        self.deleteFile(deleteFileObject.id)
 
                     # add the new file
                     fileType = file.filename.split('.')[-1]

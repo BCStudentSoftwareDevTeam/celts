@@ -113,11 +113,6 @@ def test_changeProgramInfo():
         currentProgramInfo = Program.get_by_id(newProgram.id)
         currentProgramID = currentProgramInfo.id
 
-        filePath = f"app/static/files/programattachments/{currentProgramID}.jpg"
-        
-        # create a new file
-        newFile = open(filePath, "w")
-
         AttachmentUpload.create(program=currentProgramID, fileName=f'{currentProgramID}.jpg')
 
         assert currentProgramInfo.programName == desiredProgramData["programName"]
@@ -133,7 +128,7 @@ def test_changeProgramInfo():
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(currentProgramID, newFile, **desiredProgramData)
+            changeProgramInfo(currentProgramID, None, **desiredProgramData)
 
         currentProgramInfo = Program.select().where(Program.id==currentProgramID).get()
 
