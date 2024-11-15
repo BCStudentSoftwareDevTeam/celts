@@ -218,7 +218,12 @@ function handleFileSelection(fileInputId, single=false){
         $(fileBoxId).data("file-num", $(fileBoxId).data("file-num") + 1)
       }
       else{
+        if (single){
+          $(objectContainerId).html(fileHTML)
+        }
+        else{
         msgToast("File with filename '" + file.name + "' has already been added to this event")
+        }
       }
     }
     $(fileBoxId).prop('files', getSelectedFiles());
