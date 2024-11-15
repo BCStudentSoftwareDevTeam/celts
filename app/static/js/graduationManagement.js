@@ -15,10 +15,9 @@ $(document).ready(function() {
         $('#main-filter').first().text(buttonText);
         $('#cohortFilter').text('Bonner Cohort');
 
-        $('#selectAll').text('Select All');
-        selectAllMode = true
 
-        $('#export').attr('href', `/gradStudentsxls?filterType=${filterType}`);
+
+        $('#exportFile').attr('href', `/gradStudentsxls/${filterType}`);
 
         if (filterType === 'all') {
             gradStudentsTable.search('').draw();
@@ -90,7 +89,7 @@ $(document).ready(function() {
             });
             gradStudentsTable.draw();
         }
-
+        console.log('Java Filter Type: ',filterType)
     });
 
     $('.dropdown-item-new').click(function() {

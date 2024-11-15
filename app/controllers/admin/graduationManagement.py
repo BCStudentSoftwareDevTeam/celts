@@ -61,12 +61,12 @@ def hasNotGraduated(username):
         print(e)
         return "Error Updating Graduation Status", 500
 
-@admin_bp.route("/gradStudentsxls")
-def gradsxls():
+@admin_bp.route("/gradStudentsxls/<filterType>", methods=['GET'])
+def gradsxls(filterType):
     if not g.current_user.isCeltsAdmin:
         abort(403)
-
-    filterType = request.args.get('filterType', 'all')
+    print(filterType, '#####')
+    # filterType = request.args.get('filterType', 'all')
     newfile = makeGraduatedXls(filterType)
     return send_file(open(newfile, 'rb'), download_name='GraduatedStudents.xlsx', as_attachment=True)
 

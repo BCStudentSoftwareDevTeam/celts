@@ -47,6 +47,10 @@ def makeGraduatedXls(filterType):
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
+    # filterType = "cce"
+    print('filtertype:' , filterType, "#####")
+
+
     CCEusers = getMinorProgress()
     bonnercohorts = getBonnerCohorts()
 
@@ -77,10 +81,14 @@ def makeGraduatedXls(filterType):
             prev_year = student.year
             worksheet.write(row, 0, f"{student.year} - {student.year+1}", bold)
 
+            print('Bonner student found #####')
+
         if filterType == 'cce':
             worksheet.write(row, 0, f"{student['firstName']} {student['lastName']}")
+            print('CCE student found #####')
         else:
             worksheet.write(row, 0, f"{student.firstName} {student.lastName}")
+            print(' (all) student found #####')
 
         row += 1
 
