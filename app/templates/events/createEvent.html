@@ -35,12 +35,10 @@
 {% endblock %}
 
 {% block styles %}
-  {{super()}}
-<link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all"
+  {{super()}} <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all"
   rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
-<link rel="stylesheet" href="/static/css/createEvent.css">
+  <link rel="stylesheet" href="/static/css/createEvent.css">
 {% endblock %}
 
 {% block app_content %}
@@ -110,7 +108,7 @@
         <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}"
           name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-{{pageLocation}}"
           data-page-location="{{pageLocation}}" required />
-        <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
+        <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" data-td-target="#startTime-{{pageLocation}}" hidden><i
             class="bi bi-clock"></i></span>
       </div>
     </div>
@@ -500,7 +498,8 @@
               <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime"
                 value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time"
                 id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
+              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}"
+              hidden><i
                   class="bi bi-clock"></i></span>
             </div>
           </div>

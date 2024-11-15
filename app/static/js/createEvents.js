@@ -24,6 +24,7 @@ function updateDate(obj) {
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr) {
+  console.log("hi")
   var formattedTime;
   if (parseInt(timeStr.slice(0, 2)) > 12) {
     formattedTime = "0" + String(parseInt(timeStr.slice(0, 2)) - 12) + timeStr.slice(2) + " PM";
@@ -91,8 +92,20 @@ function isDateInPast(dateString) {
   return date < today;
 }
 
-function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
+function initializeFlatpickr(obj) {
+  flatpickr(obj, {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "h:i K",
+    time_24hr: false,
+    minTime: "08:00",
+    maxTime: "22:00",
+    minuteIncrement: 15,
+    allowInput: true 
+  });
+}
 
+function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
   let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   // insert values for the newly created row
   if (eventName) {clonedMultipleOffering.find('.multipleOfferingNameField').val(eventName)}
@@ -103,7 +116,10 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
 
   $("#multipleOfferingSlots").append(clonedMultipleOffering);
   pendingmultipleEvents.push(clonedMultipleOffering);
-
+  if (navigator.userAgent.indexOf("Chrome") == -1) {
+    initializeFlatpickr(clonedMultipleOffering.find('.multipleOfferingEndTime'))
+    initializeFlatpickr(clonedMultipleOffering.find('.multipleOfferingEndTime'))
+  }
   //this is so that the trash icon can be used to delete the event
   clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
     let attachedRow = $(this).closest(".eventOffering")
@@ -415,15 +431,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    flatpickr("input.timepicker", {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: "H:i",
-      time_24hr: false,
-      minTime: "08:00",
-      maxTime: "18:00",
-      minuteIncrement: 15
-    });
+    initializeFlatpickr(".timepicker")
+    
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 
