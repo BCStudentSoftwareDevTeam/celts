@@ -49,37 +49,20 @@ $(document).ready(function(){
     var programID = $(this).data("programid");
     console.log("onTranscript", onTranscript, programID)
     console.log("banvalue", $(".banEdit").val()) //ban = not yet banned; unban = already banned
+    
+    $.ajax({
+        type: "POST",
+        url: `/profile/${username}/updateTranscript/${programID}`,
+        contentType: "application/json",
+        data: JSON.stringify({ username: username, removeFromTranscript: !onTranscript, programID: programID }),
+        success: function(response) {
 
-    //onTranscript and removeFromTrancript have inverse relationship
-    if (onTranscript == true){
-      $.ajax({
-          type: "POST",
-          url: `/profile/${username}/updateTranscript/${programID}`,
-          contentType: "application/json",
-          data: JSON.stringify({ username: username, removeFromTranscript: false, programID: programID }),
-          success: function(response) {
-
-          },
-          error: function(error) {
-              console.error("An error occurred:", error);
-          }
-      });
-    }
-
-    else if (onTranscript == false){
-      $.ajax({
-          type: "POST",
-          url: `/profile/${username}/updateTranscript/${programID}`,
-          contentType: "application/json",
-          data: JSON.stringify({ username: username, removeFromTranscript: true, programID: programID }),
-          success: function(response) {
-
-          },
-          error: function(error) {
-              console.error("An error occurred:", error);
-          }
-      });
-    }
+        },
+        error: function(error) {
+            console.error("An error occurred:", error);
+        }
+    });
+    
   });
 
 
@@ -115,17 +98,19 @@ $(document).ready(function(){
      * Ban Functionality
      */
   $(".banEdit").click(function() {
-    $.ajax({
-      url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
-      type: "GET",
-      success: function(response) {
-        // Check if the program is marked for removal from transcript
-        $('#onTranscriptCheckbox').prop('checked', response.onTranscript)
-      },
-      error: function(error, status) {
-          console.log(error, status);
-      }
-    });
+    
+    // $.ajax({
+    //   url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
+    //   type: "GET",
+    //   success: function(response) {
+    //     // Check if the program is marked for removal from transcript
+    //     $('#onTranscriptCheckbox').prop('checked', !(response.removedFromTranscript))
+        
+    //   },
+    //   error: function(error, status) {
+    //       console.log(error, status);
+    //   }
+    // });
 
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal

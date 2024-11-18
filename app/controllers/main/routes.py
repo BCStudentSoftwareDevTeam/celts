@@ -179,6 +179,8 @@ def viewUsersProfile(username):
 
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
+        
+        
 
         eligibilityTable = []
         
@@ -198,7 +200,8 @@ def viewUsersProfile(username):
                                      "completedTraining": allTrainingsComplete,
                                      "trainingList": userParticipatedTrainingEvents,
                                      "isNotBanned": (not banNotes),
-                                     "banNote": noteForDict})
+                                     "banNote": noteForDict}),
+
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
