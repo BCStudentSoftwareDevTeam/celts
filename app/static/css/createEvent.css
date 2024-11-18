@@ -17,6 +17,9 @@
     margin-right: auto;
 }
 
+.deleteOfferingBtn{
+    border-radius: 5px;  
+    position:relative; 
 .deleteRow{
     border-radius: 5px;
     position:relative;

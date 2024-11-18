@@ -130,7 +130,7 @@ def events(selectedTerm, activeTab, programID):
             "toggleStatus": toggleState
         })
     
-    return render_template("/events/event_list.html",
+    return render_template("/events/eventList.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
