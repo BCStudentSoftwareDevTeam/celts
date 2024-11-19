@@ -92,9 +92,13 @@ def deleteAllEventsInSeries(eventId):
         if event:
             if event.seriesId:
                 seriesId = event.seriesId
-            allSeriesEvents = list(Event.select(Event.id).where(Event.seriesId == seriesId).order_by(Event.startDate))
-            eventId = allSeriesEvents[0].id
-        return deleteEventAndAllFollowing(eventId)
+                allSeriesEvents = list(Event.select(Event.id).where(Event.seriesId == seriesId).order_by(Event.startDate))
+                eventId = allSeriesEvents[0].id
+                return deleteEventAndAllFollowing(eventId)
+            else:
+                raise ValueError(f"Event with id {event.id} does not belong to a series (seriesId is None).")
+        else:
+            raise ValueError(f"Event does not exist.")
         
 def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     """

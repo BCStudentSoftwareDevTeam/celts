@@ -385,7 +385,7 @@ def undoEvent():
         for eventId in eventIds: 
             Event.update({Event.deletionDate: None, Event.deletedBy: None}).where(Event.id == eventId).execute()
             event = Event.get_or_none(Event.id == eventId)
-        repeatingEvents = list(Event.select().where((Event.isRepeating) & (Event.deletionDate == None)).order_by(Event.id))          
+        repeatingEvents = list(Event.select().where((Event.seriesId == event.seriesId) & (Event.isRepeating) & (Event.deletionDate == None)).order_by(Event.id))          
         if event.isRepeating:
             nameCounter = 1
             for repeatingEvent in repeatingEvents:
