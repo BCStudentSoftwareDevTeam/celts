@@ -190,6 +190,13 @@ def viewUsersProfile(username):
                                     .where(ProgramBan.user == volunteer,
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
+            onTranscriptQuery = list(ProgramBan.select(ProgramBan)
+                                .where(ProgramBan.user == volunteer, 
+                                      ProgramBan.program == program,
+                                      ProgramBan.unbanNote.is_null(), 
+                                      ProgramBan.removeFromTranscript == 0))
+            
+            onTranscript = True if len(onTranscriptQuery) > 0 else False
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
             try:
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
@@ -200,7 +207,8 @@ def viewUsersProfile(username):
                                      "completedTraining": allTrainingsComplete,
                                      "trainingList": userParticipatedTrainingEvents,
                                      "isNotBanned": (not banNotes),
-                                     "banNote": noteForDict}),
+                                     "banNote": noteForDict,
+                                     "onTranscript": onTranscript}),
 
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
 
@@ -534,7 +542,7 @@ def updateTranscript(username, program_id):
 
     # Update the ProgramBan object matching the program_id and username
     try:
-        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user) & (ProgramBan.unbanNote.is_null()))
         bannedProgramsForUser.removeFromTranscript = removeFromTranscript
         bannedProgramsForUser.save()
         return jsonify({'status': 'success'})

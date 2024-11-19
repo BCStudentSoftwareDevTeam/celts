@@ -98,20 +98,6 @@ $(document).ready(function(){
      * Ban Functionality
      */
   $(".banEdit").click(function() {
-    
-    // $.ajax({
-    //   url: `/profile/${$(this).data("username")}/removeFromTranscript/${$(this).data("programid")}`,
-    //   type: "GET",
-    //   success: function(response) {
-    //     // Check if the program is marked for removal from transcript
-    //     $('#onTranscriptCheckbox').prop('checked', !(response.removedFromTranscript))
-        
-    //   },
-    //   error: function(error, status) {
-    //       console.log(error, status);
-    //   }
-    // });
-
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal

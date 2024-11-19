@@ -230,11 +230,8 @@
                     </td>
                     
                     {% if g.current_user.isCeltsAdmin %}
-                      {% if row.isNotBanned %}
-                        <td><input class="form-check-input onTranscriptCheckbox" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}} disabled/></td>
-                      {% else %}
-                        <td><input class="form-check-input onTranscriptCheckbox" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}"/></td>
-                      {% endif %}
+                        <td><input class="form-check-input onTranscriptCheckbox" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
+                          data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/></td>
                     {% endif %}
                     
                     
