@@ -367,7 +367,7 @@ def ban(program_id, username):
     postData = request.form
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
-    # toRemoveFromTranscript = postData["removeFromTranscript"] =='true'
+    
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
@@ -508,22 +508,6 @@ def serviceTranscript(username):
                             totalHours = totalHours,
                             startDate = startDate,
                             userData = user)
-
-@main_bp.route('/profile/<username>/removeFromTranscript/<program_id>', methods=['GET'])
-def isRemovedFromTranscript(username, program_id):
-    user = User.get_or_none(User.username == username)
-    if user is None:
-        abort(404)
-
-    try:
-        bannedProgramsForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
-        # If the user is banned, check if it's marked for removal from transcript
-        if bannedProgramsForUser.removeFromTranscript:
-            return jsonify({'removedFromTranscript': True})
-        else:
-            return jsonify({'removedFromTranscript': False})
-    except ProgramBan.DoesNotExist:
-        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
 
 @main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
 def updateTranscript(username, program_id):

@@ -47,9 +47,6 @@ $(document).ready(function(){
     var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
     var programID = $(this).data("programid");
-    console.log("onTranscript", onTranscript, programID)
-    console.log("banvalue", $(".banEdit").val()) //ban = not yet banned; unban = already banned
-    
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -138,14 +135,12 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
-    // var removeFromTranscriptState = $("#removeFromTranscriptCheckbox").is(':checked');
     
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
       data: {"note": $("#banNoteTxtArea").val(),
              "endDate":$("#banEndDatepicker").val(), //Expected to be a date in this format YYYY-MM-DD
-            //  "removeFromTranscript": removeFromTranscriptState
             },
       success: function(response) {
         reloadWithAccordion("programTable")
