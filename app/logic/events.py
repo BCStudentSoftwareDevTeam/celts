@@ -97,8 +97,6 @@ def deleteAllEventsInSeries(eventId):
                 return deleteEventAndAllFollowing(eventId)
             else:
                 raise ValueError(f"Event with id {event.id} does not belong to a series (seriesId is None).")
-        else:
-            raise ValueError(f"Event does not exist.")
         
 def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     """
@@ -484,25 +482,6 @@ def preprocessEventData(eventData):
     # Process seriesData
     if 'seriesData' not in eventData:
         eventData['seriesData'] = json.dumps([])
-    elif type(eventData['seriesData']) is str:
-        try:
-            seriesData = json.loads(eventData['seriesData'])
-            eventData['seriesData'] = seriesData
-            if type(seriesData) != list:
-                eventData['seriesData'] = json.dumps([])
-        except json.decoder.JSONDecodeError as e:
-            eventData['seriesData'] = json.dumps([])
-    if type(eventData['seriesData']) is list:
-        # validate the list data. Make sure there is 'eventName', 'startDate', 'timeStart', 'timeEnd', and 'isDuplicate' data
-        seriesData = eventData['seriesData']
-        for offeringDatum in seriesData:    
-            for attribute in ['eventName', 'startDate', 'timeStart', 'timeEnd']:
-                if type(offeringDatum.get(attribute)) != str:
-                    offeringDatum[attribute] = ''
-            if type(offeringDatum.get('isDuplicate')) != bool:
-                    offeringDatum['isDuplicate'] = False
-
-        eventData['seriesData'] = json.dumps(eventData['seriesData'])
     
     # Process terms
     if 'term' in eventData:

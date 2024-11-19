@@ -100,8 +100,6 @@ def test_event_end():
         assert testingEvent.isPastStart == True
         transaction.rollback()
 
-
-
 @pytest.mark.integration
 def test_eventTemplate_model():
 
@@ -246,67 +244,6 @@ def test_preprocessEventData_requirement():
         assert eventData['certRequirement'] == CertificationRequirement.get_by_id(3)
 
         transaction.rollback()
-
-@pytest.mark.integration
-def test_preprocessEventData_seriesData():
-    # When there is no seriesData we should get a jsonified empty list
-    eventData = preprocessEventData({})
-    assert eventData['seriesData'] == json.dumps([])
-
-    # Test parsing from list
-    offeringData = [
-                        {
-                            'eventName': 'Offering 1',
-                            'startDate': 'Today',
-                            'timeStart': '01:00 PM',
-                            'timeEnd': '02:00 PM',
-                            'isDuplicate': False
-                        }
-                    ]
-    eventData = preprocessEventData({'seriesData': offeringData})
-    assert eventData['seriesData'] == json.dumps(offeringData)
-
-    # Test when data is missing/invalid
-    offeringData = [
-                        {}, # Empty event offering should be filled with defaults
-                        {
-                            'eventName': 'Offering 1',
-                            'startDate': 'Today',
-                            'timeStart': 1, # Wrong format and type
-                            #'timeEnd': '02:00 PM'  (No end time provided)
-                            'isDuplicate': True
-                        }
-                    ]
-    eventData = preprocessEventData({'seriesData': offeringData})
-    offering = json.loads(eventData['seriesData'])[1]
-    assert offering['eventName'] == 'Offering 1'
-    assert offering['startDate'] == 'Today'
-    assert offering['timeStart'] == ''
-    assert offering['timeEnd'] == ''
-    assert offering['isDuplicate'] == True
-    defaultOffering = json.loads(eventData['seriesData'])[0]
-    assert defaultOffering['eventName'] == ''
-    assert defaultOffering['startDate'] == ''
-    assert defaultOffering['timeStart'] == ''
-    assert defaultOffering['timeEnd'] == ''
-    assert defaultOffering['isDuplicate'] == False
-    
-
-
-    # Test when data is already valid and stringified
-    offeringData = json.dumps([
-                        {
-                            'eventName': 'Offering 1',
-                            'startDate': 'Today',
-                            'timeStart': '01:00 PM',
-                            'timeEnd': '02:00 PM',
-                            'isDuplicate': False
-                        }
-                    ])
-    eventData = preprocessEventData({'seriesData': offeringData})
-    offering = json.loads(eventData['seriesData'])[0]
-    assert offering == json.loads(offeringData)[0]
-
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():
