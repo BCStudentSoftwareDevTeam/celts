@@ -950,7 +950,7 @@ def test_upcomingEvents():
 
         # Programs the user is banned from do not have their events showing up sin
         # their upcoming events
-        banUser(programForBanning.id, user.username, "Test banned program", testDate, True, "ramsayb2")
+        banUser(programForBanning.id, user.username, "Test banned program", testDate, "ramsayb2")
         eventsUserNotBannedFrom = getUpcomingEventsForUser(user, asOf = testDate)
         assert newBannedProgramEvent in eventsInUserInterestedProgram
         assert newBannedProgramEvent not in eventsUserNotBannedFrom
