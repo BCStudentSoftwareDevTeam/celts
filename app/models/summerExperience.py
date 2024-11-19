@@ -8,7 +8,7 @@ class SummerExperience(baseModel):
     summerYear = CharField()
     roleDescription = TextField()
     experienceType = CharField()
-    CceMinorContentArea = TextField()  # Store as comma-separated values or use a related table if needed
+    contentAreas = TextField()  # Store as comma-separated values or use a related table if needed
     experienceHoursOver300 = BooleanField()
     experienceHoursBelow300 = CharField(null=True)  # Optional for hours if less than 300
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")], default='Pending')
@@ -19,7 +19,5 @@ class SummerExperience(baseModel):
     supervisorName = CharField()
     supervisorPhone = CharField()
     supervisorEmail = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
+    createdOn = DateTimeField(default=datetime.datetime.now)
 
-    class Meta:
-        db_table = 'summerExperience'
