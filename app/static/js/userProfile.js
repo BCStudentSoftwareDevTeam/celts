@@ -47,7 +47,7 @@ $(document).ready(function(){
     var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
     var programID = $(this).data("programid");
-    console.log(programID);
+    
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -62,7 +62,7 @@ $(document).ready(function(){
     });
 
     if (onTranscript){
-      displayTranscriptStatus("Show on transcript", programID);
+      displayTranscriptStatus("Showing on transcript", programID);
     }
     else {
       displayTranscriptStatus("Removed from transcript", programID);
@@ -73,7 +73,6 @@ $(document).ready(function(){
     $('#transcriptStatus-' + programID).addClass();
     $('#transcriptStatus-' + programID).text(status);
   }
-
 
   function changeAction(e){
     let profileAction = $(this).val()

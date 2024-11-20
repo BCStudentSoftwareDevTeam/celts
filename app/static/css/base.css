@@ -128,5 +128,6 @@ form {
 .transcriptStatus {
   font-size: 12px;
   margin-left: 3px; 
-  display: inline;
+  display: inline-block;
+  width: 80px;
 }
