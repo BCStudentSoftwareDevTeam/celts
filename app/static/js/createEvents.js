@@ -116,14 +116,14 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   $("#multipleOfferingSlots").append(clonedMultipleOffering);
   pendingmultipleEvents.push(clonedMultipleOffering);
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    initializeFlatpickr('.flatpickr')
+    initializeFlatpickr(clonedMultipleOffering.find('#flatpickr'))
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 
-    var formattedStartTime = format24to12HourTime($(".multipleOfferingStartTime").prop("defaultValue"));
-    var formattedEndTime = format24to12HourTime($(".multipleOfferingEndTime").prop("defaultValue"));
-    $(".multipleOfferingStartTime").val(formattedStartTime);
-    $(".multipleOfferingEndTime").val(formattedEndTime);
+    var formattedStartTime = format24to12HourTime(clonedMultipleOffering.find(".multipleOfferingStartTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime(clonedMultipleOffering.find(".multipleOfferingEndTime").prop("defaultValue"));
+    clonedMultipleOffering.find(".multipleOfferingStartTime").val(formattedStartTime);
+    clonedMultipleOffering.find(".multipleOfferingEndTime").val(formattedEndTime);
   }
   //this is so that the trash icon can be used to delete the event
   clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
