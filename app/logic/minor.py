@@ -28,14 +28,11 @@ def createSummerExperience(username, form_data):
         user = User.get(User.username == username)
         content_area = ', '.join(form_data.getlist('contentArea'))  # Combine multiple content areas
 
-        # Determine the experience type
-        experience_type = form_data['experienceType']
-        if experience_type == 'Other':
-            other_experience_description = form_data.get('otherExperienceDescription', '')
-            if not other_experience_description:
-                raise ValueError("Other experience description is required.")
-            experience_type = other_experience_description
-
+        # Directly assign the experience type
+        experience_type = form_data['experienceType'] if form_data['experienceType'] != 'Other' else form_data.get('otherExperienceDescription', '')
+        if experience_type == '':  # Check if the otherExperienceDescription is empty when required
+            raise ValueError("Other experience description is required.")
+        
         SummerExperience.create(
             user=user,
             studentName=form_data['studentName'],

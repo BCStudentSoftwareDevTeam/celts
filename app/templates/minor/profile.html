@@ -241,9 +241,9 @@
         
                     <div class="form-group">
                         <label for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
-                        <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" {% if summer_experience.experienceHoursOver300 %}checked{% endif %} onclick="toggleTextarea()">
+                        <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" {% if summer_experience.experienceHoursOver300 %}checked{% endif %}>
                         <label for="yes300hours">Yes</label><br>
-                        <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" {% if not summer_experience.experienceHoursOver300 %}checked{% endif %} onclick="toggleTextarea()">
+                        <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" {% if not summer_experience.experienceHoursOver300 %}checked{% endif %}>
                         <label for="no300hours">No</label>
                         <div id="hoursBelow300Container" {% if summer_experience.experienceHoursOver300 %}style="display:none;"{% endif %}>
                             <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks.">{{ summer_experience.experienceHoursBelow300 }}</textarea>
