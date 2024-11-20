@@ -62,11 +62,10 @@ $(document).ready(function(){
     });
 
     if (onTranscript){
-      displayTranscriptStatus("checked", programID);
-      console.log("HH", '#transcriptStatus-' + programID)
+      displayTranscriptStatus("Show on transcript", programID);
     }
     else {
-      displayTranscriptStatus("unchecked", programID);
+      displayTranscriptStatus("Removed from transcript", programID);
     }
   });
 

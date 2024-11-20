@@ -124,3 +124,9 @@ form {
 .saveBtnDiv {
   text-align: center;
 }
+
+.transcriptStatus {
+  font-size: 12px;
+  margin-left: 3px; 
+  display: inline;
+}
