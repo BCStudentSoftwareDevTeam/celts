@@ -1,6 +1,5 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
-
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
 function updateDate(obj) {
@@ -94,6 +93,7 @@ function isDateInPast(dateString) {
 function initializeFlatpickr(obj) {
   flatpickr(obj, {
     enableTime: true,
+    wrap: true,
     noCalendar: true,
     dateFormat: "h:i K",
     time_24hr: false,
@@ -116,7 +116,14 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   $("#multipleOfferingSlots").append(clonedMultipleOffering);
   pendingmultipleEvents.push(clonedMultipleOffering);
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    initializeFlatpickr(clonedMultipleOffering.find('.flatpickr'))
+    initializeFlatpickr('#flatpickr')
+    $(".timepicker").prop("type", "text");
+    $(".timeIcons").prop("hidden", false);
+
+    var formattedStartTime = format24to12HourTime($(".multipleOfferingStartTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime($(".multipleOfferingEndTime").prop("defaultValue"));
+    $(".multipleOfferingStartTime").val(formattedStartTime);
+    $(".multipleOfferingEndTime").val(formattedEndTime);
   }
   //this is so that the trash icon can be used to delete the event
   clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
