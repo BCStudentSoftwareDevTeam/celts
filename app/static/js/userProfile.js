@@ -47,6 +47,7 @@ $(document).ready(function(){
     var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
     var programID = $(this).data("programid");
+    console.log(programID);
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -59,8 +60,20 @@ $(document).ready(function(){
             console.error("An error occurred:", error);
         }
     });
-    
+
+    if (onTranscript){
+      displayTranscriptStatus("checked", programID);
+      console.log("HH", '#transcriptStatus-' + programID)
+    }
+    else {
+      displayTranscriptStatus("unchecked", programID);
+    }
   });
+
+  function displayTranscriptStatus(status, programID) {
+    $('#transcriptStatus-' + programID).addClass();
+    $('#transcriptStatus-' + programID).text(status);
+  }
 
 
   function changeAction(e){
