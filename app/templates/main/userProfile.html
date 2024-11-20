@@ -217,10 +217,10 @@
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
-                      <td class="programBan"> Eligible
+                      <td class="programBan pt-3"> Eligible
                       {% set label = "Ban" %}
                     {% else %}
-                      <td class="programBan text-danger"> Banned
+                      <td class="programBan text-danger pt-3"> Banned
                       {% set label = "Unban" %}
                     {% endif %}
 
@@ -232,7 +232,7 @@
                     
                     {% if g.current_user.isCeltsAdmin %}
                         <td>
-                          <input class="form-check-input onTranscriptCheckbox " name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
+                          <input class="form-check-input onTranscriptCheckbox ms-3" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
                           <div id="transcriptStatus-{{row.program.id}}" class="transcriptStatus"></div>
                         </td>
