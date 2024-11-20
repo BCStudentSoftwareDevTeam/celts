@@ -116,7 +116,8 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   $("#multipleOfferingSlots").append(clonedMultipleOffering);
   pendingmultipleEvents.push(clonedMultipleOffering);
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    initializeFlatpickr(clonedMultipleOffering.find('#flatpickr'))
+    initializeFlatpickr(clonedMultipleOffering.find('#flatpickr1'))
+    initializeFlatpickr(clonedMultipleOffering.find('#flatpickr2'))
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 

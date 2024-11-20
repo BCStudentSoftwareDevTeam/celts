@@ -489,7 +489,7 @@
           <div class="form-group col-md-3">
             <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start
                 Time</strong></label>
-            <div class="input-group flatpickr" id="flatpickr">
+            <div class="input-group flatpickr" id="flatpickr1">
               {% if eventData.timeStart %}
                 {% set startTime = eventData.timeStart %}
               {% else %}
@@ -505,7 +505,7 @@
           </div>
           <div class='form-group col-md-3'>
             <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-            <div class="input-group flatpickr">
+            <div class="input-group flatpickr" id="flatpickr2">
               {% if eventData.timeEnd %}
                 {% set endTime = eventData.timeEnd %}
               {%else%}
