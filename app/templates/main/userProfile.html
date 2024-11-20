@@ -225,12 +225,14 @@
                     {% endif %}
 
                     {% if g.current_user.isCeltsAdmin %}
-                      <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">
+                        <i class="bi bi-pencil"></i></button>
                     {% endif %}
                     </td>
                     
                     {% if g.current_user.isCeltsAdmin %}
-                        <td><input class="form-check-input onTranscriptCheckbox" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
+                        <td>
+                          <input class="form-check-input onTranscriptCheckbox " name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
                           <div id="transcriptStatus-{{row.program.id}}" class="transcriptStatus"></div>
                         </td>

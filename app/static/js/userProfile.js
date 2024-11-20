@@ -62,16 +62,23 @@ $(document).ready(function(){
     });
 
     if (onTranscript){
-      displayTranscriptStatus("Showing on transcript", programID);
+      displayTranscriptStatus("Added!", programID, "green");
     }
     else {
-      displayTranscriptStatus("Removed from transcript", programID);
+      displayTranscriptStatus("Removed!", programID, "red");
     }
   });
 
-  function displayTranscriptStatus(status, programID) {
-    $('#transcriptStatus-' + programID).addClass();
+  function displayTranscriptStatus(status, programID, color) {
+    $('#transcriptStatus-' + programID).show();
     $('#transcriptStatus-' + programID).text(status);
+    $('#transcriptStatus-' + programID).css('color', color);
+    //show for 0.5s and fade out last for 0.5s
+    setTimeout(function() {
+      $('#transcriptStatus-' + programID).fadeOut(500, function() {
+          $(this).text(''); 
+      });
+    }, 500);
   }
 
   function changeAction(e){
