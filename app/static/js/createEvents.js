@@ -34,9 +34,9 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-function format24to12HourTime(timeStr) {
+function format12to24HourTime(timeStr) {
   // break the time into hours, minutes, and meridian (AM, PM)
-  const [timePart, meridian] = time.split(" ");
+  const [timePart, meridian] = timeStr.split(" ");
   let [hours, minutes] = timePart.split(":").map(Number);
 
   if (meridian === "PM" && hours !== 12) {
@@ -195,7 +195,15 @@ $('#multipleOfferingSave').on('click', function() {
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
-    if(startTimeInputs[i].value < endTimeInputs[i].value){
+    let startTime = startTimeInputs[i].value
+    let endTime = endTimeInputs[i].value
+    
+    if (navigator.userAgent.indexOf("Chrome") == -1) {
+      startTime = format12to24HourTime(startTime)
+      endTime = format12to24HourTime(endTime)
+    }
+
+    if(startTime < endTime){
       $(startTimeInputs[i]).removeClass('border-red');
       $(endTimeInputs[i]).removeClass('border-red');
     } else {
@@ -251,11 +259,17 @@ $('#multipleOfferingSave').on('click', function() {
   else {
     let offerings = [];
     eventOfferings.each(function(index, element) {
+      let startTime = $(element).find('.multipleOfferingStartTime').val() 
+      let endTime = $(element).find('.multipleOfferingEndTime').val()
+      if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime)
+        endTime = format12to24HourTime(endTime)
+      }
       offerings.push({
         eventName: $(element).find('.multipleOfferingNameField').val(),
         eventDate: $(element).find('.multipleOfferingDatePicker').val(),
-        startTime: $(element).find('.multipleOfferingStartTime').val(),
-        endTime: $(element).find('.multipleOfferingEndTime').val()
+        startTime: startTime,
+        endTime: endTime
       });
     });
 
