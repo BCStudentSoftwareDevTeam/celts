@@ -34,6 +34,24 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
+function format24to12HourTime(timeStr) {
+  // break the time into hours, minutes, and meridian (AM, PM)
+  const [timePart, meridian] = time.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+
+  if (meridian === "PM" && hours !== 12) {
+      hours += 12;
+  } else if (meridian === "AM" && hours === 12) {
+      hours = 0; // midnight
+  }
+
+  // format hours and minutes to always be 2 digits
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}`;
+}
+
 function calculateRecurringEventFrequency(){
   var eventDatesAndName = {name:$("#inputEventName").val(),
                             isRecurring: true,
