@@ -231,7 +231,7 @@
                     </td>
                     
                     {% if g.current_user.isCeltsAdmin %}
-                        <td>
+                        <td class="onTranscript">
                           <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
                           <div id="transcriptStatus-{{row.program.id}}" class="transcriptStatus"></div>

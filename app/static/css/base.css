@@ -130,3 +130,7 @@ form {
   margin-left: 5px; 
   display: inline-block;
 }
+
+.onTranscript {
+  width: 147px;
+}
