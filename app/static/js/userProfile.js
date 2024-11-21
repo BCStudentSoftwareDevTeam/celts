@@ -62,7 +62,7 @@ $(document).ready(function(){
     });
 
     if (onTranscript){
-      displayTranscriptStatus("Added!", programID, "green");
+      displayTranscriptStatus("Added!", programID, "blue");
     }
     else {
       displayTranscriptStatus("Removed!", programID, "red");
