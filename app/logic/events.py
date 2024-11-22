@@ -46,12 +46,15 @@ def deleteEvent(eventId):
     if event:
         if event.recurringId:
             recurringId = event.recurringId
-            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
+            recurringEvents = list(Event.select().where(Event.recurringId==recurringId, Event.deletionDate.is_null(True)).order_by(Event.id)) # orders for tests
             eventDeleted = False
-
+            print([i.name for i in recurringEvents])
             # once the deleted event is detected, change all other names to the previous event's name
             for recurringEvent in recurringEvents:
+                print("recurringEvent:", recurringEvent.name)
+                print("eventDeleted:", eventDeleted)
                 if eventDeleted:
+                    print("newEventName", newEventName)
                     Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
                     newEventName = recurringEvent.name
 
