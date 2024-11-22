@@ -506,7 +506,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   const eventId = $("#eventId").val();
   if (eventId) {
-    const selectedCohorts = getSelectedCohorts(eventId);
+    const selectedCohorts = selectedCohorts(eventId);
     
     $('input[name="cohorts[]"]').each(function() {
       const cohortYear = $(this).val();
@@ -525,19 +525,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
     getCohortStatus(eventId);
   }
 });
-
-// //const STORAGE_KEY = 'selectedCohorts';
-
-// //function saveSelectedCohorts(eventId, cohorts) {
-//  // const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-//  // storage[eventId] = cohorts;
-//   localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
-// }
-
-// function getSelectedCohorts(eventId) {
-//   const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-//   return storage[eventId] || [];
-// }
 
 
 function getCohortStatus(eventId) {
