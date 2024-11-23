@@ -85,7 +85,6 @@
     <div class='input-group date endDate' id="endDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
       <input autocomplete="off" type='text' class="form-control datePicker endDatePicker"
         id='endDatePicker-{{pageLocation}}'
-        value="{{eventData.endDate.strftime('%Y-%m-%d') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}"
         name="endDate" placeholder="Pick an end date" data-page-location="{{pageLocation}}">
       <div class="input-group-text" id="calendarIconEnd-{{pageLocation}}">
         <span><i class="bi bi-calendar-plus-fill"></i></span>

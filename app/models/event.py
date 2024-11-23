@@ -18,7 +18,6 @@ class Event(baseModel):
     isAllVolunteerTraining = BooleanField(default=False)
     rsvpLimit = IntegerField(null=True)
     startDate = DateField()
-    endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
     multipleOfferingId = IntegerField(null=True)
     contactEmail = CharField(null=True)
@@ -47,7 +46,7 @@ class Event(baseModel):
 
     @property
     def isPastEnd(self):
-        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd) 
+        return datetime.now() >= datetime.combine(self.startDate, self.timeEnd) 
 
     @property
     def isRecurring(self):

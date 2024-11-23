@@ -87,7 +87,6 @@ def test_getProgramEngagementHistory():
                                     isTraining = 0,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
                                     isCanceled = False,
                                     program = 2)
         
@@ -129,7 +128,6 @@ def test_getCommunityEngagementByTerm():
                                     isTraining = 0,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
                                     isCanceled = False,
                                     program = 2)
         

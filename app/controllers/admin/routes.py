@@ -226,7 +226,6 @@ def renewEvent(eventId):
                     'timeEnd': formData['timeEnd'],
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
-                    'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
                     'isRecurring': bool(priorEvent['recurringId']),
                     'isMultipleOffering': bool(priorEvent['multipleOfferingId']),
                     })

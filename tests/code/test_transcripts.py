@@ -31,7 +31,6 @@ def setup():
                                     isTraining = 1,
                                     isService = 0,
                                     startDate =  "2021-12-12",
-                                    endDate =  "2021-12-13",
                                     recurringId = None,
                                     program=2)
 
@@ -52,7 +51,6 @@ def setup():
                                   isTraining = 0,
                                   isService = 0,
                                   startDate =  "2021-12-12",
-                                  endDate =  "2021-12-13",
                                   recurringId = None,
                                   program= 5)
     
@@ -92,7 +90,6 @@ def setup():
                                    isTraining = 0,
                                    isService = 0,
                                    startDate =  "2021-12-12",
-                                   endDate =  "2021-12-13",
                                    recurringId = None,
                                    program= 1)
 
@@ -113,7 +110,6 @@ def setup():
                                       isTraining = 0,
                                       isService = 0,
                                       startDate =  "2021-12-12",
-                                      endDate =  "2021-12-13",
                                       recurringId = None,
                                       program = 9)
     

@@ -222,7 +222,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
                     "rsvpLimit": newEventData['rsvpLimit'],
-                    "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
                 }
@@ -269,7 +268,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
                                     Event.term == term, Event.deletionDate == None,
-                                    (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
+                                    (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
     
@@ -413,7 +412,7 @@ def validateNewEventData(data):
     if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRecurring'], data['isMultipleOffering']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
-    if data['isRecurring'] and data['endDate']  <  data['startDate']:
+    if data['isRecurring'] and data['endDate'] < data['startDate']:
         return (False, "Event start date is after event end date.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -532,10 +531,6 @@ def preprocessEventData(eventData):
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
     
-    # If we aren't recurring, all of our events are single-day or mutliple offerings, which also have the same start and end date
-    if not eventData['isRecurring']:
-        eventData['endDate'] = eventData['startDate']
-    
     # Process multipleOfferingData
     if 'multipleOfferingData' not in eventData:
         eventData['multipleOfferingData'] = json.dumps([])
@@ -641,7 +636,7 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     currentMorning = currentDatetime.replace(hour=0, minute=0)
 
     eventStart = datetime.combine(event.startDate, event.timeStart)
-    eventEnd = datetime.combine(event.endDate, event.timeEnd)
+    eventEnd = datetime.combine(event.startDate, event.timeEnd)
     
     if eventEnd < currentDatetime:
         return "Already passed"
