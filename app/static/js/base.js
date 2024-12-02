@@ -222,7 +222,7 @@ function handleFileSelection(fileInputId, single=false){
           $(objectContainerId).html(fileHTML)
         }
         else{
-        msgToast("File with filename '" + file.name + "' has already been added to this event")
+          msgToast("File with filename '" + file.name + "' has already been added to this event")
         }
       }
     }

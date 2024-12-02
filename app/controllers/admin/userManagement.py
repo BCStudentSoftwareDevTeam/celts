@@ -65,16 +65,9 @@ def updateProgramInfo(programID):
             uploadedFile = request.files.get('modalProgramImage')
             changeProgramInfo(programID, uploadedFile, **programInfo) 
 
-            associatedAttachments = list(AttachmentUpload.select().where(AttachmentUpload.program == programID).execute()) 
-           
-            filePaths = FileHandler(programId=programID).retrievePath(associatedAttachments) 
-           
-          
-            file_paths = {filename: path_info[0] for filename, path_info in filePaths.items()} 
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
-            print("error: ", e)
             flash('Error while updating program info.','warning') 
             abort(500,'Error while updating program.')
     abort(403)

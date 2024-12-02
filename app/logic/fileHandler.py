@@ -69,8 +69,8 @@ class FileHandler:
                     fileType = file.filename.split('.')[-1]
                     fileName = f"{self.programId}.{fileType}"
                     AttachmentUpload.create(program=self.programId, fileName=fileName)
-                    current_programID = fileName
-                    saveFileToFilesystem = current_programID
+                    currentProgramID = fileName
+                    saveFileToFilesystem = currentProgramID
 
                 else:
                     saveFileToFilesystem = file.filename
