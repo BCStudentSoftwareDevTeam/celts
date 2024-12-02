@@ -88,8 +88,6 @@ function isDateInPast(dateString, timeString) {
   const combineDateTime = `${dateString}T${timeString}:00`;
   const setDate = new Date(combineDateTime).getTime();
   const today = Date.now();
-  console.log(setDate)
-  console.log(today)
   return setDate < today;
 }
 
