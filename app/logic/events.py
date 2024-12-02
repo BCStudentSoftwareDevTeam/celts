@@ -49,7 +49,6 @@ def deleteEvent(eventId):
             seriesId = event.seriesId
             repeatingEvents = list(Event.select().where(Event.seriesId==seriesId).order_by(Event.id)) # orders for tests
             eventDeleted = False
-
             # once the deleted event is detected, change all other names to the previous event's name
             for repeatingEvent in repeatingEvents:
                 if eventDeleted:
