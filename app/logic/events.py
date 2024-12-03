@@ -707,3 +707,4 @@ def copyRsvpToNewEvent(priorEvent, newEvent):
     numRsvps = len(rsvpInfo)
     if numRsvps:
         createRsvpLog(newEvent, f"Copied {numRsvps} Rsvps from {priorEvent['name']} to {newEvent.name}")
+

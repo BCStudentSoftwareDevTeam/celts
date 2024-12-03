@@ -21,6 +21,7 @@ from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventCohort import EventCohort
 from app.models.certification import Certification
 from app.models.user import User
 from app.models.term import Term
@@ -41,61 +42,61 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
 
+@admin_bp.route('/event/<eventId>/cohortStatus', methods=['GET'])
+def getCohortStatus(eventId):
+  
+    try:
+        event = Event.get_by_id(eventId)
+        invited_cohorts = EventCohort.select().where(
+            EventCohort.event == event
+        ).order_by(EventCohort.year.desc())
+        
+        cohort_data = [{
+            'year': cohort.year,
+            'invited_at': cohort.invited_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for cohort in invited_cohorts]
+        
+        return jsonify({
+            'status': 'success',
+            'invited_cohorts': cohort_data
+        })
+        
+    except Event.DoesNotExist:
+        return jsonify({
+            'status': 'error',
+            'message': 'Event not found'
+        }), 404
+    except Exception as e:
+        print(f"Error getting cohort status: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Internal server error'
+        }), 500
 
-def invite_cohorts_to_event(event, cohort_years):
+def inviteCohortsToEvent(event, cohort_years):
     invited_cohorts = []
     try:
         for year in cohort_years:
             year = int(year)
-            try:
-                EventCohort.create(
-                    event=event,
-                    year=year,
-                    invited_at=datetime.now()
-                )
-                
-                # Handle RSVP and logging
-                addBonnerCohortToRsvpLog(year, event.id)
-                rsvpForBonnerCohort(year, event.id)
-                
-                invited_cohorts.append(year)
-                
-            except IntegrityError:
-                continue
-                
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invited_cohorts.append(year)
+
         if invited_cohorts:
             cohort_list = ', '.join(map(str, invited_cohorts))
-            createActivityLog(f"Invited Bonner cohorts {cohort_list} to event {event.name}")
+            createActivityLog(f"Updated Bonner cohorts {cohort_list} for event {event.name}")
             
-        return True, "Cohorts successfully invited", invited_cohorts
+        return True, "Cohorts successfully updated", invited_cohorts
         
     except Exception as e:
         print(f"Error inviting cohorts: {e}")
-        return False, "Error inviting cohorts", []
-
-@admin_bp.route('/event/<eventId>/inviteCohorts', methods=['POST'])
-def inviteCohorts(eventId):
-    if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(Event.get_by_id(eventId))):
-        abort(403)
-        
-    try:
-        event = Event.get_or_create(id=eventId)[0]
-        cohort_years = request.json.get('cohorts', [])
-        
-        success, message, invited_cohorts = invite_cohorts_to_event(event, cohort_years)
-        
-        return jsonify({
-            "success": success,
-            "message": message,
-            "invited_cohorts": invited_cohorts
-        }), 200 if success else 500
-        
-    except Exception as e:
-        print(f"Error in inviteCohorts route: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Error processing request"
-        }), 500
+        return False, f"Error updating cohorts: {e}", []
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -189,7 +190,7 @@ def createEvent(templateid, programid):
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
             if rsvpcohorts:
-                success, message, invited_cohorts = invite_cohorts_to_event(savedEvents[0], rsvpcohorts)
+                success, message, invited_cohorts = inviteCohortsToEvent(savedEvents[0], rsvpcohorts)
                 if not success:
                     flash(message, 'warning')
 
@@ -315,6 +316,10 @@ def eventDisplay(eventId):
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
+        invited_cohorts = list(EventCohort.select().where(
+            EventCohort.event == event
+        ))
+        invited_years = [str(cohort.year) for cohort in invited_cohorts]
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
@@ -375,7 +380,7 @@ def eventDisplay(eventId):
         invited_cohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,
         ))
-        invited_years = [inv.year for inv in invited_cohorts]
+        invited_years = [str(cohort.year) for cohort in invited_cohorts]
     else:
         requirements, bonnerCohorts, invited_years = [], [], []
     
@@ -425,6 +430,7 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
+                                invited_years=invited_years,
                                 eventCountdown=eventCountdown
                                 )
                                 
