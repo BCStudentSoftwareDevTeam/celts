@@ -101,11 +101,11 @@ function displayNotification(message) {
   });
 }
 
-function isDateInPast(dateString) {
-  const date = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today;
+function isDateInPast(dateString, timeString) {
+  const combineDateTime = `${dateString}T${timeString}:00`;
+  const setDate = new Date(combineDateTime).getTime();
+  const today = Date.now();
+  return setDate < today;
 }
 
 function initializeFlatpickr(obj) {
@@ -233,7 +233,7 @@ $('#multipleOfferingSave').on('click', function() {
 
   // Add past date validation
   datePickerInputs.each(function(index, element) {
-    if (!allowPastStart && isDateInPast($(element).val())) {
+    if (!allowPastStart && isDateInPast($(element).val(), startTimeInputs[index].value.trim())) {
       $(element).addClass('border-red');
       hasInvalidDates = true;
     } else {
