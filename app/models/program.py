@@ -1,7 +1,6 @@
 from app.models import*
 from app.models.term import Term
 from app.models.courseStatus import CourseStatus
-from app.models.partner import Partner
 
 class Program(baseModel):
     programName = CharField()
@@ -9,7 +8,7 @@ class Program(baseModel):
     facebookUrl = TextField(null=True)
     bereaUrl = TextField(null=True)
     programDescription = TextField()
-    partner = ForeignKeyField(Partner, null=True)
+    partner = CharField(null=True)
     isStudentLed = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
     isOtherCeltsSponsored = BooleanField(default=False)

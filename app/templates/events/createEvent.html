@@ -396,14 +396,14 @@
         <div class="container-fluid">
           <p>This action is irreversible. </p>
           <p>By deleting this event, all information regarding this event will be removed from the website. </p>
-          <div class="d-grid gap-2">
-            <form action="/event/{{eventData.id}}/delete" method='post'>
+          <div class="d-grid">
+            <form class="mb-1" action="/event/{{eventData.id}}/delete" method='post'>
               <button type="submit" class="btn btn-danger">Delete This Event</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
+            <form class="mb-1" action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
               <button type="submit" class="btn btn-danger">Delete This and All Following</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+            <form class="mb-1" action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
               <button type="submit" class="btn btn-danger">Delete Series </button>
             </form>
           </div>

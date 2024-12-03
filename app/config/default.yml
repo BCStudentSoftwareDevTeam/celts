@@ -25,6 +25,8 @@ ldap:
 
 files:
   base_path: 'app/static/files'
+  image_path: 'app/static/images'
+  program_attachment_path: 'programattachments'
   email_attachment_path: 'emailattachments'
   event_attachment_path: 'eventattachments'
   course_attachment_path: 'courseattachments'
