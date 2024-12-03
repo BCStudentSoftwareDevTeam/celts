@@ -61,7 +61,7 @@ def makeGraduatedXls(filterType):
 
     worksheet.write('A1', 'Graduated Students', bold)
     worksheet.set_column('A:A', 20)
-
+    prev_year = 1
     row = 1
 
     if filterType == 'all':
@@ -69,7 +69,10 @@ def makeGraduatedXls(filterType):
     elif filterType == 'cce':
         students = [student for student in CCEusers if student['hasGraduated']]
     elif filterType == 'bonner':
-        students = BonnerCohort.select(BonnerCohort, User).join(User).where(User.hasGraduated == True)
+        # students = BonnerCohort.select(BonnerCohort, User).join(User).where(User.hasGraduated == True)
+        students = User.select(User.username).where(User.hasGraduated == True)
+        print('student list' , students , "#####")        
+        print('bonner filter selected #####')
     elif filterType == 'bonnercohorts':
         students = [student for student in bonnercohorts if student['hasGraduated']]
     else:
