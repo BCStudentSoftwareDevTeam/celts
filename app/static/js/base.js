@@ -158,7 +158,7 @@ function getSelectedFiles(){
   return _fileHolder.files;
 }
 
-function handleFileSelection(fileInputId){
+function handleFileSelection(fileInputId, single=false){
   var fileBoxId = "#" + fileInputId
   var attachedObjectContainerId = fileInputId + "Container"
   $(fileBoxId).after(`<div id="`+attachedObjectContainerId+`" class="py-0 px-0"></div>`)
@@ -191,16 +191,22 @@ function handleFileSelection(fileInputId){
         }
         let trashNum = ($(objectContainerId+ " .row").length)
         var fullTrashId = "#trash" + trashNum
-        $(objectContainerId).append(" \
-            <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
-              <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-              <div id='attachedFile" + trashNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
-              <div class='col' style='text-align:right'> \
-                <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
-                  <span class='bi bi-trash fs-6'></span>\
-                </div>\
-              </div> \
-            </div>")
+        let fileHTML = " \
+              <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
+                <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
+                <div id='attachedFile" + trashNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
+                <div class='col' style='text-align:right'> \
+                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
+                    <span class='bi bi-trash fs-6'></span>\
+                  </div>\
+                </div> \
+              </div>"
+        if (single) {
+          $(objectContainerId).html(fileHTML)
+        }
+        else {
+          $(objectContainerId).append(fileHTML)
+        }
         $(fullTrashId).data("file", file);
         $(fullTrashId).data("file-container-id", attachedObjectContainerId);
         $(fullTrashId).on("click", function() {
@@ -212,7 +218,12 @@ function handleFileSelection(fileInputId){
         $(fileBoxId).data("file-num", $(fileBoxId).data("file-num") + 1)
       }
       else{
-        msgToast("File with filename '" + file.name + "' has already been added to this event")
+        if (single){
+          $(objectContainerId).html(fileHTML)
+        }
+        else{
+          msgToast("File with filename '" + file.name + "' has already been added to this event")
+        }
       }
     }
     $(fileBoxId).prop('files', getSelectedFiles());
