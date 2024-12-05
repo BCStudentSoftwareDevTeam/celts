@@ -404,7 +404,7 @@ def test_attemptSaveEvent():
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOfferingId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
-                   'endDate':'2022-06-12', 'location':"a big room",
+                   'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
@@ -434,7 +434,7 @@ def test_attemptSaveMultipleOfferings():
                     'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'isMultipleOffering':False, 'multipleOfferingId':None,
                     'startDate': '2021-12-12',
                     'rsvpLimit': None,
-                    'endDate':'2022-06-12', 'location':"a big room",
+                    'location':"a big room",
                     'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                     'description':"Empty Bowls Spring 2021",
                     'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
@@ -508,9 +508,9 @@ def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
                   'isTraining':True, 'isEngagement': False,'isRecurring': False, 'isMultipleOffering': False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
-                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
+                  'location':"a big room",
+                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -704,7 +704,6 @@ def test_deleteEvent():
                                     isEngagement = 1,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = " ",
                                     recurringId = None,
                                     program = 9)
 
