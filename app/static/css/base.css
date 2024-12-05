@@ -134,3 +134,8 @@ form {
 .onTranscript {
   width: 147px;
 }
+
+.editIcon {
+  position: relative;
+  top: -2.6px;
+}

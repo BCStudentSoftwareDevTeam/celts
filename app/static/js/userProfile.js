@@ -47,6 +47,7 @@ $(document).ready(function(){
     var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
     var programID = $(this).data("programid");
+    displayTranscriptStatus(programID);
     
     $.ajax({
         type: "POST",
@@ -61,18 +62,11 @@ $(document).ready(function(){
         }
     });
 
-    if (onTranscript){
-      displayTranscriptStatus("Added!", programID, "blue");
-    }
-    else {
-      displayTranscriptStatus("Removed!", programID, "red");
-    }
   });
 
-  function displayTranscriptStatus(status, programID, color) {
+  function displayTranscriptStatus(programID) {
     $('#transcriptStatus-' + programID).show();
-    $('#transcriptStatus-' + programID).text(status);
-    $('#transcriptStatus-' + programID).css('color', color);
+    $('#transcriptStatus-' + programID).css('color', blue);
     //show for 0.5s and fade out last for 0.5s
     setTimeout(function() {
       $('#transcriptStatus-' + programID).fadeOut(500, function() {

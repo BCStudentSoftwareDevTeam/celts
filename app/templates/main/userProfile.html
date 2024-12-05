@@ -194,9 +194,8 @@
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
                   <th scope="col">On Transcript</th>
-                  
                 {% endif %}
-                <th scope="col"></th>
+
               </tr>
             </thead>
             <tbody>
@@ -226,7 +225,7 @@
 
                     {% if g.current_user.isCeltsAdmin %}
                       <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">
-                        <i class="bi bi-pencil"></i></button>
+                        <i class="bi bi-pencil editIcon"></i></button>
                     {% endif %}
                     </td>
                     
