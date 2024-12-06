@@ -66,7 +66,8 @@ $(document).ready(function(){
 
   function displayTranscriptStatus(programID) {
     $('#transcriptStatus-' + programID).show();
-    $('#transcriptStatus-' + programID).css('color', blue);
+    $('#transcriptStatus-' + programID).text("Saved!");
+    $('#transcriptStatus-' + programID).css('color', 'blue');
     //show for 0.5s and fade out last for 0.5s
     setTimeout(function() {
       $('#transcriptStatus-' + programID).fadeOut(500, function() {
