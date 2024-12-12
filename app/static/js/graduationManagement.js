@@ -89,7 +89,6 @@ $(document).ready(function() {
             });
             gradStudentsTable.draw();
         }
-        console.log('Java Filter Type: ',filterType)
     });
 
     $('.dropdown-item-new').click(function() {
@@ -140,22 +139,9 @@ $('.graduated-checkbox').change(function() {
         type: "POST",
         url: graduationURL,
         success: function(response) {
-            // console.log("Graduation status updated successfully!");
-            // msgFlash("Graduation status updated successfully!", "success");
-            // console.log($('.alert').length);
-
-            // console.log($('.alert').length);
 
             if ($('.alert').length > 1 ){
 
-                console.log($('.alert').length);
-
-                // for ( let i = 0; i > $('.alert').length - 1; i++){
-                //     console.log('1');
-
-                //     $('.alert').alert('close')
-                // }
-                
                 $('.alert').alert('close'); 
             };
             console.log("Graduation status updated successfully!");

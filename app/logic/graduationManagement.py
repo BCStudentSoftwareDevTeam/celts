@@ -47,7 +47,7 @@ def makeGraduatedXls(filterType):
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
-    # filterType = "cce"
+    
     print('filtertype:' , filterType, "#####")
 
 
@@ -68,23 +68,27 @@ def makeGraduatedXls(filterType):
         students = User.select().where(User.hasGraduated == True)
     elif filterType == 'cce':
         students = [student for student in CCEusers if student['hasGraduated']]
-    elif filterType == 'bonner':
-        # students = BonnerCohort.select(BonnerCohort, User).join(User).where(User.hasGraduated == True)
-        students = User.select(User.username).where(User.hasGraduated == True)
-        print('student list' , students , "#####")        
-        print('bonner filter selected #####')
-    elif filterType == 'bonnercohorts':
-        students = [student for student in bonnercohorts if student['hasGraduated']]
+    # elif filterType == 'bonner':
+    #     students = BonnerCohort.select(BonnerCohort, User).join(User).where(User.hasGraduated == True)
+
+    #     print('##### Student list')
+
+    #     for name in User.select(User.username):
+            
+    #         print(name)
+
+    #     print('##### Student list')         
+    #     print('bonner filter selected #####')
+    # elif filterType == 'bonnercohorts':
+    #     students = [student for student in bonnercohorts if student['hasGraduated']]
     else:
         students = User.select()
 
     for student in students:
-        if filterType == 'bonner' and prev_year != student.year:
-            row += 1
-            prev_year = student.year
-            worksheet.write(row, 0, f"{student.year} - {student.year+1}", bold)
-
-            print('Bonner student found #####')
+        # if filterType == 'bonner' and prev_year != student.year:
+        #     row += 1
+        #     prev_year = student.year
+        #     worksheet.write(row, 0, f"{student.year} - {student.year+1}", bold)
 
         if filterType == 'cce':
             worksheet.write(row, 0, f"{student['firstName']} {student['lastName']}")
