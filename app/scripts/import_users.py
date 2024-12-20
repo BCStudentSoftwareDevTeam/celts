@@ -1,5 +1,7 @@
 import logging
 import pyodbc
+import sys
+import argparse
 from ldap3 import Server, Connection, ALL
 import peewee
 
@@ -7,15 +9,30 @@ from app import app
 from app.models.user import User
 from app.logic.utils import getUsernameFromEmail
 
+# Argument parser for log levels
+def parseArgs():
+    parser = argparse.ArgumentParser(description="Import users script with logging.")
+    parser.add_argument(
+        '--log-level',
+        default='INFO',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
+        help='Set the logging level'
+    )
+    return parser.parse_args()
+
+arguments = parseArgs()
+logLevels = getattr(logging, arguments.log_level.upper(), logging.INFO)
+
 # Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-fileHandler = logging.FileHandler('/home/celts/cron.log')
-fileHandler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fileHandler.setFormatter(formatter)
-logger.addHandler(fileHandler)
+logger.setLevel(logLevels)
 
+consoleHandler = logging.StreamHandler(sys.stdout)
+consoleHandler.setLevel(logLevels)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+consoleHandler.setFormatter(formatter)
+
+logger.addHandler(consoleHandler)
 
 def main():
     """
@@ -23,11 +40,21 @@ def main():
     """
     logger.info("Script started.")
     logger.info("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
-
+    
     logger.info("Getting Updated Names, Majors, and Class Levels")
-    addToDb(getStudentData())
+    
+    studentData = addToDb(getStudentData())
+    studentAdded = studentData[0]
+    studentUpdated = studentData[1]
+    logger.info(f"{studentAdded} students were added.")
+    logger.info(f"{studentUpdated} students were updated.")
     logger.info("Finished updating student data.")
-    addToDb(getFacultyStaffData())
+    
+    facultyStaffData = addToDb(getFacultyStaffData())
+    facultyStaffAdded = facultyStaffData[0]
+    facultyStaffUpdated = facultyStaffData[1]
+    logger.info(f"{facultyStaffAdded} faculties/staffs were added.")
+    logger.info(f"{facultyStaffUpdated} faculties/staffs were updated.")
     logger.info("Finished updating faculty and staff data.")
 
     logger.info("Getting Preferred Names from LDAP")
@@ -79,7 +106,7 @@ def updateFromLdap(people):
             try:
                 count = User.update(firstName=preferred).where(User.bnumber == bnumber).execute()
                 if count:
-                    logger.info(f"Updated {bnumber} name to {preferred}")
+                    logger.debug(f"Updated {bnumber} name to {preferred}")
             except Exception as e:
                 logger.error(f"Failed to update user {bnumber} with preferred name {preferred}: {e}")
 
@@ -108,10 +135,13 @@ def getMssqlCursor():
         raise
 
 def addToDb(userList):
+    usersAdded = 0
+    usersUpdated = 0
     for user in userList:
         try:
             User.insert(user).execute()
-            logger.info(f"Inserted user {user['bnumber']}")
+            logger.debug(f"Inserted user {user['bnumber']}")
+            userAdded += 1
         except peewee.IntegrityError as e:
             try:
                 if user['username']:
@@ -123,13 +153,16 @@ def addToDb(userList):
                         classLevel=user['classLevel'],
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
-                    logger.info(f"Updated user {user['bnumber']}")
+                    logger.debug(f"Updated user {user['bnumber']}")
+                    userUpdated += 1
                 else:
                     logger.warning(f"No username for {user['bnumber']}!", user)
             except Exception as e:
                 logger.error(f"Failed to update user {user['bnumber']}: {e}")
         except Exception as e:
             logger.error(f"Failed to insert or update user {user['bnumber']}: {e}")
+            
+        return [usersAdded, usersUpdated]
 
 def getFacultyStaffData():
     logger.info("Retrieving Faculty and Staff data from Tracy...")
