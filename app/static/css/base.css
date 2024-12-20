@@ -17,7 +17,7 @@
 
 .toast-container{
   top: 0;
-  z-index: 11;
+  z-index: 1060;
 }
 
 .form-control.invalid,
@@ -123,4 +123,19 @@ form {
 
 .saveBtnDiv {
   text-align: center;
+}
+
+.transcriptStatus {
+  font-size: 13px;
+  margin-left: 5px; 
+  display: inline-block;
+}
+
+.onTranscript {
+  width: 147px;
+}
+
+.editIcon {
+  position: relative;
+  top: -4px;
 }
