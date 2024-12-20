@@ -9,6 +9,7 @@ from app import app
 from app.models.user import User
 from app.logic.utils import getUsernameFromEmail
 
+
 # Argument parser for log levels
 def parseArgs():
     parser = argparse.ArgumentParser(description="Import users script with logging.")
@@ -33,6 +34,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 consoleHandler.setFormatter(formatter)
 
 logger.addHandler(consoleHandler)
+
 
 def main():
     """
