@@ -31,14 +31,14 @@
   {{super()}}
 <script type="module" src="/static/js/createEvents.js"></script>
 <script type="module" src="/static/js/displayFilesMacro.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 {% endblock %}
 
 {% block styles %}
-  {{super()}}
-<link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all"
+  {{super()}} <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all"
   rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="/static/css/createEvent.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="/static/css/createEvent.css">
 {% endblock %}
 
 {% block app_content %}
@@ -99,32 +99,32 @@
   <div class="row col-md-12">
     <div class="form-group col-md-6">
       <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
-      <div class="input-group">
+      <div class="input-group flatpickr">
         {% if eventData.timeStart %}
           {% set startTime = eventData.timeStart %}
         {% else %}
           {% set startTime = "12:00" %}
         {% endif %}
         <input autocomplete="off" type="time" class="form-control timepicker startTime" value="{{startTime}}"
-          name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" id="startTime-{{pageLocation}}"
+          name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" data-input id="startTime-{{pageLocation}}"
           data-page-location="{{pageLocation}}" required />
-        <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
-            class="bi bi-clock"></i></span>
+        <a class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" data-toggle data-td-target="#startTime-{{pageLocation}}" hidden><i
+            class="bi bi-clock"></i></a>
       </div>
     </div>
     <div class='form-group col-md-6'>
       <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-      <div class="input-group">
+      <div class="input-group flatpickr">
         {% if eventData.timeEnd %}
           {% set endTime = eventData.timeEnd %}
         {%else%}
           {% set endTime = "13:00" %}
         {% endif %}
-        <input autocomplete="off" type="time" class="form-control timepicker endTime" value="{{endTime}}" name="timeEnd"
+        <input autocomplete="off" type="time" class="form-control timepicker endTime" data-input value="{{endTime}}" name="timeEnd"
           aria-describedby="timeIcon2" placeholder="Pick an end time" class="startTime" id="endTime-{{pageLocation}}"
           data-page-location="{{pageLocation}}" required />
-        <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i
-            class="bi bi-clock"></i></span>
+        <a class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" data-toggle hidden><i
+            class="bi bi-clock"></i></a>
       </div>
     </div>
   </div>
@@ -392,14 +392,14 @@
         <div class="container-fluid">
           <p>This action is irreversible. </p>
           <p>By deleting this event, all information regarding this event will be removed from the website. </p>
-          <div class="d-grid gap-2">
-            <form action="/event/{{eventData.id}}/delete" method='post'>
+          <div class="d-grid">
+            <form class="mb-1" action="/event/{{eventData.id}}/delete" method='post'>
               <button type="submit" class="btn btn-danger">Delete This Event</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
+            <form class="mb-1" action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
               <button type="submit" class="btn btn-danger">Delete This and All Following</button>
             </form>
-            <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+            <form class="mb-1" action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
               <button type="submit" class="btn btn-danger">Delete Series </button>
             </form>
           </div>
@@ -489,32 +489,33 @@
           <div class="form-group col-md-3">
             <label class="form-label me-2" for="multipleOfferingStartTime-{{pageLocation}}"><strong>Start
                 Time</strong></label>
-            <div class="input-group">
+            <div class="input-group flatpickr" id="flatpickr1">
               {% if eventData.timeStart %}
                 {% set startTime = eventData.timeStart %}
               {% else %}
                 {% set startTime = "12:00" %}
               {% endif %}
               <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingStartTime"
-                value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time"
+                value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" data-input placeholder="Pick a start time"
                 id="multipleOfferingStartTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-              <span class="input-group-text timeIcons" id="timeIcon1-{{pageLocation}}" hidden><i
-                  class="bi bi-clock"></i></span>
+              <a class="input-group-text timeIcons" data-toggle id="timeIcon1-{{pageLocation}}"
+              hidden><i
+                  class="bi bi-clock"></i></a>
             </div>
           </div>
           <div class='form-group col-md-3'>
             <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
-            <div class="input-group pb-5">
+            <div class="input-group flatpickr" id="flatpickr2">
               {% if eventData.timeEnd %}
                 {% set endTime = eventData.timeEnd %}
               {%else%}
                 {% set endTime = "13:00" %}
               {% endif %}
               <input autocomplete="off" type="time" class="form-control timepicker multipleOfferingEndTime"
-                value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time"
+                value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" data-input placeholder="Pick an end time"
                 id="multipleOfferingEndTime-{{pageLocation}}" data-page-location="{{pageLocation}}" required />
-              <span class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" hidden><i
-                  class="bi bi-clock"></i></span>
+              <a class="input-group-text timeIcons" id="timeIcon2-{{pageLocation}}" data-toggle hidden><i
+                  class="bi bi-clock"></i></a>
             </div>
           </div>
           <div class="col-md-1 deleteMultipleOfferingWrapper">
