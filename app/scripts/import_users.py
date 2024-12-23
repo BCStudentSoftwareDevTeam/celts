@@ -143,7 +143,7 @@ def addToDb(userList):
         try:
             User.insert(user).execute()
             logger.debug(f"Inserted user {user['bnumber']}")
-            userAdded += 1
+            usersAdded += 1
         except peewee.IntegrityError as e:
             try:
                 if user['username']:
@@ -156,7 +156,7 @@ def addToDb(userList):
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
                     logger.debug(f"Updated user {user['bnumber']}")
-                    userUpdated += 1
+                    usersUpdated += 1
                 else:
                     logger.warning(f"No username for {user['bnumber']}!", user)
             except Exception as e:
