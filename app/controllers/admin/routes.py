@@ -47,18 +47,18 @@ def getCohortStatus(eventId):
   
     try:
         event = Event.get_by_id(eventId)
-        invited_cohorts = EventCohort.select().where(
+        invitedCohorts = EventCohort.select().where(
             EventCohort.event == event
         ).order_by(EventCohort.year.desc())
         
-        cohort_data = [{
+        cohortData = [{
             'year': cohort.year,
             'invited_at': cohort.invited_at.strftime('%Y-%m-%d %H:%M:%S')
-        } for cohort in invited_cohorts]
+        } for cohort in invitedCohorts]
         
         return jsonify({
             'status': 'success',
-            'invited_cohorts': cohort_data
+            'invitedCohorts': cohortData
         })
         
     except Event.DoesNotExist:
@@ -74,7 +74,7 @@ def getCohortStatus(eventId):
         }), 500
 
 def inviteCohortsToEvent(event, cohort_years):
-    invited_cohorts = []
+    invitedCohorts = []
     try:
         for year in cohort_years:
             year = int(year)
@@ -86,13 +86,13 @@ def inviteCohortsToEvent(event, cohort_years):
             
             addBonnerCohortToRsvpLog(year, event.id)
             rsvpForBonnerCohort(year, event.id)
-            invited_cohorts.append(year)
+            invitedCohorts.append(year)
 
-        if invited_cohorts:
-            cohort_list = ', '.join(map(str, invited_cohorts))
+        if invitedCohorts:
+            cohort_list = ', '.join(map(str, invitedCohorts))
             createActivityLog(f"Updated Bonner cohorts {cohort_list} for event {event.name}")
             
-        return True, "Cohorts successfully updated", invited_cohorts
+        return True, "Cohorts successfully updated", invitedCohorts
         
     except Exception as e:
         print(f"Error inviting cohorts: {e}")
@@ -190,7 +190,7 @@ def createEvent(templateid, programid):
         if savedEvents:
             rsvpcohorts = request.form.getlist("cohorts[]")
             if rsvpcohorts:
-                success, message, invited_cohorts = inviteCohortsToEvent(savedEvents[0], rsvpcohorts)
+                success, message, invitedCohorts = inviteCohortsToEvent(savedEvents[0], rsvpcohorts)
                 if not success:
                     flash(message, 'warning')
 
@@ -316,10 +316,10 @@ def eventDisplay(eventId):
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
-        invited_cohorts = list(EventCohort.select().where(
+        invitedCohorts = list(EventCohort.select().where(
             EventCohort.event == event
         ))
-        invited_years = [str(cohort.year) for cohort in invited_cohorts]
+        invitedYears = [str(cohort.year) for cohort in invitedCohorts]
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
@@ -377,12 +377,12 @@ def eventDisplay(eventId):
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
 
-        invited_cohorts = list(EventCohort.select().where(
+        invitedCohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,
         ))
-        invited_years = [str(cohort.year) for cohort in invited_cohorts]
+        invitedYears = [str(cohort.year) for cohort in invitedCohorts]
     else:
-        requirements, bonnerCohorts, invited_years = [], [], []
+        requirements, bonnerCohorts, invitedYears = [], [], []
     
     rule = request.url_rule
 
@@ -394,7 +394,7 @@ def eventDisplay(eventId):
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
-                                invited_years = invited_years, 
+                                invitedYears = invitedYears, 
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
@@ -430,7 +430,7 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
-                                invited_years=invited_years,
+                                invitedYears=invitedYears,
                                 eventCountdown=eventCountdown
                                 )
                                 

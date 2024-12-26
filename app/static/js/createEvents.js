@@ -532,7 +532,7 @@ function getCohortStatus(eventId) {
     type: "GET",
     url: `/event/${eventId}/cohortStatus`,
     success: function(response) {
-      displayCohortStatus(response.invited_cohorts);
+      displayCohortStatus(response.invitedCohorts);
     }
   });
 }
