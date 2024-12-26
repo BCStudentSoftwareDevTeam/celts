@@ -73,10 +73,14 @@ def getCohortStatus(eventId):
             'message': 'Internal server error'
         }), 500
 
-def inviteCohortsToEvent(event, cohort_years):
+
+def inviteCohortsToEvent(event, cohortYears):
+    """
+    Invites cohorts to a newly created event by associating the cohorts directly.
+    """
     invitedCohorts = []
     try:
-        for year in cohort_years:
+        for year in cohortYears:
             year = int(year)
             EventCohort.get_or_create(
                 event=event,
@@ -89,14 +93,58 @@ def inviteCohortsToEvent(event, cohort_years):
             invitedCohorts.append(year)
 
         if invitedCohorts:
-            cohort_list = ', '.join(map(str, invitedCohorts))
-            createActivityLog(f"Updated Bonner cohorts {cohort_list} for event {event.name}")
-            
-        return True, "Cohorts successfully updated", invitedCohorts
-        
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Added Bonner cohorts {cohortList} for newly created event {event.name}")
+
+        return True, "Cohorts successfully added to new event", invitedCohorts
+
     except Exception as e:
-        print(f"Error inviting cohorts: {e}")
-        return False, f"Error updating cohorts: {e}", []
+        print(f"Error inviting cohorts to new event: {e}")
+        return False, f"Error adding cohorts to new event: {e}", []
+
+
+def updateEventCohorts(event, cohortYears):
+    """
+    Updates the cohorts for an existing event by adding new ones and removing outdated ones.
+    """
+    invitedCohorts = []
+    try:
+        precedentInvitedCohorts = list(EventCohort.select().where(EventCohort.event == event))
+        precedentInvitedYears = [str(precedentCohort.year) for precedentCohort in precedentInvitedCohorts]
+        
+        yearsToAdd = [int(year) for year in cohortYears if year not in precedentInvitedYears]
+        
+        if not cohortYears:
+            yearsToRemove = [int(year) for year in precedentInvitedYears]
+        else:
+            yearsToRemove = [int(year) for year in precedentInvitedYears if year not in cohortYears]
+            
+        if yearsToRemove:
+            EventCohort.delete().where(
+                (EventCohort.event == event) & (EventCohort.year.in_(yearsToRemove))
+            ).execute()
+
+        for year in yearsToAdd:
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invitedCohorts.append(year)
+
+        if yearsToAdd or yearsToRemove:
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}, Removed: {yearsToRemove}")
+
+        return True, "Cohorts successfully updated for event", invitedCohorts
+
+    except Exception as e:
+        print(f"Error updating cohorts for event: {e}")
+        return False, f"Error updating cohorts for event: {e}", []
+
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -188,9 +236,9 @@ def createEvent(templateid, programid):
                 validationErrorMessage = "Failed to save event."
 
         if savedEvents:
-            rsvpcohorts = request.form.getlist("cohorts[]")
-            if rsvpcohorts:
-                success, message, invitedCohorts = inviteCohortsToEvent(savedEvents[0], rsvpcohorts)
+            rsvpCohorts = request.form.getlist("cohorts[]")
+            if rsvpCohorts:
+                success, message, invitedCohorts = inviteCohortsToEvent(savedEvents[0], rsvpCohorts)
                 if not success:
                     flash(message, 'warning')
 
@@ -354,8 +402,9 @@ def eventDisplay(eventId):
 
 
         if savedEvents:
-            rsvpcohorts = request.form.getlist("cohorts[]")
-            for year in rsvpcohorts:
+            rsvpCohorts = request.form.getlist("cohorts[]")
+            updateEventCohorts(savedEvents[0], rsvpCohorts)
+            for year in rsvpCohorts:
                 rsvpForBonnerCohort(int(year), event.id)
                 addBonnerCohortToRsvpLog(int(year), event.id)
 
@@ -390,7 +439,7 @@ def eventDisplay(eventId):
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
                                 eventData = eventData,
-                                futureTerms=futureTerms,
+                                futureTerms = futureTerms,
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
@@ -419,6 +468,8 @@ def eventDisplay(eventId):
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+        
+        
 
         return render_template("events/eventView.html",
                                 eventData=eventData,

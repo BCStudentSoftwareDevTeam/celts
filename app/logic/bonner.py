@@ -8,6 +8,7 @@ from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.eventCohort import EventCohort
 from app.logic.createLogs import createRsvpLog
 
 def makeBonnerXls():
@@ -82,6 +83,22 @@ def rsvpForBonnerCohort(year, event):
     EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event, SQL('NOW()'))
                                       .where(BonnerCohort.year == year),
                                       [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
+    
+# def updateEventBonnerCohort(year, event):
+#     """
+#     Updates the Bonner Cohorts for a given event
+#     """
+#     eventCohort = EventCohort.select(EventCohort.where(event == event))
+#     EventCohort.update()
+    
+    
+# def AddEventBonnerCohort(year, event):
+#     """
+#     Adds the Bonner Cohorts for a given event
+#     """
+#     eventCohort = EventCohort.create(event == event, year == year, invited_at =)
+#     EventCohort.update()
+    
     
 def addBonnerCohortToRsvpLog(year, event):
     """ This method adds the table information in the RSVP Log page"""
