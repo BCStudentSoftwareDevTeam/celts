@@ -17,7 +17,9 @@ from app.models.eventRsvp import EventRsvp
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
+from app.models.eventCohort import EventCohort
 
+from app.logic.bonner import rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.createLogs import createActivityLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
@@ -706,4 +708,77 @@ def copyRsvpToNewEvent(priorEvent, newEvent):
     numRsvps = len(rsvpInfo)
     if numRsvps:
         createRsvpLog(newEvent, f"Copied {numRsvps} Rsvps from {priorEvent['name']} to {newEvent.name}")
+        
+        
+def inviteCohortsToEvent(event, cohortYears):
+    """
+    Invites cohorts to a newly created event by associating the cohorts directly.
+    """
+    invitedCohorts = []
+    try:
+        for year in cohortYears:
+            year = int(year)
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invitedCohorts.append(year)
+
+        if invitedCohorts:
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Added Bonner cohorts {cohortList} for newly created event {event.name}")
+
+        return True, "Cohorts successfully added to new event", invitedCohorts
+
+    except Exception as e:
+        print(f"Error inviting cohorts to new event: {e}")
+        return False, f"Error adding cohorts to new event: {e}", []
+
+
+def updateEventCohorts(event, cohortYears):
+    """
+    Updates the cohorts for an existing event by adding new ones and removing outdated ones.
+    """
+    invitedCohorts = []
+    try:
+        precedentInvitedCohorts = list(EventCohort.select().where(EventCohort.event == event))
+        precedentInvitedYears = [str(precedentCohort.year) for precedentCohort in precedentInvitedCohorts]
+        
+        yearsToAdd = [int(year) for year in cohortYears if year not in precedentInvitedYears]
+        
+        if not cohortYears:
+            yearsToRemove = [int(year) for year in precedentInvitedYears]
+        else:
+            yearsToRemove = [int(year) for year in precedentInvitedYears if year not in cohortYears]
+            
+        if yearsToRemove:
+            EventCohort.delete().where(
+                (EventCohort.event == event) & (EventCohort.year.in_(yearsToRemove))
+            ).execute()
+
+        for year in yearsToAdd:
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invitedCohorts.append(year)
+
+        if yearsToAdd or yearsToRemove:
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}, Removed: {yearsToRemove}")
+
+        return True, "Cohorts successfully updated for event", invitedCohorts
+
+    except Exception as e:
+        print(f"Error updating cohorts for event: {e}")
+        return False, f"Error updating cohorts for event: {e}", []
+
 

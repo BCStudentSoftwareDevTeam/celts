@@ -10,7 +10,6 @@ from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
-from app.models.eventCohort import EventCohort
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.course import Course
@@ -32,7 +31,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRecurringEventsData, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewMultipleOfferingId, inviteCohortsToEvent, updateEventCohorts
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -41,109 +40,6 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 
 from app.controllers.admin import admin_bp
 from app.logic.spreadsheet import createSpreadsheet
-
-@admin_bp.route('/event/<eventId>/cohortStatus', methods=['GET'])
-def getCohortStatus(eventId):
-  
-    try:
-        event = Event.get_by_id(eventId)
-        invitedCohorts = EventCohort.select().where(
-            EventCohort.event == event
-        ).order_by(EventCohort.year.desc())
-        
-        cohortData = [{
-            'year': cohort.year,
-            'invited_at': cohort.invited_at.strftime('%Y-%m-%d %H:%M:%S')
-        } for cohort in invitedCohorts]
-        
-        return jsonify({
-            'status': 'success',
-            'invitedCohorts': cohortData
-        })
-        
-    except Event.DoesNotExist:
-        return jsonify({
-            'status': 'error',
-            'message': 'Event not found'
-        }), 404
-    except Exception as e:
-        print(f"Error getting cohort status: {e}")
-        return jsonify({
-            'status': 'error',
-            'message': 'Internal server error'
-        }), 500
-
-
-def inviteCohortsToEvent(event, cohortYears):
-    """
-    Invites cohorts to a newly created event by associating the cohorts directly.
-    """
-    invitedCohorts = []
-    try:
-        for year in cohortYears:
-            year = int(year)
-            EventCohort.get_or_create(
-                event=event,
-                year=year,
-                defaults={'invited_at': datetime.now()}
-            )
-            
-            addBonnerCohortToRsvpLog(year, event.id)
-            rsvpForBonnerCohort(year, event.id)
-            invitedCohorts.append(year)
-
-        if invitedCohorts:
-            cohortList = ', '.join(map(str, invitedCohorts))
-            createActivityLog(f"Added Bonner cohorts {cohortList} for newly created event {event.name}")
-
-        return True, "Cohorts successfully added to new event", invitedCohorts
-
-    except Exception as e:
-        print(f"Error inviting cohorts to new event: {e}")
-        return False, f"Error adding cohorts to new event: {e}", []
-
-
-def updateEventCohorts(event, cohortYears):
-    """
-    Updates the cohorts for an existing event by adding new ones and removing outdated ones.
-    """
-    invitedCohorts = []
-    try:
-        precedentInvitedCohorts = list(EventCohort.select().where(EventCohort.event == event))
-        precedentInvitedYears = [str(precedentCohort.year) for precedentCohort in precedentInvitedCohorts]
-        
-        yearsToAdd = [int(year) for year in cohortYears if year not in precedentInvitedYears]
-        
-        if not cohortYears:
-            yearsToRemove = [int(year) for year in precedentInvitedYears]
-        else:
-            yearsToRemove = [int(year) for year in precedentInvitedYears if year not in cohortYears]
-            
-        if yearsToRemove:
-            EventCohort.delete().where(
-                (EventCohort.event == event) & (EventCohort.year.in_(yearsToRemove))
-            ).execute()
-
-        for year in yearsToAdd:
-            EventCohort.get_or_create(
-                event=event,
-                year=year,
-                defaults={'invited_at': datetime.now()}
-            )
-            
-            addBonnerCohortToRsvpLog(year, event.id)
-            rsvpForBonnerCohort(year, event.id)
-            invitedCohorts.append(year)
-
-        if yearsToAdd or yearsToRemove:
-            cohortList = ', '.join(map(str, invitedCohorts))
-            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}, Removed: {yearsToRemove}")
-
-        return True, "Cohorts successfully updated for event", invitedCohorts
-
-    except Exception as e:
-        print(f"Error updating cohorts for event: {e}")
-        return False, f"Error updating cohorts for event: {e}", []
 
 
 @admin_bp.route('/admin/reports')
@@ -282,7 +178,14 @@ def createEvent(templateid, programid):
     requirements, bonnerCohorts = [], []
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
-        bonnerCohorts = getBonnerCohorts(limit=5)
+        rawBonnerCohorts = getBonnerCohorts(limit=5)
+        bonnerCohorts = {}
+        
+        for year, cohort in rawBonnerCohorts.items():
+            if cohort:
+                bonnerCohorts[year] = cohort
+                
+            
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -424,7 +327,15 @@ def eventDisplay(eventId):
     
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
-        bonnerCohorts = getBonnerCohorts(limit=5)
+        rawBonnerCohorts = getBonnerCohorts(limit=5)
+        bonnerCohorts = {}
+        
+        for year, cohort in rawBonnerCohorts.items():
+            if cohort:
+                bonnerCohorts[year] = cohort
+                
+        print(1000*"*")
+        print("The bonner cohorts are ", bonnerCohorts)
 
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,

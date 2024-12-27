@@ -1407,3 +1407,12 @@ def test_copyRsvpToNewEvent():
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
 
             transaction.rollback()
+            
+            
+@pytest.mark.integration
+def test_inviteCohortsToEvent():
+    pass
+
+@pytest.mark.integration
+def test_updateEventCohorts():
+    pass
