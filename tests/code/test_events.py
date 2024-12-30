@@ -22,8 +22,10 @@ from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.bonnerCohort import BonnerCohort
+from app.models.eventCohort import EventCohort
 
-from app.logic.events import preprocessEventData, validateNewEventData, getRecurringEventsData
+from app.logic.events import preprocessEventData, validateNewEventData, getRecurringEventsData, inviteCohortsToEvent, updateEventCohorts
 from app.logic.events import attemptSaveEvent, attemptSaveMultipleOfferings, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser, calculateNewMultipleOfferingId, getPreviousMultipleOfferingEventData
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
@@ -1372,6 +1374,23 @@ def test_copyRsvpToNewEvent():
 
 
             priorEvent = Event.create(name = "Req and Limit",
+                                      term = 2,
+                                      description = "Event that requries RSVP and has an RSVP limit set.",
+                                      timeStart = "6:00 pm",
+                                      timeEnd = "9:00 pm",
+                                      location = "The Moon",
+                                      isRsvpRequired = 1,
+                                      startDate = "2022-12-19",
+                                      endDate = "2022-12-19",
+                                      program = 9)
+            
+            priorEvent.save()
+            EventRsvp.create(user = "neillz",
+                             event = priorEvent).save()
+            EventRsvp.create(user = "partont",
+                             event = priorEvent).save()
+            
+            newEvent = Event.create(name = "Req and Limit",
                                     term = 2,
                                     description = "Event that requries RSVP and has an RSVP limit set.",
                                     timeStart = "6:00 pm",
@@ -1381,23 +1400,6 @@ def test_copyRsvpToNewEvent():
                                     startDate = "2022-12-19",
                                     endDate = "2022-12-19",
                                     program = 9)
-            
-            priorEvent.save()
-            EventRsvp.create(user = "neillz",
-                             event = priorEvent).save()
-            EventRsvp.create(user = "partont",
-                             event = priorEvent).save()
-            
-            newEvent = Event.create(name = "Req and Limit",
-                                     term = 2,
-                                     description = "Event that requries RSVP and has an RSVP limit set.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "The Moon",
-                                     isRsvpRequired = 1,
-                                     startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
-                                     program = 9)
 
             newEvent.save()
             assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
@@ -1411,8 +1413,99 @@ def test_copyRsvpToNewEvent():
             
 @pytest.mark.integration
 def test_inviteCohortsToEvent():
-    pass
+    """
+    This function creates a Bonner Scholar program, attaches an event to this program, 
+    and creates invited cohorts for this event.
+    """
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+            
+            testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
+            programEvent = Program.create(id = 13,
+                                        programName = "Bonner Scholars",
+                                        isStudentLed = False,
+                                        isBonnerScholars = True,
+                                        contactEmail = "test@email",
+                                        contactName = "testName")
+            
+            event = Event.create(name = "Upcoming Bonner Scholars Event",
+                                term = 2,
+                                description = "Test upcoming bonner event.",
+                                location = "Stephenson Building",
+                                startDate = testDate,
+                                endDate = testDate + timedelta(days=1),
+                                program = programEvent)
+            
+            cohortYears = ["2020", "2021", "2024"]
+            success, message, invitedCohorts = inviteCohortsToEvent(event, cohortYears)
+            
+            assert success is True
+            assert message == "Cohorts successfully added to new event"
+            assert invitedCohorts == [2020, 2021, 2024]
+            transaction.rollback()
 
 @pytest.mark.integration
 def test_updateEventCohorts():
-    pass
+    """
+    This function creates a Bonner Scholar program, attaches an event to this program, 
+    creates invited cohorts for this event, 
+    and updates the cohorts attached to this event.
+    """
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+            
+            testDate = datetime.strptime("2025-10-01 05:00","%Y-%m-%d %H:%M")
+            programEvent = Program.create(id = 13,
+                                          programName = "Bonner Scholars",
+                                          isStudentLed = False,
+                                          isBonnerScholars = True,
+                                          contactEmail = "test@email",
+                                          contactName = "testName")
+            
+            event = Event.create(name = "Upcoming Bonner Scholars event",
+                                 term = 2,
+                                 description = "Test upcoming bonner event.",
+                                 location = "MAC Building",
+                                 startDate = testDate,
+                                 endDate = testDate + timedelta(days=1),
+                                 program = programEvent)
+            
+            bonnerCohort1 = BonnerCohort.create(year = "2021",
+                                                user = "heggens")
+            
+            bonnerCohort2 = BonnerCohort.create(year = "2020",
+                                                user = "khatts")
+            
+            bonnerCohort3 = BonnerCohort.create(year = "2024",
+                                                user = "mupotsal")
+            
+            cohortYear1 = bonnerCohort1.year
+            cohortYear2 = bonnerCohort2.year
+            cohortYear3 = bonnerCohort3.year
+            
+            EventCohort.create(event = event,
+                                            invited_at = datetime.now(),
+                                            year = cohortYear1)
+            
+            EventCohort.create(event = event,
+                                            invited_at = datetime.now(),
+                                            year = cohortYear2)
+            
+            EventCohort.create(event = event,
+                                            invited_at = datetime.now(),
+                                            year = cohortYear3)
+            
+            cohortYears = ["2020", "2022", "2023"]
+            
+            success, message, updatedCohorts = updateEventCohorts(event, cohortYears)
+            print(1000*"*")
+            print(success, message, updatedCohorts)
+            
+            assert success is True
+            assert message == "Cohorts successfully updated for event"
+            assert updatedCohorts == [2022, 2023]
+            
+            transaction.rollback()
+
