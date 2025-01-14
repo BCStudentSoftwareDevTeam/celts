@@ -1,4 +1,4 @@
-import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
+import {getCourseInstructors, getRowUsername, createNewRow, updateEmptyTableMessage} from './instructorTable.js'
 import searchUser from './searchUser.js'
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -130,13 +130,14 @@ $(document).ready(function(e) {
   $("#instructorTable").on("click", ".removeButton", function() {
     let closestRow = $(this).closest("tr");
     let username = closestRow.data('username');
-
+    console.log(closestRow)
     // Check if the username is not empty or undefined
     if (username) {
         $("#instructorTableNames input[value='" + username + "']").remove();
         closestRow.remove();
     }
-});
+    updateEmptyTableMessage();
+  });
 
     $("#courseInstructor").on('input', function() {
         searchUser("courseInstructor", createNewRow, true, null, "instructor");

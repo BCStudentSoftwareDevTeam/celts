@@ -16,16 +16,22 @@
         placeholder="Search instructor"
         value="" />
       <table
-        class="table mb-3"
+        class="table mb-1"
         id="instructorTable"
         name="instructorTable">
         <thead>
           <tr>
-            <th scope="col">Instructor</th>
+            <th scope="col">Instructor(s)</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
+            <tr class="emptyTableMessage" {{"hidden" if courseInstructor else ""}}>
+              <td>
+                <label class="text-secondary">No instructors selected</label>
+              </td>
+              <td></td>
+            </tr>
             <tr data-username="" hidden>
                 <td>
                   <p class="mb-0"></p>
@@ -51,7 +57,6 @@
             </tr>
             {% endfor %}
         </tbody>
-
       </table>
       <div id='instructorTableNames'>
         {% for instructor in courseInstructor %}
