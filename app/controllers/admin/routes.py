@@ -333,9 +333,6 @@ def eventDisplay(eventId):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-                
-        print(1000*"*")
-        print("The bonner cohorts are ", bonnerCohorts)
 
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,

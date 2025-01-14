@@ -738,7 +738,6 @@ def inviteCohortsToEvent(event, cohortYears):
         print(f"Error inviting cohorts to new event: {e}")
         return False, f"Error adding cohorts to new event: {e}", []
 
-
 def updateEventCohorts(event, cohortYears):
     """
     Updates the cohorts for an existing event by adding new ones and removing outdated ones.
@@ -750,16 +749,6 @@ def updateEventCohorts(event, cohortYears):
         
         yearsToAdd = [int(year) for year in cohortYears if year not in precedentInvitedYears]
         
-        if not cohortYears:
-            yearsToRemove = [int(year) for year in precedentInvitedYears]
-        else:
-            yearsToRemove = [int(year) for year in precedentInvitedYears if year not in cohortYears]
-            
-        if yearsToRemove:
-            EventCohort.delete().where(
-                (EventCohort.event == event) & (EventCohort.year.in_(yearsToRemove))
-            ).execute()
-
         for year in yearsToAdd:
             EventCohort.get_or_create(
                 event=event,
@@ -771,9 +760,9 @@ def updateEventCohorts(event, cohortYears):
             rsvpForBonnerCohort(year, event.id)
             invitedCohorts.append(year)
 
-        if yearsToAdd or yearsToRemove:
+        if yearsToAdd:
             cohortList = ', '.join(map(str, invitedCohorts))
-            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}, Removed: {yearsToRemove}")
+            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}")
 
         return True, "Cohorts successfully updated for event", invitedCohorts
 

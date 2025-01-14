@@ -1500,8 +1500,6 @@ def test_updateEventCohorts():
             cohortYears = ["2020", "2022", "2023"]
             
             success, message, updatedCohorts = updateEventCohorts(event, cohortYears)
-            print(1000*"*")
-            print(success, message, updatedCohorts)
             
             assert success is True
             assert message == "Cohorts successfully updated for event"

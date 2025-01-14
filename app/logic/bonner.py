@@ -84,22 +84,6 @@ def rsvpForBonnerCohort(year, event):
                                       .where(BonnerCohort.year == year),
                                       [EventRsvp.user, EventRsvp.event, EventRsvp.rsvpTime]).on_conflict(action='IGNORE').execute()
     
-# def updateEventBonnerCohort(year, event):
-#     """
-#     Updates the Bonner Cohorts for a given event
-#     """
-#     eventCohort = EventCohort.select(EventCohort.where(event == event))
-#     EventCohort.update()
-    
-    
-# def AddEventBonnerCohort(year, event):
-#     """
-#     Adds the Bonner Cohorts for a given event
-#     """
-#     eventCohort = EventCohort.create(event == event, year == year, invited_at =)
-#     EventCohort.update()
-    
-    
 def addBonnerCohortToRsvpLog(year, event):
     """ This method adds the table information in the RSVP Log page"""
     bonnerCohort = list(BonnerCohort.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullName"))
