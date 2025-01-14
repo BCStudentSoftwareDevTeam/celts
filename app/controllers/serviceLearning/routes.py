@@ -83,7 +83,7 @@ def slcEditProposal(courseID):
         abort(403)
         
 
-@serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
+@serviceLearning_bp.route('/serviceLearning/createCourse', methods=['GET'])
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
     course = createCourse(g.current_user)
