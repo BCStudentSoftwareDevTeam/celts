@@ -1,8 +1,10 @@
 from peewee import fn
+from collections import defaultdict
 
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
+from app.models.programBan import ProgramBan
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
@@ -11,24 +13,31 @@ from app.models.event import Event
 
 def getProgramTranscript(username):
     """
-    Returns a Program query object containing all the programs for
-    current user.
+    Returns a Program query object containing all the programs for  ,
+    the current user.
     """
     # Add up hours earned in a term for each program they've participated in
-    
+
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
                       .where(EventParticipant.user == username)
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
-    transcriptData = {}
+
+    # Fetch all ProgramBan objects for the user
+    bannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
+
+    # Create a set of program IDs to remove from transcript
+    programsToRemoveFromTranscript = {bannedProgram.program_id for bannedProgram in bannedProgramsForParticipant if bannedProgram.removeFromTranscript}
+    transcriptData = defaultdict(list)
+
+    # Iterate through EventData and populate transcriptData
     for event in EventData:
-        if event.program in transcriptData:
+        if event.program.id not in programsToRemoveFromTranscript:  # Check if program is not in programs to be removed from transcript
             transcriptData[event.program].append([event.term.description, event.hoursEarned])
-        else:
-            transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
-    return transcriptData
+            
+    return dict(transcriptData)
 
 def getSlCourseTranscript(username):
     """
@@ -47,8 +56,15 @@ def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
     """
+    bannedAndTranscriptsRemoved = ProgramBan.select().where((ProgramBan.user == username) and (ProgramBan.unbanNote.is_null(True)) and (ProgramBan.removeFromTranscript == 1))
+    transcriptsRemovedIdList = [program.program_id for program in bannedAndTranscriptsRemoved]
+    
     eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-                                 .where(EventParticipant.user == username)).scalar()
+                  .join(Event, on=(EventParticipant.event == Event.id))
+                  .where((EventParticipant.user == username) & (Event.program_id.not_in(transcriptsRemovedIdList)))).scalar()
+   
+
+    
     courseHours =  (CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned))
                                     .where(CourseParticipant.user == username)).scalar()
 

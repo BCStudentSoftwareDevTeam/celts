@@ -53,7 +53,7 @@ def setup():
                                   startDate =  "2021-12-12",
                                   recurringId = None,
                                   program= 5)
-    
+
     EventParticipant.create(user = testUser,
                             event = newBonnerEvent,
                             attended = True,
@@ -112,7 +112,7 @@ def setup():
                                       startDate =  "2021-12-12",
                                       recurringId = None,
                                       program = 9)
-    
+
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,
@@ -203,4 +203,3 @@ def test_getStartYear():
         CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
         assert getStartYear('namet') == 2022
         transaction.rollback()
-
