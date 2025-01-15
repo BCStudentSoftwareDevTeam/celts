@@ -222,9 +222,11 @@
                         <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service" {% if summer_experience.experienceType == 'Bonner Scholar Summer of Service' %}checked{% endif %}>
                         <label for="bonnerService">Bonner Scholar Summer of Service</label>
                         <br>
-                        <input type="radio" id="otherExperience" name="experienceType" value="Other" {% if summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}checked{% endif %} required>
+
+                        {% set isValidExperience = summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}
+                        <input type="radio" id="otherExperience" name="experienceType" value="Other" {% if isValidExperience %}checked{% endif %} required>
                         <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
-                        <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" {% if summer_experience.experienceType in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}style="display:none;"{% endif %}>{{ summer_experience.experienceType if summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] else '' }}</textarea><br>
+                        <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" {% if isValidExperience %}style="display:none;"{% endif %}>{{ summer_experience.experienceType if isValidExperience else '' }}</textarea><br>
                     </div>
         
                     <div class="form-group">
