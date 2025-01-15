@@ -128,7 +128,7 @@
 
       {% if filepaths %}
         <div class="form-group col-md-4 mb-4">
-          {% from 'displayFilesMacro.html' import displayFiles %}
+          {% from 'macros/displayFilesMacro.html' import displayFiles %}
           {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
           {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
         </div>

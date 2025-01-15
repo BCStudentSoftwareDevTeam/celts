@@ -69,7 +69,7 @@ $(document).ready( function () {
       $("#submitImportedCourses").modal("toggle");
     });
 
-    $('#closeAddCourseParticipants').on('click', function () {
+    $('#closeAddCourseParticipants, #addCourseParticipantsXBtn').on('click', function () {
       $('#addCourseParticipants')[0].form.reset()
       $('#previewButton').prop('disabled', true)
     })
@@ -85,7 +85,7 @@ $(document).ready( function () {
       }
     }
 
-    $("#cancelModalPreview").click(function(){
+    $("#cancelModalPreview, #closeModalPreview").click(function(){
       $.ajax({
         url: "/deleteUploadedFile",
         type: 'POST',

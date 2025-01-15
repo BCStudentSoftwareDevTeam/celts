@@ -1,5 +1,6 @@
 from app.models import*
 
+
 class CourseStatus(baseModel):
     status = CharField()
     IN_PROGRESS = 1

@@ -3,30 +3,31 @@
 # Create a database backup and then migrate the database
 #########################################################
 
-if [ "$1" == "backup" ]
+# if no arguments, back up
+if [ $# -eq 0 ]
 then
-	# Get credentials
-	echo -n "Database/Schema Name: "
-	read DB
+    # Get credentials
+    echo -n "Database/Schema Name: "
+    read DB
 
-	echo -n "Application User: "
-	read USER
+    echo -n "Application User: "
+    read USER
 
-	echo -n "Application Password: "
-	read -s PASS
-	echo
+    echo -n "Application Password: "
+    read -s PASS
+    echo
 
-	CONN="-u $USER"
+    CONN="-u $USER"
 
-	BACKUP_DIR="tmp-backups"
-	mkdir "$BACKUP_DIR"
-	BACKUP_FILE="$BACKUP_DIR/`date +%F`-backup.sql"
+    BACKUP_DIR="tmp-backups"
+    mkdir "$BACKUP_DIR"
+    BACKUP_FILE="$BACKUP_DIR/`date +%F`-backup.sql"
 
-	echo -n -e "\nCreating database backup $BACKUP_FILE ... "
-	export MYSQL_PWD="$PASS"
-	mysqldump $CONN $DB > $BACKUP_FILE
-	export MYSQL_PWD=""
-	echo -e "done.\n"
+    echo -n -e "\nCreating database backup $BACKUP_FILE ... "
+    export MYSQL_PWD="$PASS"
+    mysqldump $CONN $DB > $BACKUP_FILE
+    export MYSQL_PWD=""
+    echo -e "done.\n"
 fi
 
 pem init
@@ -42,8 +43,7 @@ pem add app.models.eventTemplate.EventTemplate
 pem add app.models.eventParticipant.EventParticipant
 pem add app.models.interest.Interest
 pem add app.models.note.Note
-pem add app.models.outsideParticipant.OutsideParticipant
-pem add app.models.partner.Partner
+# pem add app.models.partner.Partner
 pem add app.models.program.Program
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
