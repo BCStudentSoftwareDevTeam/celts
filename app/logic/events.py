@@ -490,6 +490,12 @@ def getRecurringEventsData(eventData):
 
         Return a list of events to create from the event data.
     """
+    # if we are viewing one of the events in a recurring series, this function calls, which it really shouldn't
+    # it seemed complicated to prevent it from calling, so we are just making it auto exit when it is called if this
+    # is the case
+    if not eventData['endDate']:
+        return []
+
     if not isinstance(eventData['endDate'], date) or not isinstance(eventData['startDate'], date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
