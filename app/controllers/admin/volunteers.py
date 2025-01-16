@@ -1,5 +1,6 @@
-from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify
+from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
 from peewee import DoesNotExist, JOIN
+from datetime import datetime
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
@@ -197,14 +198,16 @@ def addBackgroundCheck():
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
         addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
-        return " "
+        return ""
 
 @admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
 def deleteBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
-        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
+        print("steve", bgToDelete)
+        session["bgCheckId"] = bgToDelete
+        BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: g.current_user}).where(BackgroundCheck.id == bgToDelete).execute()
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])

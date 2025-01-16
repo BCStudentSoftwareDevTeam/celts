@@ -290,7 +290,7 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", "Successfully deleted background check.")
+        msgToast("Background Check", `Successfully deleted background check. <a href="/userProfile/undo" id="bgCheckUndo">testing</a>`)
       },
       error: function(error, status){
         console.log(error,status)

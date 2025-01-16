@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 
 from app import app
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
@@ -379,7 +380,19 @@ def cancelRoute(eventId):
         
     else:
         abort(403)
-    
+
+@admin_bp.route('/userProfile/undo', methods=['GET'])
+def undoBgCheck():
+    try:
+        bgCheck = session['recentBgCheck']
+        BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheck).execute()
+        print("imran" + bgCheck)
+        flash("Deletion successfully undone.", "success")
+        return redirect('/userProfile' + str(g.current_term))
+    except Exception as e:
+        print('Error while undoing background check:', e)
+        return "", 500
+
 @admin_bp.route('/event/undo', methods=['GET'])
 def undoEvent():
     try:
