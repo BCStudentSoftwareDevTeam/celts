@@ -210,7 +210,7 @@
                     </div>
         
                     <div class="form-group">
-                        <label><strong>Which of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
+                        <label><strong>Whhhhhh of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
                         <input type="radio" id="internship" name="experienceType" value="Internship" {% if summer_experience.experienceType == 'Internship' %}checked{% endif %} required>
                         <label for="internship">Internship</label><br>
                         <input type="radio" id="cbr" name="experienceType" value="Community-based research" {% if summer_experience.experienceType == 'Community-based research' %}checked{% endif %}>
@@ -224,6 +224,8 @@
                         <br>
 
                         {% set isValidExperience = summer_experience.experienceType not in ['Internship', 'Community-based research', 'Community-Based Labor Position', 'EPG Summer Internship', 'Bonner Scholar Summer of Service'] %}
+                        <div>{{summer_experience.experienceType}}</div>
+                        <div>Hello</div>
                         <input type="radio" id="otherExperience" name="experienceType" value="Other" {% if isValidExperience %}checked{% endif %} required>
                         <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
                         <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" {% if isValidExperience %}style="display:none;"{% endif %}>{{ summer_experience.experienceType if isValidExperience else '' }}</textarea><br>

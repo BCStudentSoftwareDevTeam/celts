@@ -1,7 +1,6 @@
 import searchUser from './searchUser.js';
 
 function callback(selected) {
-  console.log('Selected student:', selected);
   $("#searchStudentsInput").val(`${selected.firstName} ${selected.lastName}`);
   $("#studentEmail").val(selected.email);
 }
