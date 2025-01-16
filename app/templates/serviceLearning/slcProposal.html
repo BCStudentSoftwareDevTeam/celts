@@ -14,21 +14,16 @@
         class="form-control"
         type="search"
         placeholder="Search instructor"
+        data-tooltip="Click on an instructor to add them"
         value="" />
       <table
         class="table mb-1"
         id="instructorTable"
         name="instructorTable">
-        <thead>
-          <tr>
-            <th scope="col">Instructor(s)</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
         <tbody>
             <tr class="emptyTableMessage" {{"hidden" if courseInstructor else ""}}>
               <td>
-                <label class="text-secondary">No instructors selected</label>
+                <label class="text-secondary ms-1"><i>No instructors selected</i></label>
               </td>
               <td></td>
             </tr>

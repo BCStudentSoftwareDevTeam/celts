@@ -31,8 +31,7 @@ export function createNewRow(selectedInstructor) {
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", `editButton-${username}`);
 
-  console.log("Added Row:")
-  console.log(username)
+  newRow.attr("data-username", username)
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
