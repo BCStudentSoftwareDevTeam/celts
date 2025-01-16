@@ -38,7 +38,7 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
-from app.logic.spreadsheet import createSpreadsheet
+from app.logic.volunteerSpreadsheet import createSpreadsheet
 
 
 @admin_bp.route('/admin/reports')
@@ -626,11 +626,26 @@ def updatecohort(year, method, username):
     else:
         flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
-
     return ""
 
-@admin_bp.route("/bonnerxls")
-def bonnerxls():
+@admin_bp.route("/allBonnerxls")
+def allBonnerxls():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newfile = makeBonnerXls()
+    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
+
+@admin_bp.route("/fiveYearBonnerxls")
+def fiveYearBonnerxls():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newfile = makeBonnerXls("last 5")
+    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
+
+@admin_bp.route("/selectedBonnerxls")
+def selectedBonnerxls():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 

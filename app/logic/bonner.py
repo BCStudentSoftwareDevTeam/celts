@@ -8,9 +8,10 @@ from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.term import Term
 from app.logic.createLogs import createRsvpLog
 
-def makeBonnerXls():
+def makeBonnerXls(selectedYears="all"):
     """
     Create and save a BonnerStudents.xlsx file with all of the current and former bonner students.
     Working with XLSX files: https://xlsxwriter.readthedocs.io/index.html
@@ -33,7 +34,11 @@ def makeBonnerXls():
     worksheet.set_column('D:D', 20)
 
     students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
-
+    if selectedYears == "last 5":
+        currentYear = Term.select(Term).where(Term.isCurrentTerm == True)
+        print(currentYear)
+        students = students.where(BonnerCohort.year )
+    
     prev_year = 0
     row = 0
     for student in students:
