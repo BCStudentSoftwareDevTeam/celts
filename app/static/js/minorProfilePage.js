@@ -7,7 +7,6 @@ function callback(selected) {
 
 $(document).ready(function() {
   $("#searchStudentsInput").on("input", function() {
-    console.log("Input event triggered");
     searchUser("searchStudentsInput", callback);
   });
 
@@ -201,9 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => console.error('Error fetching terms:', error));
 
-  const editOtherButton = document.getElementById('edit-other-proposal-button');
-  const cancelOtherButton = document.getElementById('cancel-other-edit-button');
-  const withdrawOtherButton = document.getElementById('withdraw-other-button');
+  const editOtherButton = $('#edit-other-proposal-button');
+  const cancelOtherButton = $('#cancel-other-edit-button');
+  const withdrawOtherButton = $('#withdraw-other-button');
   const otherFormFields = document.querySelectorAll('#requestOtherCommEng input, #requestOtherCommEng select, #requestOtherCommEng textarea');
 
   editOtherButton.addEventListener('click', function() {

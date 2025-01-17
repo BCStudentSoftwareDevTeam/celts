@@ -18,7 +18,6 @@ class IndividualRequirement(baseModel):
     requirement = ForeignKeyField(CertificationRequirement)
     addedBy = ForeignKeyField(User)
     addedOn = DateTimeField(default=datetime.now)
-    # summer_experience = ForeignKeyField(SummerExperience, null=True)
 
     class Meta:
         constraints = [SQL('UNIQUE (username_id, requirement_id)')]

@@ -37,7 +37,7 @@ def viewCceMinor(username):
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addASummerExperience(username):
+def addSummerExperience(username):
     try:
         createSummerExperience(username, request.form)
         flash(f'Summer Experience added successfully by {username}', 'success')
@@ -143,7 +143,6 @@ def view_other_engagement(username):
 
 
 
-@minor_bp.route('/api/terms', methods=['GET'])
 def get_terms():
     terms = Term.select()
     term_list = [{'id': term.id, 'name': term.description} for term in terms]
@@ -239,8 +238,6 @@ def requestOtherEngagement(username):
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
-
-# @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
     saveSummerExperience(username, request.form, g.current_user)
 

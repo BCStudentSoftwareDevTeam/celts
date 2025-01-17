@@ -35,22 +35,8 @@ def createSummerExperience(username, form_data):
         
         SummerExperience.create(
             user=user,
-            studentName=form_data['studentName'],
-            summerYear=form_data['summerYear'],
-            roleDescription=form_data['roleDescription'],
-            experienceType=experience_type,
-            CceMinorContentArea=content_area,
-            experienceHoursOver300=form_data['experienceHoursOver300'] == 'Yes',
-            experienceHoursBelow300=form_data.get('experienceHoursBelow300'),
-            status='Pending',
-            company=form_data['company'],
-            companyAddress=form_data['companyAddress'],
-            companyPhone=form_data['companyPhone'],
-            companyWebsite=form_data['companyWebsite'],
-            supervisorName=form_data['directSupervisor'],
-            supervisorPhone=form_data['supervisorPhone'],
-            supervisorEmail=form_data['supervisorEmail'],
-            created_at=form_data['date']
+            content_area = content_area,
+            **experience_type,
         )
         logging.info("Summer experience successfully saved.")
     except Exception as e:
