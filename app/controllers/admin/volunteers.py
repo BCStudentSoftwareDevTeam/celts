@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
@@ -203,11 +203,11 @@ def addBackgroundCheck():
 @admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
 def deleteBackgroundCheck():
     if g.current_user.isCeltsAdmin:
-        eventData = request.form
-        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
-        print("steve", bgToDelete)
-        session["bgCheckId"] = bgToDelete
-        BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: g.current_user}).where(BackgroundCheck.id == bgToDelete).execute()
+        backgroundData = request.form
+        bgToDelete = BackgroundCheck.get_by_id(backgroundData['bgID'])
+        session["lastDeletedBgCheck"] = bgToDelete.id
+        user = g.current_user
+        deleteUserBackgroundCheck(bgToDelete.id, user)
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])

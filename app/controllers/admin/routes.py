@@ -381,14 +381,14 @@ def cancelRoute(eventId):
     else:
         abort(403)
 
-@admin_bp.route('/userProfile/undo', methods=['GET'])
-def undoBgCheck():
+@admin_bp.route('/profile/undo', methods=['GET'])
+def undoBackgroundCheck():
     try:
-        bgCheck = session['recentBgCheck']
-        BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheck).execute()
-        print("imran" + bgCheck)
+        username = g.current_user
+        bgCheckId = session['lastDeletedBgCheck']
+        BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheckId).execute()
         flash("Deletion successfully undone.", "success")
-        return redirect('/userProfile' + str(g.current_term))
+        return redirect (f"/profile/{username}")
     except Exception as e:
         print('Error while undoing background check:', e)
         return "", 500
