@@ -116,44 +116,6 @@ $(document).ready(function() {
 
   toggleEditMode(false);
 
-  var withdrawButton = $('#withdraw-button');
-  var experienceIdElement = $('#experience-id');
-
-  if (withdrawButton && experienceIdElement) {
-    var experienceId = experienceIdElement.value;
-
-    withdrawButton.addEventListener('click', function(event) {
-      event.preventDefault();
-
-      if (confirm('Are you sure you want to withdraw the proposal?')) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', `/profile/${$('#username').value}/withdrawSummerExperience`, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        xhr.onload = function() {
-          if (xhr.status === 200) {
-            console.log('Proposal withdrawn successfully');
-            window.location.href = `/cceMinor/${$('#username').value}/viewProposal`;
-          } else {
-            console.log('Error withdrawing proposal');
-          }
-        };
-
-        xhr.onerror = function() {
-          console.log('Request failed');
-        };
-
-        xhr.send('experience_id=' + encodeURIComponent(experienceId));
-      } else {
-        console.log('User cancelled withdrawal');
-      }
-    });
-  } else {
-    console.log('Withdraw button or experience ID not found');
-  }
-});
-
-
 
 // ////////// js for Requesting Other Engagement //////////
 document.addEventListener('DOMContentLoaded', function() {
@@ -201,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const editOtherButton = $('#edit-other-proposal-button');
   const cancelOtherButton = $('#cancel-other-edit-button');
-  const withdrawOtherButton = $('#withdraw-other-button');
   const otherFormFields = $('#requestOtherCommEng input, #requestOtherCommEng select, #requestOtherCommEng textarea');
 
   editOtherButton.addEventListener('click', function() {
@@ -215,27 +176,3 @@ document.addEventListener('DOMContentLoaded', function() {
       $('#edit-other-buttons').style.display = 'none';
       $('#view-other-buttons').style.display = 'block';
   });
-
-  withdrawOtherButton.addEventListener('click', function() {
-      const experienceId = $('#other-experience-id').value;
-      if (experienceId && confirm('Are you sure you want to withdraw this proposal?')) {
-          fetch(`/withdrawOtherExperience/${experienceId}?tab=otherEngagement`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ experienceId: experienceId })
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  alert('Proposal withdrawn successfully.');
-                  window.location.search = "?tab=otherEngagement"; // Update URL to keep the tab
-              } else {
-                  alert('Failed to withdraw the proposal.');
-              }
-          })
-          .catch(error => console.error('Error withdrawing proposal:', error));
-      }
-  });
-});
