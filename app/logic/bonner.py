@@ -11,14 +11,19 @@ from app.models.user import User
 from app.models.term import Term
 from app.logic.createLogs import createRsvpLog
 
-def makeBonnerXls(selectedYears="all"):
+def makeBonnerXls(selectedYear, noOfYears=1):
     """
     Create and save a BonnerStudents.xlsx file with all of the current and former bonner students.
     Working with XLSX files: https://xlsxwriter.readthedocs.io/index.html
 
+    Params:
+        selectedYear: The cohort year of interest.
+        noOfYears: The number of years to be downloaded.
+
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
+    selectedYear = int(selectedYear)    # necessary cast
     filepath = app.config['files']['base_path'] + '/BonnerStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
     worksheet = workbook.add_worksheet('students')
@@ -34,10 +39,8 @@ def makeBonnerXls(selectedYears="all"):
     worksheet.set_column('D:D', 20)
 
     students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
-    if selectedYears == "last 5":
-        currentYear = Term.select(Term).where(Term.isCurrentTerm == True)
-        print(currentYear)
-        students = students.where(BonnerCohort.year )
+    currentYear = Term.select(Term).where(Term.isCurrentTerm == True)
+    students = students.where(BonnerCohort.year)
     
     prev_year = 0
     row = 0

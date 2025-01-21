@@ -45,22 +45,36 @@ $(document).ready(function(){
         }
     });
 
+    // $("#exportBonnerSpreadsheet").on('click', function() {
+    //     let url = ""
+    //     const spreadsheetType = this.getAttribute("data-type")
+    //     if (spreadsheetType == "allYears"){
+    //         url = "/allBonnerxls"
+    //     } else if (spreadsheetType == "selectYear"){
+    //         let year = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
+    //         url = `/selectedBonnerxls/${{year}}`
+    //     } else if (spreadsheetType == "last5Years"){
+    //         url = "/fiveYearBonnerxls"
+    //     }
+    //     console.log(url)
+    //     $.ajax({
+    //         url: url,
+    //         success: msgFlash("Download Successful", "success"),
+    //         error: function(error, status){
+    //             msgFlash("Download Failed", "danger")
+    //             console.log(error, status)
+    //     }})
+    // })
+
     $("#exportBonnerSpreadsheet").on('click', function() {
-        let url = ""
-        const spreadsheetType = this.getAttribute("data-type")
-        if (spreadsheetType == "allYears"){
-            url = "/allBonnerxls"
-        } else if (spreadsheetType == "selectYear"){
-            let year = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
-            url = "/selectedBonnerxls/{{year}}"
-        } else if (spreadsheetType == "last5Years"){
-            url = "/fiveYearBonnerxls"
-        }
+        const startingYear = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
+        const noOfYears = this.getAttribute("data-type")
+        const url = `/bonnerXls/${startingYear}/${noOfYears}`
         console.log(url)
         $.ajax({
             url: url,
             success: msgFlash("Download Successful", "success"),
-            error: function(error, status){
+            error: (error, status) => {
                 msgFlash("Download Failed", "danger")
                 console.log(error, status)
         }})
