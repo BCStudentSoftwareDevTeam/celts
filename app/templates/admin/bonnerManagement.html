@@ -37,7 +37,7 @@
                     {% for year in cohorts.keys()|sort|reverse %}
                         {% set show = "active" if subTab|int == year else "" %}
                         {% set aria = "true" if subTab|int == year else "false" %}
-                        <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
+                        <button class="nav-link year {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
                     {% endfor %}
                 </div>
                 <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
@@ -69,18 +69,13 @@
                     {% endfor %}
                 </div>
                 <div class="flex-column ms-2">
-                    <a href="/selectedBonnerxls" target="_blank">
-                        <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
-                        <span>Export Selected</span>
-                    </a>
+                    <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
+                    <br>
+                    <button class="btn btn-success py-2 mb-2" id="exportBonnerSpreadsheet" data-type="selectYear">Export Selected Year</button>
                     <br><br>
-                    <a href="/fiveYearBonnerxls" target="_blank">
-                        <span>Export Last 5 Years</span>
-                    </a>
+                    <button class="btn btn-success py-2 mb-2" id="exportBonnerSpreadsheet" data-type="last5Years">Export Last 5 Year</button>
                     <br><br>
-                    <a href="/allBonnerxls" target="_blank">
-                        <span>Export All</span>
-                    </a>
+                    <button class="btn btn-success py-2 mb-2" id="exportBonnerSpreadsheet" data-type="allYears">Export All Year</button>
                 </div>
             </div>
             <!-------------------- End cohort management --------------------->

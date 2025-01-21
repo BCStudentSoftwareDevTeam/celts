@@ -633,6 +633,7 @@ def allBonnerxls():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
+    print("allBonner")
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
@@ -640,16 +641,16 @@ def allBonnerxls():
 def fiveYearBonnerxls():
     if not g.current_user.isCeltsAdmin:
         abort(403)
-
+    print("fiveYear")
     newfile = makeBonnerXls("last 5")
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
-@admin_bp.route("/selectedBonnerxls")
-def selectedBonnerxls():
+@admin_bp.route("/selectedBonnerxls/<year>")
+def selectedBonnerxls(year):
     if not g.current_user.isCeltsAdmin:
         abort(403)
-
-    newfile = makeBonnerXls()
+    print(year)
+    newfile = makeBonnerXls("select", year)
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
 @admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
