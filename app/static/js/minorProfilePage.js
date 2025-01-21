@@ -25,8 +25,8 @@ $(document).ready(function() {
   });
 
   function toggleTextarea() {
-    var yesRadio = document.getElementById('yes300hours');
-    var textareaContainer = document.getElementById('hoursBelow300Container');
+    var yesRadio = $('#yes300hours');
+    var textareaContainer = $('#hoursBelow300Container');
     if (yesRadio.checked) {
       textareaContainer.style.display = 'none';
     } else {
@@ -36,8 +36,8 @@ $(document).ready(function() {
   window.toggleTextarea = toggleTextarea; 
 
   function toggleOtherExperienceTextarea() {
-    var otherRadio = document.getElementById('otherExperience');
-    var textareaContainer = document.getElementById('otherExperienceDescription');
+    var otherRadio = $('#otherExperience');
+    var textareaContainer = $('#otherExperienceDescription');
     if (otherRadio.checked) {
       textareaContainer.style.display = 'block';
     } else {
@@ -47,7 +47,7 @@ $(document).ready(function() {
   window.toggleOtherExperienceTextarea = toggleOtherExperienceTextarea;
 
   function updateYearOptions() {
-    var submissionDate = new Date(document.getElementById('date').value);
+    var submissionDate = new Date($('#date').value);
     var currentYear = submissionDate.getFullYear();
     var month = submissionDate.getMonth() + 1;
     var day = submissionDate.getDate();
@@ -69,10 +69,10 @@ $(document).ready(function() {
   }
 
   var today = new Date().toISOString().split('T')[0];
-  document.getElementById('date').value = today;
+  $('#date').value = today;
   updateYearOptions();
 
-  document.getElementById('date').addEventListener('change', updateYearOptions);
+  $('#date').addEventListener('change', updateYearOptions);
 
   $('#summerExperienceForm').on('submit', function(event) {
     event.preventDefault(); 
@@ -94,12 +94,11 @@ $(document).ready(function() {
       }
     });
   });
-
-  document.getElementById('edit-proposal-button').addEventListener('click', function() {
+ $('#edit-proposal-button').on('click', function() {
     toggleEditMode(true);
   });
 
-  document.getElementById('cancel-edit-button').addEventListener('click', function() {
+  $('#cancel-edit-button').on('click', function() {
     toggleEditMode(false);
   });
 
@@ -111,14 +110,14 @@ $(document).ready(function() {
         element.readOnly = !isEditMode;
       }
     });
-    document.getElementById('edit-buttons').style.display = isEditMode ? 'block' : 'none';
-    document.getElementById('view-buttons').style.display = isEditMode ? 'none' : 'block';
+    $('#edit-buttons').style.display = isEditMode ? 'block' : 'none';
+    $('#view-buttons').style.display = isEditMode ? 'none' : 'block';
   }
 
   toggleEditMode(false);
 
-  var withdrawButton = document.getElementById('withdraw-button');
-  var experienceIdElement = document.getElementById('experience-id');
+  var withdrawButton = $('#withdraw-button');
+  var experienceIdElement = $('#experience-id');
 
   if (withdrawButton && experienceIdElement) {
     var experienceId = experienceIdElement.value;
@@ -128,13 +127,13 @@ $(document).ready(function() {
 
       if (confirm('Are you sure you want to withdraw the proposal?')) {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', `/profile/${document.getElementById('username').value}/withdrawSummerExperience`, true);
+        xhr.open('POST', `/profile/${$('#username').value}/withdrawSummerExperience`, true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
           if (xhr.status === 200) {
             console.log('Proposal withdrawn successfully');
-            window.location.href = `/cceMinor/${document.getElementById('username').value}/viewProposal`;
+            window.location.href = `/cceMinor/${$('#username').value}/viewProposal`;
           } else {
             console.log('Error withdrawing proposal');
           }
@@ -171,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set the active tab based on the query parameter
   const params = getQueryParams();
   if (params.tab === 'otherEngagement') {
-      const otherEngagementTab = document.getElementById('otherEngagementTab'); // Adjust this to your tab element's ID
-      const tabContent = document.getElementById('otherEngagement'); // Adjust this to your tab content's ID
+      const otherEngagementTab = $('#otherEngagementTab'); // Adjust this to your tab element's ID
+      const tabContent = $('#otherEngagement'); // Adjust this to your tab content's ID
       otherEngagementTab.classList.add('active');
       tabContent.classList.add('active', 'show');
   }
@@ -186,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
           return response.json();
       })
       .then(data => {
-          const termSelect = document.getElementById('inputTerm');
+          const termSelect = $('#inputTerm');
           const termId = document.querySelector('form').dataset.termId;
           data.forEach(term => {
               const option = document.createElement('option');
@@ -203,22 +202,22 @@ document.addEventListener('DOMContentLoaded', function() {
   const editOtherButton = $('#edit-other-proposal-button');
   const cancelOtherButton = $('#cancel-other-edit-button');
   const withdrawOtherButton = $('#withdraw-other-button');
-  const otherFormFields = document.querySelectorAll('#requestOtherCommEng input, #requestOtherCommEng select, #requestOtherCommEng textarea');
+  const otherFormFields = $('#requestOtherCommEng input, #requestOtherCommEng select, #requestOtherCommEng textarea');
 
   editOtherButton.addEventListener('click', function() {
       otherFormFields.forEach(field => field.removeAttribute('disabled'));
-      document.getElementById('edit-other-buttons').style.display = 'block';
-      document.getElementById('view-other-buttons').style.display = 'none';
+      $('#edit-other-buttons').style.display = 'block';
+      $('#view-other-buttons').style.display = 'none';
   });
 
   cancelOtherButton.addEventListener('click', function() {
       otherFormFields.forEach(field => field.setAttribute('disabled', 'disabled'));
-      document.getElementById('edit-other-buttons').style.display = 'none';
-      document.getElementById('view-other-buttons').style.display = 'block';
+      $('#edit-other-buttons').style.display = 'none';
+      $('#view-other-buttons').style.display = 'block';
   });
 
   withdrawOtherButton.addEventListener('click', function() {
-      const experienceId = document.getElementById('other-experience-id').value;
+      const experienceId = $('#other-experience-id').value;
       if (experienceId && confirm('Are you sure you want to withdraw this proposal?')) {
           fetch(`/withdrawOtherExperience/${experienceId}?tab=otherEngagement`, {
               method: 'POST',
