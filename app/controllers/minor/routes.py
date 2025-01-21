@@ -47,9 +47,6 @@ def addSummerExperience(username):
         logging.error(f'An error occurred while adding the summer experience: {e}')
     return redirect(url_for('minor.viewCceMinor', username=username))
 
-
-
-
 @minor_bp.route('/profile/<username>/withdrawSummerExperience', methods=['POST'])
 def withdrawSummerExperience(username):
     try:
@@ -65,9 +62,6 @@ def withdrawSummerExperience(username):
         logging.error(f"Error withdrawing summer experience: {e}")
         flash('An error occurred while withdrawing the proposal.', 'danger')
         return jsonify({'status': 'error', 'message': 'An error occurred while withdrawing the proposal.'}), 500
-
-
-
 
 @minor_bp.route('/cceMinor/<username>/updateSummerExperience', methods=['GET', 'POST'])
 def updateSummerExperience(username):
@@ -139,15 +133,6 @@ def view_other_engagement(username):
         other_experience = None
     return render_template('minor/profile.html', user=user, other_experience=other_experience)
 
-
-
-
-def get_terms():
-    terms = Term.select()
-    term_list = [{'id': term.id, 'name': term.description} for term in terms]
-    return jsonify(term_list)
-
-
 @minor_bp.route('/withdrawOtherExperience/<int:experience_id>', methods=['POST'])
 def withdraw_other_experience(experience_id):
     try:
@@ -180,8 +165,6 @@ def edit_other_engagement(username):
     return redirect(url_for('minor.viewCceMinor', username=username))
 
 # ###############################################################################
-
-
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
@@ -237,13 +220,3 @@ def requestOtherEngagement(username):
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
-def addSummerExperience(username):
-    saveSummerExperience(username, request.form, g.current_user)
-
-    return ""
-
-@minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
-def deleteSummerExperience(username):        
-    removeSummerExperience(username)
-
-    return ""
