@@ -90,8 +90,7 @@ def updateSummerExperience(username):
         summer_experience.roleDescription = form_data['roleDescription']
         summer_experience.experienceType = experience_type
         summer_experience.CceMinorContentArea = content_area
-        summer_experience.experienceHoursOver300 = form_data['experienceHoursOver300'] == 'Yes'
-        summer_experience.experienceHoursBelow300 = form_data.get('experienceHoursBelow300')
+        summer_experience.isOver300Hours = form_data['isOver300Hours'] == 'Yes'
         summer_experience.company = form_data['company']
         summer_experience.companyAddress = form_data['companyAddress']
         summer_experience.companyPhone = form_data['companyPhone']

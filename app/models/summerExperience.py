@@ -9,8 +9,7 @@ class SummerExperience(baseModel):
     roleDescription = TextField()
     experienceType = CharField()
     contentAreas = TextField()  # Store as comma-separated values or use a related table if needed
-    experienceHoursOver300 = BooleanField()
-    experienceHoursBelow300 = CharField(null=True)  # Optional for hours if less than 300
+    isOver300Hours = BooleanField()
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")], default='Pending')
     company = CharField()
     companyAddress = CharField()
