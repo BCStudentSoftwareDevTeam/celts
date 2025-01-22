@@ -35,7 +35,6 @@ def test_deleteUserBackgroundCheck():
             addUserBackgroundCheck("zawn","CAN", "Submitted", parser.parse("2022-10-21"))
             addUserBackgroundCheck("zawn","SHS", "Submitted", parser.parse("2023-11-18"))
             testusrHistory = getUserBGCheckHistory(testusr)
-            print("here")
 
             # Check that all the users background checks have been submitted and
             # they are returned correctly. Also make sure that the background check
