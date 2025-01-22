@@ -3,8 +3,8 @@
 
 {% block scripts %}
   {{ super() }}
+  <script type="module" src="/static/js/minorProfilePage.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/cceMinorProfilePage.js') }}?u={{ lastStaticUpdate }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
 
 {% endblock %}
