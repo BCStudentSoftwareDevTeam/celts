@@ -628,29 +628,6 @@ def updatecohort(year, method, username):
         abort(500)
     return ""
 
-@admin_bp.route("/allBonnerxls")
-def allBonnerxls():
-    if not g.current_user.isCeltsAdmin:
-        abort(403)
-    newfile = makeBonnerXls()
-    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
-
-@admin_bp.route("/fiveYearBonnerxls")
-def fiveYearBonnerxls():
-    if not g.current_user.isCeltsAdmin:
-        abort(403)
-    newfile = makeBonnerXls("last 5")
-    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
-
-@admin_bp.route("/selectedBonnerxls/<year>")
-def selectedBonnerxls(year):
-    if not g.current_user.isCeltsAdmin:
-        abort(403)
-    print(year)
-    newfile = makeBonnerXls("select", year)
-    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
-
-
 @admin_bp.route("/bonnerXls/<startingYear>/<noOfYears>")
 def getBonnerXls(startingYear, noOfYears):
     if not g.current_user.isCeltsAdmin:

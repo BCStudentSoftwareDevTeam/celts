@@ -6,6 +6,7 @@ import xlsxwriter
 
 from app import app
 from app.models.bonnerCohort import BonnerCohort
+from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
@@ -36,8 +37,15 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     worksheet.set_column('C:C', 10)
     worksheet.write('D1', 'Student Email', bold)
     worksheet.set_column('D:D', 20)
-    worksheet.write('E1', 'Events Attended', bold)
-    worksheet.set_column('E:E', 40)
+
+    # add event column titles
+    bonnerEventsId = 1
+    bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
+    currentLetter = "E"    # ascii code for E
+    for bonnerEvent in bonnerEvents:
+        worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
+        worksheet.set_column(f"{currentLetter}:{currentLetter}")
+        currentLetter = chr(ord("E") + 1)
 
     selectedYear = int(selectedYear)   # necessary cast
 
@@ -59,7 +67,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
         worksheet.write(row, 1, student.user.fullName)
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
-        # use the username to query eventparticipant, join with event table, and add that data to the attended events column
+        # add a new 
 
         row += 1
 
