@@ -9,8 +9,7 @@ from app.models.otherExperience import OtherExperience
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, createOtherEngagement
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, createOtherEngagement, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 import logging
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -37,15 +36,26 @@ def viewCceMinor(username):
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    try:
-        createSummerExperience(username, request.form)
-        flash(f'Summer Experience added successfully by {username}', 'success')
-        return redirect(url_for('minor.viewProposal', username=username, activeTab='trainingEvents'))
-    except Exception as e:
-        flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-        logging.error(f'An error occurred while adding the summer experience: {e}')
-    return redirect(url_for('minor.viewCceMinor', username=username))
+@minor_bp.route('/cceMinor/<username>/updateSummerExperience', methods=['GET', 'POST'])
+def createOrUpdateSummerExperience(username):
+    formData = request.form
+    if request.path == f'/cceMinor/<username>/updateSummerExperience':
+        try: 
+            updateSummerExperience(username, formData)
+            flash(f'Summer Experience successfully updated by {username}', 'success')
+        except Exception as e:
+            flash(f'An error occurred while adding the summer experience: {e}', 'danger')
+            logging.error(f'An error occurred while adding the summer experience: {e}')
+        return ""
+    
+    else:
+        try: 
+            createSummerExperience(username, formData)
+            flash(f'Summer Experience successfully created by {username}', 'success')
+        except Exception as e:
+            flash(f'An error occurred while adding the summer experience: {e}', 'danger')
+            logging.error(f'An error occurred while adding the summer experience: {e}')
+        return redirect(url_for('minor.viewCceMinor', username=username)) 
 
 @minor_bp.route('/profile/<username>/withdrawSummerExperience', methods=['POST'])
 def withdrawSummerExperience(username):
@@ -62,43 +72,7 @@ def withdrawSummerExperience(username):
         logging.error(f"Error withdrawing summer experience: {e}")
         flash('An error occurred while withdrawing the proposal.', 'danger')
         return jsonify({'status': 'error', 'message': 'An error occurred while withdrawing the proposal.'}), 500
-
-@minor_bp.route('/cceMinor/<username>/updateSummerExperience', methods=['GET', 'POST'])
-def updateSummerExperience(username):
-    try:
-        form_data = request.form
-        user = User.get(User.username == username)
-        experience_id = form_data['experience_id']
-        summer_experience = SummerExperience.get(SummerExperience.id == experience_id)
-
-        content_area = ', '.join(form_data.getlist('contentArea'))
-        experience_type = form_data['experienceType']
-        if experience_type == 'Other':
-            other_experience_description = form_data.get('otherExperienceDescription', '')
-            if not other_experience_description:
-                raise ValueError("Other experience description is required.")
-            experience_type = other_experience_description
-
-        summer_experience.studentName = form_data['studentName']
-        summer_experience.summerYear = form_data['summerYear']
-        summer_experience.roleDescription = form_data['roleDescription']
-        summer_experience.experienceType = experience_type
-        summer_experience.CceMinorContentArea = content_area
-        summer_experience.isOver300Hours = form_data['isOver300Hours'] == 'Yes'
-        summer_experience.company = form_data['company']
-        summer_experience.companyAddress = form_data['companyAddress']
-        summer_experience.companyPhone = form_data['companyPhone']
-        summer_experience.companyWebsite = form_data['companyWebsite']
-        summer_experience.supervisorName = form_data['directSupervisor']
-        summer_experience.supervisorPhone = form_data['supervisorPhone']
-        summer_experience.supervisorEmail = form_data['supervisorEmail']
-        summer_experience.save()
-
-        flash("Proposal updated successfully.", 'success')
-        return redirect(url_for('minor.viewProposal', username=username))
-    except Exception as e:
-        flash(f"Error updating proposal: {e}", 'danger')
-        return redirect(url_for('minor.viewProposal', username=username))
+    
 
 
 # ################################################## SUMMER EXPERIENCE END ###########################################################

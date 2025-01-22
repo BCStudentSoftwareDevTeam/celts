@@ -21,29 +21,56 @@ from app.models.otherExperience import OtherExperience
 import logging
 
 
-def createSummerExperience(username, form_data):
+def createSummerExperience(username, formData):
     try:
-        logging.info(f"Form data received: {form_data}")
-
         user = User.get(User.username == username)
-        content_area = ', '.join(form_data.getlist('contentArea'))  # Combine multiple content areas
+        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
 
         # Directly assign the experience type
-        experience_type = form_data['experienceType'] if form_data['experienceType'] != 'Other' else form_data.get('otherExperienceDescription', '')
-        if experience_type == '':  # Check if the otherExperienceDescription is empty when required
+        experienceType = formData['experienceType'] if formData['experienceType'] != 'Other' else formData.get('otherExperienceDescription', '')
+        if experienceType == '':  # Check if the otherExperienceDescription is empty when required
             raise ValueError("Other experience description is required.")
         
         SummerExperience.create(
             user=user,
-            content_area = content_area,
-            **experience_type,
+            contentAreas = contentAreas,
+            **experienceType,
         )
-        logging.info("Summer experience successfully saved.")
     except Exception as e:
-        logging.error(f"Error saving summer experience: {e}")
+        print(f"Error saving summer experience: {e}")
         raise
 
+def updateSummerExperience(username, formData):
+    try:
+        user = User.get(User.username == username)
+        experienceID = formData['experienceID']
+        summerExperience: SummerExperience = SummerExperience.get(SummerExperience.id == experienceID)
 
+        contentAreas = ', '.join(formData.getlist('contentArea'))
+        experienceType = formData['experienceType']
+        if experienceType == 'Other':
+            otherExperienceDescription = formData.get('otherExperienceDescription', '')
+            if not otherExperienceDescription:
+                raise ValueError("Other experience description is required.")
+            experience_type = otherExperienceDescription
+
+        summerExperience.studentName = formData['studentName']
+        summerExperience.summerYear = formData['summerYear']
+        summerExperience.roleDescription = formData['roleDescription']
+        summerExperience.experienceType = experience_type
+        summerExperience.contentAreas = contentAreas
+        summerExperience.isOver300Hours = formData['isOver300Hours'] == 'Yes'
+        summerExperience.company = formData['company']
+        summerExperience.companyAddress = formData['companyAddress']
+        summerExperience.companyPhone = formData['companyPhone']
+        summerExperience.companyWebsite = formData['companyWebsite']
+        summerExperience.supervisorName = formData['directSupervisor']
+        summerExperience.supervisorPhone = formData['supervisorPhone']
+        summerExperience.supervisorEmail = formData['supervisorEmail']
+        summerExperience.save()
+    except Exception as e:
+        flash(f'An error occurred while adding the summer experience: {e}', 'danger')
+        print(f'An error occurred while adding the summer experience: {e}')
 
 def createOtherEngagement(username, form_data):
     try:
