@@ -129,7 +129,7 @@
                     <br>
                     <input type="radio" id="otherExperience" name="experienceType" value="Other" required>
                     <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
-                    <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" placeholder="Enter your summer experience" style="display:none;"></textarea><br>
+                    <textarea class="form-control" rows="2" cols="72" id="otherExperienceDescription" name="otherExperienceDescription" placeholder="Enter your summer experience"></textarea><br>
                 </div>
                 
                 <div class="form-group">
@@ -150,8 +150,8 @@
                     <label for="yes300hours">Yes</label><br>
                     <input type="radio" id="no300hours" name="experienceHoursOver300" value="No" onclick="toggleTextarea()">
                     <label for="no300hours">No</label>
-                    <div id="hoursBelow300Container" style="display:none;">
-                        <textarea class="form-control" rows="1" cols="72" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks."></textarea>
+                    <div id="hoursBelow300Container" class="form-group">
+                        <input class="form-control" type="text" id="experienceHoursBelow300" name="experienceHoursBelow300" placeholder="Enter the hours and number of weeks."></input>
                     </div>
                 </div>
                 

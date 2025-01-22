@@ -6,6 +6,8 @@ function callback(selected) {
 }
 
 $(document).ready(function() {
+  $('#hoursBelow300Container').hide()
+  $('#otherExperienceDescription').hide()
   $("#searchStudentsInput").on("input", function() {
     searchUser("searchStudentsInput", callback);
   });
@@ -21,16 +23,14 @@ $(document).ready(function() {
   });
 
   $("input[name='experienceHoursOver300']").on("change", function() {
-    toggleTextarea();
+    toggleUnder300HoursTextarea();
   });
 
-  function toggleTextarea() {
+  function toggleUnder300HoursTextarea() {
     var yesRadio = $('#yes300hours');
     var textareaContainer = $('#hoursBelow300Container');
-    if (yesRadio.checked) {
-      textareaContainer.style.display = 'none';
-    } else {
-      textareaContainer.style.display = 'block';
+    if (!yesRadio.checked) {
+      textareaContainer.show()
     }
   }
   window.toggleTextarea = toggleTextarea; 
