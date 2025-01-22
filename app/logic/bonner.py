@@ -23,7 +23,6 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
-    selectedYear = int(selectedYear)    # necessary cast
     filepath = app.config['files']['base_path'] + '/BonnerStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
     worksheet = workbook.add_worksheet('students')
@@ -37,10 +36,17 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     worksheet.set_column('C:C', 10)
     worksheet.write('D1', 'Student Email', bold)
     worksheet.set_column('D:D', 20)
+    worksheet.write('E1', 'Events Attended', bold)
+    worksheet.set_column('E:E', 40)
 
-    students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
-    currentYear = Term.select(Term).where(Term.isCurrentTerm == True)
-    students = students.where(BonnerCohort.year)
+    selectedYear = int(selectedYear)   # necessary cast
+
+    if noOfYears == "all":
+        students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+    else:
+        noOfYears = int(noOfYears)
+        startingYear = selectedYear - noOfYears + 1
+        students = BonnerCohort.select(BonnerCohort, User).where(BonnerCohort.year.between(startingYear, selectedYear)).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
     
     prev_year = 0
     row = 0
@@ -53,6 +59,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
         worksheet.write(row, 1, student.user.fullName)
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
+        # use the username to query eventparticipant, join with event table, and add that data to the attended events column
 
         row += 1
 

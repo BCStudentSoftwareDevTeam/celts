@@ -655,7 +655,6 @@ def selectedBonnerxls(year):
 def getBonnerXls(startingYear, noOfYears):
     if not g.current_user.isCeltsAdmin:
         abort(403)
-    print(startingYear, noOfYears, "gbayiii??")
     newfile = makeBonnerXls(startingYear, noOfYears)
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 

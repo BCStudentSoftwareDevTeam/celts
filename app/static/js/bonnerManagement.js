@@ -66,14 +66,17 @@ $(document).ready(function(){
     //     }})
     // })
 
-    $("#exportBonnerSpreadsheet").on('click', function() {
+    $(".export-spreadsheet").on('click', function() {
         const startingYear = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
-        const noOfYears = this.getAttribute("data-type")
+        const noOfYears = this.getAttribute("data-years")
         const url = `/bonnerXls/${startingYear}/${noOfYears}`
-        console.log(url)
         $.ajax({
             url: url,
-            success: msgFlash("Download Successful", "success"),
+            method: "GET",
+            success: () => {
+                msgFlash("Download Successful", "success"),
+                window.location = url
+            },
             error: (error, status) => {
                 msgFlash("Download Failed", "danger")
                 console.log(error, status)
