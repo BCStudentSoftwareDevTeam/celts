@@ -61,60 +61,6 @@ def createOrUpdateSummerExperience(username):
         return redirect(url_for('minor.viewCceMinor', username=username)) 
 
 # ################################################## SUMMER EXPERIENCE END ###########################################################
-@minor_bp.route('/cceMinor/<username>/addOtherEngagement', methods=['POST'])
-def addOtherEngagement(username):
-    try:
-        form_data = request.form
-        # Process form data and create a new OtherExperience
-        new_experience = OtherExperience.create(
-            user=User.get(User.username == username),
-            activity=form_data['experienceName'],
-            term=Term.get(Term.id == form_data['term']),
-            hours=form_data['totalHours'],
-            weeks=form_data['weeks'],
-            service=form_data['description'],
-            company=form_data['companyOrOrg']
-            # Add other fields as needed
-        )
-        flash('Other Community Engaged Experience added successfully!', 'success')
-        return redirect(url_for('minor.view_other_engagement', username=username))
-    except Exception as e:
-        flash(f'An error occurred while adding the engagement: {e}', 'danger')
-        logging.error(f'An error occurred while adding the engagement: {e}', exc_info=True)
-        return redirect(url_for('minor.view_other_engagement', username=username))
-
-@minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET'])
-def view_other_engagement(username):
-    user = User.get(User.username == username)
-    try:
-        other_experience = OtherExperience.get(OtherExperience.user == user)
-    except OtherExperience.DoesNotExist:
-        other_experience = None
-    return render_template('minor/profile.html', user=user, other_experience=other_experience)
-
-
-@minor_bp.route('/cceMinor/<username>/editOtherEngagement', methods=['POST'])
-def edit_other_engagement(username):
-    try:
-        form_data = request.form
-        experience_id = form_data['experience-id']
-        experience = OtherExperience.get(OtherExperience.id == experience_id)
-        
-        experience.activity = form_data['experienceName']
-        experience.term = Term.get(Term.id == form_data['term'])
-        experience.hours = form_data['totalHours']
-        experience.weeks = form_data['weeks']
-        experience.service = form_data['description']
-        experience.company = form_data['companyOrOrg']
-        experience.save()
-        
-        flash(f'Engagement updated successfully by {username}', 'success')
-    except Exception as e:
-        flash(f'An error occurred while updating the engagement: {e}', 'danger')
-        logging.error(f'An error occurred while updating the engagement: {e}', exc_info=True)
-    return redirect(url_for('minor.viewCceMinor', username=username))
-
-# ###############################################################################
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):

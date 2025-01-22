@@ -18,8 +18,6 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.models.summerExperience import SummerExperience
 from app.models.otherExperience import OtherExperience
-import logging
-
 
 def createSummerExperience(username, formData):
     try:
@@ -71,25 +69,6 @@ def updateSummerExperience(username, formData):
     except Exception as e:
         flash(f'An error occurred while adding the summer experience: {e}', 'danger')
         print(f'An error occurred while adding the summer experience: {e}')
-
-def createOtherEngagement(username, form_data):
-    try:
-        logging.info(f"Form data received: {form_data}")
-        user = User.get(User.username == username)
-        term = Term.get(Term.id == form_data['term'])
-
-        OtherExperience.create(
-            activity=form_data['experienceName'],
-            term=term,
-            hours=form_data['totalHours'],
-            weeks=form_data['weeks'],
-            service=form_data['description'],
-            company=form_data['companyOrOrg']
-        )
-        logging.info("Engagement successfully saved.")
-    except Exception as e:
-        logging.error(f"Error saving engagement: {e}", exc_info=True)
-        raise
 
 # ################################################
 def getEngagementTotal(engagementData):
