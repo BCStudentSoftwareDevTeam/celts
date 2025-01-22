@@ -9,7 +9,7 @@ from app.models.otherExperience import OtherExperience
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, createOtherEngagement, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 import logging
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
