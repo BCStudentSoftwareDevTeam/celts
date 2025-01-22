@@ -23,8 +23,11 @@ def viewCceMinor(username):
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
     selectedSummerTerm, summerExperience = getSummerExperience(username)
 
+    summerYears = [2021, 2022, 2023, 2024, 2025]
+
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
+                            summerYears = summerYears, 
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             summerExperience = summerExperience if summerExperience else "",
                             selectedSummerTerm = selectedSummerTerm,
@@ -56,24 +59,6 @@ def createOrUpdateSummerExperience(username):
             flash(f'An error occurred while adding the summer experience: {e}', 'danger')
             logging.error(f'An error occurred while adding the summer experience: {e}')
         return redirect(url_for('minor.viewCceMinor', username=username)) 
-
-@minor_bp.route('/profile/<username>/withdrawSummerExperience', methods=['POST'])
-def withdrawSummerExperience(username):
-    try:
-        user = User.get(User.username == username)
-        experience_id = request.form.get('experience_id')
-        
-        summer_experience = SummerExperience.get(SummerExperience.id == experience_id, SummerExperience.user == user)
-        summer_experience.delete_instance()
-        
-        flash('Summer experience proposal withdrawn successfully.', 'success')
-        return jsonify({'status': 'success', 'message': 'Summer experience proposal withdrawn successfully.'})
-    except Exception as e:
-        logging.error(f"Error withdrawing summer experience: {e}")
-        flash('An error occurred while withdrawing the proposal.', 'danger')
-        return jsonify({'status': 'error', 'message': 'An error occurred while withdrawing the proposal.'}), 500
-    
-
 
 # ################################################## SUMMER EXPERIENCE END ###########################################################
 @minor_bp.route('/cceMinor/<username>/addOtherEngagement', methods=['POST'])
@@ -107,15 +92,6 @@ def view_other_engagement(username):
         other_experience = None
     return render_template('minor/profile.html', user=user, other_experience=other_experience)
 
-@minor_bp.route('/withdrawOtherExperience/<int:experience_id>', methods=['POST'])
-def withdraw_other_experience(experience_id):
-    try:
-        experience = OtherExperience.get(OtherExperience.id == experience_id)
-        experience.delete_instance()
-        return jsonify({'status': 'success', 'message': 'Experience withdrawn successfully.'})
-    except Exception as e:
-        logging.error(f"Error withdrawing other experience: {e}", exc_info=True)
-        return jsonify({'success': False, 'An error occured while withrawing experience.': str(e)}), 500
 
 @minor_bp.route('/cceMinor/<username>/editOtherEngagement', methods=['POST'])
 def edit_other_engagement(username):
