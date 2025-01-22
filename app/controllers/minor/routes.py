@@ -9,7 +9,7 @@ from app.models.otherExperience import OtherExperience
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, createOtherEngagement, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 import logging
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -23,11 +23,20 @@ def viewCceMinor(username):
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
     selectedSummerTerm, summerExperience = getSummerExperience(username)
 
-    summerYears = [2021, 2022, 2023, 2024, 2025]
+    # def populateYear(summerYear):
+
+    #     current_time = current.datetime.now()
+    #     # first get current year (date.now)
+    #     year = current_time.year
+
+    #     # subtract the 5 from the year to populate the other years 
+    #     year = [5 - i for i in range(5)]
+
+    #     return year
 
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
-                            summerYears = summerYears, 
+                            summerYears = populateYear(summerYear), 
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             summerExperience = summerExperience if summerExperience else "",
                             selectedSummerTerm = selectedSummerTerm,
