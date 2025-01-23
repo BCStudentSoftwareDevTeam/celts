@@ -11,40 +11,13 @@
                 </div>
     
                 <div class="form-group">
-                    <br>
-                    <h4> Student Information </h4>
-                    <hr>
-                </div>
-    
-                <div class="row">
-                    <div class="form-group col-6">
-                        <label class="form-label"><strong>Student Name</strong></label>
-                        <div class="input-group">
-                            <input type="text" id="studentName" name="studentName" value="{{user.fullName}}" class="form-control" placeholder="Student's Name" autocomplete="off" readonly />
-                        </div>
-                    </div>
-                    <div class="form-group col-6">
-                        <label class="form-label"><strong>Email</strong></label>
-                        <input class="form-control" id="studentEmail" placeholder="Student's email" name="studentEmail" value="{{user.email}}" readonly />
-                        <br>
-                    </div>
-                </div>
-    
-                <div class="row">
-                    <div class="form-group col-md-6">
-                        <label class="form-label me-2" for="summerYear"><strong>Summer Year</strong></label>
-                        <select class="form-select" id="summerYear" name="summerYear" required>
-                            <option value="" disabled selected>Select Year</option>
-                            {% for year in summerYears %}
-                                 <option value="{{ year }}">{{ year }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label class="form-label me-2" for="dateCreated"><strong>Submission Date</strong></label>
-                        <br>
-                        <input class="form-control" type="date" id="date" name="date" required>
-                    </div>
+                    <label class="form-label" for="summerYear"><strong>Summer Year</strong></label>
+                    <select class="form-select" id="summerYear" name="summerYear" required>
+                        <option value="" disabled selected>Select Year</option>
+                        {% for year in summerYears %}
+                                <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
     
                 {% include "minor/companyOrganizationInformation.html" %}
