@@ -7,6 +7,8 @@ import xlsxwriter
 from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
@@ -42,10 +44,11 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     # bonner event titles
     bonnerEventsId = 1
     bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
+    bonnerEventNamesAndSpreadsheetPosition = [(bonnerEvent.name, index + 3) for index, bonnerEvent in enumerate(bonnerEvents)]
     currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
         worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
-        worksheet.set_column(f"{currentLetter}:{currentLetter}", 15)
+        worksheet.set_column(f"{currentLetter}:{currentLetter}", 30)
         currentLetter = chr(ord(f"{currentLetter}") + 1)
 
     if noOfYears == "all":
@@ -66,7 +69,19 @@ def makeBonnerXls(selectedYear, noOfYears=1):
         worksheet.write(row, 1, student.user.fullName)
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
-        # add a new 
+        # iterate through events for each student
+
+        for event, spreadsheetPosition in bonnerEventNamesAndSpreadsheetPosition:
+            worksheet.write(row, spreadsheetPosition, "Incomplete")     # default to incomplete
+            eventInfo = (
+                EventParticipant
+                .select()
+                .join(Event, on=(EventParticipant.event == Event.id))
+                .where((EventParticipant.event.name == event) & (EventParticipant.user.username == student.user.username))
+            )
+            # get completion date
+            if len(eventInfo) > 0:
+                worksheet.write(row, spreadsheetPosition, eventInfo.event.startDate)
 
         row += 1
 
