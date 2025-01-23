@@ -22,56 +22,11 @@
               <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" value="{{ other_experience.activity if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
   
-          <div class="form-group">
-              <br>
-              <h4>Company/Organization Information</h4>
-              <hr>
-          </div>
-  
-          <div class="form-group">
-              <label class="form-label" for="companyOrOrg"><strong>Name</strong></label>
-              <input class="form-control" id="companyOrOrg" placeholder="Company or organization's name" name="companyOrOrg" value="{{ other_experience.company if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-          </div>
-  
-          <div class="form-group">
-              <label class="form-label" for="otherCompanyAddress"><strong>Address</strong></label>
-              <input class="form-control" id="otherCompanyAddress" placeholder="Company or organization's physical address" name="otherCompanyAddress" value="{{ other_experience.company_address if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-          </div>
-  
-          <div class="row">
-              <div class="form-group col-6">
-                  <label class="form-label" for="otherCompanyPhone"><strong>Phone Number</strong></label>
-                  <input class="form-control phone-input" id="otherCompanyPhone" placeholder="Company or organization's phone number" name="otherCompanyPhone" value="{{ other_experience.company_phone if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-              </div>
-              <div class="form-group col-6">
-                  <label class="form-label" for="otherCompanyWebsite"><strong>Website</strong></label>
-                  <input class="form-control" id="otherCompanyWebsite" placeholder="Company or organization's website" name="otherCompanyWebsite" value="{{ other_experience.company_website if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-              </div>
-          </div>
-  
-          <div class="form-group">
-              <br>
-              <h4>Supervisor Information</h4>
-              <hr>
-          </div>
-  
-          <div class="row">
-              <div class="form-group col-12">
-                  <label class="form-label" for="otherDirectSupervisor"><strong>Direct Supervisor Name (or "Yet to be determined")</strong></label>
-                  <input class="form-control" id="otherDirectSupervisor" placeholder="Name of Direct Supervisor" name="otherDirectSupervisor" value="{{ other_experience.supervisor_name if other_experience else '' }}" {% if other_experience %}disabled{% endif %}>
-              </div>
-          </div>
-  
-          <div class="row">
-              <div class="form-group col-6">
-                  <label class="form-label" for="otherSupervisorPhone"><strong>Phone Number</strong></label>
-                  <input class="form-control phone-input" id="otherSupervisorPhone" placeholder="Supervisor's phone number" name="otherSupervisorPhone" value="{{ other_experience.supervisor_phone if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-              </div>
-              <div class="form-group col-6">
-                  <label class="form-label" for="otherSupervisorEmail"><strong>Email</strong></label>
-                  <input class="form-control email-input" id="otherSupervisorEmail" placeholder="Supervisor's email" name="otherSupervisorEmail" value="{{ other_experience.supervisor_email if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
-              </div>
-          </div>
+          {% include "minor/companyOrganizationInformation.html" %}
+
+          <br>
+
+          {% include "minor/supervisorInformation.html" %} 
   
           <div class="form-group">
               <label class="mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>

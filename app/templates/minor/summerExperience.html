@@ -47,65 +47,12 @@
                     </div>
                 </div>
     
-                <div class="form-group">
-                    <br>
-                    <h4>Company/Organization Information</h4>
-                    <hr>
-                </div>
-    
-                <div class="form-group">
-                    <label class="form-label" for="company"><strong>Name</strong></label>
-                    <input class="form-control" id="company" name="company" placeholder="Company or organization's name" required/>
-                </div>
-    
-                <br>
-    
-                <div class="form-group">
-                    <label class="form-label" for="companyAddress"><strong>Address</strong></label>
-                    <input class="form-control" id="companyAddress" name="companyAddress" placeholder="Company or organization's physical address" required/>
-                </div>
-    
-                <br>
-    
-                <div class="row">
-                    <div class="form-group col-6">
-                        <label class="form-label" for="companyPhone"><strong>Phone Number</strong></label>
-                        <input class="form-control phone-input" id="companyPhone" name="companyPhone" placeholder="Company or organization's phone number" required/>
-                    </div>
-                    <div class="form-group col-6">
-                        <label class="form-label" for="companyWebsite"><strong>Website</strong></label>
-                        <input class="form-control" id="companyWebsite" name="companyWebsite" placeholder="Company or organization's website" required/>
-                    </div>
-                </div>
-    
+                {% include "minor/companyOrganizationInformation.html" %}
+
                 <br> 
     
-                <div class="form-group">
-                    <br>
-                    <h4> Supervisor Information </h4>
-                    <hr>
-                </div>
-                <div class="row">
-                    <div class="form-group col-12">
-                        <label class="form-label" for="directSupervisor"> <strong>Direct Supervisor Name (or "Yet to be determined")</strong> </label>
-                        <input class="form-control" id="directSupervisor" placeholder="Name of Direct Supervisor" name="directSupervisor" required>
-                    </div>
-                </div>
+                {% include "minor/supervisorInformation.html" %} 
 
-                <br>
-    
-                <div class="row">
-                    <div class="form-group col-6">
-                        <label class="form-label" for="supervisorPhone"><strong>Phone Number</strong></label>
-                        <input class="form-control phone-input" id="supervisorPhone" name="supervisorPhone" placeholder="Supervisor's phone number" required/>
-                    </div>
-                    <div class="form-group col-6">
-                        <label class="form-label" for="supervisorEmail"><strong>Email</strong></label>
-                        <input class="form-control email-input" id="supervisorEmail" name="supervisorEmail" placeholder="Supervisor's email" required/>
-                        <br>
-                    </div>
-                </div>
-    
                 <div class="form-group">
                     <br>
                     <label for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
