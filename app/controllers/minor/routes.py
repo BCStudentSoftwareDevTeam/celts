@@ -25,13 +25,8 @@ def viewCceMinor(username):
     selectedSummerTerm, summerExperience = getSummerExperience(username)
 
     currentYear = datetime.now().year
-        # first get current year (date.now)
-        
 
-        # subtract the 5 from the year to populate the other years 
     summerYears = [currentYear - i for i in range(5)]
-
-
 
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
