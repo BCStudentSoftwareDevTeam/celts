@@ -24,6 +24,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
+    selectedYear = int(selectedYear)
     filepath = app.config['files']['base_path'] + '/BonnerStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
     worksheet = workbook.add_worksheet('students')
@@ -38,16 +39,14 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     worksheet.write('D1', 'Student Email', bold)
     worksheet.set_column('D:D', 20)
 
-    # add event column titles
+    # bonner event titles
     bonnerEventsId = 1
     bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
-    currentLetter = "E"    # ascii code for E
+    currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
         worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
-        worksheet.set_column(f"{currentLetter}:{currentLetter}")
-        currentLetter = chr(ord("E") + 1)
-
-    selectedYear = int(selectedYear)   # necessary cast
+        worksheet.set_column(f"{currentLetter}:{currentLetter}", 15)
+        currentLetter = chr(ord(f"{currentLetter}") + 1)
 
     if noOfYears == "all":
         students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
