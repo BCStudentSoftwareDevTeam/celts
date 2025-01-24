@@ -77,7 +77,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
                 EventParticipant
                 .select()
                 .join(Event, on=(EventParticipant.event == Event.id))
-                .where((EventParticipant.event.name == event) & (EventParticipant.user.username == student.user.username))
+                .where((EventParticipant.event.name == event) & (EventParticipant.user == student.user))
             )
             # get completion date
             if len(eventInfo) > 0:
