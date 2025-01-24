@@ -123,6 +123,12 @@ function initializeFlatpickr(obj) {
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
 
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+
+  // update datepicker start
+  var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
+  console.log("min date", minDate)
+  clonedOffering.find('.multipleOfferingStartTime').datepicker("option", "minDate", minDate)
+
   // insert values for the newly created row
   if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
@@ -358,7 +364,7 @@ function loadRepeatingOfferingToModal(offering){
     "<tr class='eventOffering'>" +
     "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
     "<td id='offeringDate'>" + eventDate + "</td>" +
-    "<td><div class='deleteGeneratedEvent'><i class='bi bi-trash btn btn-danger'></i></div></td>" +
+    "<td><div class='deleteGeneratedEvent'><span class='bi bi-trash btn btn-danger'></span></div></td>" +
     "</tr>"
   );
 }
