@@ -55,6 +55,7 @@ def createOrUpdateSummerExperience(username):
         return ""
     
     else:
+        print('hi')
         try: 
             createSummerExperience(username, formData)
             flash(f'Summer Experience successfully created by {username}', 'success')

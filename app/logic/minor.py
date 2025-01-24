@@ -28,11 +28,11 @@ def createSummerExperience(username, formData):
         experienceType = formData['experienceType'] if formData['experienceType'] != 'Other' else formData.get('otherExperienceDescription', '')
         if experienceType == '':  # Check if the otherExperienceDescription is empty when required
             raise ValueError("Other experience description is required.")
-        
+        print(formData)
         SummerExperience.create(
             user=user,
             contentAreas = contentAreas,
-            **experienceType,
+            **formData,
         )
     except Exception as e:
         print(f"Error saving summer experience: {e}")

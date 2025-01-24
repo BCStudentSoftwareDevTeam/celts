@@ -14,6 +14,8 @@ class SummerExperience(baseModel):
     company = CharField()
     companyAddress = CharField()
     companyPhone = CharField()
+    hoursNotOver300 = IntegerField(null=True)
+    weeksNotOver300 = IntegerField(null=True)
     companyWebsite = CharField()
     supervisorName = CharField()
     supervisorPhone = CharField()

@@ -42,8 +42,8 @@ $(document).ready(function() {
       contentType: false,
       processData: false,
       success: function(response) {
-        $('#pills-training').html(response);
-        $('#trainingEvents').tab('show');
+        $('#pills-summerExperience').html(response);
+        $('#summerExperience').tab('show');
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
