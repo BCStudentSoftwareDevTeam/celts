@@ -12,19 +12,21 @@ $(document).ready(function() {
 
   function toggleUnder300HoursTextarea() {
     var yesRadio = $('#yes300hours');
-    var textareaContainer = $('#hoursBelow300Container');
-    if (!yesRadio.checked) {
-      textareaContainer.show()
+    var conditionalTextBox = $('#hoursBelow300Container');
+    if (yesRadio.is(':checked')) {
+      conditionalTextBox.hide()
+    } else {
+      conditionalTextBox.show() 
     }
   }
 
   function toggleOtherExperienceTextarea() {
     var otherRadio = $('#otherExperience');
-    var textareaContainer = $('#otherExperienceDescription');
-    if (otherRadio.checked) {
-      textareaContainer.style.display = 'block';
+    var conditionalTextBox = $('#otherExperienceDescription');
+    if (otherRadio.is(':checked')) {
+      conditionalTextBox.show()
     } else {
-      textareaContainer.style.display = 'none';
+      conditionalTextBox.hide()
     }
   }
 
