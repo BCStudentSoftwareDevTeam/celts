@@ -384,45 +384,6 @@ def test_getMinorProgress():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_saveSummerExperience():
-    with mainDB.atomic() as transaction: 
-        IndividualRequirement.delete().execute()
-
-        # Add summer Experience for a user 
-        partontSummerExperience = {"summerExperience": "Test Summer Experience for Tyler", "selectedSummerTerm": "Summer 2021"}
-        
-        saveSummerExperience('partont', partontSummerExperience, 'ramsayb2')
-
-        allStudentReq = IndividualRequirement.select()
-        assert allStudentReq.count() == 1
-        assert allStudentReq[0].username_id == 'partont'
-        assert allStudentReq[0].description == 'Test Summer Experience for Tyler'
-
-        # Add a second summer engagement for the same user. The expected behavior is the engagement that was put in first 
-        # should be deleted and the only entry is new one
-
-        newPartontSummerExperience = {"summerExperience": "Second Summer Experience for Tyler", "selectedSummerTerm": "Summer 2021"}
-        
-        saveSummerExperience('partont', newPartontSummerExperience, 'ramsayb2')
-
-        allStudentReq = IndividualRequirement.select()
-        assert allStudentReq.count() == 1
-        assert allStudentReq[0].username_id == 'partont'
-        assert allStudentReq[0].description == 'Second Summer Experience for Tyler'
-
-        # Add a summer experience for another studnet and verify both students have summer experience records
-        
-        neillzSummerExperience = {"summerExperience": "Summer Experience for Zach", "selectedSummerTerm": "Summer 2021"}
-        saveSummerExperience('neillz', neillzSummerExperience, 'ramsayb2')
-        allStudentReq = IndividualRequirement.select()
-        assert allStudentReq.count() == 2
-        assert allStudentReq[0].username_id == 'partont'
-        assert allStudentReq[1].username_id == 'neillz'
-        assert allStudentReq[1].description == "Summer Experience for Zach"
-
-        transaction.rollback()
-
-@pytest.mark.integration
 def test_getSummerExperience():
     with mainDB.atomic() as transaction:
         IndividualRequirement.delete().execute()
@@ -454,19 +415,18 @@ def test_getSummerExperience():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_removeSummerExperience():
+def test_createSummerExperience():
     with mainDB.atomic() as transaction:
-        # remove the summer experience for khatts that is in test data
-
-        removeSummerExperience('khatts')
-
-        khattsNoSummerExperience = list(IndividualRequirement.select()
-                                                             .where(IndividualRequirement.username == 'khatts',
-                                                                    IndividualRequirement.description.is_null(False)))
-
-        assert khattsNoSummerExperience == []
-
-        transaction.rollback()
+        # create testing objects
+        testUser = User.create(username="FINN",
+                                firstName="Not",
+                                lastName="Yet",
+                                email="FINN@berea.edu",
+                                bnumber="B91111111")
+        
+        formData = {
+            studentName
+        }
 
 @pytest.mark.integration
 def test_getSummerTerms():

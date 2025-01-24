@@ -4,7 +4,6 @@ from app.models.user import User
 
 class SummerExperience(baseModel):
     user = ForeignKeyField(User)
-    studentName = CharField()
     summerYear = CharField()
     roleDescription = TextField()
     experienceType = CharField()
