@@ -387,7 +387,7 @@ def undoBackgroundCheck():
         username = g.current_user
         bgCheckId = session['lastDeletedBgCheck']
         BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheckId).execute()
-        flash("Deletion successfully undone.", "success")
+        flash("Background Check has been successfully restored.", "success")
         return redirect (f"/profile/{username}?accordion=background")
     except Exception as e:
         print('Error while undoing background check:', e)
@@ -409,7 +409,7 @@ def undoEvent():
                 newEventNameList = " ".join(newEventNameList)
                 Event.update({Event.name: newEventNameList}).where(Event.id==recurringEvent.id).execute()
                 nameCounter += 1 
-        flash("Deletion successfully undone.", "success")
+        flash("Event has been successfully restored.", "success")
         return redirect('/eventsList/' + str(g.current_term))
     except Exception as e:
         print('Error while canceling event:', e)
