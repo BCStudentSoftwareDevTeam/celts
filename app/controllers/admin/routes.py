@@ -388,7 +388,7 @@ def undoBackgroundCheck():
         bgCheckId = session['lastDeletedBgCheck']
         BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheckId).execute()
         flash("Deletion successfully undone.", "success")
-        return redirect (f"/profile/{username}")
+        return redirect (f"/profile/{username}?accordion=background")
     except Exception as e:
         print('Error while undoing background check:', e)
         return "", 500
