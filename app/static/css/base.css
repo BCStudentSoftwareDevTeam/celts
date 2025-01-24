@@ -124,3 +124,18 @@ form {
 .saveBtnDiv {
   text-align: center;
 }
+
+.transcriptStatus {
+  font-size: 13px;
+  margin-left: 5px; 
+  display: inline-block;
+}
+
+.onTranscript {
+  width: 147px;
+}
+
+.editIcon {
+  position: relative;
+  top: -4px;
+}

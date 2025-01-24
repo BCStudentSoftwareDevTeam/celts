@@ -1,6 +1,5 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
-
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
 function updateDate(obj) {
@@ -33,6 +32,24 @@ function format24to12HourTime(timeStr) {
     formattedTime = timeStr + " PM";
   }
   return formattedTime;
+}
+
+function format12to24HourTime(timeStr) {
+  // break the time into hours, minutes, and meridian (AM, PM)
+  const [timePart, meridian] = timeStr.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+
+  if (meridian === "PM" && hours !== 12) {
+      hours += 12;
+  } else if (meridian === "AM" && hours === 12) {
+      hours = 0; // midnight
+  }
+
+  // format hours and minutes to always be 2 digits
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}`;
 }
 
 function calculateRepeatingEventFrequency(){
@@ -82,11 +99,25 @@ function displayNotification(message) {
   });
 }
 
-function isDateInPast(dateString) {
-  const date = new Date(dateString.split('-'));
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today;
+function isDateInPast(dateString, timeString) {
+  const combineDateTime = `${dateString}T${timeString}:00`;
+  const setDate = new Date(combineDateTime).getTime();
+  const today = Date.now();
+  return setDate < today;
+}
+
+function initializeFlatpickr(obj) {
+  flatpickr(obj, {
+    enableTime: true,
+    wrap: true,
+    noCalendar: true,
+    dateFormat: "h:i K",
+    time_24hr: false,
+    minTime: "08:00",
+    maxTime: "22:00",
+    minuteIncrement: 15,
+    allowInput: true 
+  });
 }
 
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
@@ -102,6 +133,32 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
 
+  if (navigator.userAgent.indexOf("Chrome") == -1) {
+    initializeFlatpickr(clonedOffering.find('#flatpickr1'))
+    initializeFlatpickr(clonedOffering.find('#flatpickr2'))
+    $(".timepicker").prop("type", "text");
+    $(".timeIcons").prop("hidden", false);
+
+    var formattedStartTime = format24to12HourTime(clonedOffering.find(".multipleOfferingStartTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime(clonedOffering.find(".multipleOfferingEndTime").prop("defaultValue"));
+    clonedOffering.find(".multipleOfferingStartTime").val(formattedStartTime);
+    clonedOffering.find(".multipleOfferingEndTime").val(formattedEndTime);
+  }
+
+  /* still necessary?
+   
+  //this is so that the trash icon can be used to delete the event
+  clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
+    let attachedRow = $(this).closest(".eventOffering")
+    attachedRow.animate({
+        opacity: 0,
+        height: '0px'
+    }, 500, function() {
+        // After the animation completes, remove the row
+        attachedRow.remove();
+    });
+  });
+  */
   return clonedOffering
 }
 
@@ -148,7 +205,15 @@ $('#saveSeries').on('click', function() {
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
-    if(startTimeInputs[i].value < endTimeInputs[i].value){
+    let startTime = startTimeInputs[i].value
+    let endTime = endTimeInputs[i].value
+    
+    if (navigator.userAgent.indexOf("Chrome") == -1) {
+      startTime = format12to24HourTime(startTime)
+      endTime = format12to24HourTime(endTime)
+    }
+
+    if(startTime < endTime){
       $(startTimeInputs[i]).removeClass('border-red');
       $(endTimeInputs[i]).removeClass('border-red');
     } else {
@@ -178,7 +243,7 @@ $('#saveSeries').on('click', function() {
 
   // Add past date validation
   datePickerInputs.each(function(index, element) {
-    if (!allowPastStart && isDateInPast($(element).val())) {
+    if (!allowPastStart && isDateInPast($(element).val(), startTimeInputs[index].value.trim())) {
       $(element).addClass('border-red');
       hasInvalidDates = true;
     } else {
@@ -234,13 +299,21 @@ function saveOfferingsFromModal() {
     else {
       rowData = $.map($(element).find("input"), (el) => $(el).val());
     }
-      offerings.push({
+
+    let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2]
+    let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+    if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime)
+        endTime = format12to24HourTime(endTime)
+    }
+    offerings.push({
         eventName: rowData[0],
         eventDate: rowData[1],
-        startTime: isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2],
-        endTime: isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+        startTime: startTime,
+        endTime: endTime,
     })
   });
+
 
   $(dataTable).children().remove();
   let offeringsJson = JSON.stringify(offerings);
@@ -509,14 +582,8 @@ $(".startDatePicker").change(function () {
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    $('input.timepicker').timepicker({
-      timeFormat: 'hh:mm p',
-      scrollbar: true,
-      dropdown: true,
-      dynamic: true,
-      minTime: "08:00am",
-      maxTime: "10:00pm"
-    });
+    initializeFlatpickr(".flatpickr")
+    
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 

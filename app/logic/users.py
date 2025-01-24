@@ -5,6 +5,7 @@ from app.models.interest import Interest
 from app.models.note import Note
 from app.models.user import User
 from app.models.profileNote import ProfileNote
+from app.models.programBan import ProgramBan
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
@@ -76,6 +77,7 @@ def banUser(program_id, username, note, banEndDate, creator):
     banEndDate: date when the ban will end
     creator: the admin or person with authority who created the ban
     """
+        
     noteForDb = Note.create(createdBy = creator,
                             createdOn = datetime.datetime.now(),
                             noteContent = note,
@@ -103,7 +105,8 @@ def unbanUser(program_id, username, note, creator):
                             isPrivate = 0,
                             noteType = "unban")
     (ProgramBan.update(endDate = datetime.datetime.now(),
-                       unbanNote = noteForDb)
+                       unbanNote = noteForDb,
+                       removeFromTranscript = 0)
                .where(ProgramBan.program == program_id,
                       ProgramBan.user == username,
                       ProgramBan.endDate >  datetime.datetime.now())).execute()
