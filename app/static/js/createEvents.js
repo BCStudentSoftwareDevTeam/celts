@@ -3,7 +3,6 @@ let pendingmultipleEvents = []
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
 function updateDate(obj) {
-  console.log("update date is getting called")
   var selectedDate = $(obj).datepicker("getDate"); 
   var newMonth = selectedDate.getMonth();
   var newYear = selectedDate.getFullYear();
@@ -125,10 +124,9 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
 
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
 
-  // update datepicker start
-  var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
-  console.log("min date", minDate)
-  clonedOffering.find('.multipleOfferingStartTime').datepicker("option", "minDate", minDate)
+  // update datepicker start - not working right now
+  //var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
+  ////clonedOffering.find('.multipleOfferingStartTime').datepicker("option", "minDate", minDate)
 
   // insert values for the newly created row
   if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
