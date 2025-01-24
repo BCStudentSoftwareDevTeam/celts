@@ -3,6 +3,7 @@ let pendingmultipleEvents = []
 // updates max and min dates of the datepickers as the other datepicker changes
 // No need for / for Firefox compatiblity 
 function updateDate(obj) {
+  console.log("update date is getting called")
   var selectedDate = $(obj).datepicker("getDate"); 
   var newMonth = selectedDate.getMonth();
   var newYear = selectedDate.getFullYear();
@@ -151,7 +152,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
     clonedOffering.find(".multipleOfferingEndTime").val(formattedEndTime);
   }
 
-  /* still necessary?
+  /* still necessary? seems like it's already doing this somewhere
    
   //this is so that the trash icon can be used to delete the event
   clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
@@ -570,7 +571,6 @@ $(".startDatePicker").change(function () {
     let attachedRow = $(this).closest(".eventOffering")
     attachedRow.animate({
       opacity: 0,
-      height: '0px'
     }, 500, function() {
         // After the animation completes, remove the row
         attachedRow.remove();
