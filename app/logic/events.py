@@ -745,9 +745,9 @@ def updateEventCohorts(event, cohortYears):
     invitedCohorts = []
     try:
         precedentInvitedCohorts = list(EventCohort.select().where(EventCohort.event == event))
-        precedentInvitedYears = [str(precedentCohort.year) for precedentCohort in precedentInvitedCohorts]
+        precedentInvitedYears = [precedentCohort.year for precedentCohort in precedentInvitedCohorts]
         
-        yearsToAdd = [int(year) for year in cohortYears if year not in precedentInvitedYears]
+        yearsToAdd = [year for year in cohortYears if year not in precedentInvitedYears]
         
         for year in yearsToAdd:
             EventCohort.get_or_create(

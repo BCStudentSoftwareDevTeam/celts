@@ -307,10 +307,6 @@ def eventDisplay(eventId):
         if savedEvents:
             rsvpCohorts = request.form.getlist("cohorts[]")
             updateEventCohorts(savedEvents[0], rsvpCohorts)
-            for year in rsvpCohorts:
-                rsvpForBonnerCohort(int(year), event.id)
-                addBonnerCohortToRsvpLog(int(year), event.id)
-
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
