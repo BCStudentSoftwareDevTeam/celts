@@ -50,17 +50,15 @@ def createOrUpdateSummerExperience(username):
             flash(f'Summer Experience successfully updated by {username}', 'success')
         except Exception as e:
             flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-            logging.error(f'An error occurred while adding the summer experience: {e}')
-        return ""
-    
+            print(f'An error occurred while adding the summer experience: {e}')
     else:
         try: 
             createSummerExperience(username, formData)
             flash(f'Summer Experience successfully created by {username}', 'success')
         except Exception as e:
             flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-            logging.error(f'An error occurred while adding the summer experience: {e}')
-        return redirect(url_for('minor.viewCceMinor', username=username)) 
+            print(f'An error occurred while adding the summer experience: {e}')
+    return ""
 
 # ################################################## SUMMER EXPERIENCE END ###########################################################
 

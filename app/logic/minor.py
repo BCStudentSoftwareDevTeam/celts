@@ -36,6 +36,7 @@ def createSummerExperience(username, formData):
     except Exception as e:
         print(f"Error saving summer experience: {e}")
         raise
+    
 
 def updateSummerExperience(username, formData):
     try:
