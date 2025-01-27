@@ -46,6 +46,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     bonnerEventsId = 1
     bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
     bonnerEventInfo = {bonnerEvent.id:(bonnerEvent.name, index + 4) for index, bonnerEvent in enumerate(bonnerEvents)}
+    allBonnerSpreadsheetPosition = 7
     currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
         worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
@@ -71,7 +72,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
 
-        # set event fields to default incomplete
+        # set event fields to the default "incomplete" status
         for eventName, eventSpreadsheetPosition in bonnerEventInfo.values():
             worksheet.write(row, eventSpreadsheetPosition, "Incomplete")
         
@@ -82,25 +83,20 @@ def makeBonnerXls(selectedYear, noOfYears=1):
             .join(EventParticipant, on=(RequirementMatch.event == EventParticipant.event))
             .join(CertificationRequirement, on=(RequirementMatch.requirement == CertificationRequirement.id))
             .join(User, on=(EventParticipant.user == User.username))
-            .where((CertificationRequirement.certification_id == 1) & (User.username == student.user.username))
+            .where((CertificationRequirement.certification_id == bonnerEventsId) & (User.username == student.user.username))
         )
 
+        allBonnerMeetingDates = []
         for attendedEvent in bonnerEventsAttended:
             if bonnerEventInfo.get(attendedEvent.requirement.id):
                 completedEvent = bonnerEventInfo[attendedEvent.requirement.id]
                 worksheet.write(row, completedEvent[1], attendedEvent.event.startDate.strftime('%m/%d/%Y'))
+                if completedEvent[0] == "All Bonner Meeting":
+                    allBonnerMeetingDates.append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
             else:
                 raise Exception("Untracked requirements found in attended events. Debug required.")
-
-        
-
-        # for eventId, eventMetadata in bonnerEventInfo.items():
-        #     eventName, eventSpreadsheetPosition = eventMetadata[0], eventMetadata[1]
-        #     worksheet.write(row, eventSpreadsheetPosition, "Incomplete")     # default to incomplete
-        #     eventInfo = []
-        #     # get completion date
-        #     if len(eventInfo) > 0:
-        #         worksheet.write(row, eventSpreadsheetPosition, eventInfo.event.startDate)
+    
+        worksheet.write(row, allBonnerSpreadsheetPosition, ", ".join(sorted(allBonnerMeetingDates)))
 
         row += 1
 
