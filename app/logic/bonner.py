@@ -10,6 +10,7 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
+from app.models.requirementMatch import RequirementMatch
 from app.models.user import User
 from app.models.term import Term
 from app.logic.createLogs import createRsvpLog
@@ -44,7 +45,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     # bonner event titles
     bonnerEventsId = 1
     bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
-    bonnerEventNamesAndSpreadsheetPosition = [(bonnerEvent.name, index + 3) for index, bonnerEvent in enumerate(bonnerEvents)]
+    bonnerEventInfo = {bonnerEvent.id:(bonnerEvent.name, index + 4) for index, bonnerEvent in enumerate(bonnerEvents)}
     currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
         worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
@@ -69,19 +70,37 @@ def makeBonnerXls(selectedYear, noOfYears=1):
         worksheet.write(row, 1, student.user.fullName)
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
-        # iterate through events for each student
 
-        for event, spreadsheetPosition in bonnerEventNamesAndSpreadsheetPosition:
-            worksheet.write(row, spreadsheetPosition, "Incomplete")     # default to incomplete
-            eventInfo = (
-                EventParticipant
-                .select()
-                .join(Event, on=(EventParticipant.event == Event.id))
-                .where((EventParticipant.event.name == event) & (EventParticipant.user == student.user))
-            )
-            # get completion date
-            if len(eventInfo) > 0:
-                worksheet.write(row, spreadsheetPosition, eventInfo.event.startDate)
+        # set event fields to default incomplete
+        for eventName, eventSpreadsheetPosition in bonnerEventInfo.values():
+            worksheet.write(row, eventSpreadsheetPosition, "Incomplete")
+        
+        bonnerEventsAttended = (
+            RequirementMatch
+            .select()
+            .join(Event, on=(RequirementMatch.event == Event.id))
+            .join(EventParticipant, on=(RequirementMatch.event == EventParticipant.event))
+            .join(CertificationRequirement, on=(RequirementMatch.requirement == CertificationRequirement.id))
+            .join(User, on=(EventParticipant.user == User.username))
+            .where((CertificationRequirement.certification_id == 1) & (User.username == student.user.username))
+        )
+
+        for attendedEvent in bonnerEventsAttended:
+            if bonnerEventInfo.get(attendedEvent.requirement.id):
+                completedEvent = bonnerEventInfo[attendedEvent.requirement.id]
+                worksheet.write(row, completedEvent[1], attendedEvent.event.startDate.strftime('%m/%d/%Y'))
+            else:
+                raise Exception("Untracked requirements found in attended events. Debug required.")
+
+        
+
+        # for eventId, eventMetadata in bonnerEventInfo.items():
+        #     eventName, eventSpreadsheetPosition = eventMetadata[0], eventMetadata[1]
+        #     worksheet.write(row, eventSpreadsheetPosition, "Incomplete")     # default to incomplete
+        #     eventInfo = []
+        #     # get completion date
+        #     if len(eventInfo) > 0:
+        #         worksheet.write(row, eventSpreadsheetPosition, eventInfo.event.startDate)
 
         row += 1
 
