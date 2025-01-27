@@ -1,5 +1,6 @@
 from flask import g, render_template, request, abort, flash, redirect, url_for, jsonify
 from peewee import DoesNotExist
+from datetime import datetime 
 
 from app.controllers.minor import minor_bp
 from app.models.user import User
@@ -10,8 +11,6 @@ from app.models.otherExperience import OtherExperience
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
-import logging
-from datetime import datetime 
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):

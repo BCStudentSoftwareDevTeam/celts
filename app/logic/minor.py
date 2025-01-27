@@ -28,11 +28,10 @@ def createSummerExperience(username, formData):
         experienceType = formData['experienceType'] if formData['experienceType'] != 'Other' else formData.get('otherExperienceDescription', '')
         if experienceType == '':  # Check if the otherExperienceDescription is empty when required
             raise ValueError("Other experience description is required.")
-        
         SummerExperience.create(
             user=user,
             contentAreas = contentAreas,
-            **experienceType,
+            **formData,
         )
     except Exception as e:
         print(f"Error saving summer experience: {e}")
@@ -52,12 +51,13 @@ def updateSummerExperience(username, formData):
                 raise ValueError("Other experience description is required.")
             experience_type = otherExperienceDescription
 
-        summerExperience.studentName = formData['studentName']
         summerExperience.summerYear = formData['summerYear']
         summerExperience.roleDescription = formData['roleDescription']
         summerExperience.experienceType = experience_type
         summerExperience.contentAreas = contentAreas
         summerExperience.isOver300Hours = formData['isOver300Hours'] == 'Yes'
+        summerExperience.hoursNotOver300 = formData['hoursNotOver300']
+        summerExperience.weeksNotOver300 = formData['weeksNotOver300']
         summerExperience.company = formData['company']
         summerExperience.companyAddress = formData['companyAddress']
         summerExperience.companyPhone = formData['companyPhone']
