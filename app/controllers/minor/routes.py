@@ -24,9 +24,9 @@ def viewCceMinor(username):
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
     selectedSummerTerm, summerExperience = getSummerExperience(username)
 
-    currentYear = datetime.now().year
+    latestYear = datetime.now().year + 2
 
-    summerYears = [currentYear - i for i in range(5)]
+    summerYears = [latestYear - i for i in range(5)]
 
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
