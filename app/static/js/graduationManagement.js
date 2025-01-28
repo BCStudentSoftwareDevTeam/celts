@@ -140,7 +140,7 @@ $('.graduated-checkbox').change(function() {
         url: graduationURL,
         success: function(response) {
 
-            if ($('.alert').length > 1 ){
+            if ($('.alert').length >= 1 ){
 
                 $('.alert').alert('close'); 
             };
