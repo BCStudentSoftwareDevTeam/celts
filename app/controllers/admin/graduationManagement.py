@@ -26,8 +26,8 @@ def gradManagement():
                            CCEstudents = CCEusers)
 
 
-@admin_bp.route('/<username>/hasGraduated/', methods=['POST'])
-def hasGraduated(username):
+@admin_bp.route('/<username>/CheckIfGraduated/', methods=['POST'])
+def CheckIfGraduated(username):
     """
     This function 
     username: unique value of a user to correctly identify them
@@ -43,8 +43,8 @@ def hasGraduated(username):
         print(e)
         return "Error Updating Graduation Status", 500
 
-@admin_bp.route('/<username>/hasNotGraduated/', methods=['POST'])
-def hasNotGraduated(username):
+@admin_bp.route('/<username>/CheckIfNotGraduated/', methods=['POST'])
+def CheckIfNotGraduated(username):
     """
     This function removes 
     username: unique value of a user to correctly identify them
@@ -62,7 +62,7 @@ def hasNotGraduated(username):
         return "Error Updating Graduation Status", 500
 
 @admin_bp.route("/gradStudentsxls/<filterType>", methods=['GET'])
-def gradsxls(filterType):
+def GradsXls(filterType):
     if not g.current_user.isCeltsAdmin:
         abort(403)
     print(filterType, '#####')
