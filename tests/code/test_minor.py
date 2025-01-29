@@ -2,6 +2,7 @@ import pytest
 from peewee import *
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
+from werkzeug.datastructures import ImmutableMultiDict
 
 from app.models import mainDB
 from app.models.user import User
@@ -9,12 +10,13 @@ from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
+from app.models.summerExperience import SummerExperience
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
+from app.logic.minor import saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
 
 @pytest.mark.integration
@@ -418,15 +420,62 @@ def test_getSummerExperience():
 def test_createSummerExperience():
     with mainDB.atomic() as transaction:
         # create testing objects
-        testUser = User.create(username="FINN",
-                                firstName="Not",
-                                lastName="Yet",
-                                email="FINN@berea.edu",
-                                bnumber="B91111111")
+        User.create(username="FINN",
+                    firstName="Not",
+                    lastName="Yet",
+                    email="FINN@berea.edu",
+                    bnumber="B91111111")
         
-        formData = {
-            studentName
-        }
+        testFormData1 = ImmutableMultiDict({
+            "summerYear": 2025,
+            "roleDescription": "Assistant to Finn",
+            "experienceType": "Internship",
+            "contentArea": ["Power and inequality", "Civic literacy"],
+            "isOver300Hours": True,
+            "orgName": "Finn's Org",
+            "orgAddress": "Finn's House",
+            "orgPhone": "513-384-FINN",
+            "orgWebsite": "www.finn.com",
+            "supervisorName": "Finn",
+            "supervisorPhone": "513-384-FINN",
+            "supervisorEmail": "finn@finn.com",
+        })
+
+        testFormData2 = ImmutableMultiDict({
+            "summerYear": 2025,
+            "roleDescription": "Assistant to Finn",
+            "experienceType": "Some other experience type",
+            "contentArea": ["Power and inequality", "Civic literacy"],
+            "isOver300Hours": False,
+            "orgName": "Finn's Org",
+            "orgAddress": "Finn's House",
+            "orgPhone": "513-384-FINN",
+            "orgWebsite": "www.finn.com",
+            "supervisorName": "Finn",
+            "supervisorPhone": "513-384-FINN",
+            "supervisorEmail": "finn@finn.com",
+            "hoursNotOver300": 200,
+            "weeksNotOver300": 7,
+        })
+        
+        # verify FINN has no summer experiences in currently
+        initialSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+
+        assert len(initialSummerExperiences) == 0
+
+        # create the summer experience with the test data and verify FINN has a new entry
+        createSummerExperience("FINN", testFormData1)
+
+        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        assert len(newSummerExperiences) == 1
+
+        # create the summer experience with the test data and verify FINN has a new entry
+        createSummerExperience("FINN", testFormData2)
+
+        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        assert len(newSummerExperiences) == 2
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getSummerTerms():

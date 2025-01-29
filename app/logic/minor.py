@@ -20,6 +20,10 @@ from app.models.summerExperience import SummerExperience
 from app.models.otherExperience import OtherExperience
 
 def createSummerExperience(username, formData):
+    """
+        Given the username of the student and the formData which includes all of
+        the SummerExperience information, create a new SummerExperience object.
+    """
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
@@ -31,6 +35,7 @@ def createSummerExperience(username, formData):
         SummerExperience.create(
             user=user,
             contentAreas = contentAreas,
+            status="Pending",
             **formData,
         )
     except Exception as e:
