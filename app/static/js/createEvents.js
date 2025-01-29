@@ -124,10 +124,6 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
 
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
 
-  // update datepicker start - not working right now
-  //var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
-  ////clonedOffering.find('.multipleOfferingStartTime').datepicker("option", "minDate", minDate)
-
   // insert values for the newly created row
   if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
@@ -184,7 +180,6 @@ $('#saveSeries').on('click', function() {
   let hasValidTimes = true;
   let hasDuplicateListings = false;
   let hasInvalidDates = false;
-  const allowPastStart = $("#allowPastStart").is(":checked");
 
 
   // Check if the input field is empty
@@ -246,16 +241,6 @@ $('#saveSeries').on('click', function() {
     }
   }
 
-  // Add past date validation
-  datePickerInputs.each(function(index, element) {
-    if (!allowPastStart && isDateInPast($(element).val(), startTimeInputs[index].value.trim())) {
-      $(element).addClass('border-red');
-      hasInvalidDates = true;
-    } else {
-      $(element).removeClass('border-red');
-    }
-  }); 
-
   if (isEmpty){
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
@@ -267,11 +252,7 @@ $('#saveSeries').on('click', function() {
   else if (hasDuplicateListings) {
     let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
     displayNotification(eventConflictMessage);
-  }
-  else if (hasInvalidDates) {
-    displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
-  }
-  else {
+  } else {
     saveOfferingsFromModal();
     $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
