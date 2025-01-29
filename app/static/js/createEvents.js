@@ -260,7 +260,6 @@ $('#saveSeries').on('click', function() {
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalSeries').modal('hide');
-    msgFlash("Events saved!", "success");
   }
 });
 
