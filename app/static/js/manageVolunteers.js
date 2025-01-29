@@ -101,7 +101,7 @@ $(document).ready(function() {
       })
     })
 
-    var userlist = $(".recurringVolunteer").map(function(){
+    var userlist = $(".repeatingVolunteer").map(function(){
       return $(this).val()
     }).get()
     function callback(selected) {
