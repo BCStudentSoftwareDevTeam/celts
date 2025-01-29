@@ -44,6 +44,7 @@ $(document).ready(function() {
       success: function(response) {
         $('#pills-summerExperience').html(response);
         $('#summerExperience').tab('show');
+        location.reload()
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);

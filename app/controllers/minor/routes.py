@@ -52,7 +52,7 @@ def createOrUpdateSummerExperience(username):
             flash(f'An error occurred while adding the summer experience: {e}', 'danger')
             print(f'An error occurred while adding the summer experience: {e}')
     else:
-        try: 
+        try:
             createSummerExperience(username, formData)
             flash(f'Summer Experience successfully created by {username}', 'success')
         except Exception as e:
