@@ -465,12 +465,6 @@ $(".startDatePicker").change(function () {
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (isSeries) {
-      if (verifyRepeatingFields()){
-        handleRepeatingEventsChange()
-      }
-      else{
-        $("#generatedEvents").addClass("d-none");
-      }
       setViewForSeries();
       loadOfferingsToModal();
       $('#modalSeries').modal('show');
@@ -479,6 +473,7 @@ $(".startDatePicker").change(function () {
       $('#inputEventName').prop('readonly', true)
       $('#inputEventName').prop('placeholder', '')
       $('#inputEventName').val('')
+
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -541,6 +536,7 @@ $(".startDatePicker").change(function () {
         $("#generatedEvents").addClass('d-none');
         return;
       }
+
       calculateRepeatingEventFrequency();
     }
   }
