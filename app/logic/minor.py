@@ -37,40 +37,6 @@ def createSummerExperience(username, formData):
         print(f"Error saving summer experience: {e}")
         raise
     
-
-def updateSummerExperience(username, formData):
-    try:
-        user = User.get(User.username == username)
-        experienceID = formData['experienceID']
-        summerExperience: SummerExperience = SummerExperience.get(SummerExperience.id == experienceID)
-
-        contentAreas = ', '.join(formData.getlist('contentArea'))
-        experienceType = formData['experienceType']
-        if experienceType == 'Other':
-            otherExperienceDescription = formData.get('otherExperienceDescription', '')
-            if not otherExperienceDescription:
-                raise ValueError("Other experience description is required.")
-            experience_type = otherExperienceDescription
-
-        summerExperience.summerYear = formData['summerYear']
-        summerExperience.roleDescription = formData['roleDescription']
-        summerExperience.experienceType = experience_type
-        summerExperience.contentAreas = contentAreas
-        summerExperience.isOver300Hours = formData['isOver300Hours'] == 'Yes'
-        summerExperience.hoursNotOver300 = formData['hoursNotOver300']
-        summerExperience.weeksNotOver300 = formData['weeksNotOver300']
-        summerExperience.company = formData['company']
-        summerExperience.companyAddress = formData['companyAddress']
-        summerExperience.companyPhone = formData['companyPhone']
-        summerExperience.companyWebsite = formData['companyWebsite']
-        summerExperience.supervisorName = formData['directSupervisor']
-        summerExperience.supervisorPhone = formData['supervisorPhone']
-        summerExperience.supervisorEmail = formData['supervisorEmail']
-        summerExperience.save()
-    except Exception as e:
-        flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-        print(f'An error occurred while adding the summer experience: {e}')
-
 # ################################################
 def getEngagementTotal(engagementData):
     """ 

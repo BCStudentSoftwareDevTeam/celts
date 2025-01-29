@@ -41,23 +41,14 @@ def viewCceMinor(username):
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-@minor_bp.route('/cceMinor/<username>/updateSummerExperience', methods=['GET', 'POST'])
 def createOrUpdateSummerExperience(username):
     formData = request.form
-    if request.path == f'/cceMinor/<username>/updateSummerExperience':
-        try: 
-            updateSummerExperience(username, formData)
-            flash(f'Summer Experience successfully updated by {username}', 'success')
-        except Exception as e:
-            flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-            print(f'An error occurred while adding the summer experience: {e}')
-    else:
-        try:
-            createSummerExperience(username, formData)
-            flash(f'Summer Experience successfully created by {username}', 'success')
-        except Exception as e:
-            flash(f'An error occurred while adding the summer experience: {e}', 'danger')
-            print(f'An error occurred while adding the summer experience: {e}')
+    try:
+        createSummerExperience(username, formData)
+        flash(f'Summer Experience successfully created by {username}', 'success')
+    except Exception as e:
+        flash(f'An error occurred while adding the summer experience: {e}', 'danger')
+        print(f'An error occurred while adding the summer experience: {e}')
     return ""
 
 # ################################################## SUMMER EXPERIENCE END ###########################################################
