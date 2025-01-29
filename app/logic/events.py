@@ -199,7 +199,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "isService": newEventData['isService'],
                 "startDate": newEventData['startDate'],
                 "rsvpLimit": newEventData['rsvpLimit'],
-                "endDate": newEventData['startDate'],
                 "contactEmail": newEventData['contactEmail'],
                 "contactName": newEventData['contactName']
             }
@@ -246,7 +245,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
                                     Event.term == term, Event.deletionDate == None,
-                                    (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
+                                    (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
     
@@ -477,6 +476,29 @@ def preprocessEventData(eventData):
             eventData[eventDate] = parser.parse(eventData[eventDate])
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
+    
+    # Process multipleOfferingData
+    if 'multipleOfferingData' not in eventData:
+        eventData['multipleOfferingData'] = json.dumps([])
+    elif type(eventData['multipleOfferingData']) is str:
+        try:
+            multipleOfferingData = json.loads(eventData['multipleOfferingData'])
+            eventData['multipleOfferingData'] = multipleOfferingData
+            if type(multipleOfferingData) != list:
+                eventData['multipleOfferingData'] = json.dumps([])
+        except json.decoder.JSONDecodeError as e:
+            eventData['multipleOfferingData'] = json.dumps([])
+    if type(eventData['multipleOfferingData']) is list:
+        # validate the list data. Make sure there is 'eventName', 'startDate', 'timeStart', 'timeEnd', and 'isDuplicate' data
+        multipleOfferingData = eventData['multipleOfferingData']
+        for offeringDatum in multipleOfferingData:    
+            for attribute in ['eventName', 'startDate', 'timeStart', 'timeEnd']:
+                if type(offeringDatum.get(attribute)) != str:
+                    offeringDatum[attribute] = ''
+            if type(offeringDatum.get('isDuplicate')) != bool:
+                    offeringDatum['isDuplicate'] = False
+
+        eventData['multipleOfferingData'] = json.dumps(eventData['multipleOfferingData'])
         
     # Process seriesData
     if 'seriesData' not in eventData:
@@ -564,7 +586,7 @@ def getCountdownToEvent(event, *, currentDatetime=None):
     currentMorning = currentDatetime.replace(hour=0, minute=0)
 
     eventStart = datetime.combine(event.startDate, event.timeStart)
-    eventEnd = datetime.combine(event.endDate, event.timeEnd)
+    eventEnd = datetime.combine(event.startDate, event.timeEnd)
     
     if eventEnd < currentDatetime:
         return "Already passed"

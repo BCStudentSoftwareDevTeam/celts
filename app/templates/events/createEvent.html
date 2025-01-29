@@ -445,7 +445,7 @@
           <div class="row col-md-12 my-3">
 
             <div class="form-group mb-3">
-              <label class="required form-label me-2 mb-0" for="repeatingEventsName"><strong>Event Name</strong></label>
+              <label class="required form-label me-2 mb-0" for="repeatingEventsNamePicker"><strong>Event Name</strong></label>
               <div class='input-group date'>
                 <input autocomplete="off" type='text'
                   class="form-control repeatingEventsField"
@@ -477,7 +477,7 @@
             
             <!-- Repeating Event Start Time -->
             <div class="form-group col-md-3">
-              <label class="form-label me-2 mb-0" for="startTime-repeatingEventsDiv"><strong>Start Time</strong></label>
+              <label class="form-label me-2 mb-0" for="repeatingEventsStartTime"><strong>Start Time</strong></label>
               <div class="input-group flatpickr">
                 {% if eventData.repeatingEventsStartTime %}
                 {% set startTime = eventData.repeatingEventsStartTime %}
@@ -493,7 +493,7 @@
             </div>
             <!-- Repeating Event End Time -->
             <div class='form-group col-md-3'>
-              <label class="form-label me-2 mb-0" for="endTime-repeatingEventsDiv"><strong>End Time</strong></label>
+              <label class="form-label me-2 mb-0" for="repeatingEventsEndTime"><strong>End Time</strong></label>
               <div class="input-group flatpickr">
                 {% if eventData.repeatingEventsEndTime %}
                 {% set endTime = eventData.repeatingEventsEndTime %}
@@ -533,7 +533,7 @@
 
           <!--series date datepicker-->
           <div class="form-group col-md-5">
-            <label class="form-label me-2 required" for="multipleOfferingDatePicker"><strong>Event
+            <label class="form-label me-2 required" for="multipleOfferingDatePicker-{{pageLocation}}"><strong>Event
                 Date</strong></label>
             <div class='input-group date multipleOfferingDate' id="multipleOfferingDate-{{pageLocation}}"
               data-page-location="{{pageLocation}}">
@@ -565,7 +565,7 @@
           </div>
           <!--series Start Time-->
           <div class='form-group col-md-3'>
-            <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+            <label class="form-label me-2" for="multipleOfferingEndTime-{{pageLocation}}"><strong>End Time</strong></label>
             <div class="input-group flatpickr" id="flatpickr2">
               {% if eventData.timeEnd %}
                 {% set endTime = eventData.timeEnd %}

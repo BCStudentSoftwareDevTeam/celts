@@ -1,24 +1,5 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
-// updates max and min dates of the datepickers as the other datepicker changes
-// No need for / for Firefox compatiblity 
-function updateDate(obj) {
-  var selectedDate = $(obj).datepicker("getDate"); 
-  var newMonth = selectedDate.getMonth();
-  var newYear = selectedDate.getFullYear();
-  var newDay = selectedDate.getDate();
-
-  if (obj.className.includes("startDatePicker")) {
-    $("#endDatePicker-" + $(obj).data("page-location")).datepicker("option", "minDate", new Date(newYear, newMonth, newDay));
-  } else if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-" + $(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
-  }
-
-  if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(newYear, newMonth, newDay)});
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
-  }
-}
 
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
@@ -172,10 +153,6 @@ $('#saveSeries').on('click', function() {
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
-  if ($(dataTable).children().length < 1){
-    displayNotification("Please create events.")
-    return;
-  }
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
@@ -221,6 +198,10 @@ $('#saveSeries').on('click', function() {
       $(endTimeInputs[i]).addClass('border-red');
       hasValidTimes = false;
     }
+  }
+
+  if ($(dataTable).children().length < 1){
+    displayNotification("Please create events.")
   }
 
   // Check if there are duplicate event offerings
@@ -382,30 +363,38 @@ function formatDate(originalDate) {
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
+  var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
+
   //makes sure bonners toggle will stay on between event pages
-  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+  if (isEditPage) {
     if ($("#checkBonners")) {
       $("#checkBonners").prop('checked', true);
     }
   }
 
+  // don't use a minimum if we are editing an existing event
+  var minDate = new Date()
+  if (isEditPage) {
+      minDate = null;
+  }
+
   // Initialize datepicker with proper options
   $.datepicker.setDefaults({
     dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-    minDate: new Date()
+    minDate: minDate
   });
 
   $(".datePicker").datepicker({
     dateFormat: 'mm/dd/yy',
-    minDate: new Date() 
+    minDate: minDate
   });
 
-  $(".datePicker").each(function() {
-    var dateStr = $(this).val();
+  $(".datePicker").each(function(idx, el) {
+    var dateStr = $(el).val();
     if (dateStr) {
       var dateObj = new Date(dateStr);
       if (!isNaN(dateObj.getTime())) {
-        $(this).datepicker("setDate", dateObj);
+        $(el).datepicker("setDate", dateObj);
       }
     }
   });
@@ -626,14 +615,6 @@ $(document).ready(function() {
     facilitatorArray.splice(index, 1);
     $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
     $(this).closest("tr").remove();
-  });
-
-  $(".endDatePicker").change(function () {
-    updateDate(this);
-  });
-
-  $(".startDatePicker").change(function(){
-     updateDate(this)
   });
 
   $("#inputCharacters").keyup(function () {

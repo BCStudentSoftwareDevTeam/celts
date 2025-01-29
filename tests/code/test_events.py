@@ -47,7 +47,6 @@ def test_event_end():
                                     isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=1),
-                                    endDate = datetime.now() + timedelta(days=2),
                                     seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
@@ -69,7 +68,6 @@ def test_event_end():
                                     isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now(),
-                                    endDate = datetime.now() + timedelta(days=1),
                                     seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
@@ -91,7 +89,6 @@ def test_event_end():
                                     isEngagement = 0,
                                     isService = 0,
                                     startDate = datetime.now() + timedelta(days=-3),
-                                    endDate = datetime.now() + timedelta(days=-1),
                                     seriesId = None,
                                     program = 9)
         testingEvent = Event.get_by_id(testingEvent.id)
@@ -166,7 +163,6 @@ def test_preprocessEventData_dates():
     eventData = {'startDate':''}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == ''
-    assert newData['endDate'] == ''
 
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
@@ -177,13 +173,6 @@ def test_preprocessEventData_dates():
     eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == ''
-
-    # non-repeating events do not have any end dates
-    eventData = {'startDate':'09/07/21', 'endDate': ''}
-    newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == ''
 
     #repeating events have end dates
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
@@ -192,7 +181,11 @@ def test_preprocessEventData_dates():
     assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
     assert newData['startDate'] != newData['endDate']
 
-    
+    eventData = {'startDate':'09/07/21', 'isMultipleOffering': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+
+
 @pytest.mark.integration
 def test_preprocessEventData_term():
 
@@ -250,7 +243,7 @@ def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
                   'isTraining': True,'isEngagement': False,'isRepeating': False,'startDate': parser.parse('1999-12-12'),
-                  'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
+                  'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
@@ -343,7 +336,7 @@ def test_attemptSaveEvent():
     eventInfo =  { 'isTraining':'on', 'isRepeating':False, 'seriesId':None,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
-                   'endDate':'2022-06-12', 'location':"a big room",
+                   'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
@@ -373,7 +366,7 @@ def test_attemptSaveMultipleOfferings():
                     'isTraining':'on', 'isRepeating':False, 'seriesId': 1,
                     'startDate': '2021-12-12',
                     'rsvpLimit': None,
-                    'endDate':'2022-06-12', 'location':"a big room",
+                    'location':"a big room",
                     'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                     'description':"Empty Bowls Spring 2021",
                     'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
@@ -446,10 +439,10 @@ def test_attemptSaveMultipleOfferings():
 def test_saveEventToDb_create():
 
     eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
-                  'isTraining':True, 'isEngagement': False,'isRepeating': False,'isAllVolunteerTraining': True, 'seriesId':None, 'startDate': parser.parse('2021-12-12'),
-                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
+                  'isTraining':True, 'isEngagement': False,'isRepeating': False,'isAllVolunteerTraining': True, 
+                  'seriesId':None, 'startDate': parser.parse('2021-12-12'), 'location':"a big room",
+                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -480,21 +473,24 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_repeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
+                            'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
+                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
+                            'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
+                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
+                            'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
+                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
@@ -525,21 +521,24 @@ def test_saveEventToDb_repeating():
 def test_saveEventToDb_nonRepeatingSeries():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True,'isEngagement': False, 'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate':'', 'location':"this is only a test",
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
+                            'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
+                           'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                            'isTraining':True,'isEngagement': False, 'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate':'', 'location':"this is only a test",
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
+                            'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
+                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                            'isTraining':True, 'isEngagement': False,'isRepeating': False, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate':'', 'location':"this is only a test",
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+                            'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
+                            'isEngagement': False,'isRepeating': False, 'seriesId':1, 
+                            'startDate': parser.parse('12-12-2021'),'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
@@ -640,7 +639,6 @@ def test_cancelEvent():
                                     isEngagement = 1,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
                                     isCanceled = False,
                                     program = 2)
         
@@ -671,7 +669,6 @@ def test_deleteEvent():
                                     isEngagement = 1,
                                     isService = 0,
                                     startDate = "2021-12-12",
-                                    endDate = " ",
                                     seriesId = None,
                                     program = 9)
 
@@ -792,7 +789,6 @@ def test_upcomingEvents():
                                  description = "Test upcoming no program event.",
                                  location = "The moon",
                                  startDate = testDate,
-                                 endDate = testDate + timedelta(days=1),
                                  program = 9)
 
          # Create a new Program to create the new Program Event off of so the
@@ -834,7 +830,6 @@ def test_upcomingEvents():
                                        description = "Test upcoming program event.",
                                        location = "The sun",
                                        startDate = testDate,
-                                       endDate = testDate + timedelta(days=1),
                                        program = programForInterest2)
 
         newBannedProgramEvent = Event.create(name = "Upcoming event with banned program",
@@ -842,7 +837,6 @@ def test_upcomingEvents():
                                              description = "Test upcoming banned program event.",
                                              location = "The moon",
                                              startDate = testDate,
-                                             endDate = testDate + timedelta(days=1),
                                              program= programForBanning)
 
         newRecurringEvent = Event.create(name = "Recurring Event Test",
@@ -850,7 +844,6 @@ def test_upcomingEvents():
                                          description = "Test upcoming program event.",
                                          location = "The sun",
                                          startDate = date(2021,12,12),
-                                         endDate = date(2021,12,14),
                                          seriesId = 1,
                                          program= programForInterest)
 
@@ -859,7 +852,6 @@ def test_upcomingEvents():
                                           description = "Test upcoming program event.",
                                           location = "The sun",
                                           startDate = date(2021,12,14),
-                                          endDate = date(2021,12,15),
                                           seriesId = 1,
                                           program= programForInterest)
 
@@ -868,7 +860,6 @@ def test_upcomingEvents():
                                                description = "Test upcoming program event.",
                                                location = "The sun",
                                                startDate = date(2021,12,13),
-                                               endDate = date(2021,12,13),
                                                seriesId = 2,
                                                program= programForInterest)
         
@@ -877,7 +868,6 @@ def test_upcomingEvents():
                                             description = "Test multiple offering event",
                                             location = "The moon",
                                             startDate = date(2021,12,13),
-                                            endDate = date(2021,12,13),
                                             seriesId = 3,
                                             program= programForMultiple)
 
@@ -972,7 +962,6 @@ def test_volunteerHistory():
                                                 timeEnd = "21:00:00",
                                                 location = "The moon",
                                                 startDate = "2021-12-12",
-                                                endDate = "2021-12-13",
                                                 isAllVolunteerTraining = False,
                                                 program = participatedProgram)
         # Create a non-program event in the past that the test user will have
@@ -984,7 +973,6 @@ def test_volunteerHistory():
                                          timeEnd = "21:00:00",
                                          location = "The moon",
                                          startDate = "2021-12-12",
-                                         endDate = "2021-12-13",
                                          isAllVolunteerTraining = False,
                                          program = 9)
 
@@ -1054,7 +1042,6 @@ def test_getPreviousRecurringEventData():
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2021-12-5",
-                                     endDate = "2022-12-5",
                                      seriesId = 3,
                                      program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
@@ -1067,7 +1054,6 @@ def test_getPreviousRecurringEventData():
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2022-12-12",
-                                     endDate = "2022-12-12",
                                      seriesId = 3,
                                      program = 9)
         testingEvent3 = Event.create(name = "Testing delete event",
@@ -1080,7 +1066,6 @@ def test_getPreviousRecurringEventData():
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
                                      seriesId = 3,
                                      program = 9)
 
@@ -1116,7 +1101,6 @@ def test_getPreviousMultipleOfferingEventData():
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2022-12-12",
-                                     endDate = "2022-12-12",
                                      seriesId = 3,
                                      program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
@@ -1129,7 +1113,6 @@ def test_getPreviousMultipleOfferingEventData():
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
                                      seriesId = 3,
                                      program = 9)
 
@@ -1162,7 +1145,6 @@ def test_getEventRsvpCountsForTerm():
                                           isRsvpRequired = 1,
                                           rsvpLimit = 4,
                                           startDate = "2022-12-19",
-                                          endDate = "2022-12-19",
                                           program = 9)
 
         testUserToRsvp = User.create(username = 'rsvpUsr',
@@ -1195,7 +1177,6 @@ def test_getEventRsvpCount():
                                      location = "The Moon",
                                      isRsvpRequired = 1,
                                      startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
                                      program = 9)
         user_list = []
         for i in range(5):
@@ -1237,7 +1218,7 @@ def test_getCountdownToEvent():
         eventStart = currentTime + timeDifference
         eventEnd = eventStart + relativedelta(hours=1)
         irrelevantEventData = {'name': 'testing', 'term': 1, 'description': '', 'location': '', 'program': 1}
-        return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), endDate=eventEnd.date(), **irrelevantEventData)
+        return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), **irrelevantEventData)
     
     def testCountdown(expectedOutput, *, timeDifference=None, **kwargs):
         """
@@ -1314,7 +1295,6 @@ def test_copyRsvpToNewEvent():
                                     location = "The Moon",
                                     isRsvpRequired = 1,
                                     startDate = "2022-12-19",
-                                    endDate = "2022-12-19",
                                     program = 9)
             
             priorEvent.save()
@@ -1331,7 +1311,6 @@ def test_copyRsvpToNewEvent():
                                      location = "The Moon",
                                      isRsvpRequired = 1,
                                      startDate = "2022-12-19",
-                                     endDate = "2022-12-19",
                                      program = 9)
 
             newEvent.save()

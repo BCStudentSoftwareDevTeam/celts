@@ -18,7 +18,6 @@ class Event(baseModel):
     isAllVolunteerTraining = BooleanField(default=False)
     rsvpLimit = IntegerField(null=True)
     startDate = DateField()
-    endDate = DateField(null=True)
     seriesId = IntegerField(null=True)
     isRepeating = BooleanField(default=False)
     contactEmail = CharField(null=True)
@@ -47,8 +46,8 @@ class Event(baseModel):
 
     @property
     def isPastEnd(self):
-        return datetime.now() >= datetime.combine(self.endDate, self.timeEnd)
-    
+        return datetime.now() >= datetime.combine(self.startDate, self.timeEnd) 
+
     @property
     def isFirstRepeatingEvent(self):
         firstRepeatingEvent = Event.select().where(Event.seriesId==self.seriesId).order_by(Event.id).get()
