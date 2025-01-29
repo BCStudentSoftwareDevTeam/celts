@@ -2,6 +2,18 @@ $(document).ready(function() {
   $('#hoursBelow300Container').hide()
   $('#otherExperienceDescription').hide()
 
+  $('input.phone-input').inputmask('(999)-999-9999')
+  $('input.phone-input').on('input', function(){
+      let matches = $(this).val().match(/\d/g);
+      let digits = matches?matches.length:0;
+      if (digits == 0 || digits == 10){
+          this.setCustomValidity('')
+      }
+      else{
+          this.setCustomValidity('Please enter a valid phone number.')    
+          this.reportValidity()        
+      }
+  })
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
