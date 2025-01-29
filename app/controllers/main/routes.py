@@ -79,6 +79,9 @@ def events(selectedTerm, activeTab, programID):
     currentTime = datetime.datetime.now()
 
     listOfTerms = Term.select()
+    term_Order= [(term.termOrder, term.description, term.id) for term in listOfTerms]
+    print("imran", term_Order)
+
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
