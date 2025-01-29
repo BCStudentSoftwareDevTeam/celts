@@ -386,35 +386,31 @@ $(document).ready(function() {
   if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
     if ($("#checkBonners")) {
       $("#checkBonners").prop('checked', true);
-  }
-}
-// Initialize datepicker with proper options
-$.datepicker.setDefaults({
-  dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-  minDate: new Date()
-});
-
-$(".datePicker").datepicker({
-  dateFormat: 'mm/dd/yy',
-  minDate: new Date() 
-});
-
-  $(".datePicker").each(function() {
-  var dateStr = $(this).val();
-  if (dateStr) {
-    var dateObj = new Date(dateStr);
-    if (!isNaN(dateObj.getTime())) {
-      $(this).datepicker("setDate", dateObj);
     }
   }
-});
 
-// Update datepicker min and max dates on change
-$(".startDatePicker").change(function () {
-  updateDate(this);
-});
+  // Initialize datepicker with proper options
+  $.datepicker.setDefaults({
+    dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
+    minDate: new Date()
+  });
 
-    handleFileSelection("attachmentObject")
+  $(".datePicker").datepicker({
+    dateFormat: 'mm/dd/yy',
+    minDate: new Date() 
+  });
+
+  $(".datePicker").each(function() {
+    var dateStr = $(this).val();
+    if (dateStr) {
+      var dateObj = new Date(dateStr);
+      if (!isNaN(dateObj.getTime())) {
+        $(this).datepicker("setDate", dateObj);
+      }
+    }
+  });
+
+  handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
     if ($("#checkRSVP").is(":checked")) {
@@ -423,6 +419,7 @@ $(".startDatePicker").change(function () {
       $("#limitGroup").hide();
     }
   });
+
   // Determine which checkbox was clicked and its current checked status, uncheck others
   let typeBoxes = $("#checkIsTraining, #checkServiceHours, #checkEngagement, #checkBonners")
   typeBoxes.on('click', function (event) {
@@ -524,14 +521,20 @@ $(".startDatePicker").change(function () {
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
       let endTime = $("#repeatingEventsEndTime").val();
+
+      if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime)
+        endTime = format12to24HourTime(endTime)
+      }
+
       if (endDate <= startDate) {
-        displayNotification("Invalid dates.");
+        displayNotification("The end date must be after the start date.");
         table.each(function(){$(this).remove()})
         $("#generatedEvents").addClass('d-none');
         return;
       }
       if (endTime <= startTime){
-        displayNotification("Invalid times.");
+        displayNotification("The end time must be after the start time.");
         table.each(function(){$(this).remove()})
         $("#generatedEvents").addClass('d-none');
         return;
@@ -571,6 +574,7 @@ $(".startDatePicker").change(function () {
     var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
     $(".startTime").val(formattedStartTime);
     $(".endTime").val(formattedEndTime);
+
   } else {
     $(".timepicker").prop("type", "time");
     $(".timeIcons").prop("hidden", true);
