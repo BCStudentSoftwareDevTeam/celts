@@ -354,7 +354,7 @@ function updateOfferingsTable() {
   var offeringsTable = $("#offeringsTable");
   offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
-    //fromat to 12hr time for display
+    //format to 12hr time for display
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
@@ -371,8 +371,8 @@ function updateOfferingsTable() {
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
-  //ensures that time zone is not inconsistent, keeping the date consistent with what the user selects
-  dateObj.setUTCHours(0, 0, 0, 0);
+  // dateObj.setUTCHours(0, 0, 0, 0); // set the timezone
+
   var month = dateObj.toLocaleString('default', { month: 'short' });
   var day = dateObj.getUTCDate();
   var year = dateObj.getUTCFullYear();
