@@ -11,7 +11,7 @@ from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
-from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
+from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.createLogs import createActivityLog, createRsvpLog
@@ -73,7 +73,7 @@ def manageVolunteersPage(eventID):
 
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
-        recurringVolunteers = getPreviousRecurringEventData(event.recurringId)
+        repeatingVolunteers = getPreviousSeriesEventData(event.seriesId)
 
         currentRsvpAmount = getEventRsvpCount(event.id)
 
@@ -84,7 +84,7 @@ def manageVolunteersPage(eventID):
                                 eventWaitlistData = eventWaitlistData,
                                 eventLength = eventLengthInHours,
                                 event = event,
-                                recurringVolunteers = recurringVolunteers,
+                                repeatingVolunteers = repeatingVolunteers,
                                 bannedUsersForProgram = bannedUsersForProgram,
                                 trainedParticipantsForProgramAndTerm = trainedParticipantsForProgramAndTerm,
                                 participationStatusForTrainings = participationStatusForTrainings,
