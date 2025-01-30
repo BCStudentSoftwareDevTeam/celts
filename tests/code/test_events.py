@@ -298,6 +298,7 @@ def test_calculateRecurringEventFrequency():
 
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
+                 'endDate': parser.parse("03/11/2023")}
 
     # test correct response
     returnedEvents = getRepeatingEventsData(eventInfo)
@@ -1283,11 +1284,8 @@ def test_copyRsvpToNewEvent():
                                       startDate = "2022-12-19",
                                       program = 9)
             
-            priorEvent.save()
-            EventRsvp.create(user = "neillz",
-                             event = priorEvent).save()
-            EventRsvp.create(user = "partont",
-                             event = priorEvent).save()
+            EventRsvp.create(user = "neillz", event = priorEvent)
+            EventRsvp.create(user = "partont", event = priorEvent)
             
             newEvent = Event.create(name = "Req and Limit",
                                     term = 2,
@@ -1299,23 +1297,7 @@ def test_copyRsvpToNewEvent():
                                     startDate = "2022-12-19",
                                     program = 9)
             
-            priorEvent.save()
-            EventRsvp.create(user = "neillz",
-                             event = priorEvent).save()
-            EventRsvp.create(user = "partont",
-                             event = priorEvent).save()
-            
-            newEvent = Event.create(name = "Req and Limit",
-                                     term = 2,
-                                     description = "Event that requries RSVP and has an RSVP limit set.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "The Moon",
-                                     isRsvpRequired = 1,
-                                     startDate = "2022-12-19",
-                                     program = 9)
 
-            newEvent.save()
             assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 0
             
@@ -1384,38 +1366,21 @@ def test_updateEventCohorts():
                                  startDate = testDate,
                                  program = programEvent)
             
-            bonnerCohort1 = BonnerCohort.create(year = "2021",
-                                                user = "heggens")
+            bonnerCohort1 = BonnerCohort.create(year = "2021", user = "heggens")
+            bonnerCohort2 = BonnerCohort.create(year = "2020", user = "khatts")
+            bonnerCohort3 = BonnerCohort.create(year = "2024", user = "mupotsal")
             
-            bonnerCohort2 = BonnerCohort.create(year = "2020",
-                                                user = "khatts")
-            
-            bonnerCohort3 = BonnerCohort.create(year = "2024",
-                                                user = "mupotsal")
-            
-            cohortYear1 = bonnerCohort1.year
-            cohortYear2 = bonnerCohort2.year
-            cohortYear3 = bonnerCohort3.year
-            
-            EventCohort.create(event = event,
-                                            invited_at = datetime.now(),
-                                            year = cohortYear1)
-            
-            EventCohort.create(event = event,
-                                            invited_at = datetime.now(),
-                                            year = cohortYear2)
-            
-            EventCohort.create(event = event,
-                                            invited_at = datetime.now(),
-                                            year = cohortYear3)
+            # create invite records for the above 3 cohorts
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort1.year)
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort2.year)
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort3.year)
             
             cohortYears = ["2020", "2022", "2023"]
-            
             success, message, updatedCohorts = updateEventCohorts(event, cohortYears)
             
             assert success is True
             assert message == "Cohorts successfully updated for event"
-            assert updatedCohorts == [2022, 2023]
+            assert updatedCohorts == ["2022", "2023"]
             
             transaction.rollback()
 
