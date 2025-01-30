@@ -8,6 +8,7 @@ from app import app
 from app.models.bonnerCohort import BonnerCohort
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.eventCohort import EventCohort
 from app.logic.createLogs import createRsvpLog
 
 def makeBonnerXls():
@@ -90,4 +91,4 @@ def addBonnerCohortToRsvpLog(year, event):
                                     .where(BonnerCohort.year == year))
     for bonner in bonnerCohort:
         fullName = bonner.fullName
-        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.")
+        createRsvpLog(eventId=event, content=f"Added {fullName} to RSVP list.") 
