@@ -7,9 +7,13 @@ $(document).ready(function(){
       rsvpForEvent($("#rsvpBtn").val())
   })
   //ensure that toggle state is consistent across terms
-  var toggleState = sessionStorage.getItem('toggleState') || 'unchecked';
-  var viewPastEventsToggle = $("#viewPastEventsToggle");
-  viewPastEventsToggle.prop('checked', toggleState === 'checked');
+  if (!g_isPastTerm) {
+    var toggleState = sessionStorage.getItem('toggleState') || 'unchecked';
+    var viewPastEventsToggle = $("#viewPastEventsToggle");
+    viewPastEventsToggle.prop('checked', toggleState === 'checked');
+  } else {
+    viewPastEventsToggle.prop('checked', true); 
+  }
   var isChecked = viewPastEventsToggle.prop("checked");
   toggleRows(isChecked);
   
