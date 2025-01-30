@@ -22,8 +22,10 @@ from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.bonnerCohort import BonnerCohort
+from app.models.eventCohort import EventCohort
 
-from app.logic.events import preprocessEventData, validateNewEventData, getRepeatingEventsData
+from app.logic.events import preprocessEventData, validateNewEventData, getRepeatingEventsData, inviteCohortsToEvent, updateEventCohorts
 from app.logic.events import attemptSaveEvent, attemptSaveMultipleOfferings, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewSeriesId, getPreviousSeriesEventData, getUpcomingEventsForUser, calculateNewSeriesId
 from app.logic.events import deleteEventAndAllFollowing, deleteAllEventsInSeries, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
@@ -164,24 +166,12 @@ def test_preprocessEventData_dates():
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == ''
 
-    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
+    eventData = {'startDate':'09/07/21', 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
 
     # test different date formats
-    eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRepeating': 'on'}
-    newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-
-    #repeating events have end dates
-    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRepeating': 'on'}
-    newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
-    assert newData['startDate'] != newData['endDate']
-
-    eventData = {'startDate':'09/07/21', 'isMultipleOffering': 'on'}
+    eventData = {'startDate':parser.parse('09/07/21'), 'isRepeating': 'on'}
     newData = preprocessEventData(eventData)
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
 
@@ -275,7 +265,6 @@ def test_wrongValidateNewEventData():
 
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
-    eventData['endDate'] = parser.parse('2022-06-12')
     for boolKey in ['isRsvpRequired', 'isTraining', 'isEngagement','isService', 'isRepeating']:
         eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -285,7 +274,6 @@ def test_wrongValidateNewEventData():
 
     # testing event starts after it ends.
     eventData["startDate"] = parser.parse('2021-06-12')
-    eventData["endDate"] = parser.parse('2021-06-12')
     eventData["timeStart"] =  '21:39'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
@@ -293,7 +281,6 @@ def test_wrongValidateNewEventData():
 
     # testing same event already exists if no event id
     eventData["startDate"] = parser.parse('2021-10-12')
-    eventData["endDate"] = parser.parse('2022-06-12')
     eventData["location"] = "Seabury Center"
     eventData["timeStart"] = '18:00'
     eventData["timeEnd"] =  '21:00'
@@ -311,7 +298,7 @@ def test_calculateRecurringEventFrequency():
 
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
-                 'endDate': parser.parse("03/9/2023")}
+                 'endDate': parser.parse("03/11/2023")}
 
     # test correct response
     returnedEvents = getRepeatingEventsData(eventInfo)
@@ -326,7 +313,6 @@ def test_calculateRecurringEventFrequency():
 
     # test non-recurring
     eventInfo["startDate"] = '2021/06/07'
-    eventInfo["endDate"] = '2021/06/07'
     with pytest.raises(Exception):
         returnedEvents = getRepeatingEventsData(eventInfo)
 
@@ -595,7 +581,6 @@ def test_saveEventToDb_update():
                         'isAllVolunteerTraining': True,
                         'isService': False,
                         "startDate": "2021-12-12",
-                        "endDate": "2022-6-12",
                         "contactName": "Monkey D. Luffy",
                         "contactEmail": "goatpiece@berea.edu",
                         "valid": True
@@ -685,23 +670,25 @@ def test_deleteEvent():
         transaction.rollback()
 
         # create repeating events
-        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
+                    'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
+                    'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
+                    'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 2','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
+                    'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
+                    'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                    'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 3','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
+                    'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
+                    'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                    'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 3','term':1,
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
         event_1['valid'] = True
         event_2['valid'] = True
@@ -1288,6 +1275,19 @@ def test_copyRsvpToNewEvent():
 
 
             priorEvent = Event.create(name = "Req and Limit",
+                                      term = 2,
+                                      description = "Event that requries RSVP and has an RSVP limit set.",
+                                      timeStart = "6:00 pm",
+                                      timeEnd = "9:00 pm",
+                                      location = "The Moon",
+                                      isRsvpRequired = 1,
+                                      startDate = "2022-12-19",
+                                      program = 9)
+            
+            EventRsvp.create(user = "neillz", event = priorEvent)
+            EventRsvp.create(user = "partont", event = priorEvent)
+            
+            newEvent = Event.create(name = "Req and Limit",
                                     term = 2,
                                     description = "Event that requries RSVP and has an RSVP limit set.",
                                     timeStart = "6:00 pm",
@@ -1297,23 +1297,7 @@ def test_copyRsvpToNewEvent():
                                     startDate = "2022-12-19",
                                     program = 9)
             
-            priorEvent.save()
-            EventRsvp.create(user = "neillz",
-                             event = priorEvent).save()
-            EventRsvp.create(user = "partont",
-                             event = priorEvent).save()
-            
-            newEvent = Event.create(name = "Req and Limit",
-                                     term = 2,
-                                     description = "Event that requries RSVP and has an RSVP limit set.",
-                                     timeStart = "6:00 pm",
-                                     timeEnd = "9:00 pm",
-                                     location = "The Moon",
-                                     isRsvpRequired = 1,
-                                     startDate = "2022-12-19",
-                                     program = 9)
 
-            newEvent.save()
             assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 0
             
@@ -1321,3 +1305,82 @@ def test_copyRsvpToNewEvent():
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
 
             transaction.rollback()
+            
+            
+@pytest.mark.integration
+def test_inviteCohortsToEvent():
+    """
+    This function creates a Bonner Scholar program, attaches an event to this program, 
+    and creates invited cohorts for this event.
+    """
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+            
+            testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
+            programEvent = Program.create(id = 13,
+                                        programName = "Bonner Scholars",
+                                        isStudentLed = False,
+                                        isBonnerScholars = True,
+                                        contactEmail = "test@email",
+                                        contactName = "testName")
+            
+            event = Event.create(name = "Upcoming Bonner Scholars Event",
+                                term = 2,
+                                description = "Test upcoming bonner event.",
+                                location = "Stephenson Building",
+                                startDate = testDate,
+                                program = programEvent)
+            
+            cohortYears = ["2020", "2021", "2024"]
+            success, message, invitedCohorts = inviteCohortsToEvent(event, cohortYears)
+            
+            assert success is True
+            assert message == "Cohorts successfully added to new event"
+            assert invitedCohorts == [2020, 2021, 2024]
+            transaction.rollback()
+
+@pytest.mark.integration
+def test_updateEventCohorts():
+    """
+    This function creates a Bonner Scholar program, attaches an event to this program, 
+    creates invited cohorts for this event, 
+    and updates the cohorts attached to this event.
+    """
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+            
+            testDate = datetime.strptime("2025-10-01 05:00","%Y-%m-%d %H:%M")
+            programEvent = Program.create(id = 13,
+                                          programName = "Bonner Scholars",
+                                          isStudentLed = False,
+                                          isBonnerScholars = True,
+                                          contactEmail = "test@email",
+                                          contactName = "testName")
+            
+            event = Event.create(name = "Upcoming Bonner Scholars event",
+                                 term = 2,
+                                 description = "Test upcoming bonner event.",
+                                 location = "MAC Building",
+                                 startDate = testDate,
+                                 program = programEvent)
+            
+            bonnerCohort1 = BonnerCohort.create(year = "2021", user = "heggens")
+            bonnerCohort2 = BonnerCohort.create(year = "2020", user = "khatts")
+            bonnerCohort3 = BonnerCohort.create(year = "2024", user = "mupotsal")
+            
+            # create invite records for the above 3 cohorts
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort1.year)
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort2.year)
+            EventCohort.create(event = event, invited_at = datetime.now(), year = bonnerCohort3.year)
+            
+            cohortYears = ["2020", "2022", "2023"]
+            success, message, updatedCohorts = updateEventCohorts(event, cohortYears)
+            
+            assert success is True
+            assert message == "Cohorts successfully updated for event"
+            assert updatedCohorts == ["2022", "2023"]
+            
+            transaction.rollback()
+

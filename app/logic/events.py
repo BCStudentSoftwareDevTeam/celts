@@ -17,7 +17,9 @@ from app.models.eventRsvp import EventRsvp
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
+from app.models.eventCohort import EventCohort
 
+from app.logic.bonner import rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.createLogs import createActivityLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
@@ -477,29 +479,6 @@ def preprocessEventData(eventData):
         elif not isinstance(eventData[eventDate], date):  # The date is not a date object
             eventData[eventDate] = ''
     
-    # Process multipleOfferingData
-    if 'multipleOfferingData' not in eventData:
-        eventData['multipleOfferingData'] = json.dumps([])
-    elif type(eventData['multipleOfferingData']) is str:
-        try:
-            multipleOfferingData = json.loads(eventData['multipleOfferingData'])
-            eventData['multipleOfferingData'] = multipleOfferingData
-            if type(multipleOfferingData) != list:
-                eventData['multipleOfferingData'] = json.dumps([])
-        except json.decoder.JSONDecodeError as e:
-            eventData['multipleOfferingData'] = json.dumps([])
-    if type(eventData['multipleOfferingData']) is list:
-        # validate the list data. Make sure there is 'eventName', 'startDate', 'timeStart', 'timeEnd', and 'isDuplicate' data
-        multipleOfferingData = eventData['multipleOfferingData']
-        for offeringDatum in multipleOfferingData:    
-            for attribute in ['eventName', 'startDate', 'timeStart', 'timeEnd']:
-                if type(offeringDatum.get(attribute)) != str:
-                    offeringDatum[attribute] = ''
-            if type(offeringDatum.get('isDuplicate')) != bool:
-                    offeringDatum['isDuplicate'] = False
-
-        eventData['multipleOfferingData'] = json.dumps(eventData['multipleOfferingData'])
-        
     # Process seriesData
     if 'seriesData' not in eventData:
         eventData['seriesData'] = json.dumps([])
@@ -651,3 +630,65 @@ def copyRsvpToNewEvent(priorEvent, newEvent):
     numRsvps = len(rsvpInfo)
     if numRsvps:
         createRsvpLog(newEvent, f"Copied {numRsvps} Rsvps from {priorEvent['name']} to {newEvent.name}")
+        
+        
+def inviteCohortsToEvent(event, cohortYears):
+    """
+    Invites cohorts to a newly created event by associating the cohorts directly.
+    """
+    invitedCohorts = []
+    try:
+        for year in cohortYears:
+            year = int(year)
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invitedCohorts.append(year)
+
+        if invitedCohorts:
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Added Bonner cohorts {cohortList} for newly created event {event.name}")
+
+        return True, "Cohorts successfully added to new event", invitedCohorts
+
+    except Exception as e:
+        print(f"Error inviting cohorts to new event: {e}")
+        return False, f"Error adding cohorts to new event: {e}", []
+
+def updateEventCohorts(event, cohortYears):
+    """
+    Updates the cohorts for an existing event by adding new ones and removing outdated ones.
+    """
+    invitedCohorts = []
+    try:
+        precedentInvitedCohorts = list(EventCohort.select().where(EventCohort.event == event))
+        precedentInvitedYears = [precedentCohort.year for precedentCohort in precedentInvitedCohorts]
+        yearsToAdd = [year for year in cohortYears if int(year) not in precedentInvitedYears]
+        
+        for year in yearsToAdd:
+            EventCohort.get_or_create(
+                event=event,
+                year=year,
+                defaults={'invited_at': datetime.now()}
+            )
+            
+            addBonnerCohortToRsvpLog(year, event.id)
+            rsvpForBonnerCohort(year, event.id)
+            invitedCohorts.append(year)
+
+        if yearsToAdd:
+            cohortList = ', '.join(map(str, invitedCohorts))
+            createActivityLog(f"Updated Bonner cohorts for event {event.name}. Added: {yearsToAdd}")
+
+        return True, "Cohorts successfully updated for event", invitedCohorts
+
+    except Exception as e:
+        print(f"Error updating cohorts for event: {e}")
+        return False, f"Error updating cohorts for event: {e}", []
+
+
