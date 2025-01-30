@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 
 from app import app
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
@@ -376,7 +377,19 @@ def cancelRoute(eventId):
         
     else:
         abort(403)
-    
+
+@admin_bp.route('/profile/undo', methods=['GET'])
+def undoBackgroundCheck():
+    try:
+        username = g.current_user
+        bgCheckId = session['lastDeletedBgCheck']
+        BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheckId).execute()
+        flash("Background Check has been successfully restored.", "success")
+        return redirect (f"/profile/{username}?accordion=background")
+    except Exception as e:
+        print('Error while undoing background check:', e)
+        return "", 500
+
 @admin_bp.route('/event/undo', methods=['GET'])
 def undoEvent():
     try:
@@ -393,9 +406,8 @@ def undoEvent():
                 newEventNameList = " ".join(newEventNameList)
                 Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvent.id).execute()
                 nameCounter += 1 
-        flash("Deletion successfully undone.", "success")
+        flash("Event has been successfully restored.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
-        
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
