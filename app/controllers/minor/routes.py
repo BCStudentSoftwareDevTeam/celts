@@ -89,6 +89,9 @@ def requestOtherEngagement(username):
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
     
+    latestYear = datetime.now().year + 2 
+
+    summerYears = [latestYear - i  for i in range(5)]
 
     if request.method == 'POST':
         filename = None
@@ -106,4 +109,5 @@ def requestOtherEngagement(username):
 
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
+                            summerYears = summerYears,
                             terms=terms)

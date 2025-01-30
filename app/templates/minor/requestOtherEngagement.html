@@ -4,7 +4,10 @@
         <div class="container">
           <div class="container text-center">
               <div class='form-group mb-4'>
-                  <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }}: Other Community Engaged Experience </h2>
+                  <h4 class='form-label' for='studentUser'> Proposal for Other Community Engaged Experience </h4>
+                  <p>
+                    Please fill out this form to submit a proposal for another community engaged experience that pertains to at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
+                </p>
                   <input type="hidden" value="{{ user }}" name="user"/>
                   <input type="hidden" id="other-experience-id" name="experience-id" value="{{ other_experience.id if other_experience else '' }}">
               </div>
@@ -14,6 +17,9 @@
               <label class="form-label" for="inputTerm"><strong>Term</strong></label>
               <select class="form-select" name="inputTerm" id="inputTerm" required {% if other_experience %}disabled{% endif %}>
                 <option value="" disabled selected>Select Year</option> 
+                {% for year in summerYears %}
+                   <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
               </select>
           </div>
 

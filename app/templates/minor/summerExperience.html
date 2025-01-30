@@ -1,6 +1,6 @@
 <div class="tab-pane fade show {{ 'active' if activeTab == 'summerExperience' else '' }}" id="pills-summerExperience" role="tabpanel" aria-labelledby="summerExperience">
     <div name="Community-Engaged Summer Experience" class="pt-4">
-      <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/addSummerExperience" method="POST">
+      <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/addSummerExperience" onsubmit="setTimeout(function(){window.location.reload();},10;"method="POST">
         <div class='row'>
             <div class="container">
                 <div class='form-group mb-4 text-center'>
@@ -28,6 +28,11 @@
 
                 <div class="form-group">
                     <br>
+                    <h4>Experience Information</h4>
+                    <hr>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
                         Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector)
                         that is responsive to community-identified initiatives or needs:</strong></label>
