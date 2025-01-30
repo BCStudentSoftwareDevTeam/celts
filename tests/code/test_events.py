@@ -669,23 +669,25 @@ def test_deleteEvent():
         transaction.rollback()
 
         # create repeating events
-        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
+                    'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
+                    'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
+                    'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 2','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
+                    'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
+                    'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                    'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('12-12-2021'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring Week 3','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+                    'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
+                    'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
+                    'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                    'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 3','term':1,
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
         event_1['valid'] = True
         event_2['valid'] = True
