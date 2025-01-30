@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS populateRequirementMatch;
+DROP PROCEDURE IF EXISTS populateRequirementMatch;
 DELIMITER //
 
 create procedure populateRequirementMatch()
@@ -11,7 +11,7 @@ create procedure populateRequirementMatch()
         declare bonner_orient, all_bonner, service_trip, soph_exchange, junior_recommitment int;
         declare legacy_training, learning_pres, bonner_congress, leadership_institute int;
 
-        declare event_info cursor for select event.id, LOWER(event.name) from celts.event where program_id=10;
+        declare event_info cursor for select event.id, LOWER(event.name) from celts.event where program_id=5;
         declare continue handler for not found set done = TRUE;
 
         open event_info;
