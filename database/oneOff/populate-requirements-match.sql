@@ -11,7 +11,7 @@ create procedure populateRequirementMatch()
         declare bonner_orient, all_bonner, service_trip, soph_exchange, junior_recommitment int;
         declare legacy_training, learning_pres, bonner_congress, leadership_institute int;
 
-        declare event_info cursor for select event.id, LOWER(event.name) from celts.event where program_id=5;
+        declare event_info cursor for select event.id, LOWER(event.name) from celts.event join celts.program on event.program_id=program.id where program.isBonnerScholars = 1;
         declare continue handler for not found set done = TRUE;
 
         open event_info;
@@ -38,7 +38,7 @@ create procedure populateRequirementMatch()
                 insert into celts.requirementmatch (requirement_id, event_id) values (8, event_id);
             elseif event_name like '%institute%' then 
                 insert into celts.requirementmatch (requirement_id, event_id) values (9, event_id);
-            else select event_id;
+            else select event_id, event_name;
             end if;
             /* selecting it so we can see the failing event on the console */
         end loop;
