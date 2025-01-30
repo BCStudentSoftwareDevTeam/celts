@@ -92,7 +92,6 @@ def test_addPersonToEvent():
             yesterday = datetime.today() - timedelta(days=1)
             newEvent = Event.create(name = "Test event 1234", term = 2,
                                     startDate=yesterday.date(),
-                                    endDate=yesterday.date(),
                                     isRsvpRequired = True,
                                     program = 9)
             
@@ -109,7 +108,6 @@ def test_addPersonToEvent():
             newEvent = Event.create(name = "Test event 1234", 
                                     term = 2,
                                     startDate=tomorrow.date(),
-                                    endDate=tomorrow.date(),
                                     isRsvpRequired = True,
                                     program = 9)
             
@@ -125,7 +123,6 @@ def test_addPersonToEvent():
             testWaitlistEvent = Event.create(name = "Waitlist Event",
                                             term = 2,
                                             startDate = tomorrow.date(),
-                                            endDate = tomorrow.date(),
                                             isRsvpRequired = True,
                                             rsvpLimit = 1,
                                             program = 9)

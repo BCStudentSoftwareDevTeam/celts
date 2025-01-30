@@ -576,7 +576,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -592,7 +591,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -608,7 +606,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Patio",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -623,7 +620,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -638,7 +634,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -653,7 +648,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -668,7 +662,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -683,7 +676,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -698,7 +690,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Farm",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -714,7 +705,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -729,7 +719,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -744,7 +733,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Boone Tavern",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -759,7 +747,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -775,7 +762,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -790,7 +776,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -806,7 +791,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -1360,7 +1344,7 @@ emailTemplates = [
     {
     #'id': 1,
     'subject': 'Test Email',
-    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
+    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date} and this {start_time}-{end_time}.',
     'action': 'sent',
     'purpose': 'Test',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
@@ -1368,14 +1352,14 @@ emailTemplates = [
     {
     #'id': 2,
     'subject': 'Test Email 2',
-    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
+    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
     'subject': 'Event Reminder',
-    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} on {start_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
     'action': 'sent',
     'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
