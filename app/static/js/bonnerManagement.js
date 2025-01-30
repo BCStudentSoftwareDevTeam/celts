@@ -14,6 +14,17 @@ function cohortRequest(year, method, username){
   })
 }
 
+function downloadSpreadsheet(blob, fileName) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
 function addSearchCapabilities(inputElement){
     $(inputElement).on("input", function(){
         let year = $(this).data('year');
@@ -49,17 +60,22 @@ $(document).ready(function(){
         const startingYear = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
         const noOfYears = this.getAttribute("data-years")
         const url = `/bonnerXls/${startingYear}/${noOfYears}`
+        const fileName = noOfYears === "all" 
+            ? "Bonner Spreadsheet, All Cohorts" 
+            : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`
         $.ajax({
             url: url,
             method: "GET",
-            success: () => {
-                msgFlash("Download Successful", "success"),
-                window.location = url
+            xhrFields: { responseType: "blob" },
+            success: function (blob) {
+                msgFlash("Download Successful", "success");
+                downloadSpreadsheet(blob, fileName);
             },
-            error: (error, status) => {
-                msgFlash("Download Failed", "danger")
-                console.log(error, status)
-        }})
+            error: function (error, status) {
+                msgFlash("Download Failed", "danger");
+                console.log("Error response:", error.responseText, status);
+        }
+    })
     })
 
     addRequirementsRowHandlers()
