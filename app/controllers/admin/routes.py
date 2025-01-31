@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 
 from app import app
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
@@ -20,6 +21,7 @@ from app.models.activityLog import ActivityLog
 from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventCohort import EventCohort
 from app.models.certification import Certification
 from app.models.user import User
 from app.models.term import Term
@@ -30,7 +32,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId
+from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId, inviteCohortsToEvent, updateEventCohorts
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
@@ -131,11 +133,11 @@ def createEvent(templateid, programid):
                 validationErrorMessage = "Failed to save event."
 
         if savedEvents:
-            rsvpcohorts = request.form.getlist("cohorts[]")
-            for year in rsvpcohorts:
-                rsvpForBonnerCohort(int(year), savedEvents[0].id)
-                addBonnerCohortToRsvpLog(int(year), savedEvents[0].id)
-
+            rsvpCohorts = request.form.getlist("cohorts[]")
+            if rsvpCohorts:
+                success, message, invitedCohorts = inviteCohortsToEvent(savedEvents[0], rsvpCohorts)
+                if not success:
+                    flash(message, 'warning')
 
             noun = ((eventData.get('isSeries')) and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
@@ -175,7 +177,14 @@ def createEvent(templateid, programid):
     requirements, bonnerCohorts = [], []
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
-        bonnerCohorts = getBonnerCohorts(limit=5)
+        rawBonnerCohorts = getBonnerCohorts(limit=5)
+        bonnerCohorts = {}
+        
+        for year, cohort in rawBonnerCohorts.items():
+            if cohort:
+                bonnerCohorts[year] = cohort
+                
+            
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -256,6 +265,10 @@ def eventDisplay(eventId):
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
+        invitedCohorts = list(EventCohort.select().where(
+            EventCohort.event == event
+        ))
+        invitedYears = [str(cohort.year) for cohort in invitedCohorts]
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
@@ -290,11 +303,8 @@ def eventDisplay(eventId):
 
 
         if savedEvents:
-            rsvpcohorts = request.form.getlist("cohorts[]")
-            for year in rsvpcohorts:
-                rsvpForBonnerCohort(int(year), event.id)
-                addBonnerCohortToRsvpLog(int(year), event.id)
-
+            rsvpCohorts = request.form.getlist("cohorts[]")
+            updateEventCohorts(savedEvents[0], rsvpCohorts)
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
@@ -311,7 +321,19 @@ def eventDisplay(eventId):
     
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
-        bonnerCohorts = getBonnerCohorts(limit=5)
+        rawBonnerCohorts = getBonnerCohorts(limit=5)
+        bonnerCohorts = {}
+        
+        for year, cohort in rawBonnerCohorts.items():
+            if cohort:
+                bonnerCohorts[year] = cohort
+
+        invitedCohorts = list(EventCohort.select().where(
+            EventCohort.event_id == eventId,
+        ))
+        invitedYears = [str(cohort.year) for cohort in invitedCohorts]
+    else:
+        requirements, bonnerCohorts, invitedYears = [], [], []
     
     rule = request.url_rule
 
@@ -319,10 +341,11 @@ def eventDisplay(eventId):
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
                                 eventData = eventData,
-                                futureTerms=futureTerms,
+                                futureTerms = futureTerms,
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
+                                invitedYears = invitedYears, 
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
@@ -347,6 +370,8 @@ def eventDisplay(eventId):
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+        
+        
 
         return render_template("events/eventView.html",
                                 eventData=eventData,
@@ -358,6 +383,7 @@ def eventDisplay(eventId):
                                 filepaths=filepaths,
                                 image=image,
                                 pageViewsCount=pageViewsCount,
+                                invitedYears=invitedYears,
                                 eventCountdown=eventCountdown
                                 )
                                 
@@ -376,7 +402,19 @@ def cancelRoute(eventId):
         
     else:
         abort(403)
-    
+
+@admin_bp.route('/profile/undo', methods=['GET'])
+def undoBackgroundCheck():
+    try:
+        username = g.current_user
+        bgCheckId = session['lastDeletedBgCheck']
+        BackgroundCheck.update({BackgroundCheck.deletionDate: None, BackgroundCheck.deletedBy: None}).where(BackgroundCheck.id == bgCheckId).execute()
+        flash("Background Check has been successfully restored.", "success")
+        return redirect (f"/profile/{username}?accordion=background")
+    except Exception as e:
+        print('Error while undoing background check:', e)
+        return "", 500
+
 @admin_bp.route('/event/undo', methods=['GET'])
 def undoEvent():
     try:
@@ -393,9 +431,8 @@ def undoEvent():
                 newEventNameList = " ".join(newEventNameList)
                 Event.update({Event.name: newEventNameList}).where(Event.id==repeatingEvent.id).execute()
                 nameCounter += 1 
-        flash("Deletion successfully undone.", "success")
+        flash("Event has been successfully restored.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
-        
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500

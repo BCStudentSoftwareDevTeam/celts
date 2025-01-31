@@ -3,7 +3,7 @@ from peewee import *
 from datetime import datetime
 from dateutil import parser
 from app import app
-from flask import g
+from flask import g, request, session
 
 from app.models import mainDB
 from app.models.program import Program
@@ -15,7 +15,41 @@ from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
-from app.logic.volunteers import addUserBackgroundCheck
+from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
+
+@pytest.mark.integration
+def test_deleteUserBackgroundCheck():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+
+            # Create a test user to run background checks on
+            testUser = User.create(username = 'zawn',
+                                    firstName = 'Nyan',
+                                    lastName = 'Zaw',
+                                    bnumber = '00123321',
+                                    email = 'zawn@berea.deu',
+                                    isStudent = True)
+
+            # Add background checks to the user
+            addUserBackgroundCheck("zawn","CAN", "Submitted", parser.parse("2022-10-21"))
+            addUserBackgroundCheck("zawn","SHS", "Submitted", parser.parse("2023-11-18"))
+            testUserHistory = getUserBGCheckHistory(testUser)
+            
+            # Delete the submitted background checks
+            bgCheck_CAN = testUserHistory['CAN'][0]
+            deleteUserBackgroundCheck(bgCheck_CAN.id, "zawn")
+            bgCheck_SHS = testUserHistory['SHS'][0]
+            deleteUserBackgroundCheck(bgCheck_SHS.id, "zawn")
+            userHistory = getUserBGCheckHistory(testUser)
+            
+            # Check that all the users background checks have been deleted
+            assert [] == userHistory['CAN']
+            assert [] == userHistory['SHS']
+            assert [] == userHistory['FBI']
+            assert [] == userHistory['BSL']
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_user_model():
