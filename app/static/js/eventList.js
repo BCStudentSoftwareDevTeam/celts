@@ -11,13 +11,16 @@ $(document).ready(function(){
     var toggleState = sessionStorage.getItem('toggleState') || 'unchecked';
     var viewPastEventsToggle = $("#viewPastEventsToggle");
     viewPastEventsToggle.prop('checked', toggleState === 'checked');
+
   } else {
-    viewPastEventsToggle.prop('checked', true); 
+    var viewPastEventsToggle = $("#viewPastEventsToggle");
+    viewPastEventsToggle.prop('checked', true);
   }
   var isChecked = viewPastEventsToggle.prop("checked");
   toggleRows(isChecked);
   
   updateIndicatorCounts(isChecked)
+
   //update indicator numbers when toggle is changed
   viewPastEventsToggle.on("change", function(){
     if (!g_isPastTerm) {
