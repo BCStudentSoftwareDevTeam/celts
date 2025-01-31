@@ -119,7 +119,7 @@ def getUserBGCheckHistory(username):
 
     allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
                                           .join(BackgroundCheckType)
-                                          .where(BackgroundCheck.user == username)
+                                          .where(BackgroundCheck.user == username, BackgroundCheck.deletionDate == None)
                                           .order_by(BackgroundCheck.dateCompleted.desc()))
     for row in allBackgroundChecks:
         bgHistory[row.type_id].append(row)
