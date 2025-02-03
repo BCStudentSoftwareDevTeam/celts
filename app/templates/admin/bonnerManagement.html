@@ -68,14 +68,10 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="flex-column ms-2">
-                    <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
-                    <br>
-                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="1">Export Selected Years</button>
-                    <br><br>
-                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="5">Export Last 5 Years</button>
-                    <br><br>
-                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="all">Export All Years</button>
+                <div class="ms-2">
+                    <button class="btn btn-success py-2 mb-2 d-flex export-spreadsheet" data-years="1"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Selected Years</button>
+                    <button class="btn btn-success py-2 mb-2 d-flex export-spreadsheet" data-years="5"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export Last 5 Years</button>
+                    <button class="btn btn-success py-2 d-flex export-spreadsheet" data-years="all"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export All Years</button>
                 </div>
             </div>
             <!-------------------- End cohort management --------------------->
