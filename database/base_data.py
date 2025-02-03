@@ -6,7 +6,7 @@ from app.models.backgroundCheckType import BackgroundCheckType
 
 terms = [
     {
-        "id": 8,
+        "id": 6,
         "description": "Summer 2022",
         "year": 2022,
         "academicYear": "2021-2022",
@@ -24,7 +24,7 @@ terms = [
         "termOrder": "2022-3"
     },
     {
-        "id": 6,
+        "id": 8,
         "description": "Spring 2023",
         "year": 2023,
         "academicYear": "2022-2023",

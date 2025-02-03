@@ -74,9 +74,9 @@ def test_addNextTerm():
         testTerm.save()
 
         newTerm = addNextTerm()
-        assert newTerm.description == "Summer 2024"
-        assert newTerm.year == 2024
-        assert newTerm.academicYear == "2023-2024"
+        assert newTerm.description == "Summer 2025"
+        assert newTerm.year == 2025
+        assert newTerm.academicYear == "2024-2025"
         assert newTerm.isSummer
         assert not newTerm.isCurrentTerm
 

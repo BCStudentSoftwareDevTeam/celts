@@ -380,7 +380,7 @@ terms = [
         "termOrder": "2020-3"
     },
     {
-        "id": 3,
+        "id": 2,
         "description": "Spring 2021",
         "year": 2021,
         "academicYear": "2020-2021",
@@ -390,7 +390,7 @@ terms = [
     },
     
     {
-        "id": 2,
+        "id": 3,
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
@@ -399,7 +399,7 @@ terms = [
         "termOrder": "2021-2"
     },
     {
-        "id": 5,
+        "id": 4,
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
@@ -408,13 +408,31 @@ terms = [
         "termOrder": "2021-3"
     },
     {
-        "id": 4,
+        "id": 5,
         "description": "Spring 2022",
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
         "isCurrentTerm": False,
         "termOrder": "2022-1"
+    },
+    {
+        "id": 9,
+        "description": "Spring 2025",
+        "year": 2025,
+        "academicYear": "2024-2025",
+        "isSummer": False,
+        "isCurrentTerm": False,
+        "termOrder": "2025-1"
+    },
+    {
+        "id": 10,
+        "description": "Fall 2024",
+        "year": 2024,
+        "academicYear": "2024-2025",
+        "isSummer": False,
+        "isCurrentTerm": False,
+        "termOrder": "2024-3"
     },
 
 ]
