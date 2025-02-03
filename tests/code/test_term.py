@@ -7,13 +7,13 @@ from app.logic.term import addNextTerm, changeCurrentTerm, addPastTerm
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert 8 == len(listOfTerms)
+    assert 9 == len(listOfTerms)
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
-    assert [3,4,5,6,7,8] == [t.id for t in listOfTerms]
+    assert [3,4,5,6,7,8,10] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
-    assert [2,3,4,5,6,7,8] == [t.id for t in listOfTerms]
+    assert [2,3,4,5,6,7,8,10] == [t.id for t in listOfTerms]
 
 def test_changeCurrentTerm():
     # test via g.current_term
@@ -74,9 +74,9 @@ def test_addNextTerm():
         testTerm.save()
 
         newTerm = addNextTerm()
-        assert newTerm.description == "Summer 2025"
-        assert newTerm.year == 2025
-        assert newTerm.academicYear == "2024-2025"
+        assert newTerm.description == "Summer 2024"
+        assert newTerm.year == 2024
+        assert newTerm.academicYear == "2023-2024"
         assert newTerm.isSummer
         assert not newTerm.isCurrentTerm
 

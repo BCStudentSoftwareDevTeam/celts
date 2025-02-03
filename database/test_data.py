@@ -418,21 +418,21 @@ terms = [
     },
     {
         "id": 9,
-        "description": "Spring 2025",
-        "year": 2025,
-        "academicYear": "2024-2025",
+        "description": "Spring 2024",
+        "year": 2024,
+        "academicYear": "2023-2024",
         "isSummer": False,
         "isCurrentTerm": False,
-        "termOrder": "2025-1"
+        "termOrder": "2024-1"
     },
     {
         "id": 10,
-        "description": "Fall 2024",
-        "year": 2024,
-        "academicYear": "2024-2025",
+        "description": "Fall 2023",
+        "year": 2023,
+        "academicYear": "2023-2024",
         "isSummer": False,
         "isCurrentTerm": False,
-        "termOrder": "2024-3"
+        "termOrder": "2023-3"
     },
 
 ]
