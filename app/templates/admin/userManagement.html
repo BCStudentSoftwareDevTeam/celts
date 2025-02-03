@@ -148,10 +148,10 @@
                       data-programinfo= '{
                         "programName": "{{ program.programName }}",
                         "programDescription": "{{ program.programDescription }}",
-                        "partner": "{{ program.partner if program.partner else "" }}",
-                        "contactEmail": "{{ program.contactEmail if program.contactEmail else ""}}",
+                        "partner": "{{ program.partner if program.partner else ""}}",
+                        "contactEmail": "{{ program.contactEmail if program.contactEmail else "" }}",
                         "contactName": "{{ program.contactName if program.contactName else ""}}",
-                        "location": "{{ program.location  if program.location else ""}}",
+                        "location": "{{ program.location if program.location else ""}}",
                         "programid": "{{ program.id }}",
                         "instagramUrl": "{{ program.instagramUrl if program.instagramUrl else "" }}",
                         "facebookUrl": "{{ program.facebookUrl if program.facebookUrl else ""}}",
@@ -242,4 +242,5 @@
     </div>
   </div>
   
+
 {% endblock %}
