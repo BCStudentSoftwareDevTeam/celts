@@ -31,6 +31,7 @@ export function createNewRow(selectedInstructor) {
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", `editButton-${username}`);
 
+  newRow.attr("data-username", username)
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -43,9 +44,18 @@ export function createNewRow(selectedInstructor) {
   }
 
   $("#instructorTableNames").append(`<input hidden name="instructor[]" value="${username}"/>`)
+  updateEmptyTableMessage()
 }
 
 export function getCourseInstructors() {
   // get usernames out of the table rows 
   return $("#instructorTableNames input").map((i,el) => $(el).val())
+}
+
+export function updateEmptyTableMessage(){
+  if ($("#instructorTable tbody tr").length > 2){
+    $("#instructorTable tbody tr").first().attr("hidden", true)
+  } else{
+    $("#instructorTable tbody tr").first().attr("hidden", false)
+  }
 }

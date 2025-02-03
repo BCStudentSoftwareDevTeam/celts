@@ -103,13 +103,20 @@
                         <p>This event does not require RSVP.</p>
                     {% endif %}
 
-                    {% if eventData.recurringId %}
-                        <p>This event is a recurring event.
-                            {% if eventData.nextRecurringEvent %}
-                                The next event in the series occurs on <a href="/event/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
-                            {% else %}
-                                <b>However, this is the last event in the series.</b>
-                            {% endif %}
+                    {% if eventData.seriesId %}
+                        <p>
+                        {% if eventData.isRepeating %}
+                            This event is in a repeating series.
+                        {% else %}
+                            This event has multiple occurrences.
+                        {% endif %}
+
+                        {% if eventData.nextRepeatingEvent %}
+                            {% set verb = "occurred" if eventData.nextRepeatingEvent.isPastEnd else "occurs" %}
+                            The next event in the series {{verb}} on <a href="/event/{{eventData.nextRepeatingEvent.id}}/view"><b>{{eventData.nextRepeatingEvent.startDate.strftime("%B %-d")}}.</b></a>
+                        {% else %}
+                            <b>However, this is the last event in the series.</b>
+                        {% endif %}
                         </p>
                     {% endif %}
 

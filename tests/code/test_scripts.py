@@ -24,7 +24,6 @@ def test_sendEventReminderEmail():
                                 isEngagement = 1,
                                 isService = 0,
                                 startDate=  tomorrow,
-                                endDate= "2022-12-19",
                                 recurringId = 0,
                                 program = 9)
         tomorrowEvents = getTomorrowsEvents()
@@ -42,7 +41,6 @@ def test_sendEventReminderEmail():
                                 isEngagement = 1,
                                 isService = 0,
                                 startDate=  tomorrow,
-                                endDate= "2022-12-19",
                                 recurringId = 0,
                                 program = 9)
         tomorrowEvents = getTomorrowsEvents()
