@@ -47,7 +47,7 @@ py==1.11.0
 pycparser==2.20
 Pygments==2.9.0
 PyMySQL==1.0.2
-pyodbc==4.0.35
+pyodbc==5.2.0
 pyparsing==2.4.7
 pytest==7.1.2
 pytest-base-url==1.4.2
