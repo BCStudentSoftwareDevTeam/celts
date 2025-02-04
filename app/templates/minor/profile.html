@@ -29,19 +29,14 @@
             data-bs-toggle="pill" data-bs-target="#pills-sustainedCommunityEngagements" type="button" role="tab" aria-controls="pills-sustainedCommunityEngagements" aria-selected="true">Sustained Community Engagements</button>
         </li>
         <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link {{ 'active' if activeTab == 'summerExperience' else '' }}" id="summerExperience"
-            data-bs-toggle="pill" data-bs-target="#pills-summerExperience" type="button" role="tab" aria-controls="pills-summerExperience" aria-selected="false">Summer Experience</button>
-        </li>
-        <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link {{ 'active' if activeTab == 'otherExperience' else '' }}" id="requestOtherEngagement"
-            data-bs-toggle="pill" data-bs-target="#pills-requestOtherEngagement" type="button" role="tab" aria-controls="pills-requestOtherEngagement" aria-selected="false">Request Other Engagement</button>
+          <button class="nav-link {{ 'active' if activeTab == 'manageProposals' else '' }}" id="manageProposals"
+            data-bs-toggle="pill" data-bs-target="#pills-manageProposals" type="button" role="tab" aria-controls="pills-manageProposals" aria-selected="false">Manage Proposals</button>
         </li>
       </ul>
     </div>
     <div class="tab-content" id="pills-tabContent">
       {% include "minor/sustainedCommunityEngagements.html" %}
-      {% include "minor/summerExperience.html" %}
-      {% include "minor/requestOtherEngagement.html" %}
+      {% include "minor/cceMinorProposalManagement.html" %}
     </div>
   </div>
 
