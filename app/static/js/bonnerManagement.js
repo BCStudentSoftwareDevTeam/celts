@@ -32,6 +32,14 @@ function addSearchCapabilities(inputElement){
     });
 }
 
+function updateExportText(){
+    const activeYearElement = document.querySelector(".nav-link.year.active");
+    if (!activeYearElement) return;
+
+    const startingYear = Number(activeYearElement.getAttribute("data-year"));
+    const newText = `(${startingYear - 5} - ${startingYear})`;
+    document.getElementById("last5").textContent = newText;
+}
 
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
@@ -79,11 +87,8 @@ $(document).ready(function(){
     })
 
     $(".year").on('click', function() {
-        const startingYear = Number(document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year"))
-        const newText = `Export Previous 5 Years (${startingYear - 5} - ${startingYear})`
-        console.log(newText)
-        document.getElementById("last5").textContent = newText
-    })
+        updateExportText();
+    });
 
     addRequirementsRowHandlers()
 
@@ -101,6 +106,8 @@ $(document).ready(function(){
 
 });
 /** End onready ****************************/
+
+document.addEventListener("DOMContentLoaded", updateExportText);
 
 /* Add a new requirements row and focus it */
 function addRequirement() {

@@ -68,10 +68,10 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="ms-2">
-                    <button class="btn btn-success py-2 mb-2 d-flex export-spreadsheet" data-years="1"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Selected Years</button>
-                    <button class="btn btn-success py-2 mb-2 d-flex export-spreadsheet" data-years="5"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> <a id="last5">Export Previous 5 Years (2020 - 2025)</a> </button>
-                    <button class="btn btn-success py-2 d-flex export-spreadsheet" data-years="all"> <img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export All Years</button>
+                <div class="d-flex flex-column ms-2">
+                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="1"> <div><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export Selected Years</div></button>
+                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="5"> <div class="d-flex"><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> <a>Export Previous 5 Years</a></div><a id="last5"></a></button>
+                    <button class="btn btn-success py-2 export-spreadsheet" data-years="all"> <div></div><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export All Years</div></button>
                 </div>
             </div>
             <!-------------------- End cohort management --------------------->
