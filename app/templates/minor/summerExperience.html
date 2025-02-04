@@ -1,4 +1,22 @@
-<div class="tab-pane fade show {{ 'active' if activeTab == 'summerExperience' else '' }}" id="pills-summerExperience" role="tabpanel" aria-labelledby="summerExperience">
+{% set title = "Request Other Engagement" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="module" src="/static/js/minorProfilePage.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
+  <script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
+
+{% endblock %}
+
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/minor.css') }}?u={{ lastStaticUpdate }}">
+{% endblock %}
+
+{% block app_content %}    
     <div name="Community-Engaged Summer Experience" class="pt-4">
       <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/addSummerExperience" onsubmit="setTimeout(function(){window.location.reload();},10;"method="POST">
         <div class='row'>
@@ -96,5 +114,4 @@
         </div>
       </form>
     </div>
-  </div>
- 
+{% endblock %}

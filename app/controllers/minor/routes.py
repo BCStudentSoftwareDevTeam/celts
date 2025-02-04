@@ -38,6 +38,55 @@ def viewCceMinor(username):
                             allTerms = getSummerExperience(username))
 
     
+
+@minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
+def requestOtherEngagement(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin):
+        return abort(403)
+
+    sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
+    selectedSummerTerm, summerExperience = getSummerExperience(username)
+
+    latestYear = datetime.now().year + 2
+
+    summerYears = [latestYear - i for i in range(5)]
+
+    return render_template("minor/requestOtherEngagement.html",
+                            user = User.get_by_id(username),
+                            summerYears = summerYears, 
+                            sustainedEngagementByTerm = sustainedEngagementByTerm,
+                            summerExperience = summerExperience if summerExperience else "",
+                            selectedSummerTerm = selectedSummerTerm,
+                            totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
+                            summerTerms = getSummerTerms(),
+                            allTerms = getSummerExperience(username))
+
+
+@minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
+def requestSummerExperience(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin or g.current_user.username == username):
+        return abort(403)
+    
+    # once we submit the form for creation
+    if request.method == "POST":
+        createSummerExperience(username, request.form)
+        return redirect(url_for('minor.viewCceMinor', username=username))
+
+    latestYear = datetime.now().year + 2
+
+    summerYears = [latestYear - i for i in range(5)]
+
+    return render_template("minor/summerExperience.html",
+                            summerYears = summerYears,
+                            user = User.get_by_id(username),
+                            )
+
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
@@ -81,33 +130,33 @@ def modifyCommunityEngagement(username):
     
     return ""
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
-def requestOtherEngagement(username):
-    """
-        Load the "request other" form and submit it.
-    """
-    user = User.get_by_id(username)
-    terms = selectSurroundingTerms(g.current_term)
+# @minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
+# def requestOtherEngagement(username):
+#     """
+#         Load the "request other" form and submit it.
+#     """
+#     user = User.get_by_id(username)
+#     terms = selectSurroundingTerms(g.current_term)
     
-    latestYear = datetime.now().year + 2 
+#     latestYear = datetime.now().year + 2 
 
-    summerYears = [latestYear - i  for i in range(5)]
+#     summerYears = [latestYear - i  for i in range(5)]
 
-    if request.method == 'POST':
-        filename = None
-        attachment = request.files.get("attachmentObject")
-        if attachment:
-                addFile = FileHandler(getFilesFromRequest(request))
-                addFile.saveFiles()
-                filename = attachment.filename
-        formData = request.form.copy()
-        formData["filename"] = filename
-        saveOtherEngagementRequest(formData)
-        flash("Other community engagement request submitted.", "success")
-        return redirect(url_for("minor.viewCceMinor", username=user))
+#     if request.method == 'POST':
+#         filename = None
+#         attachment = request.files.get("attachmentObject")
+#         if attachment:
+#                 addFile = FileHandler(getFilesFromRequest(request))
+#                 addFile.saveFiles()
+#                 filename = attachment.filename
+#         formData = request.form.copy()
+#         formData["filename"] = filename
+#         saveOtherEngagementRequest(formData)
+#         flash("Other community engagement request submitted.", "success")
+#         return redirect(url_for("minor.viewCceMinor", username=user))
 
 
-    return render_template("/minor/requestOtherEngagement.html",
-                            user=user,
-                            summerYears = summerYears,
-                            terms=terms)
+#     return render_template("/minor/requestOtherEngagement.html",
+#                             user=user,
+#                             summerYears = summerYears,
+#                             terms=terms)
