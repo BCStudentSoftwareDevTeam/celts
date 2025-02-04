@@ -78,6 +78,13 @@ $(document).ready(function(){
     })
     })
 
+    $(".year").on('click', function() {
+        const startingYear = Number(document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year"))
+        const newText = `Export Previous 5 Years (${startingYear - 5} - ${startingYear})`
+        console.log(newText)
+        document.getElementById("last5").textContent = newText
+    })
+
     addRequirementsRowHandlers()
 
     // Add Requirement handler
