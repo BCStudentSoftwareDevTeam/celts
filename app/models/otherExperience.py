@@ -11,3 +11,4 @@ class OtherExperience(baseModel):
     service = CharField()
     company = CharField()
     createdBy = ForeignKeyField(User)
+    supervisorName = CharField()

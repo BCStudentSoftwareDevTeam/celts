@@ -47,6 +47,7 @@ def getCCEMinorProposals(username):
     proposalList = []
 
     summerExperiences = list(SummerExperience.select().where(SummerExperience.student==username))
+    otherExperiences = list(OtherExperience.select().where(OtherExperience.student==username))
 
     for summerExperience in summerExperiences:
         proposalList.append({
@@ -57,7 +58,21 @@ def getCCEMinorProposals(username):
             "status": summerExperience.status,
 
         })
+
+    for otherExperience in otherExperiences:
+        proposalList.append({
+            "type": "otherExperience",
+            "createdBy": otherExperience.createdBy, 
+            "supervisor": otherExperience.supervisorName, 
+            "term": otherExperience.term, 
+            "status": otherExperiences.status,
+
+
+             
+        })
     print(proposalList)
+
+    for summ
 
 
     return proposalList
