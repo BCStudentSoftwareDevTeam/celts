@@ -1,7 +1,7 @@
 # Flask application to manage CELTS programs
 
 ## Requirements
- * Python 3.7+
+ * Python 3.8+
 
 **Packages (Ubuntu)**
  * python3-dev
