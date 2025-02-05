@@ -204,6 +204,7 @@ def getCommunityEngagementByTerm(username):
         communityEngagementByTermDict[(event.term.description, event.term.id)].append({"name":event.program.programName,
                                                                                        "id":event.program.id,
                                                                                        "type":"program",
+                                                                                       "isService": event.isService,
                                                                                        "matched": event.matchedReq,
                                                                                        "term":event.term.id
                                                                                       })
