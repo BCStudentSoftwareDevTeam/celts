@@ -3,7 +3,7 @@ from app.models import *
 from app.models.user import User
 
 class SummerExperience(baseModel):
-    user = ForeignKeyField(User)
+    student = ForeignKeyField(User)
     summerYear = CharField()
     roleDescription = TextField()
     experienceType = CharField()
@@ -20,4 +20,5 @@ class SummerExperience(baseModel):
     supervisorPhone = CharField()
     supervisorEmail = CharField()
     createdOn = DateTimeField(default=datetime.datetime.now)
+    createdBy = ForeignKeyField(User)
 

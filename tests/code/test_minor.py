@@ -17,7 +17,7 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.logic.minor import saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal, getCCEMinorProposals
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -110,6 +110,18 @@ def test_getProgramEngagementHistory():
         expectedData = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
         assert actualData == expectedData
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getCCEMinorProposals():
+
+
+
+
+    print('Hi')
+
+    getCCEMinorProposals("ayisie")
+
+
 
 @pytest.mark.integration
 def test_getCommunityEngagementByTerm():

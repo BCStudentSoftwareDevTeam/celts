@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import List, Dict
-from flask import flash
+from flask import flash, g
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 
@@ -33,7 +33,8 @@ def createSummerExperience(username, formData):
         if experienceType == '':  # Check if the otherExperienceDescription is empty when required
             raise ValueError("Other experience description is required.")
         SummerExperience.create(
-            user=user,
+            student=user,
+            createdBy= g.current_user,
             contentAreas = contentAreas,
             status="Pending",
             **formData,
@@ -41,6 +42,28 @@ def createSummerExperience(username, formData):
     except Exception as e:
         print(f"Error saving summer experience: {e}")
         raise
+
+def getCCEMinorProposals(username):
+    proposalList = []
+
+    summerExperiences = list(SummerExperience.select().where(SummerExperience.student==username))
+
+    for summerExperience in summerExperiences:
+        proposalList.append({
+            "type": "summer",
+            "createdBy": summerExperience.createdBy, 
+            "supervisor": summerExperience.supervisorName,
+            "term": summerExperience.term,
+            "status": summerExperience.status,
+
+        })
+    print(proposalList)
+
+
+    return proposalList
+
+
+
     
 # ################################################
 def getEngagementTotal(engagementData):
