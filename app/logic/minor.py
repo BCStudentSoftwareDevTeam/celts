@@ -197,14 +197,13 @@ def getCommunityEngagementByTerm(username):
                    .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.program == Program.id) &
                                                                      (IndividualRequirement.username == EventParticipant.user) &
                                                                      (IndividualRequirement.term == Event.term)))
-                   .where(EventParticipant.user == username)
+                   .where(EventParticipant.user == username, Event.isService == True)
                    .group_by(Event.program, Event.term))
     
     for event in events:
         communityEngagementByTermDict[(event.term.description, event.term.id)].append({"name":event.program.programName,
                                                                                        "id":event.program.id,
                                                                                        "type":"program",
-                                                                                       "isService": event.isService,
                                                                                        "matched": event.matchedReq,
                                                                                        "term":event.term.id
                                                                                       })
