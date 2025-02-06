@@ -196,6 +196,18 @@ def test_getCommunityEngagementByTerm():
     actualServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 2 == getEngagementTotal(actualServiceResult)
 
+    assert 0 == getEngagementTotal(actualNonServiceResult)
+
+    actualNonServiceResult[("Spring 2021", 2)][0]["matched"] = True
+    assert 1 == getEngagementTotal(actualNonServiceResult)
+
+    actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
+    assert 2 == getEngagementTotal(actualNonServiceResult)
+
+    actualNonServiceResult[("Spring 2021", 2)][0]["matched"] = False
+    assert 1 == getEngagementTotal(actualNonServiceResult)
+
+
 @pytest.mark.integration
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
