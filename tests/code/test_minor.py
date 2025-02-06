@@ -114,10 +114,8 @@ def test_getProgramEngagementHistory():
 @pytest.mark.integration
 def test_getCCEMinorProposals():
 
+    
 
-
-
-    print('Hi')
 
     getCCEMinorProposals("ayisie")
 

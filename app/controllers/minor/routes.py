@@ -10,7 +10,7 @@ from app.models.otherExperience import OtherExperience
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -30,6 +30,7 @@ def viewCceMinor(username):
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             summerYears = summerYears, 
+                            proposalList = getCCEMinorProposals(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             summerExperience = summerExperience if summerExperience else "",
                             selectedSummerTerm = selectedSummerTerm,

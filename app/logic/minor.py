@@ -65,20 +65,12 @@ def getCCEMinorProposals(username):
             "createdBy": otherExperience.createdBy, 
             "supervisor": otherExperience.supervisorName, 
             "term": otherExperience.term, 
-            "status": otherExperiences.status,
+            "status": otherExperience.status,
 
-
-             
+         
         })
-    print(proposalList)
 
-    for summ
-
-
-    return proposalList
-
-
-
+    return proposalList 
     
 # ################################################
 def getEngagementTotal(engagementData):
