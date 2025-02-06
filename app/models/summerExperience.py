@@ -1,10 +1,11 @@
 import datetime
 from app.models import *
 from app.models.user import User
+from app.models.term import Term
 
 class SummerExperience(baseModel):
     student = ForeignKeyField(User)
-    summerYear = CharField()
+    summerTerm = ForeignKeyField(Term)
     roleDescription = TextField()
     experienceType = CharField()
     contentAreas = TextField()  # Store as comma-separated values or use a related table if needed
