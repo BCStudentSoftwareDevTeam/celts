@@ -5,13 +5,13 @@ import datetime
 
 class OtherExperience(baseModel):
     student = ForeignKeyField(User)
-    term = ForeignKeyField(Term)
-    hours = IntegerField()
-    weeks = IntegerField()
-    experienceTitle = CharField()
+    experienceTerm = ForeignKeyField(Term)
+    totalHours = IntegerField()
+    totalWeeks = IntegerField()
+    experienceName = CharField()
     experienceDescription = CharField()
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")], default='Pending')
-    orgName= CharField()
+    orgName = CharField()
     orgAddress = CharField()
     orgPhone = CharField()
     orgWebsite = CharField()

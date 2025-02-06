@@ -45,24 +45,17 @@ def requestOtherEngagement(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    if not (g.current_user.isAdmin):
+    if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
 
-    sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    selectedSummerTerm, summerExperience = getSummerExperience(username)
-
-    latestYear = datetime.now().year + 2
-
-    summerYears = [latestYear - i for i in range(5)]
-
+    # once we submit the form for creation
+    if request.method == "POST":
+        saveOtherEngagementRequest(username, request.form)
+        return redirect(url_for('minor.viewCceMinor', username=username))
+    
     return render_template("minor/requestOtherEngagement.html",
                             user = User.get_by_id(username),
-                            summerYears = summerYears, 
-                            sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = summerExperience if summerExperience else "",
-                            selectedSummerTerm = selectedSummerTerm,
-                            totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
-                            summerTerms = getSummerTerms(),
+                            selectableTerms = selectSurroundingTerms(g.current_term),
                             allTerms = getSummerExperience(username))
 
 

@@ -54,7 +54,7 @@ def getCCEMinorProposals(username):
             "type": "summer",
             "createdBy": summerExperience.createdBy, 
             "supervisor": summerExperience.supervisorName,
-            "term": summerExperience.term,
+            "term": summerExperience.summerTerm,
             "status": summerExperience.status,
 
         })
@@ -64,12 +64,12 @@ def getCCEMinorProposals(username):
             "type": "otherExperience",
             "createdBy": otherExperience.createdBy, 
             "supervisor": otherExperience.supervisorName, 
-            "term": otherExperience.term, 
+            "term": otherExperience.experienceTerm, 
             "status": otherExperience.status,
 
          
         })
-
+    print(proposalList)
     return proposalList 
     
 # ################################################
@@ -268,12 +268,16 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def saveOtherEngagementRequest(engagementRequest):
+def saveOtherEngagementRequest(username, formData):
     """
         Create a CommunityEngagementRequest entry based off of the form data
     """
-    engagementRequest['status'] = "Pending"
-    CommunityEngagementRequest.create(**engagementRequest)
+    user = User.get(User.username == username)
+    OtherExperience.create(
+        student=user,
+        createdBy=g.current_user,
+        status="Pending",
+        **formData)
     
 
 def saveSummerExperience(username, summerExperience, currentUser):

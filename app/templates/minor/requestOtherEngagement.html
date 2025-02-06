@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block app_content %}
-   <form id='requestOtherEngagementForm' enctype="multipart/form-data" role='form' action="/" method="POST">
+   <form id='requestOtherEngagementForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/otherEngagement" onsubmit="setTimeout(function(){window.location.reload();},10);" method="POST">
       <div class='row'>
         <div class="container">
           <div class="container text-center">
@@ -32,11 +32,11 @@
           </div>
   
           <div class="form-group">
-              <label class="form-label" for="inputTerm"><strong>Term</strong></label>
-              <select class="form-select" name="inputTerm" id="inputTerm" required {% if other_experience %}disabled{% endif %}>
+              <label class="form-label" for="experienceTerm"><strong>Term</strong></label>
+              <select class="form-select" name="experienceTerm" id="experienceTerm" required {% if other_experience %}disabled{% endif %}>
                 <option value="" disabled selected>Select Year</option> 
-                {% for year in summerYears %}
-                   <option value="{{ year }}">{{ year }}</option>
+                {% for term in selectableTerms %}
+                   <option value="{{ term }}">{{ term.description }}</option>
                 {% endfor %}
               </select>
           </div>
@@ -74,14 +74,14 @@
 
           <div class="form-group">
               <label class="form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
-              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="weeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="totalWeeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
 
           <br>
 
           <div class="form-group">
               <label class="form-label" for="experienceDescription"><strong>Experience Description</strong></label>
-              <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="description" {% if other_experience %}disabled{% endif %}>{{ other_experience.service if other_experience else '' }}</textarea>
+              <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription" {% if other_experience %}disabled{% endif %}>{{ other_experience.service if other_experience else '' }}</textarea>
           </div>
           
           <br><br>

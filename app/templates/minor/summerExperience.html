@@ -18,7 +18,7 @@
 
 {% block app_content %}    
     <div name="Community-Engaged Summer Experience" class="pt-4">
-      <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/addSummerExperience" onsubmit="setTimeout(function(){window.location.reload();},10;"method="POST">
+      <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/summerExperience" onsubmit="setTimeout(function(){window.location.reload();},10);" method="POST">
         <div class='row'>
             <div class="container">
                 <div class='form-group mb-4 text-center'>
