@@ -19,7 +19,7 @@
                     <td id="type-{{ proposal['type'] }}-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
                     <td id="creator-{{ proposal['type'] }}-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
                     <td id="supervisor-{{ proposal['type'] }}-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
-                    <td id="term-{{ proposal['type'] }}-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
+                    <td id="term-{{ proposal['type'] }}-{{ proposal['id'] }}">{{ proposal['term'] }}</td>
                     <td>
                         <a class="status-key text-dark" id="status-{{ proposal['type'] }}-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
                     </td>
@@ -50,11 +50,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Course</h5>
+            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Proposal</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to withdraw this service-learning course proposal?<br><br>
+            <p>Are you sure you want to withdraw this CCE Minor proposal?<br><br>
             <span class="text-danger bi bi-exclamation-triangle-fill"></span>
             <b>Note: This action is irreversible. Once withdrawn, the proposal will be forever deleted.</b>
             </p>

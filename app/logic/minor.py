@@ -279,7 +279,6 @@ def saveOtherEngagementRequest(username, formData):
         createdBy=g.current_user,
         status="Pending",
         **formData)
-    print("created") 
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
