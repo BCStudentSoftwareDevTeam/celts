@@ -14,12 +14,12 @@
         </tr>
         </thead>
         <tbody>
-        {% for course in courseDict %}
+        {% for proposal in proposalList %}
             <tr>
-            <td id="name-{{ courseDict[course]['id'] }}">{{courseDict[course]['courseDisplayName']}}</td>
-            <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
+            <td id="name-{{ proposal['type'] }}"></td>
+            <!-- <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
             <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
-            <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td>
+            <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td> -->
             <td>
                 <a class="status-key text-dark" id="status-{{courseDict[course]['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
             </td>

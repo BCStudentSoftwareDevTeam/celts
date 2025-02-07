@@ -69,7 +69,6 @@ def getCCEMinorProposals(username):
 
          
         })
-    print(proposalList)
     return proposalList 
     
 # ################################################

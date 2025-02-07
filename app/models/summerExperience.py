@@ -5,6 +5,7 @@ from app.models.term import Term
 
 class SummerExperience(baseModel):
     student = ForeignKeyField(User)
+    summerYears = IntegerField()
     summerTerm = ForeignKeyField(Term)
     roleDescription = TextField()
     experienceType = CharField()

@@ -30,7 +30,7 @@ def viewCceMinor(username):
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             summerYears = summerYears, 
-                            proposalList = getCCEMinorProposals(username),
+                            getCCEMinorProposals = getCCEMinorProposals(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             summerExperience = summerExperience if summerExperience else "",
                             selectedSummerTerm = selectedSummerTerm,
@@ -70,6 +70,7 @@ def requestSummerExperience(username):
     # once we submit the form for creation
     if request.method == "POST":
         createSummerExperience(username, request.form)
+        print(request.form)
         return redirect(url_for('minor.viewCceMinor', username=username))
 
     latestYear = datetime.now().year + 2
