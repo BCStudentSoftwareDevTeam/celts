@@ -6,7 +6,7 @@ from peewee import DoesNotExist
 
 from app.models.term import Term
 
-def selectSurroundingTerms(currentTerm, prevTerms=2):
+def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
     """
     Returns a list of term objects around the provided Term object for the current term.
     Chooses the previous terms according to the prevTerms parameter (defaulting to 2),
@@ -14,7 +14,6 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
 
     To get only the current and future terms, pass prevTerms=0.
     """
-
     # Find the starting term
     startOrder = currentTerm.termOrder
     while(prevTerms > 0):
@@ -29,9 +28,11 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
         prevTerms -= 1
 
     surroundingTerms = (Term.select()
-                            .where(Term.termOrder >= startOrder)
-                            .where((Term.year <= currentTerm.year + 2))
+                            .where(Term.termOrder >= startOrder, Term.year <= currentTerm.year + 2)
                             .order_by(Term.termOrder))
+    
+    if summerOnly:
+       surroundingTerms = surroundingTerms.where(Term.isSummer)
 
     return surroundingTerms
 

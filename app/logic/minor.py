@@ -51,7 +51,8 @@ def getCCEMinorProposals(username):
 
     for summerExperience in summerExperiences:
         proposalList.append({
-            "type": "summer",
+            "id": summerExperience.id,
+            "type": "Summer Experience",
             "createdBy": summerExperience.createdBy, 
             "supervisor": summerExperience.supervisorName,
             "term": summerExperience.summerTerm,
@@ -61,7 +62,8 @@ def getCCEMinorProposals(username):
 
     for otherExperience in otherExperiences:
         proposalList.append({
-            "type": "otherExperience",
+            "id": otherExperience.id,
+            "type": "Other Engagement",
             "createdBy": otherExperience.createdBy, 
             "supervisor": otherExperience.supervisorName, 
             "term": otherExperience.experienceTerm, 
@@ -277,7 +279,7 @@ def saveOtherEngagementRequest(username, formData):
         createdBy=g.current_user,
         status="Pending",
         **formData)
-    
+    print("created") 
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """

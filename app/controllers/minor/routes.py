@@ -21,19 +21,11 @@ def viewCceMinor(username):
         return abort(403)
 
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    selectedSummerTerm, summerExperience = getSummerExperience(username)
-
-    latestYear = datetime.now().year + 2
-
-    summerYears = [latestYear - i for i in range(5)]
 
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
-                            summerYears = summerYears, 
-                            getCCEMinorProposals = getCCEMinorProposals(username),
+                            proposalList = getCCEMinorProposals(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = summerExperience if summerExperience else "",
-                            selectedSummerTerm = selectedSummerTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
                             summerTerms = getSummerTerms(),
                             allTerms = getSummerExperience(username))
@@ -70,15 +62,12 @@ def requestSummerExperience(username):
     # once we submit the form for creation
     if request.method == "POST":
         createSummerExperience(username, request.form)
-        print(request.form)
         return redirect(url_for('minor.viewCceMinor', username=username))
-
-    latestYear = datetime.now().year + 2
-
-    summerYears = [latestYear - i for i in range(5)]
+    
+    summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)
 
     return render_template("minor/summerExperience.html",
-                            summerYears = summerYears,
+                            summerTerms = summerTerms,
                             user = User.get_by_id(username),
                             )
 
