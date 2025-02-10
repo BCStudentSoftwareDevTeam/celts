@@ -16,7 +16,7 @@
         <tbody>
         {% for proposal in proposalList %}
             <tr>
-            <td id="name-{{ proposal['type'] }}"></td>
+            <td id="name-{{ proposal['createdBy'] }}"></td>
             <!-- <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
             <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
             <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td> -->
