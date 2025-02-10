@@ -111,12 +111,12 @@ def test_getProgramEngagementHistory():
 @pytest.mark.integration
 def test_getCommunityEngagementByTerm():
     with mainDB.atomic() as transaction:
-        # create testing objects
+        # create testing objects  
         testUser = User.create(username="FINN",
-                               firstName="Not",
-                               lastName="Yet",
-                               email="FINN@berea.edu",
-                               bnumber="B91111111")
+                    firstName="Not",
+                    lastName="Yet",
+                    email="FINN@berea.edu",
+                    bnumber="B91111111")   
         
         testingServiceEvent = Event.create(name = "Testing event",
                                     term = 1,
@@ -129,7 +129,7 @@ def test_getCommunityEngagementByTerm():
                                     isService = 1,
                                     startDate = "2021-12-12",
                                     isCanceled = False,
-                                    program = 2)        
+                                    program = 1)        
         
         testCourse = Course.create(courseName="test get course information",
                                    courseAbbreviation="TGCI",
@@ -145,90 +145,93 @@ def test_getCommunityEngagementByTerm():
         EventParticipant.create(user = testUser , event = testingServiceEvent.id)
         CourseParticipant.create(course=testCourse, user=testUser, hoursEarned=1.0)
 
-        actualServiceResult = getCommunityEngagementByTerm("FINN")
-
+        # get the service event and course
         serviceCourse = Course.get_by_id(testCourse)
         serviceEvent = Event.get_by_id(testingServiceEvent)
 
-        # write out what we expect the result to be
+        # write out what we expect the result to be as the getCommunityEngagementByTerm is suppose to return name, id, type, matched and term
         expectedServiceResult = OrderedDict({
                 ("Fall 2020", 1):[{"name":serviceEvent.program.programName, "id":serviceEvent.program.id, "type":"program", "matched": False, "term":serviceEvent.term.id}],
                 ("Summer 2021", 3):[{"name":serviceCourse.courseName, "id":serviceCourse.id, "type":"course", "matched": False, "term":serviceCourse.term.id}]})
+        
         # get the actual result from getCommunityEngagementByTerm
         actualServiceResult = getCommunityEngagementByTerm("FINN")
-        print("wewe",actualServiceResult, expectedServiceResult)
-        assert actualServiceResult == expectedServiceResult
 
+        assert actualServiceResult == expectedServiceResult
         transaction.rollback()
 
     with mainDB.atomic() as transaction:
-            # create testing objects
-            testUser = User.create(username="FINN",
-                                firstName="Not",
-                                lastName="Yet",
-                                email="FINN@berea.edu",
-                                bnumber="B91111111")
+        # create testing objects
+        testUser = User.create(username="FINN",
+                    firstName="Not",
+                    lastName="Yet",
+                    email="FINN@berea.edu",
+                    bnumber="B91111111")
             
-            testingNonServiceEvent = Event.create(name = "Testing non-service event",
-                                        term = 2,
-                                        description = "This Non-Service Event is Created to be tested.",
-                                        timeStart = "07:00 PM",
-                                        timeEnd = "10:00 PM",
-                                        location = "Somewhere",
-                                        isRsvpRequired = 0,
-                                        isTraining = 0,
-                                        isService = 0,
-                                        startDate = "2021-11-11",
-                                        isCanceled = False,
-                                        program = 2)
-            
-            
-            testCourse = Course.create(courseName="test get course information",
-                                    courseAbbreviation="TGCI",
-                                    sectionDesignation="something",
-                                    courseCredit=1.0,
-                                    term=3,
-                                    status=1,
-                                    createdBy="bledsoef",
-                                    serviceLearningDesignatedSections = "",
-                                    previouslyApprovedDescription="")
-            
-            EventParticipant.create(user = testUser , event = testingNonServiceEvent.id)
-            CourseParticipant.create(course=testCourse, user=testUser, hoursEarned=1.0)
+        testingNonServiceEvent = Event.create(name = "Testing non-service event",
+                                    term = 2,
+                                    description = "This Non-Service Event is Created to be tested.",
+                                    timeStart = "07:00 PM",
+                                    timeEnd = "10:00 PM",
+                                    location = "Somewhere",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = "2021-1-1",
+                                    isCanceled = False,
+                                    program = 2)
+        
+        testCourse = Course.create(courseName="test get course information",
+                                courseAbbreviation="TGCI",
+                                sectionDesignation="something",
+                                courseCredit=1.0,
+                                term=3,
+                                status=1,
+                                createdBy="bledsoef",
+                                serviceLearningDesignatedSections = "",
+                                previouslyApprovedDescription="")
+        
+        # add the testUser as a participant in the course and event
+        EventParticipant.create(user = testUser , event = testingNonServiceEvent.id)
+        CourseParticipant.create(course=testCourse, user=testUser, hoursEarned=1.0)
 
-            actualNonServiceResult = getCommunityEngagementByTerm("FINN")
+        # get the non-service event and course
+        nonServiceCourse = Course.get_by_id(testCourse)
+        nonServiceEvent = Event.get_by_id(testingNonServiceEvent)
 
-            nonServiceCourse = Course.get_by_id(testCourse)
-            nonServiceEvent = Event.get_by_id(testingNonServiceEvent)
+        #This expected result is without the non-service event as the return value of getCommunityEngagementByTerm 
+        #is suppose to return name, id, type, matched and term of events with only isService as True
+        expectedNonServiceResult = OrderedDict({
+            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
+        
+        #This expected result is with the non-service event to test whether getCommunityEngagementByTerm is actualy returning only service events and courses
+        expectedResultWithoutServiceEvent = OrderedDict({
+            ("Spring 2021", 2):[{"name":nonServiceEvent.program.programName, "id":nonServiceEvent.program.id, "type":"program", "matched": False, "term":nonServiceEvent.term.id}],
+            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
+        
+        # get the actual result from getCommunityEngagementByTerm
+        actualNonServiceResult = getCommunityEngagementByTerm("FINN")
 
-            expectedNonServiceResult = OrderedDict({
-                ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
-            
-            actualNonServiceResult = getCommunityEngagementByTerm("FINN")
-            print("wetwe",actualNonServiceResult, expectedNonServiceResult)
-            assert actualNonServiceResult == expectedNonServiceResult
-
-            transaction.rollback()
+        assert actualNonServiceResult == expectedNonServiceResult
+        assert actualNonServiceResult != expectedResultWithoutServiceEvent
+        transaction.rollback()
 
     # check that our total function works
-'''   assert 0 == getEngagementTotal(actualServiceResult)
-
-    actualServiceResult[("Spring 2021", 2)][0]["matched"] = True
+    assert 0 == getEngagementTotal(actualServiceResult)
+    
+    # add a matched event to the service result and check the total
+    actualServiceResult[("Fall 2020", 1)][0]["matched"] = True
     assert 1 == getEngagementTotal(actualServiceResult)
 
+    # add a matched event to the service result and check the total
     actualServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 2 == getEngagementTotal(actualServiceResult)
-
     assert 0 == getEngagementTotal(actualNonServiceResult)
 
-    actualNonServiceResult[("Spring 2021", 2)][0]["matched"] = True
+    # add a matched event to the service result and check the total
+    actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 1 == getEngagementTotal(actualNonServiceResult)
 
-    actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
-    assert 2 == getEngagementTotal(actualNonServiceResult)
-
-    actualNonServiceResult[("Spring 2021", 2)][0]["matched"] = False
-    assert 1 == getEngagementTotal(actualNonServiceResult)'''
 
 
 @pytest.mark.integration
