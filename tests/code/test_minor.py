@@ -85,7 +85,7 @@ def test_getProgramEngagementHistory():
                                     location = "Somewhere",
                                     isRsvpRequired = 0,
                                     isTraining = 0,
-                                    isService = 0,
+                                    isService = 1,
                                     startDate = "2021-12-12",
                                     isCanceled = False,
                                     program = 2)
@@ -228,7 +228,7 @@ def test_getCommunityEngagementByTerm():
     assert 2 == getEngagementTotal(actualServiceResult)
     assert 0 == getEngagementTotal(actualNonServiceResult)
 
-    # add a matched event to the service result and check the total
+        # add a matched event to the service result and check the total
     actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 1 == getEngagementTotal(actualNonServiceResult)
 
