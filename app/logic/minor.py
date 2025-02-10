@@ -51,7 +51,8 @@ def getCCEMinorProposals(username):
 
     for summerExperience in summerExperiences:
         proposalList.append({
-            "type": "summer",
+            "id": summerExperience.id,
+            "type": "Summer Experience",
             "createdBy": summerExperience.createdBy, 
             "supervisor": summerExperience.supervisorName,
             "term": summerExperience.summerTerm,
@@ -61,7 +62,8 @@ def getCCEMinorProposals(username):
 
     for otherExperience in otherExperiences:
         proposalList.append({
-            "type": "otherExperience",
+            "id": otherExperience.id,
+            "type": "Other Engagement",
             "createdBy": otherExperience.createdBy, 
             "supervisor": otherExperience.supervisorName, 
             "term": otherExperience.experienceTerm, 
@@ -277,7 +279,6 @@ def saveOtherEngagementRequest(username, formData):
         createdBy=g.current_user,
         status="Pending",
         **formData)
-    
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
@@ -331,12 +332,3 @@ def removeSummerExperience(username):
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
-
-
-def getSummerTerms():
-    """
-        Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
-    """
-    summerTerms = list(Term.select().where(Term.isSummer).order_by(Term.termOrder))
-
-    return summerTerms

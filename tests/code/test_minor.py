@@ -1,8 +1,10 @@
 import pytest
 from peewee import *
+from flask import g
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
 from werkzeug.datastructures import ImmutableMultiDict
+from app import app
 
 from app.models import mainDB
 from app.models.user import User
@@ -13,11 +15,12 @@ from app.models.program import Program
 from app.models.summerExperience import SummerExperience
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
+from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.models.communityEngagementRequest import CommunityEngagementRequest
+from app.models.otherExperience import OtherExperience
 from app.logic.minor import saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal, getCCEMinorProposals
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -185,27 +188,43 @@ def test_getCommunityEngagementByTerm():
 @pytest.mark.integration
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
-        testInfo = {'user': 'ramsayb2',
-                    'term': 3,
+        User.create(
+            username="glek",
+            firstName="Not",
+            lastName="Yet",
+            email="glek@berea.edu",
+            bnumber="B91111111")
+        
+        newTerm = Term.create(
+            description="Fall 2025",
+            year=2025,
+            academicYear="2025-2026",
+            isSummer=0,
+            isCurrentTerm=0)
+        
+        testInfo = {'experienceTerm': newTerm,
                     'experienceName': 'Test Experience',
-                    'company': 'Test Company',
-                    'companyAddress': '123 test ln',
-                    'companyPhone': '(123)-456-7890',
+                    'orgName': 'Test Company',
+                    'orgAddress': '123 test ln',
+                    'orgPhone': '(123)-456-7890',
+                    'orgWebsite': 'glek.portfolio.com',
+                    'supervisorName': 'Kafui Gle',
+                    'supervisorPhone': '2269485450',
                     'supervisorEmail': 'test@supervisor.com',
                     'totalHours': 300,
-                    'weeks': 10,
-                    'description': 'Test Description',
-                    'filename': 'test_file.txt',
-                    'status': 'Pending',
+                    'totalWeeks': 10,
+                    'experienceDescription': 'Test Description',
                    }
         
         expectedValues = testInfo.copy()
 
         # Save the requested event to the database
-        saveOtherEngagementRequest(testInfo)
+        with app.app_context():
+            g.current_user = "glek"
+            saveOtherEngagementRequest('glek', testInfo)
 
         # Get the actual saved request from the database (the most recent one)
-        savedRequest = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
+        savedRequest = OtherExperience.select().order_by(OtherExperience.id.desc()).first()
         # Check that the saved request matches the expected values
         for key, expectedValue in expectedValues.items():
             if key == "user":
@@ -436,8 +455,14 @@ def test_createSummerExperience():
                     email="FINN@berea.edu",
                     bnumber="B91111111")
         
+        newTerm = Term.create(description="Summer 2025",
+                    year=2025,
+                    academicYear="2024-2025",
+                    isSummer=1,
+                    isCurrentTerm=0)
+
         testFormData1 = ImmutableMultiDict({
-            "summerYear": 2025,
+            "summerTerm": newTerm,
             "roleDescription": "Assistant to Finn",
             "experienceType": "Internship",
             "contentArea": ["Power and inequality", "Civic literacy"],
@@ -452,7 +477,7 @@ def test_createSummerExperience():
         })
 
         testFormData2 = ImmutableMultiDict({
-            "summerYear": 2025,
+            "summerTerm": newTerm,
             "roleDescription": "Assistant to Finn",
             "experienceType": "Some other experience type",
             "contentArea": ["Power and inequality", "Civic literacy"],
@@ -469,35 +494,25 @@ def test_createSummerExperience():
         })
         
         # verify FINN has no summer experiences in currently
-        initialSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        initialSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
 
         assert len(initialSummerExperiences) == 0
 
         # create the summer experience with the test data and verify FINN has a new entry
-        createSummerExperience("FINN", testFormData1)
+        with app.app_context():
+            g.current_user = "FINN"
+            createSummerExperience("FINN", testFormData1)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
         assert len(newSummerExperiences) == 1
 
         # create the summer experience with the test data and verify FINN has a new entry
-        createSummerExperience("FINN", testFormData2)
+        with app.app_context():
+            g.current_user = "FINN"
+            createSummerExperience("FINN", testFormData2)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
         assert len(newSummerExperiences) == 2
 
         transaction.rollback()
 
-@pytest.mark.integration
-def test_getSummerTerms():
-    with mainDB.atomic() as transaction:
-        # get all the terms that have the isSummer flag that are in test data
-        baseSummerTerms = getSummerTerms()
-
-        assert len(list(baseSummerTerms)) == 2
-
-        Term.update(isSummer = 0).where(Term.isSummer == 1).execute()
-        noSummerTerms = getSummerTerms()
-
-        assert len(list(noSummerTerms)) == 0
-
-        transaction.rollback()

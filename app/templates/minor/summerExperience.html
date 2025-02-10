@@ -29,11 +29,11 @@
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label" for="summerYear"><strong>Summer Year</strong></label>
-                    <select class="form-select" id="summerYear" name="summerYear" required>
+                    <label class="form-label" for="summerTerm"><strong>Summer Year</strong></label>
+                    <select class="form-select" id="summerTerm" name="summerTerm" required>
                         <option value="" disabled selected>Select Year</option>
-                        {% for year in summerYears %}
-                                <option value="{{ year}}">{{ year}}</option>
+                        {% for term in summerTerms %}
+                                <option value="{{ term }}">{{ term.description }}</option>
                         {% endfor %}
                     </select>
                 </div>
