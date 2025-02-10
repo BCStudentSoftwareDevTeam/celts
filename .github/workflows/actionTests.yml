@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     # each step can define `env` vars, but it's easiest to define them on the build level
     env:
@@ -29,10 +29,18 @@ jobs:
       APP_ENV: 'testing'
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
           python-version: ${{ matrix.python-version }}
+
+    - name: Print Python Version  
+      run: python --version  
+ 
+    - name: Create and activate virtual environment  
+      run: |  
+        python -m venv venv  
+        source venv/bin/activate  
     - run: sudo /etc/init.d/mysql start
     - name: Install dependencies
       run: source setup.sh

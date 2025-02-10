@@ -21,7 +21,7 @@ fi
 python3 -m pip install --upgrade pip #added python-m for pip installs (source setup overwrite for venv)
 
 # install requirements
-python3 -m pip install -r requirements.txt
+python3 -m pip install --no-cache-dir -r requirements.txt
 # To generate a new requirements.txt file, run "pip freeze > requirements.txt"
 
 echo
