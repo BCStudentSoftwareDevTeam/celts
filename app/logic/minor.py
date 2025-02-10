@@ -332,12 +332,3 @@ def removeSummerExperience(username):
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
-
-
-def getSummerTerms():
-    """
-        Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
-    """
-    summerTerms = list(Term.select().where(Term.isSummer).order_by(Term.termOrder))
-
-    return summerTerms
