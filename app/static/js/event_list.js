@@ -79,7 +79,7 @@ function updateIndicatorCounts(isChecked){
     success: function(eventsCount) {
       const studentLedEventsCount = Number(eventsCount.studentLedEventsCount);
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
-      const engagementEventsCount = Number(eventsCount.engagementEventsCount)
+      const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
       const otherEventsCount = Number(eventsCount.otherEventsCount);
       const toggleStatus = eventsCount.toggleStatus;
@@ -87,9 +87,9 @@ function updateIndicatorCounts(isChecked){
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
       // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student Led Service (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student Led Service`)
-      trainingEventsCount > 0 ? $("#trainingEvents").html(`Training (${trainingEventsCount})`) : $("#trainingEvents").html(`Training and Education`)
-      engagementEventCount > 0 ? $("#engagementEvents").html(`Education and Engagement this(${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
+      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student-Led Services (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student-Led Services`)
+      trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
+      engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
       otherEventsCount > 0 ? $("#otherEvents").html(`Other Events (${otherEventsCount})`) : $("#otherEvents").html(`Other Events`)
     },
