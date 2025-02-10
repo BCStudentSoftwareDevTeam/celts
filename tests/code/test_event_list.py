@@ -185,7 +185,18 @@ def test_training_events(training_events):
                                              isTraining = True,
                                              startDate = "1919-12-12",
                                              program = testNotBonnerProgram.id)
-   
+
+        testEngagementEvent = Event.create(programName = "Test Engagement Event",
+                                              partner = None,
+                                              isEngagement = True,
+                                              contactName = "Jesus Christ",
+                                              contactEmail = "christj@test.com")
+        
+        testNotEngagementEvent = Event.create(programName = "Test Engagement Event",
+                                              partner = None,
+                                              isEngagement = False,
+                                              contactName = "Jesus Christ",
+                                              contactEmail = "christj@test.com")
 
         userFaculty = User.create(username = "TestNotBonner",
                                   bnumber = "B000000000",
