@@ -119,7 +119,7 @@ def test_getCommunityEngagementByTerm():
                     bnumber="B91111111")   
         
         testingServiceEvent = Event.create(name = "Testing event",
-                                    term = 1,
+                                    term = 1, # Fall 2020
                                     description = "This Service Event is Created to be tested.",
                                     timeStart = "07:00 PM",
                                     timeEnd = "10:00 PM",
@@ -135,7 +135,7 @@ def test_getCommunityEngagementByTerm():
                                    courseAbbreviation="TGCI",
                                    sectionDesignation="something",
                                    courseCredit=1.0,
-                                   term=3,
+                                   term=3, # Summer 2021
                                    status=1,
                                    createdBy="bledsoef",
                                    serviceLearningDesignatedSections = "",
@@ -205,7 +205,7 @@ def test_getCommunityEngagementByTerm():
             ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
         
         #This expected result is with the non-service event to test whether getCommunityEngagementByTerm is actualy returning only service events and courses
-        expectedResultWithoutServiceEvent = OrderedDict({
+        unexpectedResultWithoutServiceEvent = OrderedDict({
             ("Spring 2021", 2):[{"name":nonServiceEvent.program.programName, "id":nonServiceEvent.program.id, "type":"program", "matched": False, "term":nonServiceEvent.term.id}],
             ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
         
@@ -213,7 +213,7 @@ def test_getCommunityEngagementByTerm():
         actualNonServiceResult = getCommunityEngagementByTerm("FINN")
 
         assert actualNonServiceResult == expectedNonServiceResult
-        assert actualNonServiceResult != expectedResultWithoutServiceEvent
+        assert actualNonServiceResult != unexpectedResultWithoutServiceEvent
         transaction.rollback()
 
     # check that our total function works
@@ -228,7 +228,7 @@ def test_getCommunityEngagementByTerm():
     assert 2 == getEngagementTotal(actualServiceResult)
     assert 0 == getEngagementTotal(actualNonServiceResult)
 
-        # add a matched event to the service result and check the total
+    # add a matched event to the service result and check the total
     actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 1 == getEngagementTotal(actualNonServiceResult)
 
