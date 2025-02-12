@@ -54,8 +54,25 @@ $(document).ready(function() {
       contentType: false,
       processData: false,
       success: function(response) {
-        $('#pills-summerExperience').html(response);
-        $('#summerExperience').tab('show');
+        location.reload()
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+  });
+  $('#otherExperienceForm').on('submit', function(event) {
+    event.preventDefault(); 
+    var formData = new FormData(this); 
+    var actionUrl = $(this).attr('action'); 
+    
+    $.ajax({
+      url: actionUrl,
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function(response) {
         location.reload()
       },
       error: function(xhr, status, error) {
