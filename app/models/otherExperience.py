@@ -20,3 +20,4 @@ class OtherExperience(baseModel):
     supervisorEmail = CharField()
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
+    attachmentObject = CharField()
