@@ -227,6 +227,7 @@ def viewUsersProfile(username):
                                 permissionPrograms = permissionPrograms,
                                 eligibilityTable = eligibilityTable,
                                 volunteer = volunteer,
+                                volunteerBirthday=volunteerBirthday,
                                 backgroundTypes = backgroundTypes,
                                 allBackgroundHistory = allBackgroundHistory,
                                 currentDateTime = datetime.datetime.now(),

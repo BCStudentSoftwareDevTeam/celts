@@ -310,7 +310,8 @@ $(document).ready(function(){
     });
 
   setupPhoneNumber("#updatePhone", "#phoneInput")
-
+  SetupBirthday("#updateBirfday", "#birthdayInput")
+  
   $(".saveDiet").on('click', function() {
     let data = {
       dietInfo: $("#diet").val(),
@@ -327,6 +328,66 @@ $(document).ready(function(){
   });
 
 });
+
+function SetupBirthday(editButtonId, birthdayInputID) {
+  $(editButtonId).on('click', function() {
+    var username = $(this).data("username")
+    if ($(editButtonId).html() === 'Edit'){
+      $(birthdayInputID).focus();
+    }
+    else{
+      processBirthdaySetup(this, birthdayInputID, username, "save")
+    }
+  });
+
+  $(birthdayInputID).focus(function (){
+    var username = $(editButtonId).data("username")
+    processBirthdaySetup(editButtonId, this, username, "edit")
+  })
+  $(birthdayInputID).focusout(function (event) {
+    var username = $(editButtonId).data("username")
+    var bla = $(editButtonId)
+    if ($(event.relatedTarget).attr("id") != bla.attr("id")){
+      processBirthdaySetup(editButtonId, this, username, "restore")
+    }
+  })
+}
+
+function processBirthdaySetup(editButtonId, birthdayInputId, username, action) {
+  if (action == "edit" ) {
+    $(editButtonId).html("Save");
+  }
+  else if (action == "save" ) {
+    changeBirthday(editButtonId, birthdayInputId, username)
+  }
+  else if (action == "restore"){
+    var birthdayInput = $(birthdayInputId);
+    $(birthdayInputId).val(birthdayInput.attr("data-value"))
+    $(editButtonId).html('Edit');
+  }
+}
+
+function changeBirthday(editButtonId, birthdayInputId, username) {
+
+  // Save the birthday
+  var birthday_input = $(birthdayInputId);
+  console.log('birthday_input:', birthday_input)
+    $.ajax({
+      method:"POST",
+      url:"/updateBirthday",
+      data:{"username":username,
+            "birthday":birthday_input.val()},
+      success: function(s){
+        $(birthdayInputId).attr("data-value",birthday_input.val())
+        msgToast("Birthday", "Successfully updated the BirthDay.")
+      },
+      error: function(request, status, error) {
+        msgFlash("Birthday not updated.", "danger")
+      },
+
+    })
+    $(editButtonId).html('Edit');
+}
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
   let program_id=$(el).attr('data-programid');

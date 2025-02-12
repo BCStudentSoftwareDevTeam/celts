@@ -227,3 +227,15 @@ def updatePhone():
     newinfo=request.form
     User.update(phoneNumber=newinfo["phoneNumber"]).where(User.username==newinfo["username"]).execute()
     return ""
+
+@admin_bp.route("/updateBirthday", methods=["POST"])
+def updateBirthday():
+    formdata=request.form
+    birthday = formdata["birthday"].split("/")
+    print("birthday:", "birthday")
+    birthdayDay = birthday[2]
+    birthdayYear = birthday[1]
+    birthdayMonth = birthday[0]
+    User.update(birthdayDay=birthdayDay, birthdayYear=birthdayYear, birthdayMonth=birthdayMonth).where(User.username==formdata["username"]).execute()
+    return ""
+
