@@ -5,9 +5,6 @@ from datetime import datetime
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
-from app.models.summerExperience import SummerExperience
-from app.models.otherExperience import OtherExperience
-
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
