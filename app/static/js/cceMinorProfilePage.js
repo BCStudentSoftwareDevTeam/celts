@@ -1,36 +1,4 @@
 $(document).ready(function(){
-    $("#summerExperienceSave").click(function(){
-      let data = {'summerExperience': $("#summerExperience").val(),
-                  'selectedSummerTerm': $("#summerExperienceTerm").find(":selected").text()}
-      let username = $("#username").val()
-      $.ajax({
-        type: "POST", 
-        url: "/cceMinor/"+username+"/addSummerExperience",
-        data: data,
-        success: function(s){
-          msgToast("Success!", "Summer Experience successfully added!")
-        },
-        error: function(error){
-          msgToast("Error!", "Error adding Summer Experience!")
-        }
-      })
-    });
-
-    $("#removeSummerExperience").click(function(){
-      let username = $("#username").val()
-      $.ajax({
-        type: "POST", 
-        url: "/cceMinor/"+username+"/deleteSummerExperience",
-        success: function(s){
-          $("#summerExperience").val("")
-          msgToast("Success!", "Summer Experience successfully deleted!")
-        },
-        error: function(error){
-          msgToast("Error!", "Error deleting Summer Experience!")
-        }
-      })
-    });
-
     $('.engagement-row').on("click", function() {
         showEngagementInformation($(this).data('engagement-data'));
     });
