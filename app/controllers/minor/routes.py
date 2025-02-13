@@ -38,9 +38,18 @@ def requestOtherEngagement(username):
     """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
+    
 
     # once we submit the form for creation
     if request.method == "POST":
+        filename = None
+        attachment = request.files.get("attachmentObject")
+        if attachment:
+                addFile = FileHandler(getFilesFromRequest(request))
+                addFile.saveFiles()
+                filename = attachment.filename
+        formData["filename"] = filename
+        formData = request.form.copy()
         saveOtherEngagementRequest(username, request.form)
         return redirect(url_for('minor.viewCceMinor', username=username))
     

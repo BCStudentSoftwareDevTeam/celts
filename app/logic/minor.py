@@ -274,11 +274,14 @@ def saveOtherEngagementRequest(username, formData):
         Create a CommunityEngagementRequest entry based off of the form data
     """
     user = User.get(User.username == username)
+
+
     OtherExperience.create(
         student=user,
         createdBy=g.current_user,
         status="Pending",
         **formData)
+    print(**formData)
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """

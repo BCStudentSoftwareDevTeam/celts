@@ -6,7 +6,7 @@ from app.models.program import Program
 import glob
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None, programId=None):
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None, filepath=""):
         self.files = files 
         if not isinstance(self.files, list):
                 self.files = [self.files]  
@@ -80,7 +80,7 @@ class FileHandler:
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
         except AttributeError:
-            pass
+            print('Ughh')
 
     def retrievePath(self, files):
         pathDict = {}
