@@ -10,7 +10,7 @@ from app.models.otherExperience import OtherExperience
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, withdrawCCEMinorExperience, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -69,6 +69,19 @@ def requestSummerExperience(username):
                             summerTerms = summerTerms,
                             user = User.get_by_id(username),
                             )
+
+@minor_bp.route('/cceMinor/<username>/withdrawExperience', methods=['POST'])
+def withdrawExperience(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin or g.current_user.username == username):
+        return
+    
+    withdrawCCEMinorExperience(request.form)    
+
+    return redirect(url_for('minor.viewCceMinor', username=username))
+
 
 # ################################################## SUMMER EXPERIENCE START ###########################################################
 

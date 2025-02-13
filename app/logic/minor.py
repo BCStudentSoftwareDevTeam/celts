@@ -43,6 +43,21 @@ def createSummerExperience(username, formData):
         print(f"Error saving summer experience: {e}")
         raise
 
+def withdrawCCEMinorExperience(experienceData):
+    try:
+        experienceType = experienceData["experienceType"]
+        experienceID = experienceData["experienceID"]
+        experience = None
+        if experienceType == "Summer Experience":
+            experience = SummerExperience.get_by_id(experienceID)
+        else: # if "Other Engagement"
+            experience = OtherExperience.get_by_id(experienceID) 
+        
+        experience.delete_instance()
+    except Exception as e:
+        print(f"Error withdrawing experience: {e}")
+        raise
+    
 def getCCEMinorProposals(username):
     proposalList = []
 
