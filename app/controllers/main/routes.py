@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents, getEngagementEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -88,6 +88,7 @@ def events(selectedTerm, activeTab, programID):
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
+    engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
 
@@ -104,6 +105,7 @@ def events(selectedTerm, activeTab, programID):
     # Get the count of all term events for each category to display in the event list page.
     studentLedEventsCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
+    engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
 
@@ -113,6 +115,9 @@ def events(selectedTerm, activeTab, programID):
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
+        for event in engagementEvents:
+            if event.isPastEnd:
+                engagementEventsCount -= 1
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
@@ -125,6 +130,7 @@ def events(selectedTerm, activeTab, programID):
         return jsonify({
             "studentLedEventsCount": studentLedEventsCount,
             "trainingEventsCount": trainingEventsCount,
+            "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount,
             "toggleStatus": toggleState
@@ -134,6 +140,7 @@ def events(selectedTerm, activeTab, programID):
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
+                            engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
                             otherEvents = otherEvents,
                             listOfTerms = listOfTerms,

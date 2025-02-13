@@ -238,6 +238,15 @@ def getStudentLedEvents(term):
 
     return programs
 
+def getEngagementEvents(term):
+    engagementEvents = list(Event.select(Event, Program)
+                                 .join(Program)
+                                 .where(Event.isEngagement,
+                                        Event.term == term, Event.deletionDate == None)
+                                 .order_by(Event.startDate, Event.timeStart)
+                                 .execute())
+    return engagementEvents
+
 def getUpcomingStudentLedCount(term, currentTime):
     """
         Return a count of all upcoming events for each student led program.
