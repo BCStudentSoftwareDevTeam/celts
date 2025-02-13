@@ -62,13 +62,13 @@ def special_otherEvents():
         nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
-def test_studentled_events(training_events):
+def test_getStudentLedEvents(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
-def test_getUpcomingStudentLed_events():
+def test_getUpcomingStudentLedCount():
     with mainDB.atomic() as transaction: 
         testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
         currentTestTerm = Term.get_by_id(5)
@@ -144,7 +144,7 @@ def test_getUpcomingStudentLed_events():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_training_events(training_events):
+def test_getTrainingEvents(training_events):
     with mainDB.atomic() as transaction:
         testTerm = Term.create( description = "Test Term",
                                 year = 1919,
@@ -259,13 +259,13 @@ def test_training_events(training_events):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_bonner_events(special_bonner):
+def test_getBonnerEvents(special_bonner):
     bonner = special_bonner
     allBonnerProgram = [bonner]
     assert allBonnerProgram == getBonnerEvents(2)
 
 @pytest.mark.integration
-def test_engagement_events():
+def test_getEngagementEvents():
     with mainDB.atomic() as transaction:
         testTerm = Term.create( description = "Test Term",
                                 year = 1919,
