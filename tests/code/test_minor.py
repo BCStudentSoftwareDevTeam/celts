@@ -10,7 +10,6 @@ from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
-from app.models.summerExperience import SummerExperience
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
@@ -459,20 +458,20 @@ def test_createSummerExperience():
         })
         
         # verify FINN has no summer experiences in currently
-        initialSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
 
         assert len(initialSummerExperiences) == 0
 
         # create the summer experience with the test data and verify FINN has a new entry
         createSummerExperience("FINN", testFormData1)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student== "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
         # create the summer experience with the test data and verify FINN has a new entry
         createSummerExperience("FINN", testFormData2)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.user == "FINN"))
+        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 2
 
         transaction.rollback()

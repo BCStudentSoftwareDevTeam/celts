@@ -6,6 +6,7 @@ import datetime
 class CCEMinorProposal(baseModel):
     student = ForeignKeyField(User)
     term = ForeignKeyField(Term)
+    proposalType = CharField()
     experienceName = CharField(null=True)
     experienceType = CharField(null=True)
     contentAreas = TextField(null=True)

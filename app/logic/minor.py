@@ -27,7 +27,8 @@ def createSummerExperience(username, formData):
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
        
         CCEMinorProposal.create(
-            user=user,
+            student=user,
+            proposalType = 'Summer Experience',
             contentAreas = contentAreas,
             status="Pending",
             **formData,
