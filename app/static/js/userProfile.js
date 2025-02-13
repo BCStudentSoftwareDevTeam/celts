@@ -290,13 +290,14 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", "Successfully deleted background check.")
+        msgToast("Background Check", `Successfully deleted background check. <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`)
       },
       error: function(error, status){
         console.log(error,status)
       }
     })
   });
+
   // Popover functionality
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
