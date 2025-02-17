@@ -515,8 +515,6 @@ def test_createSummerExperience():
 
         transaction.rollback()
 
-<<<<<<< HEAD
-=======
 @pytest.mark.integration
 def test_createOtherEngagementRequest():
     with mainDB.atomic() as transaction:
@@ -559,4 +557,3 @@ def test_createOtherEngagementRequest():
         assert len(initialOtherExperiences) == 1 
 
         transaction.rollback()
->>>>>>> 24d080fcb045213bcfc129494ea1eae2bee0e666
