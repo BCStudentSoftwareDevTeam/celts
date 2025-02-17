@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import List, Dict
-from flask import flash
+from flask import flash, g
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 
@@ -17,6 +17,7 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
 
+
 def createSummerExperience(username, formData):
     """
         Given the username of the student and the formData which includes all of
@@ -27,6 +28,7 @@ def createSummerExperience(username, formData):
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
        
         CCEMinorProposal.create(
+            createdBy = g.current_user,
             student=user,
             proposalType = 'Summer Experience',
             contentAreas = contentAreas,
@@ -73,7 +75,7 @@ def getMinorProgress():
                                                                     fn.IF(fn.COUNT(CCEMinorProposal.id) > 0, True, False).alias('hasCCEMinorProposal'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
-            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.user,))
+            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
@@ -233,12 +235,16 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def saveOtherEngagementRequest(engagementRequest):
+def createOtherEngagementRequest(username, formData):
     """
         Create a CCEMinorProposal entry based off of the form data
     """
-    engagementRequest['status'] = "Pending"
-    CCEMinorProposal.create(**engagementRequest)
+    CCEMinorProposal.create(proposalType = 'Other Engagement',
+                            createdBy = g.current_user,
+                            status = 'Pending',
+                            student = username,
+                            **formData
+                            )
     
 
 def saveSummerExperience(username, summerExperience, currentUser):

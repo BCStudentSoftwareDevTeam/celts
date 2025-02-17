@@ -1,7 +1,9 @@
 from app.models import *
+from flask import g 
 from app.models.term import Term
 from app.models.user import User
 import datetime 
+
 
 class CCEMinorProposal(baseModel):
     student = ForeignKeyField(User)

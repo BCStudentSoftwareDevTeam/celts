@@ -7,7 +7,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerTerms, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -99,7 +99,7 @@ def requestOtherEngagement(username):
                 filename = attachment.filename
         formData = request.form.copy()
         formData["filename"] = filename
-        saveOtherEngagementRequest(formData)
+        createOtherEngagementRequest(formData)
         flash("Other community engagement request submitted.", "success")
         return redirect(url_for("minor.viewCceMinor", username=user))
 
