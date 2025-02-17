@@ -12,14 +12,12 @@ from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
-from app.models.summerExperience import SummerExperience
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
-from app.models.communityEngagementRequest import CommunityEngagementRequest
+from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.models.otherExperience import OtherExperience
-from app.logic.minor import saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
+from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
 @pytest.mark.integration
@@ -247,60 +245,6 @@ def test_getCommunityEngagementByTerm():
     actualNonServiceResult[("Summer 2021", 3)].append({"matched":True})
     assert 1 == getEngagementTotal(actualNonServiceResult)
 
-
-
-@pytest.mark.integration
-def test_saveOtherEngagementRequest():
-    with mainDB.atomic() as transaction:
-        User.create(
-            username="glek",
-            firstName="Not",
-            lastName="Yet",
-            email="glek@berea.edu",
-            bnumber="B91111111")
-        
-        newTerm = Term.create(
-            description="Fall 2025",
-            year=2025,
-            academicYear="2025-2026",
-            isSummer=0,
-            isCurrentTerm=0)
-        
-        testInfo = {'experienceTerm': newTerm,
-                    'experienceName': 'Test Experience',
-                    'orgName': 'Test Company',
-                    'orgAddress': '123 test ln',
-                    'orgPhone': '(123)-456-7890',
-                    'orgWebsite': 'glek.portfolio.com',
-                    'supervisorName': 'Kafui Gle',
-                    'supervisorPhone': '2269485450',
-                    'supervisorEmail': 'test@supervisor.com',
-                    'totalHours': 300,
-                    'totalWeeks': 10,
-                    'experienceDescription': 'Test Description',
-                   }
-        
-        expectedValues = testInfo.copy()
-
-        # Save the requested event to the database
-        with app.app_context():
-            g.current_user = "glek"
-            saveOtherEngagementRequest('glek', testInfo)
-
-        # Get the actual saved request from the database (the most recent one)
-        savedRequest = OtherExperience.select().order_by(OtherExperience.id.desc()).first()
-        # Check that the saved request matches the expected values
-        for key, expectedValue in expectedValues.items():
-            if key == "user":
-                assert savedRequest.user.username == expectedValues['user']
-            elif key == "term":
-                assert savedRequest.term.id == expectedValues['term']
-            else:             
-                assert getattr(savedRequest, key) == expectedValue
-
-        transaction.rollback()
-
-@pytest.mark.integration
 def test_setCommunityEngagementForUser():
     with mainDB.atomic() as transaction: 
         IndividualRequirement.delete().execute()
@@ -444,68 +388,53 @@ def test_getMinorProgress():
         sreynitProgress = minorProgress[0]
         assert sreynitProgress['engagementCount'] == 1
         assert sreynitProgress['hasSummer'] == "Incomplete"
-        assert sreynitProgress['hasCommunityEngagementRequest'] == 0
+        assert sreynitProgress['hasCCEMinorProposal'] == 0
 
         # add a summer engagement and requested engagement to Sreynit's progress
-        khattsSummerEngagement = {"username": "khatts",
-                                  "program": None,
-                                  "course": None, 
-                                  "description": "Summer engagement",
-                                  "term": 3,
-                                  "requirement": 16,
-                                  "addedBy": "ramsayb2",
-                                  "addedOn": "",
-                                 }
-        khattsRequestedEngagement = {"user": "khatts",
-                                     "experienceName ": "Voluteering",
-                                     "company" : "Berea Celts",
-                                     "term": 3,
-                                     "description": "Summer engagement",
-                                     "weeklyHours": 3,
-                                     "weeks": 4,
-                                     "filename": None,
-                                     "status" : "Pending",
-                                    }
-    
+
+
+        khattsSummerExperience = ImmutableMultiDict({
+            "term": 3,
+            "roleDescription": "Assistant to Finn",
+            "experienceType": "Internship",
+            "contentArea": ["Power and inequality", "Civic literacy"],
+            "isOver300Hours": True,
+            "orgName": "Finn's Org",
+            "orgAddress": "Finn's House",
+            "orgPhone": "513-384-FINN",
+            "orgWebsite": "www.finn.com",
+            "supervisorName": "Finn",
+            "supervisorPhone": "513-384-FINN",
+            "supervisorEmail": "finn@finn.com",
+        })
+   
+        khattsRequestedEngagement = {'term': 3,
+                    'experienceName': 'Test Experience',
+                    'orgName': 'Test Company',
+                    'orgAddress': '123 test ln',
+                    'orgPhone': '(123)-456-7890',
+                    'orgPhone': '(123)-456-7890',
+                    'orgWebsite': "kafui.com",
+                    'supervisorPhone': '(123)-798-3516',
+                    'supervisorName': 'kafui',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
+                    'weeks': 10,
+                    'experienceDescription': 'Test Description',
+                    'filename': 'test_file.txt',
+                   }
+        
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
-        CommunityEngagementRequest.create(**khattsRequestedEngagement)
-        IndividualRequirement.create(**khattsSummerEngagement)
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            createOtherEngagementRequest("khatts", khattsRequestedEngagement)
+            createSummerExperience("khatts", khattsSummerExperience)
+
         minorProgressWithSummerAndRequestOther = getMinorProgress()
         sreynitProgress = minorProgressWithSummerAndRequestOther[0]
         assert sreynitProgress['engagementCount'] == 1
         assert sreynitProgress['hasSummer'] == "Completed"
-        assert sreynitProgress['hasCommunityEngagementRequest'] == 1
-
-        transaction.rollback()
-
-@pytest.mark.integration
-def test_getSummerExperience():
-    with mainDB.atomic() as transaction:
-        IndividualRequirement.delete().execute()
-
-        partontSummerEngagement = {"username": "partont",
-                                   "program": None,
-                                   "course": None, 
-                                   "description": "Summer engagement",
-                                   "term": 3,
-                                   "requirement": 16,
-                                   "addedBy": "ramsayb2",
-                                   "addedOn": ""
-                                  }
-        IndividualRequirement.create(**partontSummerEngagement)
-        tylerSummerEngagement = getSummerExperience('partont')
-
-        assert tylerSummerEngagement[1] == "Summer engagement"
-        
-        IndividualRequirement.update(description = "Updated summer engagement").where(IndividualRequirement.username == 'partont').execute()
-        tylerUpdatedSummerEngagement = getSummerExperience('partont')
-
-        assert tylerUpdatedSummerEngagement[1] == "Updated summer engagement"
-        
-        IndividualRequirement.update(term = 6).where(IndividualRequirement.username == 'partont').execute()
-        tylerUpdatedSummerEngagementTerm = getSummerExperience('partont')
-
-        assert tylerUpdatedSummerEngagementTerm[0] == 'Summer 2022'
+        assert sreynitProgress['hasCCEMinorProposal'] == 1
 
         transaction.rollback()
 
@@ -519,14 +448,20 @@ def test_createSummerExperience():
                     email="FINN@berea.edu",
                     bnumber="B91111111")
         
+        User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+        
         newTerm = Term.create(description="Summer 2025",
-                    year=2025,
-                    academicYear="2024-2025",
-                    isSummer=1,
-                    isCurrentTerm=0)
-
+            year=2025,
+            academicYear="2024-2025",
+            isSummer=1,
+            isCurrentTerm=0)
+        
         testFormData1 = ImmutableMultiDict({
-            "summerTerm": newTerm,
+            "term": newTerm,
             "roleDescription": "Assistant to Finn",
             "experienceType": "Internship",
             "contentArea": ["Power and inequality", "Civic literacy"],
@@ -541,7 +476,7 @@ def test_createSummerExperience():
         })
 
         testFormData2 = ImmutableMultiDict({
-            "summerTerm": newTerm,
+            "term": newTerm,
             "roleDescription": "Assistant to Finn",
             "experienceType": "Some other experience type",
             "contentArea": ["Power and inequality", "Civic literacy"],
@@ -558,25 +493,70 @@ def test_createSummerExperience():
         })
         
         # verify FINN has no summer experiences in currently
-        initialSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
+        initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
 
         assert len(initialSummerExperiences) == 0
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "FINN"
-            createSummerExperience("FINN", testFormData1)
+            g.current_user = "glek"
+            createSummerExperience('FINN', testFormData1)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
+        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "FINN"
+            g.current_user = "glek"
             createSummerExperience("FINN", testFormData2)
 
-        newSummerExperiences = list(SummerExperience.select().where(SummerExperience.student == "FINN"))
+        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 2
 
         transaction.rollback()
 
+<<<<<<< HEAD
+=======
+@pytest.mark.integration
+def test_createOtherEngagementRequest():
+    with mainDB.atomic() as transaction:
+        User.create(username="FINN",
+                    firstName="Not",
+                    lastName="Yet",
+                    email="FINN@berea.edu",
+                    bnumber="B91111111")
+        
+        User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+        
+        testInfo = {'term': 3,
+                    'experienceName': 'Test Experience',
+                    'orgName': 'Test Company',
+                    'orgAddress': '123 test ln',
+                    'orgPhone': '(123)-456-7890',
+                    'orgPhone': '(123)-456-7890',
+                    'orgWebsite': "kafui.com",
+                    'supervisorPhone': '(123)-798-3516',
+                    'supervisorName': 'kafui',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
+                    'weeks': 10,
+                    'experienceDescription': 'Test Description',
+                    'filename': 'test_file.txt',
+                   }
+
+        # Save the requested event to the database
+        with app.app_context():
+            g.current_user = "glek"
+            createOtherEngagementRequest('FINN', testInfo)
+
+        # Get the actual saved request from the database (the most recent one)
+        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == "FINN")
+       
+        assert len(initialOtherExperiences) == 1 
+
+        transaction.rollback()
+>>>>>>> 24d080fcb045213bcfc129494ea1eae2bee0e666

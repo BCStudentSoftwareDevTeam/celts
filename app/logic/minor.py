@@ -15,9 +15,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
-from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.models.summerExperience import SummerExperience
-from app.models.otherExperience import OtherExperience
+from app.models.cceMinorProposal import CCEMinorProposal
+
 
 def createSummerExperience(username, formData):
     """
@@ -27,16 +26,13 @@ def createSummerExperience(username, formData):
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-
-        # Directly assign the experience type
-        experienceType = formData['experienceType'] if formData['experienceType'] != 'Other' else formData.get('otherExperienceDescription', '')
-        if experienceType == '':  # Check if the otherExperienceDescription is empty when required
-            raise ValueError("Other experience description is required.")
-        SummerExperience.create(
+        
+        CCEMinorProposal.create(
             student=user,
-            createdBy= g.current_user,
+            proposalType = 'Summer Experience',
             contentAreas = contentAreas,
             status="Pending",
+            createdBy = g.current_user,
             **formData,
         )
     except Exception as e:
@@ -46,31 +42,18 @@ def createSummerExperience(username, formData):
 def getCCEMinorProposals(username):
     proposalList = []
 
-    summerExperiences = list(SummerExperience.select().where(SummerExperience.student==username))
-    otherExperiences = list(OtherExperience.select().where(OtherExperience.student==username))
+    cceMinorProposals = list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
 
-    for summerExperience in summerExperiences:
+    for summerExperience in cceMinorProposals:
         proposalList.append({
             "id": summerExperience.id,
-            "type": "Summer Experience",
+            "type": summerExperience.proposalType,
             "createdBy": summerExperience.createdBy, 
             "supervisor": summerExperience.supervisorName,
-            "term": summerExperience.summerTerm,
+            "term": summerExperience.term,
             "status": summerExperience.status,
-
         })
 
-    for otherExperience in otherExperiences:
-        proposalList.append({
-            "id": otherExperience.id,
-            "type": "Other Engagement",
-            "createdBy": otherExperience.createdBy, 
-            "supervisor": otherExperience.supervisorName, 
-            "term": otherExperience.experienceTerm, 
-            "status": otherExperience.status,
-
-         
-        })
     return proposalList 
     
 # ################################################
@@ -101,15 +84,15 @@ def getMinorProgress():
         and returns a list of dicts containing the student, how many engagements they have completed, 
         and if they have completed the summer experience. 
     """
-    summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
+    summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     engagedStudentsWithCount = (
         User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
                                                                     fn.SUM(summerCase).alias('hasSummer'),
-                                                                    fn.IF(fn.COUNT(CommunityEngagementRequest.id) > 0, True, False).alias('hasCommunityEngagementRequest'))
+                                                                    fn.IF(fn.COUNT(CCEMinorProposal.id) > 0, True, False).alias('hasCCEMinorProposal'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
-            .switch(User).join(CommunityEngagementRequest, JOIN.LEFT_OUTER, on= (User.username == CommunityEngagementRequest.user,))
+            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
@@ -119,7 +102,7 @@ def getMinorProgress():
                             'lastName': student.lastName,
                             'hasGraduated': student.hasGraduated, 
                             'engagementCount': student.engagementCount - student.hasSummer,
-                            'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
+                            'hasCCEMinorProposal': student.hasCCEMinorProposal,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
@@ -270,17 +253,19 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def saveOtherEngagementRequest(username, formData):
+def createOtherEngagementRequest(username, formData):
     """
-        Create a CommunityEngagementRequest entry based off of the form data
+        Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
-    OtherExperience.create(
-        student=user,
-        createdBy=g.current_user,
-        status="Pending",
-        **formData)
 
+    CCEMinorProposal.create(proposalType = 'Other Engagement',
+                            createdBy = g.current_user,
+                            status = 'Pending',
+                            student = user,
+                            **formData
+                            )
+    
 def saveSummerExperience(username, summerExperience, currentUser):
     """
         :param username: username of the student that the summer experience is for
