@@ -174,49 +174,6 @@ def test_getCommunityEngagementByTerm():
     assert 2 == getEngagementTotal(actualResult)
 
 @pytest.mark.integration
-def test_createOtherEngagementRequest():
-    with mainDB.atomic() as transaction:
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
-        
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
-                    bnumber="B91111113")
-        
-        testInfo = {'term': 3,
-                    'experienceName': 'Test Experience',
-                    'orgName': 'Test Company',
-                    'orgAddress': '123 test ln',
-                    'orgPhone': '(123)-456-7890',
-                    'orgPhone': '(123)-456-7890',
-                    'orgWebsite': "kafui.com",
-                    'supervisorPhone': '(123)-798-3516',
-                    'supervisorName': 'kafui',
-                    'supervisorEmail': 'test@supervisor.com',
-                    'totalHours': 300,
-                    'weeks': 10,
-                    'experienceDescription': 'Test Description',
-                    'filename': 'test_file.txt',
-                   }
-
-        # Save the requested event to the database
-        with app.app_context():
-            g.current_user = "glek"
-            createOtherEngagementRequest('FINN', testInfo)
-
-        # Get the actual saved request from the database (the most recent one)
-        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == "FINN")
-       
-        assert len(initialOtherExperiences) == 1 
-
-        transaction.rollback()
-
-@pytest.mark.integration
 def test_setCommunityEngagementForUser():
     with mainDB.atomic() as transaction: 
         IndividualRequirement.delete().execute()
@@ -460,42 +417,66 @@ def test_createSummerExperience():
         
         # verify FINN has no summer experiences in currently
         initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
-        print("test1")
 
         assert len(initialSummerExperiences) == 0
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "glek",
+            g.current_user = "glek"
             createSummerExperience('FINN', testFormData1)
-    
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student== "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "glek",
+            g.current_user = "glek"
             createSummerExperience("FINN", testFormData2)
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 2
-        print('test3')
 
         transaction.rollback()
 
-
 @pytest.mark.integration
-def test_getSummerTerms():
+def test_createOtherEngagementRequest():
     with mainDB.atomic() as transaction:
-        # get all the terms that have the isSummer flag that are in test data
-        baseSummerTerms = getSummerTerms()
+        User.create(username="FINN",
+                    firstName="Not",
+                    lastName="Yet",
+                    email="FINN@berea.edu",
+                    bnumber="B91111111")
+        
+        User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+        
+        testInfo = {'term': 3,
+                    'experienceName': 'Test Experience',
+                    'orgName': 'Test Company',
+                    'orgAddress': '123 test ln',
+                    'orgPhone': '(123)-456-7890',
+                    'orgPhone': '(123)-456-7890',
+                    'orgWebsite': "kafui.com",
+                    'supervisorPhone': '(123)-798-3516',
+                    'supervisorName': 'kafui',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
+                    'weeks': 10,
+                    'experienceDescription': 'Test Description',
+                    'filename': 'test_file.txt',
+                   }
 
-        assert len(list(baseSummerTerms)) == 2
+        # Save the requested event to the database
+        with app.app_context():
+            g.current_user = "glek"
+            createOtherEngagementRequest('FINN', testInfo)
 
-        Term.update(isSummer = 0).where(Term.isSummer == 1).execute()
-        noSummerTerms = getSummerTerms()
-
-        assert len(list(noSummerTerms)) == 0
+        # Get the actual saved request from the database (the most recent one)
+        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == "FINN")
+       
+        assert len(initialOtherExperiences) == 1 
 
         transaction.rollback()

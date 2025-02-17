@@ -26,13 +26,13 @@ def createSummerExperience(username, formData):
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-       
+        
         CCEMinorProposal.create(
-            createdBy = g.current_user,
             student=user,
             proposalType = 'Summer Experience',
             contentAreas = contentAreas,
             status="Pending",
+            createdBy = g.current_user,
             **formData,
         )
     except Exception as e:
@@ -67,7 +67,7 @@ def getMinorProgress():
         and returns a list of dicts containing the student, how many engagements they have completed, 
         and if they have completed the summer experience. 
     """
-    summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
+    summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     engagedStudentsWithCount = (
         User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
