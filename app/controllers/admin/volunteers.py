@@ -232,7 +232,7 @@ def updatePhone():
 def updateBirthday():
     formdata=request.form
     birthday = formdata["birthday"].split("/")
-    print("birthday:", "birthday")
+    print("birthday:", birthday)
     birthdayDay = birthday[2]
     birthdayYear = birthday[1]
     birthdayMonth = birthday[0]
