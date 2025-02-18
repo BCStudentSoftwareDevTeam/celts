@@ -224,7 +224,11 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-
+        
+        if volunteer.birthdayMonth and volunteer.birthdayYear and volunteer.birthdayDay:
+            volunteerBirthday = f"{volunteer.birthdayMonth}/{volunteer.birthdayDay}/{volunteer.birthdayYear}"
+        else: 
+            volunteerBirthday = ""
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
