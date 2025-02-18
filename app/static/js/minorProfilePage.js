@@ -54,7 +54,7 @@ $(document).ready(function() {
       contentType: false,
       processData: false,
       success: function(response) {
-        $('#pills-summerExperience').html(response);
+        $('pills-requestOtherEngagement').html(response);
         $('#summerExperience').tab('show');
         location.reload()
       },
@@ -64,3 +64,27 @@ $(document).ready(function() {
     });
   });
 })
+
+$('#requestOtherEngagementForm').on('submit', function(event) {
+  event.preventDefault(); 
+  var formData = new FormData(this); 
+  var actionUrl = $(this).attr('action'); 
+  
+  $.ajax({
+    url: actionUrl,
+    type: 'POST',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      $('#pills-requestOtherEngagement').html(response);
+      $('#otherEngagement').tab('show');
+      location.reload()
+    },
+    error: function(xhr, status, error) {
+      console.error('Error:', error);
+    }
+  });
+});
+
+
