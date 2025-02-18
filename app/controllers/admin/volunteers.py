@@ -228,7 +228,7 @@ def updatePhone():
     User.update(phoneNumber=newinfo["phoneNumber"]).where(User.username==newinfo["username"]).execute()
     return ""
 
-@admin_bp.route("/updateBirthday", methods=["POST"])
+@admin_bp.route("/updateBirthday", methods=["GET", "POST"])
 def updateBirthday():
     formdata=request.form
     birthday = formdata["birthday"].split("/")
