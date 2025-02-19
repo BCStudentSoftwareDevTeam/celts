@@ -35,6 +35,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         }
 
        return false;
-     }
+     },
+     autoFocus: true
   });
 };
