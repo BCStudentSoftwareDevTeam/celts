@@ -258,17 +258,6 @@ def createOtherEngagementRequest(username, formData):
         Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
-<<<<<<< HEAD
-
-
-    OtherExperience.create(
-        student=user,
-        createdBy=g.current_user,
-        status="Pending",
-        **formData)
-    print(**formData)
-=======
->>>>>>> 2ec53d4d4c1ec5c3c808d06e68a55c3b20c3be11
 
     CCEMinorProposal.create(proposalType = 'Other Engagement',
                             createdBy = g.current_user,

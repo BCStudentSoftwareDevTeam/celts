@@ -7,7 +7,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -39,7 +39,6 @@ def requestOtherEngagement(username):
 
     # once we submit the form for creation
     if request.method == "POST":
-<<<<<<< HEAD
         filename = None
         attachment = request.files.get("attachmentObject")
         if attachment:
@@ -48,10 +47,9 @@ def requestOtherEngagement(username):
                 filename = attachment.filename
         formData["filename"] = filename
         formData = request.form.copy()
-        saveOtherEngagementRequest(username, request.form)
-=======
+        
+        
         createOtherEngagementRequest(username, request.form)
->>>>>>> 2ec53d4d4c1ec5c3c808d06e68a55c3b20c3be11
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
