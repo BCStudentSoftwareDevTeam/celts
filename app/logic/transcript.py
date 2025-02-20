@@ -20,10 +20,11 @@ def getProgramTranscript(username):
 
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
-                      .where(EventParticipant.user == username)
+                      .where((EventParticipant.user == username) & (Event.deletionDate == None))
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+    print("cve",EventData)
 
     # Fetch all ProgramBan objects for the user
     bannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
@@ -61,7 +62,7 @@ def getTotalHours(username):
     
     eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
                   .join(Event, on=(EventParticipant.event == Event.id))
-                  .where((EventParticipant.user == username) & (Event.program_id.not_in(transcriptsRemovedIdList)))).scalar()
+                  .where((EventParticipant.user == username) & (Event.program_id.not_in(transcriptsRemovedIdList)) & (Event.deletionDate == None))).scalar()
    
 
     
