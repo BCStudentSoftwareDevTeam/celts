@@ -259,12 +259,14 @@ def createOtherEngagementRequest(username, formData):
     """
     user = User.get(User.username == username)
 
-    CCEMinorProposal.create(proposalType = 'Other Engagement',
+    cceObject = CCEMinorProposal.create(proposalType = 'Other Engagement',
                             createdBy = g.current_user,
                             status = 'Pending',
                             student = user,
                             **formData
                             )
+
+    return cceObject
     
 def saveSummerExperience(username, summerExperience, currentUser):
     """

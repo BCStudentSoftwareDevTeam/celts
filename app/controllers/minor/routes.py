@@ -39,17 +39,18 @@ def requestOtherEngagement(username):
 
     # once we submit the form for creation
     if request.method == "POST":
+        createdProposal = createOtherEngagementRequest(username, request.form)
         filename = None
         attachment = request.files.get("attachmentObject")
         if attachment:
-                addFile = FileHandler(getFilesFromRequest(request))
+                addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
                 addFile.saveFiles()
+                print(addFile)
                 filename = attachment.filename
         formData["filename"] = filename
         formData = request.form.copy()
         
-        
-        createOtherEngagementRequest(username, request.form)
+    
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",

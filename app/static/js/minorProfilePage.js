@@ -158,8 +158,6 @@ $(document).ready(function(){
     }); 
 })
 
-<<<<<<< HEAD
-
 $('#requestOtherEngagementForm').on('submit', function(event) {
   event.preventDefault(); 
   var formData = new FormData(this); 
@@ -182,7 +180,6 @@ $('#requestOtherEngagementForm').on('submit', function(event) {
   });
 });
 
-=======
 function showEngagementInformation(engagementInfoDict) {
   let type = engagementInfoDict['type'],
       id = engagementInfoDict['id'],
