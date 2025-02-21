@@ -24,7 +24,6 @@ def getProgramTranscript(username):
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
-    print("cve",EventData)
 
     # Fetch all ProgramBan objects for the user
     bannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
