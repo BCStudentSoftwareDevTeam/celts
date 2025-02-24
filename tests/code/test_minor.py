@@ -408,7 +408,7 @@ def test_getMinorProgress():
             "supervisorEmail": "finn@finn.com",
         })
    
-        khattsRequestedEngagement = {'term': 3,
+        khattsRequestedEngagement = ({'term': 3,
                     'experienceName': 'Test Experience',
                     'orgName': 'Test Company',
                     'orgAddress': '123 test ln',
@@ -422,7 +422,7 @@ def test_getMinorProgress():
                     'weeks': 10,
                     'experienceDescription': 'Test Description',
                     'filename': 'test_file.txt',
-                   }
+                   })
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
         with app.app_context():
@@ -530,7 +530,7 @@ def test_createOtherEngagementRequest():
                     email="kaf@berea.edu",
                     bnumber="B91111113")
         
-        testInfo = {'term': 3,
+        testInfo = {'term': 4,
                     'experienceName': 'Test Experience',
                     'orgName': 'Test Company',
                     'orgAddress': '123 test ln',

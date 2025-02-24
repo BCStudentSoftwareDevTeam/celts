@@ -47,8 +47,8 @@ def requestOtherEngagement(username):
                 addFile.saveFiles()
                 print(addFile)
                 filename = attachment.filename
-        formData["filename"] = filename
         formData = request.form.copy()
+        formData["filename"] = filename
         
     
         return redirect(url_for('minor.viewCceMinor', username=username))

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 $(document).ready(function() {
   $('#hoursBelow300Container').hide()
   $('#otherExperienceDescription').hide()
@@ -61,12 +61,10 @@ $(document).ready(function() {
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
-      }
-=======
-$(document).ready(function(){
+      }})
+
     $('.engagement-row').on("click", function() {
         showEngagementInformation($(this).data('engagement-data'));
->>>>>>> 2ec53d4d4c1ec5c3c808d06e68a55c3b20c3be11
     });
 
     $('.engagement-row input').on("click", function(e) {
@@ -179,6 +177,7 @@ $('#requestOtherEngagementForm').on('submit', function(event) {
     }
   });
 });
+    })
 
 function showEngagementInformation(engagementInfoDict) {
   let type = engagementInfoDict['type'],
@@ -262,4 +261,4 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
           }
     });
 }
->>>>>>> 2ec53d4d4c1ec5c3c808d06e68a55c3b20c3be11
+
