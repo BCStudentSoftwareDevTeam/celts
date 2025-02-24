@@ -26,7 +26,6 @@ class CCEMinorProposal(baseModel):
     hoursNotOver300 = IntegerField(null=True)
     weeksNotOver300 = IntegerField(null=True)
     description = TextField()
-    filename = CharField(null=True)
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])
