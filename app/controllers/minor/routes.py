@@ -4,6 +4,7 @@ from datetime import datetime
 
 from app.controllers.minor import minor_bp
 from app.models.user import User
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
@@ -40,17 +41,11 @@ def requestOtherEngagement(username):
     # once we submit the form for creation
     if request.method == "POST":
         createdProposal = createOtherEngagementRequest(username, request.form)
-        filename = None
         attachment = request.files.get("attachmentObject")
         if attachment:
-                addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
-                addFile.saveFiles()
-                print(addFile)
-                filename = attachment.filename
-        formData = request.form.copy()
-        formData["filename"] = filename
-        
-    
+            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+            addFile.saveFiles()
+
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
