@@ -24,7 +24,6 @@ def training_events():
                              location = "basement",
                              isTraining = True,
                              startDate = "2021-12-12",
-                             endDate = "2021-12-13",
                              program = 2)
 
     yield testEvent
@@ -40,7 +39,6 @@ def special_bonner():
                                timeEnd = "22:00:00",
                                location = "moon",
                                startDate = "2021-12-12",
-                               endDate = "2021-12-13",
                                program = 5)
 
 
@@ -58,7 +56,6 @@ def special_otherEvents():
                                        location = "moon",
                                        isTraining = False,
                                        startDate = "2021-12-12",
-                                       endDate = "2021-12-13",
                                        program = 9)
 
         yield nonProgramEvent
@@ -77,7 +74,7 @@ def test_getUpcomingStudentLed_events():
         currentTestTerm = Term.get_by_id(5)
 
         # In case any events are put in term 5 in testData, put them into the past.
-        Event.update(startDate = date(2021,7,1), endDate = date(2021,7,1)).where(Event.term_id == 5).execute()
+        Event.update(startDate = date(2021,7,1)).where(Event.term_id == 5).execute()
 
         # Student Led event in the future
         futureAgpEvent = Event.create(name = "Test future AGP event",
@@ -88,7 +85,6 @@ def test_getUpcomingStudentLed_events():
                                       location = "The Moon",
                                       isTraining = False,
                                       startDate = "2021-08-02",
-                                      endDate = "2021-08-02",
                                       program = 3)
          
         # Student Led event to be canceled 
@@ -100,7 +96,6 @@ def test_getUpcomingStudentLed_events():
                                         location = "The Sun",
                                         isTraining = False,
                                         startDate = "2021-08-02",
-                                        endDate = "2021-08-02",
                                         program = 3)
         
         # Student Led event that start in the future but will be moved to the past
@@ -112,7 +107,6 @@ def test_getUpcomingStudentLed_events():
                                         location = "Mars",
                                         isTraining = False,
                                         startDate = "2021-08-02",
-                                        endDate = "2021-08-02",
                                         program = 3)
         
         # verify that there are three upcoming events for AGP (program id 3)
@@ -127,8 +121,7 @@ def test_getUpcomingStudentLed_events():
         # Move pastStudentLed start date to the same day as testDate and set timeEnd to the time on testDate
         (Event.update(timeStart = datetime.strptime("03:00", "%H:%M").time(), 
                       timeEnd = datetime.strptime("04:00", "%H:%M").time(), 
-                      startDate = date(2021,8,1), 
-                      endDate = date(2021,8,1))
+                      startDate = date(2021,8,1))
               .where(Event.id == pastStudentLed.id)).execute()
         
         upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
@@ -143,7 +136,6 @@ def test_getUpcomingStudentLed_events():
                                           location = "The Moon",
                                           isTraining = False,
                                           startDate = "2021-08-02",
-                                          endDate = "2021-08-02",
                                           program = 2)
         
         upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
@@ -182,7 +174,6 @@ def test_training_events(training_events):
                                           location = "basement",
                                           isTraining = True,
                                           startDate = "1919-12-13",
-                                          endDate = "1919-12-14",
                                           program = testBonnerProgram.id)
        
         testNotBonnerTraining = Event.create(name = "Bonner Test Training",
@@ -193,7 +184,6 @@ def test_training_events(training_events):
                                              location = "basement",
                                              isTraining = True,
                                              startDate = "1919-12-12",
-                                             endDate = "1919-12-13",
                                              program = testNotBonnerProgram.id)
    
 
@@ -292,7 +282,6 @@ def test_eventViewCount():
                                  location = "basement",
                                  isTraining = True,
                                  startDate = "2021-12-12",
-                                 endDate = "2021-12-13",
                                  program = 9)
         
         viewer = User.create(username = "eventViewer",
