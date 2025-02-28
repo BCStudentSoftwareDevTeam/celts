@@ -1,6 +1,11 @@
-<script type="module" src="cceMinorProposalManagement.js"></script>
+{%set title = "cceMinorProposalManagement"%}
+{% extends "base.html"%}
 {% block scripts %}
   {{super()}}
+  <script type="module" src="/static/js/cceMinorProposalManagement.js"></script>
+{% endblock %}
+
+{% block app_content %}
 <div class="tab-pane fade show{{ 'active' if activeTab == 'manageProposals' else '' }}" id="pills-manageProposals" role="tabpanel" aria-labelledby="manageProposals">
     <div class="table-responsive" id="proposalTable">
     <table class="table table-striped">
@@ -108,3 +113,4 @@
   </div>
 </div>
 {% endblock %}
+
