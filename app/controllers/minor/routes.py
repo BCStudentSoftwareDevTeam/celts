@@ -7,7 +7,8 @@ from app.models.user import User
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, withdrawProposal
+
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -78,6 +79,20 @@ def getEngagementInformation(username, type, id, term):
         information = getCourseInformation(id)
 
     return information
+
+@minor_bp.route('/cceMinor/withdraw/<proposalID>', methods = ['POST'])
+def withdrawCourse(proposalID):
+    try:
+        if g.current_user.isAdmin or g.current_user.isFaculty:
+            withdrawProposal(proposalID)
+            flash("Course successfully withdrawn", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        print(e)
+        flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+    
 
 @minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
 def modifyCommunityEngagement(username):

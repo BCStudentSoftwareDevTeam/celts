@@ -16,6 +16,10 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
+from app.logic.createLogs import createActivityLog
+from app.logic.fileHandler import FileHandler
+from app.logic.serviceLearningCourses import deleteCourseObject
+from app.models.attachmentUpload import AttachmentUpload
 
 
 def createSummerExperience(username, formData):
@@ -318,3 +322,24 @@ def removeSummerExperience(username):
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
+
+def withdrawProposal(proposalID) -> None:
+    """
+    Withdraws proposal of ID passed in. Removes foreign keys first.
+    Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
+    CourseInstructor, Note
+    """
+
+    # delete syllabus
+    try:
+        syllabi: List[CCEMinorProposal] = list(CCEMinorProposal.select().where(CCEMinorProposal.proposalId==proposalID))
+        for syllabus in syllabi:
+            FileHandler(proposaId = proposalID).deleteFile(syllabus.id)
+
+    except DoesNotExist:
+        print(f"File, {AttachmentUpload.fileName}, does not exist.")
+
+    # deletes course
+    deletedCourse = deleteCourseObject(proposaId=proposalID)
+
+    createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
