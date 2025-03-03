@@ -43,7 +43,7 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
-  $('[data-bs-toggle="modal"]').on('click', function() {
+  $('[data-bs-target="#adminProgramManagement"]').on('click', function() {
     // Get the JSON data from the data-programinfo attribute
     const programInfo = JSON.parse($(this).attr('data-programinfo'));
     // Directly populate modal fields
@@ -65,6 +65,10 @@ $(document).ready(function(){
     let updateForm = $('#updateProgramForm');
     updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
     });
+
+    $('[data-bs-target="#editProgramManagers"]').on('click', function(){
+    // split from the comma separated values, use for loop to populate
+    })
 });
 function submitRequest(method, username){
   let data = {

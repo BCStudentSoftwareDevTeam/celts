@@ -1,4 +1,5 @@
 from flask import render_template,request, flash, g, abort, redirect, url_for
+from peewee import fn, JOIN
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
@@ -9,6 +10,8 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
+from app.models.programManager import ProgramManager
+from app.models.user import User
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
@@ -75,7 +78,17 @@ def updateProgramInfo(programID):
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
-    current_programs = Program.select()
+    current_programs = (
+            Program
+            .select(
+                Program,
+                fn.GROUP_CONCAT(fn.CONCAT(User.firstName, ' ', User.lastName), ', ').alias('managers')
+            )
+            .join(ProgramManager, JOIN.LEFT_OUTER, on=(Program.id == ProgramManager.program))
+            .join(User, JOIN.LEFT_OUTER, on=(ProgramManager.user == User.username))
+            .group_by(Program.id)
+    )
+
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
     if g.current_user.isCeltsAdmin:
