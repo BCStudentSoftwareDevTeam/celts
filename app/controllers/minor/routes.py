@@ -4,11 +4,11 @@ from datetime import datetime
 
 from app.controllers.minor import minor_bp
 from app.models.user import User
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, withdrawProposal
-
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, withdrawProposal
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -36,10 +36,16 @@ def requestOtherEngagement(username):
     """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
+    
 
     # once we submit the form for creation
     if request.method == "POST":
-        createOtherEngagementRequest(username, request.form)
+        createdProposal = createOtherEngagementRequest(username, request.form)
+        attachment = request.files.get("attachmentObject")
+        if attachment:
+            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+            addFile.saveFiles()
+
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
@@ -80,11 +86,12 @@ def getEngagementInformation(username, type, id, term):
 
     return information
 
-@minor_bp.route('/cceMinor/withdraw/<proposalID>', methods = ['POST'])
-def withdrawCourse(proposalID):
+@minor_bp.route('/cceMinor/withdraw/<proposalType>', methods = ['POST'])
+def withdrawCourse(proposalType):
     try:
         if g.current_user.isAdmin or g.current_user.isFaculty:
-            withdrawProposal(proposalID)
+            withdrawProposal(proposalType)
+            print(withdrawProposal)
             flash("Course successfully withdrawn", 'success')
         else:
             flash("Unauthorized to perform this action", 'warning')

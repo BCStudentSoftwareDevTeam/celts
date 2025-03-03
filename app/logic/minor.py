@@ -341,7 +341,6 @@ def withdrawProposal(proposalID, fileName) -> None:
     except DoesNotExist:
         print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
-    # # deletes course
-    # deletedCourse = deleteCourseObject(proposaId=proposalID)
+    deletedCourse = deleteCourseObject(proposaId=proposalID)
 
-    # createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
+    createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
