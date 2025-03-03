@@ -323,7 +323,7 @@ def removeSummerExperience(username):
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
 
-def withdrawProposal(proposalID) -> None:
+def withdrawProposal(proposalID, fileName) -> None:
     """
     Withdraws proposal of ID passed in. Removes foreign keys first.
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
@@ -333,13 +333,15 @@ def withdrawProposal(proposalID) -> None:
     # delete syllabus
     try:
         syllabi: List[CCEMinorProposal] = list(CCEMinorProposal.select().where(CCEMinorProposal.proposalId==proposalID))
-        for syllabus in syllabi:
-            FileHandler(proposaId = proposalID).deleteFile(syllabus.id)
+        syllabi2: List[AttachmentUpload] = list(AttachmentUpload).select().where(AttachmentUpload.fileName==fileName)
+        for syllabus in syllabi2:
+            FileHandler.deleteFile(syllabus.id)
+
 
     except DoesNotExist:
         print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
-    # deletes course
-    deletedCourse = deleteCourseObject(proposaId=proposalID)
+    # # deletes course
+    # deletedCourse = deleteCourseObject(proposaId=proposalID)
 
-    createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
+    # createActivityLog(f"Withdrew SLC proposal: {deletedCourse}")
