@@ -1,3 +1,5 @@
+$("#withdrawBtn").on("click", withdraw);
+
 function changeAction(action){
     let proposalID = action.id;
     let proposalAction = action.value;
@@ -5,7 +7,6 @@ function changeAction(action){
    if (proposalAction == "Withdraw"){
       $('#proposalID').val(proposalID);
       $('#withdrawModal').modal('show');
-
     }
   }
 
@@ -14,7 +15,7 @@ function withdraw(){
     // uses hidden label to withdraw course
     let proposalID = $("#proposalID").val();
     $.ajax({
-      url: `/serviceLearning/withdraw/${proposalID}`,
+      url: `/cceMinor/withdraw/${proposalID}`,
       type: "POST",
       success: function(s){
         location.reload();
@@ -24,8 +25,6 @@ function withdraw(){
       }
     })
   };
-
-
 
 
 window.changeAction = changeAction;
