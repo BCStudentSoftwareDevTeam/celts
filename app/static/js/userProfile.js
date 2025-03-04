@@ -339,9 +339,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"user_name":volunteer_username, //student staff: user_name
-            "program_id":program_id,       // program id
-            "action":action,          //action: add or remove
+    data : {"user_name":volunteer_username, 
+            "program_id":program_id,       
+            "action":action,          
              },
 
      success: function(s){

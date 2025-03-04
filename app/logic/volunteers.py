@@ -89,7 +89,7 @@ def setProgramManager(username, program_id, action):
     '''
     adds and removes the studentstaff from program that makes them student manager.
 
-    param: uername - a string
+    param: username - a string
            program_id - id
            action: add, remove
 

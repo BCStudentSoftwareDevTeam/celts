@@ -4,11 +4,12 @@ import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
+from app.logic.fileHandler import FileHandler
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
-from app.logic.fileHandler import FileHandler
+from app.logic.volunteers import setProgramManager
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
 from app.models.user import User
@@ -45,6 +46,11 @@ def manageUsers():
             else:
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
+    elif method == "addProgramManager":
+        print(user, method, eventData, "IT HITTTT")
+        setProgramManager(user, 'add')
+    elif method == "removeProgramManager":
+        setProgramManager()
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
@@ -82,7 +88,7 @@ def userManagement():
             Program
             .select(
                 Program,
-                fn.GROUP_CONCAT(fn.COALESCE(fn.CONCAT(User.firstName, ' ', User.lastName), '')).alias('managers')
+                fn.GROUP_CONCAT(fn.COALESCE(fn.CONCAT(User.firstName, ' ', User.lastName, '#', User.username), '')).alias('managers')
             )
             .join(ProgramManager, JOIN.LEFT_OUTER, on=(Program.id == ProgramManager.program))
             .join(User, JOIN.LEFT_OUTER, on=(ProgramManager.user == User.username))

@@ -228,6 +228,19 @@ users = [
         "isStaff": True,
         "minorInterest": 0,
     },
+    {
+        "username": "makindeo",
+        "bnumber": "B00791326",
+        "email": "makindeo@berea.edu",
+        "firstName": "Oluwagbayi",
+        "lastName": "Makinde",
+        "phoneNumber": "(123)456-7890",
+        "isCeltsAdmin": False,
+        "isFaculty": False,
+        "isCeltsStudentStaff": True,
+        "isStaff": True,
+        "minorInterest": 0,
+    },
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -243,6 +256,7 @@ bonners = [
     { "year": 2022, "user": "ayisie" },
     { "year": 2022, "user": "neillz" },
     { "year": 2022, "user": "ramsayb2" },
+    { "year": 2022, "user": "makindeo" },
     ]
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 

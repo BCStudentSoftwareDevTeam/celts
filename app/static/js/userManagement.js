@@ -6,6 +6,9 @@ function callbackAdmin(selected){
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
+function callbackProgramManager(selected){
+    submitRequest("addProgramManager", selected.username)
+}
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -13,6 +16,9 @@ $(document).ready(function(){
   });
   $("#searchCeltsStudentStaffInput").on("input", function(){
       searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+  });
+  $("#searchProgramManagersInput").on("input", function() {
+      searchUser("searchProgramManagersInput", callbackProgramManager, true, "parentManager", "student");
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
@@ -22,6 +28,9 @@ $(document).ready(function(){
   });
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
+  });
+  $(".removeProgramManager").on("click",function(){
+    submitRequest("removeProgramManager", $(this).data("username"));
   });
   $('#searchCeltsAdminInput').keydown(function(e){
       if (e.key === "Enter"){
@@ -77,15 +86,21 @@ $(document).ready(function(){
       };
 
       managers.forEach(manager => {
+        let [managerName, managerUser] = manager.split('#');
         let row = document.createElement("tr");
         row.innerHTML = `
-                        <td id="{{studentStaff.username}}"> ${manager} </td>
-                        <td class="text-end"><button data-username="{{studentStaff.username}}" 
-                        type="button" class="btn btn-danger">Remove</button>
+                        <td id="${managerUser}"> ${managerName} </td>
+                        <td class="text-end"><button data-username="${managerUser}" 
+                        type="button" class="btn btn-danger removeProgramManager">Remove</button>
                         </td>
                         `;
         managersTable.append(row)
       });
+    })
+
+    $('#editProgramManagersButton').on('click', function(){
+      const programId = $(this).attr('data-programid');
+      $('#updateProgramForm').append('programId', programId);
     })
 });
 

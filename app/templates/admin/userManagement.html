@@ -158,10 +158,12 @@
                         "bereaUrl": "{{ program.bereaUrl if program.bereaUrl else "" }}"
                     }'>
                       Edit Details</button>
-              <button class ="btn btn-success btn-sm" 
+              <button class ="btn btn-success btn-sm"
+                      id="editProgramManagersButton"
                       data-bs-toggle="modal" 
                       data-bs-target="#editProgramManagers"
                       data-managers="{{program.managers}}"
+                      data-programid="{{program.id}}"
                       > Edit Managers </button>
             </div>
           </div>
@@ -255,22 +257,23 @@
           <h5 class="modal-title"> Edit Program Managers </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <div>
-          {{createInputsButtons("searchProgramManagersInput", "Add Manager")}}<br>
-          </div>
-          <table class="table mb-1">
+        <form id="changeProgramManager" method="POST" action="">
+          <div class="modal-body">
+            <div id="parentManager">
+              {{createInputsButtons("searchProgramManagersInput", "Add Manager")}}<br>
+            </div>
+            <table class="table mb-1">
             <thead>
               <tr>
                 <th colspan="2" scope="col">Program Managers</th>
               </tr>
             </thead>
             <tbody id="programManagersTable">
-
+              
             </tbody>
           </table>
-          
         </div>
+      </form>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success">Save changes</button>
