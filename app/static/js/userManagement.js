@@ -169,8 +169,12 @@ function editProgramManager(username, fullName, programId, action){
     type: "POST",
     data: data,
     success: function(s){
-      $('#programManagersTable').append(createProgramManagerRow(username, fullName))
-      msgFlash('User successfully appointed')
+      if (action === 'add'){
+        $('#programManagersTable').append(createProgramManagerRow(username, fullName))
+      } else {
+        $(`#${username}`).remove()
+      }
+      msgFlash(`User successfully ${action === 'add' ? 'appointed' : 'removed'}`)
     },
     error: function(error, status){
       console.log(error, status)
