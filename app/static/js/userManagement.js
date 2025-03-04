@@ -11,16 +11,13 @@ function callbackProgramManager(selected) {
   let exists = $('#programManagersTable tr[username="' + selected["username"] + '"]').length > 0;
 
   if (exists == false){
-      let row = $('<tr>').attr('username', selected['username'])
-      row.html(
-        `
-        <td id="${selected['username']}"> ${selected['firstName'] + ' ' + selected['lastName']}  </td>
-        <td class="text-end"><button data-username="${selected['username']}" 
-        type="button" class="btn btn-danger removeProgramManager">Remove</button>
-        </td>
-        `
+      let programId = $('#programPlaceholder').attr('programId');
+      editProgramManager(
+        selected['username'],
+        `${selected['firstName'] + ' ' + selected['lastName']}`,
+        programId,
+        'add'
       )
-      $('#programManagersTable').append(row)
   }
   else {
       msgFlash("User already selected.")
@@ -118,6 +115,7 @@ $(document).ready(function(){
     $('#editProgramManagersButton').on('click', function(){
       const programId = $(this).attr('data-programid');
       $('#updateProgramForm').append('programId', programId);
+      $('#programPlaceholder').append('programId', programId);
     })
 });
 
@@ -136,6 +134,35 @@ function submitRequest(method, username){
     },
     error: function(error, status){
       location.reload()
+      console.log(error, status)
+    }
+  })
+}
+
+function editProgramManager(username, fullName, programId, action){
+  let data = {
+      user_name: username,
+      program_id: programId,
+      action: action,
+  }
+  $.ajax({
+    url: "/admin/updateProgramManager",
+    type: "POST",
+    data: data,
+    success: function(s){
+      let row = $('<tr>').attr('username', username);
+      row.html(
+        `
+        <td id="${username}"> ${fullName}  </td>
+        <td class="text-end"><button data-username="${username}" 
+        type="button" class="btn btn-danger removeProgramManager">Remove</button>
+        </td>
+        `
+      )
+      $('#programManagersTable').append(row)
+    },
+    error: function(error, status){
+      
       console.log(error, status)
     }
   })

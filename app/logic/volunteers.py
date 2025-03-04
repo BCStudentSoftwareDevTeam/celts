@@ -95,7 +95,7 @@ def setProgramManager(username, program_id, action):
 
     '''
     studentstaff=User.get(User.username==username)
-    if action == "add" and studentstaff.isCeltsStudentStaff==True:
+    if action == "add":
         studentstaff.addProgramManager(program_id)
     elif action == "remove":
         studentstaff.removeProgramManager(program_id)
