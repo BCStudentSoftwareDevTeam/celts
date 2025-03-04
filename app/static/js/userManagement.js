@@ -11,7 +11,7 @@ function callbackProgramManager(selected) {
   let exists = $('#programManagersTable tr[username="' + selected["username"] + '"]').length > 0;
 
   if (exists == false){
-      let programId = $('#programPlaceholder').attr('programId');
+      let programId = $('#programPlaceholder').attr('data-programid');
       editProgramManager(
         selected['username'],
         `${selected['firstName'] + ' ' + selected['lastName']}`,
@@ -101,21 +101,12 @@ $(document).ready(function(){
 
       managers.forEach(manager => {
         let [managerName, managerUser] = manager.split('#');
-        let row = $('<tr>').attr('username', managerUser)
-        row.html(
-                  `<td id="${managerUser}"> ${managerName} </td>
-                    <td class="text-end"><button data-username="${managerUser}" 
-                    type="button" class="btn btn-danger removeProgramManager">Remove</button>
-                    </td>`
-                );
-        managersTable.append(row)
+        managersTable.append(createProgramManagerRow(managerUser, managerName))
       });
     })
 
     $('#editProgramManagersButton').on('click', function(){
-      const programId = $(this).attr('data-programid');
-      $('#updateProgramForm').append('programId', programId);
-      $('#programPlaceholder').append('programId', programId);
+      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
     })
 });
 
@@ -139,6 +130,18 @@ function submitRequest(method, username){
   })
 }
 
+function createProgramManagerRow(username, fullName) {
+  return `
+      <tr data-username="${username}">
+      <td id="${username}"> ${fullName} </td>
+      <td class="text-end">
+          <button data-username="${username}" type="button" 
+          class="btn btn-danger removeProgramManager">Remove</button>
+      </td>
+      </tr>
+  `;
+}
+
 function editProgramManager(username, fullName, programId, action){
   let data = {
       user_name: username,
@@ -146,23 +149,13 @@ function editProgramManager(username, fullName, programId, action){
       action: action,
   }
   $.ajax({
-    url: "/admin/updateProgramManager",
+    url: "/updateProgramManager",
     type: "POST",
     data: data,
     success: function(s){
-      let row = $('<tr>').attr('username', username);
-      row.html(
-        `
-        <td id="${username}"> ${fullName}  </td>
-        <td class="text-end"><button data-username="${username}" 
-        type="button" class="btn btn-danger removeProgramManager">Remove</button>
-        </td>
-        `
-      )
-      $('#programManagersTable').append(row)
+      $('#programManagersTable').append(createProgramManagerRow(username, fullName))
     },
     error: function(error, status){
-      
       console.log(error, status)
     }
   })
