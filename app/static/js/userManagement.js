@@ -6,8 +6,25 @@ function callbackAdmin(selected){
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
-function callbackProgramManager(selected){
-    submitRequest("addProgramManager", selected.username)
+
+function callbackProgramManager(selected) {
+  let exists = $('#programManagersTable tr[username="' + selected["username"] + '"]').length > 0;
+
+  if (exists == false){
+      let row = $('<tr>').attr('username', selected['username'])
+      row.html(
+        `
+        <td id="${selected['username']}"> ${selected['firstName'] + ' ' + selected['lastName']}  </td>
+        <td class="text-end"><button data-username="${selected['username']}" 
+        type="button" class="btn btn-danger removeProgramManager">Remove</button>
+        </td>
+        `
+      )
+      $('#programManagersTable').append(row)
+  }
+  else {
+      msgFlash("User already selected.")
+  }
 }
 $(document).ready(function(){
   // Admin Management
@@ -87,13 +104,13 @@ $(document).ready(function(){
 
       managers.forEach(manager => {
         let [managerName, managerUser] = manager.split('#');
-        let row = document.createElement("tr");
-        row.innerHTML = `
-                        <td id="${managerUser}"> ${managerName} </td>
-                        <td class="text-end"><button data-username="${managerUser}" 
-                        type="button" class="btn btn-danger removeProgramManager">Remove</button>
-                        </td>
-                        `;
+        let row = $('<tr>').attr('username', managerUser)
+        row.html(
+                  `<td id="${managerUser}"> ${managerName} </td>
+                    <td class="text-end"><button data-username="${managerUser}" 
+                    type="button" class="btn btn-danger removeProgramManager">Remove</button>
+                    </td>`
+                );
         managersTable.append(row)
       });
     })
