@@ -33,6 +33,24 @@ function emailAllDeclared(){
   }
 }
 
+function emailAll(){
+  let declaredStudentEmails =  $("#declaredStudentEmails").val();
+  let interestedStudentEmails =  $("#interestedStudentEmails").val();
+  let allMinorParticipantEmails = declaredStudentEmails + ";" + interestedStudentEmails
+
+  if (allMinorParticipantEmails.length) {
+    const windowRef = window.open(`mailto:${allMinorParticipantEmails}`, '_blank');
+    windowRef.focus();
+    setTimeout(function(){
+      if(!windowRef.document) {
+          windowRef.close();
+      }
+    }, 500);
+  } else {
+    msgFlash("No minor participants to email.", "info")
+  }
+}
+
 $(document).ready(function() {
   $(document).on('click', '.remove_interested_student', function() {
       let username = $(this).attr('id'); 
@@ -66,9 +84,6 @@ $(document).ready(function() {
         });
     });
 });
-
-
-
 
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
@@ -134,6 +149,7 @@ $(document).ready(function() {
   $('#declaredStudentsTable').DataTable();
   $('#emailAllInterested').on('click', emailAllInterested);
   $('#emailAllDeclared').on('click', emailAllDeclared);
+  $('#emailAll').on('click', emailAll);
 });
 
 $(document).ready(function() {

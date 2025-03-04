@@ -25,12 +25,13 @@ def manageMinor():
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
     declaredStudentsList = getDeclaredMinorStudents()
-    
+    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])    
 
     return render_template('/admin/cceMinor.html',
                             interestedStudentsList = interestedStudentsList,
                             declaredStudentsList = declaredStudentsList,
                             interestedStudentEmailString = interestedStudentEmailString,
+                            declaredStudentEmailString = declaredStudentEmailString,
                             sustainedEngagement = sustainedEngagement,
                             )
     
