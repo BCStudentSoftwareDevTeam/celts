@@ -1,11 +1,11 @@
 $("#withdrawBtn").on("click", withdraw);
 
 function changeAction(action){
-    let proposaltype = action.id;
+    let proposalID = action.id;
     let proposalAction = action.value;
     // decides what to do based on selection
    if (proposalAction == "Withdraw"){
-      $('#proposaltype').val(proposaltype);
+      $('#proposalID').val(proposalID);
       $('#withdrawModal').modal('show');
     }
   }
@@ -13,9 +13,9 @@ function changeAction(action){
 
 function withdraw(){
     // uses hidden label to withdraw course
-    let proposalType = $("#proposaltype").val();
+    let proposalID = $("#proposalID").val();
     $.ajax({
-      url: `/cceMinor/withdraw/${proposalType}`,
+      url: `/cceMinor/withdraw/${proposalID}`,
       type: "POST",
       success: function(s){
         location.reload();

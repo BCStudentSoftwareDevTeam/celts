@@ -26,7 +26,7 @@
                         <a class="status-key text-dark" id="status-{{ proposal['type'] }}-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
                     </td>
                     <td>
-                        <select class="form-select proposalData" id="{{ proposal['type'] }}-{{proposal['id']}}" onchange='changeAction(this)'>
+                        <select class="form-select proposalData" id="{{proposal['id']}}" onchange='changeAction(this)'>
                         <option value="---" disabled selected>Select Action</option>
                         <option value="View">View</option>
                         <option value="Withdraw">Withdraw</option>
@@ -40,7 +40,7 @@
 
         </tbody>
     </table>
-    
+    <input id="proposalID" type="hidden">
     {% if not proposalList %}
         <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated CCE Minor proposals.</p>
     {% endif %}

@@ -8,7 +8,7 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, withdrawProposal
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, removeProposal
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -43,7 +43,7 @@ def requestOtherEngagement(username):
         createdProposal = createOtherEngagementRequest(username, request.form)
         attachment = request.files.get("attachmentObject")
         if attachment:
-            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+            addFile = FileHandler(getFilesFromRequest(request), proposalID=createdProposal.id)
             addFile.saveFiles()
 
         return redirect(url_for('minor.viewCceMinor', username=username))
@@ -86,16 +86,20 @@ def getEngagementInformation(username, type, id, term):
 
     return information
 
-@minor_bp.route('/cceMinor/withdraw/<proposalType>', methods = ['POST'])
-def withdrawCourse(proposalType):
+@minor_bp.route('/cceMinor/withdraw/<proposalID>', methods = ['POST'])
+def withdrawProposal(proposalID):
     try:
+        print('hhhhh')
+        print(proposalID)
         if g.current_user.isAdmin or g.current_user.isFaculty:
-            withdrawProposal(proposalType)
-            print(withdrawProposal)
-            flash("Course successfully withdrawn", 'success')
+            print('lllll')
+            removeProposal(proposalID)
+            print(removeProposal)
+            flash("Experience successfully withdrawn", 'success')
         else:
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
+        print("Errorrr")
         print(e)
         flash("Withdrawal Unsuccessful", 'warning')
     return ""

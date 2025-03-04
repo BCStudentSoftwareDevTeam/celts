@@ -89,11 +89,9 @@ class FileHandler:
             pathDict[file.fileName] = ((self.path + "/" + file.fileName)[3:], file)
         return pathDict
 
-    def deleteFile(self, fileId, proposalID):
-        proposal = CCEMinorProposal.get_by_id(proposalID)
+    def deleteFile(self, fileId):
         file = AttachmentUpload.get_by_id(fileId)
         file.delete_instance()
-        proposal.delete_instance()
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
