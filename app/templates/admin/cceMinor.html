@@ -71,13 +71,14 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th> Remove Student</th>
+            <th>Remove Student</th>
+            <th>Declare Student</th>
         </tr>
     </thead>
     <tbody>
         {% for student in interestedStudentsList %}
             <tr>
-                <td style = "width: 82%">
+                <td style = "width: 75%">
                     <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{student.firstName}} {{student.lastName}}</a>
                 </td>
                 <td style="text-align:center">
@@ -87,6 +88,15 @@
                     id = "{{student.username}}"
                     aria-label="remove interested student">
                     <span class="bi bi-trash h5 align-middle"></span>
+                  </button>
+                </td>
+                <td style="text-align:center">
+                  <button
+                    type="button"
+                    class="declare_interested_student btn btn-primary btn-sm"
+                    id = "{{student.username}}"
+                    aria-label="declare interested student">
+                    <span class="bi bi-check-lg h5 align-middle"></span>
                   </button>
                 </td>
             </tr>

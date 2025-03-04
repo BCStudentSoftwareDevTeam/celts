@@ -20,7 +20,6 @@ function emailAllInterested(){
 $(document).ready(function() {
   $(document).on('click', '.remove_interested_student', function() {
       let username = $(this).attr('id'); 
-
       
       $.ajax({
           type: 'POST',
@@ -34,6 +33,22 @@ $(document).ready(function() {
           }
       });
   });
+
+  $(document).on('click', '.declare_interested_student', function() {
+    let username = $(this).attr('id');
+
+    $.ajax({
+        type: 'POST',
+        url: '/profile/' + username + '/declareMinor',
+        success: function(response) {
+          msgToast("Student successfully declared")
+          location.reload();
+        },
+        error: function(error) {
+          console.log("error")
+            } 
+        });
+    });
 });
 
 

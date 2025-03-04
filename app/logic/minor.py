@@ -31,7 +31,7 @@ def getMinorInterest() -> List[Dict]:
     """
     interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-                              .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
+                              .where(User.isStudent & User.minorInterest & ~User.declaredMinor & IndividualRequirement.username.is_null(True)))
 
     interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
@@ -73,6 +73,25 @@ def toggleMinorInterest(username):
     user.minorInterest = not user.minorInterest
 
     user.save()
+    
+def declareMinorInterest(username):
+    """
+    Given a username, update their minor declaration
+    """
+    
+    user = User.get_by_id(username)
+    
+    if not user:
+        raise ValueError(f"User with username '{username}' not found.")
+    
+    user.declaredMinor = not user.declaredMinor
+    
+    try:
+        user.save()
+    except Exception as e:
+        raise RuntimeError(f"Failed to declare interested student: {e}")
+    
+    
     
 def getCourseInformation(id):
     """
