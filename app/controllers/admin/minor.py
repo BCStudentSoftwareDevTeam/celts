@@ -4,7 +4,7 @@ from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest
+from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getDeclaredMinorStudents
 
 @admin_bp.route('/admin/cceMinor', methods=['POST','GET'])
 def manageMinor():
@@ -24,13 +24,13 @@ def manageMinor():
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
+    declaredStudentsList = getDeclaredMinorStudents()
     
 
     return render_template('/admin/cceMinor.html',
                             interestedStudentsList = interestedStudentsList,
+                            declaredStudentsList = declaredStudentsList,
                             interestedStudentEmailString = interestedStudentEmailString,
                             sustainedEngagement = sustainedEngagement,
                             )
-
-
-
+    

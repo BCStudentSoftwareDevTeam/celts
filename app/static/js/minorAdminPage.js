@@ -16,6 +16,22 @@ function emailAllInterested(){
   }
 }
  
+function emailAllDeclared(){
+  // Read all student emails from the input as a string and put them in mailto format
+  let declaredStudentEmails =  $("#declaredStudentEmails").val();
+  // If there are any students interested, open the mailto link
+  if (declaredStudentEmails.length) {
+    const windowRef = window.open(`mailto:${declaredStudentEmails}`, '_blank');
+    windowRef.focus();
+    setTimeout(function(){
+      if(!windowRef.document) {
+          windowRef.close();
+      }
+    }, 500);
+  } else {
+    msgFlash("No declared students to email.", "info")
+  }
+}
 
 $(document).ready(function() {
   $(document).on('click', '.remove_interested_student', function() {
@@ -115,5 +131,11 @@ searchUser("addStudentInput", callback, true, "addInterestedStudentsModal");
 $(document).ready(function() {
   $('#engagedStudentsTable').DataTable();
   $('#interestedStudentsTable').DataTable();
+  $('#declaredStudentsTable').DataTable();
   $('#emailAllInterested').on('click', emailAllInterested);
+  $('#emailAllDeclared').on('click', emailAllDeclared);
 });
+
+$(document).ready(function() {
+  
+})

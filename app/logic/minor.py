@@ -93,6 +93,15 @@ def declareMinorInterest(username):
     
     
     
+def getDeclaredMinorStudents():
+    declaredStudents = (User.select(User)
+                              .where(User.isStudent & User.minorInterest & User.declaredMinor))
+
+    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
+
+    return interestedStudentList
+    
+
 def getCourseInformation(id):
     """
         Given a course ID, return an object containing the course information and 
