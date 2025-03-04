@@ -67,9 +67,28 @@ $(document).ready(function(){
     });
 
     $('[data-bs-target="#editProgramManagers"]').on('click', function(){
-    // split from the comma separated values, use for loop to populate
+      const managers = $(this).attr('data-managers').split(',');
+      const managersTable = $('#programManagersTable');
+
+      managersTable.empty();
+      
+      if(managers[0].length == 0){
+        return;
+      };
+
+      managers.forEach(manager => {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+                        <td id="{{studentStaff.username}}"> ${manager} </td>
+                        <td class="text-end"><button data-username="{{studentStaff.username}}" 
+                        type="button" class="btn btn-danger">Remove</button>
+                        </td>
+                        `;
+        managersTable.append(row)
+      });
     })
 });
+
 function submitRequest(method, username){
   let data = {
       method: method,

@@ -82,7 +82,7 @@ def userManagement():
             Program
             .select(
                 Program,
-                fn.GROUP_CONCAT(fn.CONCAT(User.firstName, ' ', User.lastName), ', ').alias('managers')
+                fn.GROUP_CONCAT(fn.COALESCE(fn.CONCAT(User.firstName, ' ', User.lastName), '')).alias('managers')
             )
             .join(ProgramManager, JOIN.LEFT_OUTER, on=(Program.id == ProgramManager.program))
             .join(User, JOIN.LEFT_OUTER, on=(ProgramManager.user == User.username))

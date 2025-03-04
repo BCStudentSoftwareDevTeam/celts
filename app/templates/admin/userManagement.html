@@ -51,7 +51,7 @@
                   {% for admin in currentAdmins %}
                      <tr>
                        <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
-                       <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
+                       <td class="text-end"><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
                      </tr>
                   {% endfor %}
                 </tbody>
@@ -71,7 +71,7 @@
                   {% for studentStaff in currentStudentStaff %}
                     <tr>
                       <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
-                      <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
+                      <td class="text-end"><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
                      </tr>
                   {% endfor %}
                 </tbody>
@@ -161,7 +161,7 @@
               <button class ="btn btn-success btn-sm" 
                       data-bs-toggle="modal" 
                       data-bs-target="#editProgramManagers"
-                      data-bs-managers="{{program.managers}}"
+                      data-managers="{{program.managers}}"
                       > Edit Managers </button>
             </div>
           </div>
@@ -256,9 +256,19 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <div>
           {{createInputsButtons("searchProgramManagersInput", "Add Manager")}}<br>
-        </div>
-        <div>
+          </div>
+          <table class="table mb-1">
+            <thead>
+              <tr>
+                <th colspan="2" scope="col">Program Managers</th>
+              </tr>
+            </thead>
+            <tbody id="programManagersTable">
+
+            </tbody>
+          </table>
           
         </div>
         <div class="modal-footer">
