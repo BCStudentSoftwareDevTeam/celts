@@ -7,22 +7,28 @@ function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
 
-function callbackProgramManager(selected) {
-  let exists = $('#programManagersTable tr[username="' + selected["username"] + '"]').length > 0;
+function callbackProgramManager(selected, action = 'add') {
+  let row = $(`#programManagersTable tr[username="${selected["username"]}"]`);
+  let exists = row.length > 0;
+  let programId = $('#programPlaceholder').attr('data-programid');
 
-  if (exists == false){
-      let programId = $('#programPlaceholder').attr('data-programid');
-      editProgramManager(
-        selected['username'],
-        `${selected['firstName'] + ' ' + selected['lastName']}`,
-        programId,
-        'add'
-      )
-  }
-  else {
-      msgFlash("User already selected.")
+  if (action === 'remove' || (!exists && action === 'add')){
+    editProgramManager(
+      selected['username'],
+      `${selected['firstName'] + ' ' + selected['lastName']}`,
+      programId,
+      action
+    );
+
+    if (action === 'remove'){
+      row.remove()
+    }
+  } else {
+    msgFlash('User already selected')
+    return;
   }
 }
+
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -43,6 +49,16 @@ $(document).ready(function(){
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
+  $(".removeProgramManager").on("click",function(){
+    let row = $(this).closest("tr");
+    let fullName = row.find("td").eq(0).text().trim();
+    let [firstName, lastName] = fullName.split(" ");
+    callbackProgramManager({
+      username: row.data("username"),
+      firstName: firstName,
+      lastName: lastName
+    }, "remove");
+    });
   $(".removeProgramManager").on("click",function(){
     submitRequest("removeProgramManager", $(this).data("username"));
   });
@@ -154,9 +170,11 @@ function editProgramManager(username, fullName, programId, action){
     data: data,
     success: function(s){
       $('#programManagersTable').append(createProgramManagerRow(username, fullName))
+      msgFlash('User successfully appointed')
     },
     error: function(error, status){
       console.log(error, status)
+      msgFlash('Manager appointment failed. Please try again')
     }
   })
 }
