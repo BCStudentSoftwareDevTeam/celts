@@ -46,7 +46,6 @@ $(document).ready(function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
   $("#programManagersTable").on("click", ".removeProgramManager", function(){
-    console.log("MMMM")
     let row = $(this).closest("tr");
     let fullName = row.find("td").eq(0).text().trim();
     let [firstName, lastName] = fullName.split(" ");
