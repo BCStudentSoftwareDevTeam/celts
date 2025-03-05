@@ -552,16 +552,37 @@ def test_getSummerTerms():
 @pytest.mark.integration
 def testDeclareMinorInterest():
     
-    declareMinorInterest()
-    
-    pass
+    with mainDB.atomic() as transaction:
+        # Get three students with interest in minor
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        # Declare students interested in minor
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == True
+        assert student2.declaredMinor == True
+        assert student3.declaredMinor == True
+        
+        transaction.rollback()
 
 
 @pytest.mark.integration
 def testGetDeclaredMinorStudents():
     
     with mainDB.atomic() as transaction:
-        
+        # Get all the declared students
         declaredStudents = getDeclaredMinorStudents()
         
         assert declaredStudents == []
@@ -579,6 +600,7 @@ def testGetDeclaredMinorStudents():
         student2.save()
         student3.save()
         
+        # Get all the declared students after recent changes
         newDeclaredStudents = getDeclaredMinorStudents()
         
         assert len(newDeclaredStudents) == 3
