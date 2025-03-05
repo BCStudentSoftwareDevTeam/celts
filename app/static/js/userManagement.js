@@ -19,10 +19,6 @@ function callbackProgramManager(selected, action = 'add') {
       programId,
       action
     );
-
-    if (action === 'remove'){
-      row.remove()
-    }
   } else {
     msgFlash('User already selected')
     return;
@@ -49,7 +45,8 @@ $(document).ready(function(){
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
-  $(".removeProgramManager").on("click",function(){
+  $("#programManagersTable").on("click", ".removeProgramManager", function(){
+    console.log("MMMM")
     let row = $(this).closest("tr");
     let fullName = row.find("td").eq(0).text().trim();
     let [firstName, lastName] = fullName.split(" ");
@@ -59,9 +56,7 @@ $(document).ready(function(){
       lastName: lastName
     }, "remove");
     });
-  $(".removeProgramManager").on("click",function(){
-    submitRequest("removeProgramManager", $(this).data("username"));
-  });
+  
   $('#searchCeltsAdminInput').keydown(function(e){
       if (e.key === "Enter"){
           submitRequest("addCeltsAdmin", $(this).val())
@@ -171,16 +166,41 @@ function editProgramManager(username, fullName, programId, action){
     success: function(s){
       if (action === 'add'){
         $('#programManagersTable').append(createProgramManagerRow(username, fullName))
+        updateManagers()
       } else {
-        $(`#${username}`).remove()
+        $(`#programManagersTable #${username}`)
+        .animate({
+          opacity: 0,
+        }, 500, function() {
+          $(`#programManagersTable #${username}`)
+          .closest('tr')
+          .remove()
+          updateManagers()
+        })
       }
-      msgFlash(`User successfully ${action === 'add' ? 'appointed' : 'removed'}`)
+      msgFlash(
+        `User successfully ${action === 'add' ? 'appointed' : 'removed'}`,
+         `${action === 'add' ? 'success' : 'danger'}`
+        )
     },
     error: function(error, status){
       console.log(error, status)
-      msgFlash('Manager appointment failed. Please try again')
+      msgFlash('Task failed. Please try again')
     }
   })
+}
+
+function updateManagers(){
+  let newManagers = []
+  let username = ""
+  let fullName = "";
+  $("#programManagersTable").children().each((index, manager) => {
+    username = $(manager).find("td:first-child").attr("id");
+    fullName = $(manager).find("td:first-child").html().trim();
+    newManagers.push(`${fullName}#${username}`);
+  });
+  let managersString = newManagers.join(",");
+  $("#editProgramManagersButton").attr('data-managers', managersString)
 }
 
 function submitTerm(){
