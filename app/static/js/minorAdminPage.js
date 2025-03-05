@@ -1,6 +1,6 @@
 import searchUser from './searchUser.js'
 
-function emailMinorParticipants(studentEmails){
+function emailMinorCandidates(studentEmails){
   // If there are any students interested or declared, open the mailto link
   if (studentEmails.length) {
     const windowRef = window.open(`mailto:${studentEmails}`, '_blank');
@@ -18,9 +18,9 @@ function emailMinorParticipants(studentEmails){
 function emailAll(){
   let declaredStudentEmails =  $("#declaredStudentEmails").val();
   let interestedStudentEmails =  $("#interestedStudentEmails").val();
-  let allMinorParticipantEmails = declaredStudentEmails + ";" + interestedStudentEmails;
+  let allMinorCandidateEmails = declaredStudentEmails + ";" + interestedStudentEmails;
   
-  emailMinorParticipants(allMinorParticipantEmails);
+  emailMinorCandidates(allMinorCandidateEmails);
 }
 
 $(document).ready(function() {
@@ -121,11 +121,11 @@ $(document).ready(function() {
   $('#declaredStudentsTable').DataTable();
 
   $('#emailAllInterested').on('click', function() {
-    emailMinorParticipants($("#interestedStudentEmails").val())
+    emailMinorCandidates($("#interestedStudentEmails").val())
   });
 
   $('#emailAllDeclared').on('click', function() {
-    emailMinorParticipants($("#declaredStudentEmails").val())
+    emailMinorCandidates($("#declaredStudentEmails").val())
   });
 
   $('#emailAll').on('click', emailAll);
