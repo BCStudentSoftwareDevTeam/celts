@@ -20,7 +20,6 @@ function callbackProgramManager(selected, action = 'add') {
       action
     );
   } else {
-    msgFlash('User already selected')
     return;
   }
 }
@@ -177,10 +176,6 @@ function editProgramManager(username, fullName, programId, action){
           updateManagers()
         })
       }
-      msgFlash(
-        `User successfully ${action === 'add' ? 'appointed' : 'removed'}`,
-         `${action === 'add' ? 'success' : 'danger'}`
-        )
     },
     error: function(error, status){
       console.log(error, status)
