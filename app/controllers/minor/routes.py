@@ -43,7 +43,7 @@ def requestOtherEngagement(username):
         createdProposal = createOtherEngagementRequest(username, request.form)
         attachment = request.files.get("attachmentObject")
         if attachment:
-            addFile = FileHandler(getFilesFromRequest(request), proposalID=createdProposal.id)
+            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
             addFile.saveFiles()
 
         return redirect(url_for('minor.viewCceMinor', username=username))

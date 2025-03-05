@@ -18,7 +18,7 @@ function withdraw(){
       url: `/cceMinor/withdraw/${proposalID}`,
       type: "POST",
       success: function(s){
-        location.reload();
+        location.reload()
       },
       error: function(request, status, error) {
           console.log(status,error);
