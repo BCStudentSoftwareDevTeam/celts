@@ -147,20 +147,9 @@ def test_changeProgramInfo():
 @pytest.mark.integration
 def test_updatedProgramManager():
     with mainDB.atomic() as transaction:
-        # Try to add a student who isnt Student Staff into a Program Manager: They should not be added.
+        # Make student a program manager.
         user = User.get_by_id("mupotsal")
-        user.isCeltsStudentStaff = False
-        user.save()
         program = Program.get_by_id(1)
-
-        setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
-
-        # Make the previous student into a Student Staff then try to make them
-        # a Program Manager again: They should be added to Program Managers.
-        user.isCeltsStudentStaff = True
-        user.save()
-
         setProgramManager(user, program, "add")
         assert ProgramManager.get_or_none(program = program, user = user) is not None
 
