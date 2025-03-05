@@ -16,6 +16,7 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
+from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -546,3 +547,42 @@ def test_getSummerTerms():
         assert len(list(noSummerTerms)) == 0
 
         transaction.rollback()
+        
+        
+@pytest.mark.integration
+def testDeclareMinorInterest():
+    
+    declareMinorInterest()
+    
+    pass
+
+
+@pytest.mark.integration
+def testGetDeclaredMinorStudents():
+    
+    with mainDB.atomic() as transaction:
+        
+        declaredStudents = getDeclaredMinorStudents()
+        
+        assert declaredStudents == []
+        assert len(declaredStudents) == 0
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        student1.declaredMinor = not student1.declaredMinor
+        student2.declaredMinor = not student2.declaredMinor
+        student3.declaredMinor = not student3.declaredMinor
+        
+        student1.save()
+        student2.save()
+        student3.save()
+        
+        newDeclaredStudents = getDeclaredMinorStudents()
+        
+        assert len(newDeclaredStudents) == 3
+        
+        transaction.rollback()
+        
+    pass

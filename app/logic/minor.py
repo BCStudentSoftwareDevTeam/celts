@@ -78,7 +78,6 @@ def declareMinorInterest(username):
     """
     Given a username, update their minor declaration
     """
-    
     user = User.get_by_id(username)
     
     if not user:
@@ -91,17 +90,16 @@ def declareMinorInterest(username):
     except Exception as e:
         raise RuntimeError(f"Failed to declare interested student: {e}")
     
-    
-    
 def getDeclaredMinorStudents():
-    declaredStudents = (User.select(User)
-                              .where(User.isStudent & User.minorInterest & User.declaredMinor))
+    """
+    Get a list of the students who have declared minor
+    """
+    declaredStudents = (User.select(User).where(User.isStudent & User.minorInterest & User.declaredMinor))
 
     interestedStudentList = [model_to_dict(student) for student in declaredStudents]
 
     return interestedStudentList
     
-
 def getCourseInformation(id):
     """
         Given a course ID, return an object containing the course information and 

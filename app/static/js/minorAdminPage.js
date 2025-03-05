@@ -1,10 +1,9 @@
 import searchUser from './searchUser.js'
-function emailAllInterested(){
-  // Read all student emails from the input as a string and put them in mailto format
-  let interestedStudentEmails =  $("#interestedStudentEmails").val();
-  // If there are any students interested, open the mailto link
-  if (interestedStudentEmails.length) {
-    const windowRef = window.open(`mailto:${interestedStudentEmails}`, '_blank');
+
+function emailMinorParticipants(studentEmails){
+  // If there are any students interested or declared, open the mailto link
+  if (studentEmails.length) {
+    const windowRef = window.open(`mailto:${studentEmails}`, '_blank');
     windowRef.focus();
     setTimeout(function(){
       if(!windowRef.document) {
@@ -12,43 +11,16 @@ function emailAllInterested(){
       }
     }, 500);
   } else {
-    msgFlash("No interested students to email.", "info")
-  }
-}
- 
-function emailAllDeclared(){
-  // Read all student emails from the input as a string and put them in mailto format
-  let declaredStudentEmails =  $("#declaredStudentEmails").val();
-  // If there are any students interested, open the mailto link
-  if (declaredStudentEmails.length) {
-    const windowRef = window.open(`mailto:${declaredStudentEmails}`, '_blank');
-    windowRef.focus();
-    setTimeout(function(){
-      if(!windowRef.document) {
-          windowRef.close();
-      }
-    }, 500);
-  } else {
-    msgFlash("No declared students to email.", "info")
+    msgFlash("No interested or declared students to email.", "info")
   }
 }
 
 function emailAll(){
   let declaredStudentEmails =  $("#declaredStudentEmails").val();
   let interestedStudentEmails =  $("#interestedStudentEmails").val();
-  let allMinorParticipantEmails = declaredStudentEmails + ";" + interestedStudentEmails
-
-  if (allMinorParticipantEmails.length) {
-    const windowRef = window.open(`mailto:${allMinorParticipantEmails}`, '_blank');
-    windowRef.focus();
-    setTimeout(function(){
-      if(!windowRef.document) {
-          windowRef.close();
-      }
-    }, 500);
-  } else {
-    msgFlash("No minor participants to email.", "info")
-  }
+  let allMinorParticipantEmails = declaredStudentEmails + ";" + interestedStudentEmails;
+  
+  emailMinorParticipants(allMinorParticipantEmails);
 }
 
 $(document).ready(function() {
@@ -147,8 +119,15 @@ $(document).ready(function() {
   $('#engagedStudentsTable').DataTable();
   $('#interestedStudentsTable').DataTable();
   $('#declaredStudentsTable').DataTable();
-  $('#emailAllInterested').on('click', emailAllInterested);
-  $('#emailAllDeclared').on('click', emailAllDeclared);
+
+  $('#emailAllInterested').on('click', function() {
+    emailMinorParticipants($("#interestedStudentEmails").val())
+  });
+
+  $('#emailAllDeclared').on('click', function() {
+    emailMinorParticipants($("#declaredStudentEmails").val())
+  });
+
   $('#emailAll').on('click', emailAll);
 });
 
