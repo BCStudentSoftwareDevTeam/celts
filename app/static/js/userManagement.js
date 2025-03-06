@@ -183,7 +183,7 @@ function editProgramManager(username, fullName, programId, action){
   })
 }
 
-function updateManagers(){
+function updateManagers(programId){
   let newManagers = []
   let username = ""
   let fullName = "";
@@ -193,7 +193,7 @@ function updateManagers(){
     newManagers.push(`${fullName}#${username}`);
   });
   let managersString = newManagers.join(",");
-  $(".editProgramManagersButton").attr('data-managers', managersString)
+  $(`.editProgramManagersButton[data-programid='${programId}'`).attr('data-managers', managersString)
 }
 
 function submitTerm(){
