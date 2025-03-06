@@ -163,7 +163,7 @@ function editProgramManager(username, fullName, programId, action){
     success: function(s){
       if (action === 'add'){
         $('#programManagersTable').append(createProgramManagerRow(username, fullName))
-        updateManagers()
+        updateManagers(programId)
       } else {
         $(`#programManagersTable #${username}`)
         .animate({
@@ -172,7 +172,7 @@ function editProgramManager(username, fullName, programId, action){
           $(`#programManagersTable #${username}`)
           .closest('tr')
           .remove()
-          updateManagers()
+          updateManagers(programId)
         })
       }
     },
