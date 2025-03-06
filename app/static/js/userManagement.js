@@ -98,10 +98,13 @@ $(document).ready(function(){
     updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
     });
 
-    $('[data-bs-target="#editProgramManagers"]').on('click', function(){
+    $(".editProgramManagersButton").on('click', function(){
+      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
+      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
+
       const managers = $(this).attr('data-managers').split(',');
       const managersTable = $('#programManagersTable');
-
+      console.log(managers)
       managersTable.empty();
       
       if(managers[0].length == 0){
@@ -112,11 +115,6 @@ $(document).ready(function(){
         let [managerName, managerUser] = manager.split('#');
         managersTable.append(createProgramManagerRow(managerUser, managerName))
       });
-    })
-
-    $('.editProgramManagersButton').on('click', function(){
-      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
-      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`)
     })
 });
 
@@ -195,7 +193,7 @@ function updateManagers(){
     newManagers.push(`${fullName}#${username}`);
   });
   let managersString = newManagers.join(",");
-  $("#editProgramManagersButton").attr('data-managers', managersString)
+  $(".editProgramManagersButton").attr('data-managers', managersString)
 }
 
 function submitTerm(){
