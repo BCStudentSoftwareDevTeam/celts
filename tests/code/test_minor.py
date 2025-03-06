@@ -567,27 +567,37 @@ def test_removeProposal():
 
     with mainDB.atomic() as transaction:
 
+        print('####')
+
         if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
             removeProposal(98)
 
         CCEMinorProposal.create(id=98,
                             proposalType = 'Other Engagement',
                             createdBy = g.current_user,
+                            supervisor = "FINN",
+                            term = "2",
+                            action = "action",
                             status = 'Pending',
-                            student = 'user')
+                            )
         
         CCEMinorProposal.create(id=98, 
                             proposalType = 'Summer Experience',
                             createdBy = g.current_user,
+                            supervisor = "GLEK",
+                            term = "4",
+                            action = "action",
                             status = 'Pending',
                             contentAreas = 'contentAreas',
-                            student = 'user')
+                            )
         
         with app.test_request_context():
             g.current_user = "glek"
-            removeProposal(99)
+            removeProposal(98)
 
         with pytest.raises(DoesNotExist):
-            Course.get_by_id(99)
+            CCEMinorProposal.get_by_id(98)
+            print('###')
+            print(CCEMinorProposal.get_by_id(98))
 
         transaction.rollback()
