@@ -17,7 +17,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
+from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
 @pytest.mark.integration
@@ -555,5 +555,39 @@ def test_createOtherEngagementRequest():
         initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == "FINN")
        
         assert len(initialOtherExperiences) == 1 
+
+        transaction.rollback()
+
+
+
+@pytest.mark.integration
+def test_removeProposal():
+    '''creates a test course with all foreign key fields. tests if they can
+    be deleted'''
+
+    with mainDB.atomic() as transaction:
+
+        if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
+            removeProposal(98)
+
+        CCEMinorProposal.create(id=98,
+                            proposalType = 'Other Engagement',
+                            createdBy = g.current_user,
+                            status = 'Pending',
+                            student = 'user')
+        
+        CCEMinorProposal.create(id=98, 
+                            proposalType = 'Summer Experience',
+                            createdBy = g.current_user,
+                            status = 'Pending',
+                            contentAreas = 'contentAreas',
+                            student = 'user')
+        
+        with app.test_request_context():
+            g.current_user = "glek"
+            removeProposal(99)
+
+        with pytest.raises(DoesNotExist):
+            Course.get_by_id(99)
 
         transaction.rollback()
