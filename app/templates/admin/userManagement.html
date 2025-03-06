@@ -158,12 +158,12 @@
                         "bereaUrl": "{{ program.bereaUrl if program.bereaUrl else "" }}"
                     }'>
                       Edit Details</button>
-              <button class ="btn btn-success btn-sm"
-                      id="editProgramManagersButton"
+              <button class ="btn btn-success btn-sm editProgramManagersButton"
                       data-bs-toggle="modal" 
                       data-bs-target="#editProgramManagers"
                       data-managers="{{program.managers}}"
                       data-programid="{{program.id}}"
+                      data-name="{{program.programName}}"
                       > Edit Managers </button>
             </div>
           </div>
@@ -254,7 +254,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title"> Edit Program Managers </h5>
+          <h5 class="modal-title" id="programNameHeader"> Edit Program Managers </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
           <a id="programPlaceholder" class="d-none" data-programid=""></a>

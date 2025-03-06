@@ -114,8 +114,9 @@ $(document).ready(function(){
       });
     })
 
-    $('#editProgramManagersButton').on('click', function(){
+    $('.editProgramManagersButton').on('click', function(){
       $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
+      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`)
     })
 });
 
