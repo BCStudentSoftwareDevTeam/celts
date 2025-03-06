@@ -327,8 +327,6 @@ def removeProposal(proposalID) -> None:
     """
     Delete summerexperience or otherexperience of the CCEMinorProposal Table  for entry proposalType
     """
-
-
     
     CCEMinorProposal.delete().where(CCEMinorProposal.id == int(proposalID)).execute()
 
