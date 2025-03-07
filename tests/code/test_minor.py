@@ -17,7 +17,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
+from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
 @pytest.mark.integration
@@ -557,3 +557,62 @@ def test_createOtherEngagementRequest():
         assert len(initialOtherExperiences) == 1 
 
         transaction.rollback()
+
+
+
+@pytest.mark.integration
+def test_removeProposal():
+    '''creates a CCEMinorProposal with all foreign key fields. tests if they can
+    be deleted'''
+
+    # wrapping app_context for the entire test function.
+
+    with app.app_context():
+        g.current_user = 'glek'
+        with mainDB.atomic() as transaction:
+            if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
+                removeProposal(98)
+
+
+
+            User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+            
+
+            CCEMinorProposal.create(id=98,
+                                username = 'glek',
+                                proposalType = 'Other Engagement',
+                                createdBy = g.current_user,
+                                supervisor = "FINN",
+                                term = "2",
+                                action = "action",
+                                status = 'Pending',
+                                student = 'user', 
+                                experienceName =  'Test Experience',
+                                orgName = 'Test Company',
+                                orgAddress = '123 test ln',
+                                orgPhone =  '(123)-456-7890',
+                                orgWebsite =  "kafui.com",
+                                supervisorPhone =  '(123)-798-3516',
+                                supervisorName =  'kafui',
+                                supervisorEmail =  'test@supervisor.com',
+                                totalHours =  300,
+                                weeks =  10,
+                                experienceDescription =  'Test Description',
+                                filename = 'test_file.txt',
+                            )
+    
+        
+
+           
+            createOtherEngagementRequest('glek', 98)
+            removeProposal(98)
+
+
+            with pytest.raises(DoesNotExist):
+                CCEMinorProposal.get_by_id(98)
+
+            transaction.rollback()

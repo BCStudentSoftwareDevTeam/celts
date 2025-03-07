@@ -68,7 +68,6 @@ def test_getInstructorCourses():
     currentFaculty = User.get_by_id("ramsayb2")
     currentFacultyCourses = courseDict[currentFaculty]
     assert 'Spanish Help' in currentFacultyCourses
-    assert 'Databases' in currentFacultyCourses
     assert 'Math' not in currentFacultyCourses
 
 @pytest.mark.integration

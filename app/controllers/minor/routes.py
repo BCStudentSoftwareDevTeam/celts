@@ -89,12 +89,8 @@ def getEngagementInformation(username, type, id, term):
 @minor_bp.route('/cceMinor/withdraw/<proposalID>', methods = ['POST'])
 def withdrawProposal(proposalID):
     try:
-        print('hhhhh')
-        print(proposalID)
         if g.current_user.isAdmin or g.current_user.isFaculty:
-            print('lllll')
             removeProposal(proposalID)
-            print(removeProposal)
             flash("Experience successfully withdrawn", 'success')
         else:
             flash("Unauthorized to perform this action", 'warning')
