@@ -570,8 +570,8 @@ def test_removeProposal():
     with app.app_context():
         g.current_user = 'glek'
         with mainDB.atomic() as transaction:
-            if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
-                removeProposal(98)
+            if 8 in CCEMinorProposal.select(CCEMinorProposal.id):
+                removeProposal(22)
 
 
 
@@ -582,7 +582,7 @@ def test_removeProposal():
                     bnumber="B91111113")
             
 
-            CCEMinorProposal.create(id=98,
+            CCEMinorProposal.create(proposalId=8,
                                 username = 'glek',
                                 proposalType = 'Other Engagement',
                                 createdBy = g.current_user,
@@ -608,11 +608,11 @@ def test_removeProposal():
         
 
            
-            createOtherEngagementRequest('glek', 98)
+            createOtherEngagementRequest('glek', 8)
             removeProposal(98)
 
 
             with pytest.raises(DoesNotExist):
-                CCEMinorProposal.get_by_id(98)
+                CCEMinorProposal.get_by_id(22)
 
             transaction.rollback()
