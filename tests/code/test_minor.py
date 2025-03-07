@@ -562,6 +562,7 @@ def test_createOtherEngagementRequest():
 
 @pytest.mark.integration
 def test_removeProposal():
+<<<<<<< HEAD
     '''creates a CCEMinorProposal with all foreign key fields. tests if they can
     be deleted'''
 
@@ -616,3 +617,54 @@ def test_removeProposal():
                 CCEMinorProposal.get_by_id(22)
 
             transaction.rollback()
+=======
+    '''creates a test course with all foreign key fields. tests if they can
+    be deleted'''
+
+    with mainDB.atomic() as transaction:
+
+        print('####')
+
+        if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
+            removeProposal(98, testInfo)
+            print(removeProposal(98, testInfo))
+
+        CCEMinorProposal.create(id=98,
+                                username = 'glek',
+                            proposalType = 'Other Engagement',
+                            createdBy = g.current_user,
+                            supervisor = "FINN",
+                            term = "2",
+                            action = "action",
+                            status = 'Pending',
+                            )
+        
+
+        testInfo = {'term': 3,
+                    'experienceName': 'Test Experience',
+                    'orgName': 'Test Company',
+                    'orgAddress': '123 test ln',
+                    'orgPhone': '(123)-456-7890',
+                    'orgPhone': '(123)-456-7890',
+                    'orgWebsite': "kafui.com",
+                    'supervisorPhone': '(123)-798-3516',
+                    'supervisorName': 'kafui',
+                    'supervisorEmail': 'test@supervisor.com',
+                    'totalHours': 300,
+                    'weeks': 10,
+                    'experienceDescription': 'Test Description',
+                    'filename': 'test_file.txt',
+                   }
+        
+        
+        with app.app_context():
+            g.current_user = "glek"
+            removeProposal(98, testInfo)
+
+            assert CCEMinorProposal.get_by_id(98, testInfo) is not None
+
+        with pytest.raises(DoesNotExist):
+            CCEMinorProposal.get_by_id(98)
+
+        transaction.rollback()
+>>>>>>> 013c017806a069f163e3788f9bd56b6493615f50
