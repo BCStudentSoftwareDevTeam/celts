@@ -24,8 +24,11 @@ function emailAll(){
 }
 
 $(document).ready(function() {
-  $(document).on('click', '.remove_interested_student', function() {
+  $(document).on('click', '.remove_minor_candidate', function() {
       let username = $(this).attr('id'); 
+      if ($('#declared').hasClass('show active')) {
+        localStorage.setItem('activeTab', 'declared');
+      }
       
       $.ajax({
           type: 'POST',
@@ -40,21 +43,54 @@ $(document).ready(function() {
       });
   });
 
-  $(document).on('click', '.declare_interested_student', function() {
-    let username = $(this).attr('id');
+$(document).on('click', '.declare_interested_student', function() {
+  let username = $(this).attr('id');
 
-    $.ajax({
-        type: 'POST',
-        url: '/profile/' + username + '/declareMinor',
-        success: function(response) {
-          msgToast("Student successfully declared")
-          location.reload();
-        },
-        error: function(error) {
-          console.log("error")
-            } 
-        });
-    });
+  $.ajax({
+      type: 'POST',
+      url: '/profile/' + username + '/declareMinor',
+      success: function(response) {
+        msgToast("Student successfully declared")
+        location.reload();
+      },
+      error: function(error) {
+        console.log("error")
+          } 
+      });
+  });
+
+$(document).on('click', '.move_to_interested', function() {
+  let username = $(this).attr('id');
+
+  $.ajax({
+      type: 'POST',
+      url: '/profile/' + username + '/moveToInterested',
+      success: function(response) {
+        msgToast("Student successfully made interested")
+        localStorage.setItem('activeTab', 'declared');
+        location.reload();
+      },
+      error: function(error) {
+        console.log("error")
+          } 
+      });
+  });
+
+$(document).ready(function() {
+  setTimeout(function() {
+  let activeTab = localStorage.getItem('activeTab');
+
+  if (activeTab === 'declared') {
+      $('#declared').addClass('show active'); 
+      $('#interested').removeClass('show active'); 
+
+      $('.nav-tabs .nav-link').removeClass('active'); 
+      $('#declared-tab').addClass('active'); 
+
+      localStorage.removeItem('activeTab'); 
+      }
+    }, 100);
+  });
 });
 
 function getInterestedStudents() {

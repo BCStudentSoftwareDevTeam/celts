@@ -596,3 +596,13 @@ def declareInterestedStudent(username):
         abort(403)
         
     return ""
+
+@main_bp.route('/profile/<username>/moveToInterested', methods=["POST"])
+def moveStudentToInterested(username):
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        declareMinorInterest(username)
+    else:
+        abort(403)
+        
+    return ""
+
