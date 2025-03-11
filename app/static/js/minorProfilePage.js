@@ -63,6 +63,7 @@ $(document).ready(function() {
         console.error('Error:', error);
       }
     });
+  })
 
     $('.engagement-row input').on("click", function(e) {
         e.stopPropagation()
@@ -234,4 +235,5 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
             msgFlash("Error saving changes!", "danger")
           }
     });
+  
 }
