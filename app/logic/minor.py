@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import List, Dict
 from flask import flash, g
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN, fn, Case, DoesNotExist
+from peewee import JOIN, fn, Case, DoesNotExist, SQL
 
 from app.models.user import User
 from app.models.term import Term
@@ -37,9 +37,8 @@ def createSummerExperience(username, formData):
         )
     except Exception as e:
         print(f"Error saving summer experience: {e}")
-        raise
+        raise e
     
-# ################################################
 def getEngagementTotal(engagementData):
     """ 
         Count the number of engagements (from all terms) that have matched with a requirement 
@@ -78,7 +77,7 @@ def getMinorProgress():
             .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
-            .order_by(fn.COUNT(IndividualRequirement.id).desc())
+            .order_by(SQL("engagementCount").desc())
     )
     engagedStudentsList = [{'username': student.username,
                             'firstName': student.firstName,

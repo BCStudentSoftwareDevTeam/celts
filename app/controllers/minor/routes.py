@@ -33,10 +33,7 @@ def viewCceMinor(username):
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
                             summerTerms = getSummerTerms(),
                             allTerms = getSummerExperience(username))
-
     
-# ################################################## SUMMER EXPERIENCE START ###########################################################
-
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def createOrUpdateSummerExperience(username):
     formData = request.form
@@ -47,8 +44,6 @@ def createOrUpdateSummerExperience(username):
         flash(f'An error occurred while adding the summer experience: {e}', 'danger')
         print(f'An error occurred while adding the summer experience: {e}')
     return ""
-
-# ################################################## SUMMER EXPERIENCE END ###########################################################
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
@@ -99,7 +94,7 @@ def requestOtherEngagement(username):
                 filename = attachment.filename
         formData = request.form.copy()
         formData["filename"] = filename
-        createOtherEngagementRequest(formData)
+        createOtherEngagementRequest(username, formData)
         flash("Other community engagement request submitted.", "success")
         return redirect(url_for("minor.viewCceMinor", username=user))
 
