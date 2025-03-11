@@ -8,11 +8,12 @@ function callbackStudentStaff(selected){
 }
 
 function callbackProgramManager(selected, action = 'add') {
-  let row = $(`#programManagersTable tr[username="${selected["username"]}"]`);
+  let row = $(`#programManagersTable tr[data-username="${selected["username"]}"]`);
   let exists = row.length > 0;
+  console.log(exists, "row=", row)
   let programId = $('#programPlaceholder').attr('data-programid');
 
-  if (action === 'remove' || (!exists && action === 'add')){
+  if ((action === 'remove') || (!exists && action === 'add')){
     editProgramManager(
       selected['username'],
       `${selected['firstName'] + ' ' + selected['lastName']}`,
