@@ -25,9 +25,7 @@ def viewCceMinor(username):
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
                             allTerms = getSummerExperience(username))
-
     
-
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
 def requestOtherEngagement(username):
     """
@@ -94,3 +92,4 @@ def modifyCommunityEngagement(username):
         return "There are already 4 Sustained Community Engagement records." 
     
     return ""
+
