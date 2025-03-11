@@ -1,7 +1,9 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let data = {"username":username}
+    let isAdding = $(this).hasClass('express_interest'); 
+    let data = {"username":username, "isAdding": isAdding}
+    
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",

@@ -29,10 +29,12 @@ $(document).ready(function() {
       if ($('#declared').hasClass('show active')) {
         localStorage.setItem('activeTab', 'declared');
       }
+      let isAdding = $(this).hasClass('express_interest'); 
       
       $.ajax({
           type: 'POST',
           url: '/profile/' + username + '/indicateInterest',
+          data: JSON.stringify({ "isAdding": isAdding }),
           success: function(response) {
             msgToast("Student successfully removed")
             location.reload();  

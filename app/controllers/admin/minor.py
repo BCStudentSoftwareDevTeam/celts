@@ -18,7 +18,7 @@ def manageMinor():
         for i in interested_students:
             user = User.get(username=i)
             if not user.minorInterest:
-                toggleMinorInterest(i)    
+                toggleMinorInterest(i, True)    
 
 
     interestedStudentsList = getMinorInterest()
