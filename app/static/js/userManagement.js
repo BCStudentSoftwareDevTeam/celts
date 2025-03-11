@@ -104,7 +104,6 @@ $(document).ready(function(){
 
       const managers = $(this).attr('data-managers').split(',');
       const managersTable = $('#programManagersTable');
-      console.log(managers)
       managersTable.empty();
       
       if(managers[0].length == 0){

@@ -47,7 +47,6 @@ def manageUsers():
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
     elif method == "addProgramManager":
-        print(user, method, eventData, "IT HITTTT")
         setProgramManager(user, 'add')
     elif method == "removeProgramManager":
         setProgramManager()
