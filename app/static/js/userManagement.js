@@ -178,7 +178,7 @@ function editProgramManager(username, fullName, programId, action){
     },
     error: function(error, status){
       console.log(error, status)
-      msgFlash('Task failed. Please try again')
+      msgFlash('Failed to update the Program Manager Table. Please try again')
     }
   })
 }
