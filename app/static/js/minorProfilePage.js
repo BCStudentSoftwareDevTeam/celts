@@ -53,8 +53,11 @@ $(document).ready(function() {
       } 
       
     });
-
+    $('.engagement-row').on("click", function() {
+      showEngagementInformation($(this).data('engagement-data'));
+    });
     $('.engagement-row input').on("click", function(e) {
+      console.log("howdy")
         e.stopPropagation()
 
         engagementData = $(this).parents('.engagement-row').data('engagement-data');
