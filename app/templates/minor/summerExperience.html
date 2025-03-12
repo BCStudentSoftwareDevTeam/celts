@@ -29,8 +29,8 @@
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label" for="summerTerm"><strong>Summer Year</strong></label>
-                    <select class="form-select" id="summerTerm" name="summerTerm" required>
+                    <label class="form-label" for="term"><strong>Summer Year</strong></label>
+                    <select class="form-select" id="term" name="term" required>
                         <option value="" disabled selected>Select Year</option>
                         {% for term in summerTerms %}
                                 <option value="{{ term }}">{{ term.description }}</option>
@@ -94,11 +94,11 @@
 
                     <div id="hoursBelow300Container" class="row mt-2">
                         <div class="form-group col-6">
-                            <label for="hoursNotOver300"><b>Hours</b></label><br>
+                            <label for="totalHours"><b>Hours</b></label><br>
                             <input class="form-control" type="text" id="hoursNotOver300" name="hoursNotOver300" placeholder="Enter the total hours."></input>
                         </div>
                         <div class="form-group col-6">
-                            <label for="weeksNotOver300"><b>Weeks</b></label><br>
+                            <label for="totalHours"><b>Weeks</b></label><br>
                             <input class="form-control" type="text" id="weeksNotOver300" name="weeksNotOver300" placeholder="Enter the number of weeks."></input>
                         </div>
                     </div>

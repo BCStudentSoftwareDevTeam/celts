@@ -43,27 +43,16 @@ $(document).ready(function() {
     }
   }
 
-  $('#summerExperienceForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) {
-        $('pills-requestOtherEngagement').html(response);
-        $('#summerExperience').tab('show');
-        location.reload()
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
+    // Determine which checkbox was clicked and its current checked status, uncheck others
+    let typeBoxes = $("#powerInequality, #communityIdentity, #civicLiteracy, #civicSkills")
+    typeBoxes.on('click', function (event) {
+      if (typeBoxes.filter(':checked').length > 0) {
+        typeBoxes.prop('required', false);
+      } else {
+        typeBoxes.prop('required', true);
+      } 
+      
     });
-  })
 
     $('.engagement-row input').on("click", function(e) {
         e.stopPropagation()
@@ -133,11 +122,10 @@ $(document).ready(function() {
         }
       });
     });
-    $('#otherExperienceForm').on('submit', function(event) {
+    $('#otherEngagementForm').on('submit', function(event) {
       event.preventDefault(); 
       var formData = new FormData(this); 
       var actionUrl = $(this).attr('action'); 
-      
       $.ajax({
         url: actionUrl,
         type: 'POST',
