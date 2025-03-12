@@ -7,3 +7,5 @@ class BackgroundCheck(baseModel):
     type = ForeignKeyField(BackgroundCheckType)
     backgroundCheckStatus = CharField()
     dateCompleted = DateField(null=True)
+    deletionDate = DateTimeField(null=True)
+    deletedBy = TextField(null=True)

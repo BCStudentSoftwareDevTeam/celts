@@ -121,11 +121,12 @@ def getProgramEngagementHistory(program_id, username, term_id):
     """
     # execute a query that will retrieve all events in which the user has participated
     # that fall under the provided term and programs.
-    eventsInProgramAndTerm = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+    eventsInProgramAndTerm = (Event.select(Event.id, Event.name, EventParticipant.hoursEarned)
                                    .join(Program).switch()
                                    .join(EventParticipant)
                                    .where(EventParticipant.user == username,
                                           Event.term == term_id,
+                                          Event.isService == True,
                                           Program.id == program_id)
                              )
     
@@ -134,8 +135,8 @@ def getProgramEngagementHistory(program_id, username, term_id):
     # calculate total amount of hours for the whole program that term
     totalHours = 0
     for event in eventsInProgramAndTerm:
-        if event.hoursEarned:
-            totalHours += event.hoursEarned
+        if event.eventparticipant.hoursEarned:
+            totalHours += event.eventparticipant.hoursEarned
     
     participatedEvents = {"program":program.programName, "events": [event for event in eventsInProgramAndTerm.dicts()], "totalHours": totalHours}
 
@@ -220,7 +221,7 @@ def getCommunityEngagementByTerm(username):
                    .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.program == Program.id) &
                                                                      (IndividualRequirement.username == EventParticipant.user) &
                                                                      (IndividualRequirement.term == Event.term)))
-                   .where(EventParticipant.user == username)
+                   .where(EventParticipant.user == username, Event.isService == True)
                    .group_by(Event.program, Event.term))
     
     for event in events:

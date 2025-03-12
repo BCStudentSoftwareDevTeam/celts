@@ -583,7 +583,6 @@ CREATE TABLE `event` (
   `isService` tinyint(1) NOT NULL,
   `isAllVolunteerTraining` tinyint(1) NOT NULL,
   `startDate` date NOT NULL,
-  `endDate` date DEFAULT NULL,
   `recurringId` int DEFAULT NULL,
   `contactEmail` varchar(255) DEFAULT NULL,
   `contactName` varchar(255) DEFAULT NULL,
