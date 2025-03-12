@@ -562,62 +562,6 @@ def test_createOtherEngagementRequest():
 
 @pytest.mark.integration
 def test_removeProposal():
-<<<<<<< HEAD
-    '''creates a CCEMinorProposal with all foreign key fields. tests if they can
-    be deleted'''
-
-    # wrapping app_context for the entire test function.
-
-    with app.app_context():
-        g.current_user = 'glek'
-        with mainDB.atomic() as transaction:
-            if 8 in CCEMinorProposal.select(CCEMinorProposal.id):
-                removeProposal(22)
-
-
-
-            User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
-                    bnumber="B91111113")
-            
-
-            CCEMinorProposal.create(proposalId=8,
-                                username = 'glek',
-                                proposalType = 'Other Engagement',
-                                createdBy = g.current_user,
-                                supervisor = "FINN",
-                                term = "2",
-                                action = "action",
-                                status = 'Pending',
-                                student = 'user', 
-                                experienceName =  'Test Experience',
-                                orgName = 'Test Company',
-                                orgAddress = '123 test ln',
-                                orgPhone =  '(123)-456-7890',
-                                orgWebsite =  "kafui.com",
-                                supervisorPhone =  '(123)-798-3516',
-                                supervisorName =  'kafui',
-                                supervisorEmail =  'test@supervisor.com',
-                                totalHours =  300,
-                                weeks =  10,
-                                experienceDescription =  'Test Description',
-                                filename = 'test_file.txt',
-                            )
-    
-        
-
-           
-            createOtherEngagementRequest('glek', 8)
-            removeProposal(98)
-
-
-            with pytest.raises(DoesNotExist):
-                CCEMinorProposal.get_by_id(22)
-
-            transaction.rollback()
-=======
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
 
@@ -667,4 +611,3 @@ def test_removeProposal():
             CCEMinorProposal.get_by_id(98)
 
         transaction.rollback()
->>>>>>> 013c017806a069f163e3788f9bd56b6493615f50

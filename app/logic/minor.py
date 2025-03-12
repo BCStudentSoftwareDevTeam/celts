@@ -329,20 +329,7 @@ def removeProposal(proposalID) -> None:
     """
     Delete summerexperience or otherexperience of the CCEMinorProposal Table  for entry proposalType
     """
-    
-
-    # checking to see if related attachments exist 
-
-    related_attachments = AttachmentUpload.select().where(AttachmentUpload.proposal == int(proposalID)).execute()
-
-    if related_attachments.exists():
-        print(f"{related_attachments} found")
+    proposalAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
+    proposalFileHandler=FileHandler(proposalId=proposalID)
+    proposalFileHandler.deleteFile(proposalAttachment.ID)
     CCEMinorProposal.delete().where(CCEMinorProposal.id == int(proposalID)).execute()
-
-    
-    
-
-
-
-
-    
