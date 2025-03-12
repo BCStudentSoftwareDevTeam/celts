@@ -157,8 +157,16 @@ def getParticipationStatusForTrainings(program, userList, term):
     # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
     userParticipationStatus = {}
     for user in userList:
-        for training, attendeeList in trainingData.items():
-            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
+        seenEvents = {}     # Tracks the most recent index where each training event was processed for each user
+        for index, (training, attendeeList) in enumerate(trainingData.items()):
+            userAttendedTraining = user.username in attendeeList
+            if training.name in seenEvents:
+                targetIndex = seenEvents[training.name]
+                if userAttendedTraining:
+                    userParticipationStatus[user.username][targetIndex][1] = True
+            else:
+                userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
+                seenEvents[training.name] = index
 
     return userParticipationStatus
 
