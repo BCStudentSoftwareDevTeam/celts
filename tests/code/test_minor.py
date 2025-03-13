@@ -398,7 +398,6 @@ def test_getMinorProgress():
             "roleDescription": "Assistant to Finn",
             "experienceType": "Internship",
             "contentArea": ["Power and inequality", "Civic literacy"],
-            "isOver300Hours": True,
             "orgName": "Finn's Org",
             "orgAddress": "Finn's House",
             "orgPhone": "513-384-FINN",
@@ -419,9 +418,8 @@ def test_getMinorProgress():
                     'supervisorName': 'kafui',
                     'supervisorEmail': 'test@supervisor.com',
                     'totalHours': 300,
-                    'weeks': 10,
+                    'totalWeeks': 10,
                     'experienceDescription': 'Test Description',
-                    'filename': 'test_file.txt',
                    }
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
@@ -465,7 +463,6 @@ def test_createSummerExperience():
             "roleDescription": "Assistant to Finn",
             "experienceType": "Internship",
             "contentArea": ["Power and inequality", "Civic literacy"],
-            "isOver300Hours": True,
             "orgName": "Finn's Org",
             "orgAddress": "Finn's House",
             "orgPhone": "513-384-FINN",
@@ -480,7 +477,6 @@ def test_createSummerExperience():
             "roleDescription": "Assistant to Finn",
             "experienceType": "Some other experience type",
             "contentArea": ["Power and inequality", "Civic literacy"],
-            "isOver300Hours": False,
             "orgName": "Finn's Org",
             "orgAddress": "Finn's House",
             "orgPhone": "513-384-FINN",
@@ -488,8 +484,6 @@ def test_createSummerExperience():
             "supervisorName": "Finn",
             "supervisorPhone": "513-384-FINN",
             "supervisorEmail": "finn@finn.com",
-            "hoursNotOver300": 200,
-            "weeksNotOver300": 7,
         })
         
         # verify FINN has no summer experiences in currently
@@ -541,7 +535,7 @@ def test_createOtherEngagementRequest():
                     'supervisorName': 'kafui',
                     'supervisorEmail': 'test@supervisor.com',
                     'totalHours': 300,
-                    'weeks': 10,
+                    'totalWeeks': 10,
                     'experienceDescription': 'Test Description',
                     'filename': 'test_file.txt',
                    }

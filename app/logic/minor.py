@@ -26,7 +26,7 @@ def createSummerExperience(username, formData):
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        
+        print(formData)
         CCEMinorProposal.create(
             student=user,
             proposalType = 'Summer Experience',

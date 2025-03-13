@@ -74,7 +74,7 @@
 
           <div class="form-group">
               <label class="form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
-              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="weeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="totalWeeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
 
           <br>
