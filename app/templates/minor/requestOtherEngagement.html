@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block app_content %}
-   <form id='requestOtherEngagementForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/otherEngagement" method="POST">
+   <form id='otherEngagementForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/otherEngagement" method="POST">
       <div class='row'>
         <div class="container">
           <div class="container text-center">
@@ -32,8 +32,8 @@
           </div>
   
           <div class="form-group">
-              <label class="form-label" for="experienceTerm"><strong>Term</strong></label>
-              <select class="form-select" name="experienceTerm" id="experienceTerm" required {% if other_experience %}disabled{% endif %}>
+              <label class="form-label" for="term"><strong>Term</strong></label>
+              <select class="form-select" name="term" id="term" required {% if other_experience %}disabled{% endif %}>
                 <option value="" disabled selected>Select Year</option> 
                 {% for term in selectableTerms %}
                    <option value="{{ term }}">{{ term.description }}</option>
@@ -45,7 +45,7 @@
   
           <div class="form-group">
               <label class="form-label" for="experienceName"><strong>Experience Title</strong></label>
-              <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" value="{{ other_experience.activity if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required value="{{ other_experience.activity if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
   
           {% include "minor/companyOrganizationInformation.html" %}
@@ -67,14 +67,14 @@
   
           <div class="form-group">
               <label class="form-label" for="totalHours"><strong>Total Hours</strong></label>
-              <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" type="number" name="totalHours" value="{{ other_experience.hours if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" required type="number" name="totalHours" value="{{ other_experience.hours if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
           
           <br>
 
           <div class="form-group">
               <label class="form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
-              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" type="number" name="totalWeeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="totalWeeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
           </div>
 
           <br>
@@ -89,17 +89,6 @@
           <div class="text-center">
             <input class="btn btn-primary" type="submit" value="Send Request for Approval" {% if other_experience %}style="display: none;"{% endif %}/> 
           </div>
-        
-        <div class="text-center mt-3" id="edit-other-buttons" style="display: none;">
-            <input class="btn btn-primary" type="submit" value="Update Proposal"/> 
-            <button type="button" class="btn btn-secondary" id="cancel-other-edit-button">Cancel</button>
-        </div>
-        
-        <div class="text-center mt-3" id="view-other-buttons" {% if not other_experience %}style="display: none;"{% endif %}>
-            <button type="button" class="btn btn-info text-white" id="edit-other-proposal-button">Edit Proposal</button>
-            <button type="button" class="btn btn-danger" id="withdraw-other-button">Withdraw Proposal</button>
-        </div>
-        
       </div>
   </form>
 {% endblock %}

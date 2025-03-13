@@ -1,9 +1,63 @@
-$(document).ready(function(){
-    $('.engagement-row').on("click", function() {
-        showEngagementInformation($(this).data('engagement-data'));
-    });
 
+$(document).ready(function() {
+  $('#hoursBelow300Container').hide()
+  $('#otherExperienceDescription').hide()
+
+  $('input.phone-input').inputmask('(999)-999-9999')
+  $('input.phone-input').on('input', function(){
+      let matches = $(this).val().match(/\d/g);
+      let digits = matches?matches.length:0;
+      if (digits == 0 || digits == 10){
+          this.setCustomValidity('')
+      }
+      else{
+          this.setCustomValidity('Please enter a valid phone number.')    
+          this.reportValidity()        
+      }
+  })
+  $("input[name='experienceType']").on("change", function() {
+    toggleOtherExperienceTextarea();
+  });
+
+  $("input[name='experienceHoursOver300']").on("change", function() {
+    toggleUnder300HoursTextarea();
+  });
+
+  function toggleUnder300HoursTextarea() {
+    var yesRadio = $('#yes300hours');
+    var conditionalTextBox = $('#hoursBelow300Container');
+    if (yesRadio.is(':checked')) {
+      conditionalTextBox.hide()
+    } else {
+      conditionalTextBox.show() 
+    }
+  }
+
+  function toggleOtherExperienceTextarea() {
+    var otherRadio = $('#otherExperience');
+    var conditionalTextBox = $('#otherExperienceDescription');
+    if (otherRadio.is(':checked')) {
+      conditionalTextBox.show()
+    } else {
+      conditionalTextBox.hide()
+    }
+  }
+
+    // Determine which checkbox was clicked and its current checked status, uncheck others
+    let typeBoxes = $("#powerInequality, #communityIdentity, #civicLiteracy, #civicSkills")
+    typeBoxes.on('click', function (event) {
+      if (typeBoxes.filter(':checked').length > 0) {
+        typeBoxes.prop('required', false);
+      } else {
+        typeBoxes.prop('required', true);
+      } 
+      
+    });
+    $('.engagement-row').on("click", function() {
+      showEngagementInformation($(this).data('engagement-data'));
+    });
     $('.engagement-row input').on("click", function(e) {
+      console.log("howdy")
         e.stopPropagation()
 
         engagementData = $(this).parents('.engagement-row').data('engagement-data');
@@ -71,11 +125,10 @@ $(document).ready(function(){
         }
       });
     });
-    $('#otherExperienceForm').on('submit', function(event) {
+    $('#otherEngagementForm').on('submit', function(event) {
       event.preventDefault(); 
       var formData = new FormData(this); 
       var actionUrl = $(this).attr('action'); 
-      
       $.ajax({
         url: actionUrl,
         type: 'POST',
@@ -173,4 +226,5 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
             msgFlash("Error saving changes!", "danger")
           }
     });
+  
 }

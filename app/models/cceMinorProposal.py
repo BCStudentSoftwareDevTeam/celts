@@ -1,5 +1,4 @@
 from app.models import *
-from flask import g 
 from app.models.term import Term
 from app.models.user import User
 import datetime 
@@ -20,14 +19,16 @@ class CCEMinorProposal(baseModel):
     supervisorPhone = CharField()
     supervisorName = CharField()
     supervisorEmail = CharField()
-    totalHours = IntegerField()
-    weeks = IntegerField()
-    hoursNotOver300 = IntegerField(null=True)
-    weeksNotOver300 = IntegerField(null=True)
+    totalHours = IntegerField(null=True)
+    totalWeeks = IntegerField(null=True)
     description = TextField()
     filename = CharField(null=True)
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])
-    isOver300Hours = BooleanField(null=True)
 
+    @property
+    def isOver300Hours(self):
+        if not int(self.totalHours) or (int(self.totalHours) and int(self.totalHours) >= 300):
+            return True
+        return False
