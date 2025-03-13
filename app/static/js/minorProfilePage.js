@@ -129,6 +129,8 @@ $(document).ready(function() {
       event.preventDefault(); 
       var formData = new FormData(this); 
       var actionUrl = $(this).attr('action'); 
+      let username = $("#username").val()
+      console.log(username)
       $.ajax({
         url: actionUrl,
         type: 'POST',
@@ -136,7 +138,7 @@ $(document).ready(function() {
         contentType: false,
         processData: false,
         success: function(response) {
-          location.reload()
+          window.location.href = `/profile/${username}/cceMinor`
         },
         error: function(xhr, status, error) {
           console.error('Error:', error);
