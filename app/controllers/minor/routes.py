@@ -18,7 +18,7 @@ def viewCceMinor(username):
         return abort(403)
 
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    
+
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             proposalList = getCCEMinorProposals(username),
