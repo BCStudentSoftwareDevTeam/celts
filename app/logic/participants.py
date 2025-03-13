@@ -158,16 +158,17 @@ def getParticipationStatusForTrainings(program, userList, term):
     userParticipationStatus = {}
     for user in userList:
         seenEvents = {}     # Tracks the most recent index where each training event was processed for each user
-        for index, (training, attendeeList) in enumerate(trainingData.items()):
+        index = 0
+        for training, attendeeList in trainingData.items():
             userAttendedTraining = user.username in attendeeList
             if training.name in seenEvents:
-                targetIndex = seenEvents[training.name]
+                targetIndex = seenEvents[training.name] 
                 if userAttendedTraining:
                     userParticipationStatus[user.username][targetIndex][1] = True
             else:
-                userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
+                userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [[training, user.username in attendeeList]]
                 seenEvents[training.name] = index
-
+                index += 1
     return userParticipationStatus
 
 def sortParticipantsByStatus(event):
