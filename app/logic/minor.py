@@ -26,7 +26,6 @@ def createSummerExperience(username, formData):
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        print(formData)
         CCEMinorProposal.create(
             student=user,
             proposalType = 'Summer Experience',
@@ -44,14 +43,14 @@ def getCCEMinorProposals(username):
 
     cceMinorProposals = list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
 
-    for summerExperience in cceMinorProposals:
+    for experience in cceMinorProposals:
         proposalList.append({
-            "id": summerExperience.id,
-            "type": summerExperience.proposalType,
-            "createdBy": summerExperience.createdBy, 
-            "supervisor": summerExperience.supervisorName,
-            "term": summerExperience.term,
-            "status": summerExperience.status,
+            "id": experience.id,
+            "type": experience.proposalType,
+            "createdBy": experience.createdBy, 
+            "supervisor": experience.supervisorName,
+            "term": experience.term,
+            "status": experience.status,
         })
 
     return proposalList 
