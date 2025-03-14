@@ -1,6 +1,5 @@
-from flask import g, render_template, request, abort, flash, redirect, url_for, jsonify
+from flask import g, render_template, request, abort, flash, redirect, url_for
 from peewee import DoesNotExist
-from datetime import datetime 
 
 from app.controllers.minor import minor_bp
 from app.models.user import User

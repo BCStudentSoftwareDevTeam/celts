@@ -4,6 +4,7 @@ import pprint
 from flask import Flask, render_template
 from playhouse.shortcuts import model_to_dict, dict_to_model
 from app.logic.config import load_config_files
+
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
