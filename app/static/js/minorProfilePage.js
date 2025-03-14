@@ -1,7 +1,7 @@
+import { validateEmail } from "./emailValidation.mjs";
 
 $(document).ready(function() {
-  $('#hoursBelow300Container').hide()
-  $('#otherExperienceDescription').hide()
+  $("#supervisorEmail").on('input', validateEmail);
 
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
@@ -15,38 +15,30 @@ $(document).ready(function() {
           this.reportValidity()        
       }
   })
-  $("input[name='experienceType']").on("change", function() {
-    toggleOtherExperienceTextarea();
+
+  // ************** SUSTAINED COMMUNITY ENGAGEMENTS ************** //
+  $('.engagement-row').on("click", function() {
+    showEngagementInformation($(this).data('engagement-data'));
+  });
+  $('.engagement-row input').on("click", function(e) {
+    console.log("howdy")
+      e.stopPropagation()
+
+      engagementData = $(this).parents('.engagement-row').data('engagement-data');
+      toggleEngagementCredit($(this).is(':checked'), engagementData, this)
   });
 
-  $("input[name='experienceHoursOver300']").on("change", function() {
-    toggleUnder300HoursTextarea();
-  });
+  // ************** END SUSTAINED COMMUNITY ENGAGEMENTS ************** //
 
-  function toggleUnder300HoursTextarea() {
-    var yesRadio = $('#yes300hours');
-    var conditionalTextBox = $('#hoursBelow300Container');
-    if (yesRadio.is(':checked')) {
-      conditionalTextBox.hide()
-    } else {
-      conditionalTextBox.show() 
-    }
-  }
-
-  function toggleOtherExperienceTextarea() {
-    var otherRadio = $('#otherExperience');
-    var conditionalTextBox = $('#otherExperienceDescription');
-    if (otherRadio.is(':checked')) {
-      conditionalTextBox.show()
-    } else {
-      conditionalTextBox.hide()
-    }
-  }
+  // ************** SUMMER EXPERIENCE ************** //
+  $('#hoursBelow300Container').hide()
+  $('#otherExperienceDescription').hide()
 
   $('#summerExperienceForm').on('submit', function(event) {
     event.preventDefault(); 
     var formData = new FormData(this); 
     var actionUrl = $(this).attr('action'); 
+    let username = $("#username").val()
     
     $.ajax({
       url: actionUrl,
@@ -54,106 +46,69 @@ $(document).ready(function() {
       data: formData,
       contentType: false,
       processData: false,
-      success: function(response) {
-        $('#pills-otherExperience').html(response);
-        $('#otherExperience').tab('show');
-        location.reload()
+      success: function(response) { 
+          window.location.href = `/profile/${username}/cceMinor`
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
-      }})
-
-    $('.engagement-row').on("click", function() {
-        showEngagementInformation($(this).data('engagement-data'));
-    });
-
-    $('.engagement-row input').on("click", function(e) {
-        e.stopPropagation()
-
-        engagementData = $(this).parents('.engagement-row').data('engagement-data');
-        toggleEngagementCredit($(this).is(':checked'), engagementData, this)
-    });
-    $('#hoursBelow300Container').hide()
-    $('#otherExperienceDescription').hide()
-  
-    $('input.phone-input').inputmask('(999)-999-9999')
-    $('input.phone-input').on('input', function(){
-        let matches = $(this).val().match(/\d/g);
-        let digits = matches?matches.length:0;
-        if (digits == 0 || digits == 10){
-            this.setCustomValidity('')
-        }
-        else{
-            this.setCustomValidity('Please enter a valid phone number.')    
-            this.reportValidity()        
-        }
-    })
-    $("input[name='experienceType']").on("change", function() {
-      toggleOtherExperienceTextarea();
-    });
-  
-    $("input[name='experienceHoursOver300']").on("change", function() {
-      toggleUnder300HoursTextarea();
-    });
-  
-    function toggleUnder300HoursTextarea() {
-      var yesRadio = $('#yes300hours');
-      var conditionalTextBox = $('#hoursBelow300Container');
-      if (yesRadio.is(':checked')) {
-        conditionalTextBox.hide()
-      } else {
-        conditionalTextBox.show() 
       }
-    }
-  
-    function toggleOtherExperienceTextarea() {
-      var otherRadio = $('#otherExperience');
-      var conditionalTextBox = $('#otherExperienceDescription');
-      if (otherRadio.is(':checked')) {
-        conditionalTextBox.show()
-      } else {
-        conditionalTextBox.hide()
-      }
-    }
-  
-    $('#summerExperienceForm').on('submit', function(event) {
-      event.preventDefault(); 
-      var formData = new FormData(this); 
-      var actionUrl = $(this).attr('action'); 
-      
-      $.ajax({
-        url: actionUrl,
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-          location.reload()
-        },
-        error: function(xhr, status, error) {
-          console.error('Error:', error);
-        }
-      });
     });
-    $('#otherExperienceForm').on('submit', function(event) {
-      event.preventDefault(); 
-      var formData = new FormData(this); 
-      var actionUrl = $(this).attr('action'); 
-      
-      $.ajax({
-        url: actionUrl,
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-          location.reload()
-        },
-        error: function(xhr, status, error) {
-          console.error('Error:', error);
-        }
-      });
-    }); 
+  });
+
+  $("input[name='experienceHoursOver300']").on("change", function() {
+    toggleUnder300HoursTextarea();
+  });
+
+  // make sure that the hours and weeks boxes aren't displayed 
+  // when they are hidden
+  $("#yes300hours").on("click", function() {
+    let hoursWeeksBoxes = $("#totalHours, #totalWeeks")
+    hoursWeeksBoxes.prop('required', false); 
+  })
+
+  $("#no300hours").on("click", function() {
+    let hoursWeeksBoxes = $("#totalHours, #totalWeeks")
+    hoursWeeksBoxes.prop('required', true); 
+  })
+    
+  // Determine which checkbox was clicked and its current checked status, uncheck others
+  let typeBoxes = $("#powerInequality, #communityIdentity, #civicLiteracy, #civicSkills")
+  typeBoxes.on('click', function (event) {
+    if (typeBoxes.filter(':checked').length > 0) {
+      typeBoxes.prop('required', false);
+    } else {
+      typeBoxes.prop('required', true);
+    } 
+  });
+  // ************** END SUMMER EXPERIENCE ************** //
+
+  // ************** OTHER ENGAGEMENT ************** //
+  $('#otherEngagementForm').on('submit', function(event) {
+    event.preventDefault(); 
+    var formData = new FormData(this); 
+    var actionUrl = $(this).attr('action'); 
+    let username = $("#username").val()
+    console.log(username)
+    $.ajax({
+      url: actionUrl,
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function(response) {
+        window.location.href = `/profile/${username}/cceMinor`
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+  }); 
+
+  $("input[name='experienceType']").on("change", function() {
+    toggleOtherExperienceTextarea();
+  });
+
+  // ************** END OTHER ENGAGEMENT ************** //
 })
 
 $('#requestOtherEngagementForm').on('submit', function(event) {
@@ -262,3 +217,22 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
     });
 }
 
+function toggleUnder300HoursTextarea() {
+  var yesRadio = $('#yes300hours');
+  var conditionalTextBox = $('#hoursBelow300Container');
+  if (yesRadio.is(':checked')) {
+    conditionalTextBox.hide()
+  } else {
+    conditionalTextBox.show() 
+  }
+}
+
+function toggleOtherExperienceTextarea() {
+  var otherRadio = $('#otherExperience');
+  var conditionalTextBox = $('#otherExperienceDescription');
+  if (otherRadio.is(':checked')) {
+    conditionalTextBox.show()
+  } else {
+    conditionalTextBox.hide()
+  }
+}
