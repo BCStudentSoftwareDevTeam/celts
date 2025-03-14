@@ -65,21 +65,22 @@ def getMinorProgress():
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
-def toggleMinorInterest(username, isAddingInterestedStudents):
+def toggleMinorInterest(username, isAdding):
     """
         Given a username, update their minor interest and minor status.
     """
     
-    user = User.get(username=username)
-    if isAddingInterestedStudents:
-        user.minorInterest = True
-    else:
-        user.minorInterest = False
+    try:
+        user = User.get(username=username)
+        if not user:
+            return {"error": "User not found"}, 404
         
-    print(1000*"$")
-    print("We are here, we see you", username, user.minorInterest)
+        user.minorInterest = isAdding
+        user.save()
 
-    user.save()
+    except Exception as e:
+        print(f"Error updating minor interest: {e}")
+        return {"error": str(e)}, 500
     
 def declareMinorInterest(username):
     """

@@ -55,14 +55,14 @@ def test_toggleMinorInterest():
         user = User.get_by_id("FINN")
         # make sure users have the default values of false and not interested, respectively
         assert user.minorInterest == False
-        toggleMinorInterest("FINN")
+        toggleMinorInterest("FINN", True)
         
         user = User.get_by_id("FINN")
         # make sure toggleMinorInterest works correctly
         assert user.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest("FINN")
+        toggleMinorInterest("FINN", False)
         
         user = User.get_by_id("FINN")  
         assert user.minorInterest == False

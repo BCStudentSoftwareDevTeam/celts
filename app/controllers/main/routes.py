@@ -580,17 +580,10 @@ def getDietInfo():
 
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    print(1000*"^")
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
-        
         data = request.get_json()
-        print(data)
-        print(1000*"^")
-        print(data)
         isAdding = data.get("isAdding", False)
         
-        print(1000*"%")
-        print("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
         toggleMinorInterest(username, isAdding)
 
     else:
@@ -598,17 +591,8 @@ def indicateMinorInterest(username):
     
     return ""
 
-@main_bp.route('/profile/<username>/declareMinor', methods=["POST"])
-def declareInterestedStudent(username):
-    if g.current_user.isCeltsAdmin or g.current_user.username == username:
-        declareMinorInterest(username)
-    else:
-        abort(403)
-        
-    return ""
-
-@main_bp.route('/profile/<username>/moveToInterested', methods=["POST"])
-def moveStudentToInterested(username):
+@main_bp.route('/profile/<username>/updateMinorDeclaration', methods=["POST"])
+def updateMinorDeclaration(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
         declareMinorInterest(username)
     else:

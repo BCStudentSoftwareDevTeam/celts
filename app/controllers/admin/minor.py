@@ -6,9 +6,9 @@ from app.controllers.admin import admin_bp
 
 from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getDeclaredMinorStudents
 
-@admin_bp.route('/admin/cceMinor', methods=['POST','GET'])
+@admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
-
+    print("i'm running _____________________________________")
     if not g.current_user.isAdmin:
         abort(403)
     
@@ -18,7 +18,10 @@ def manageMinor():
         for i in interested_students:
             user = User.get(username=i)
             if not user.minorInterest:
-                toggleMinorInterest(i, True)    
+                toggleMinorInterest(i, True)  
+                 
+        return redirect(url_for("admin.manageMinor"))
+
 
 
     interestedStudentsList = getMinorInterest()

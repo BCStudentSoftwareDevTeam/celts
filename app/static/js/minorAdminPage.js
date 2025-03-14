@@ -24,20 +24,22 @@ function emailAll(){
 }
 
 $(document).ready(function() {
-  $(document).on('click', '.remove_minor_candidate', function() {
+  $('.remove_minor_candidate').on('click', function() {
       let username = $(this).attr('id'); 
       if ($('#declared').hasClass('show active')) {
         localStorage.setItem('activeTab', 'declared');
       }
-      let isAdding = $(this).hasClass('express_interest'); 
+
+      let isAdding = false
       
       $.ajax({
           type: 'POST',
           url: '/profile/' + username + '/indicateInterest',
           data: JSON.stringify({ "isAdding": isAdding }),
+          contentType: "application/json",
           success: function(response) {
             msgToast("Student successfully removed")
-            location.reload();  
+            window.location.reload(true)
           },
           error: function(error) {
            console.log("error")
@@ -45,12 +47,13 @@ $(document).ready(function() {
       });
   });
 
-$(document).on('click', '.declare_interested_student', function() {
+$('.declare_interested_student').on('click', function() {
   let username = $(this).attr('id');
 
   $.ajax({
       type: 'POST',
-      url: '/profile/' + username + '/declareMinor',
+      url: '/profile/' + username + '/updateMinorDeclaration',
+      contentType: "application/json",
       success: function(response) {
         msgToast("Student successfully declared")
         location.reload();
@@ -61,12 +64,13 @@ $(document).on('click', '.declare_interested_student', function() {
       });
   });
 
-$(document).on('click', '.move_to_interested', function() {
+$('.move_to_interested').on('click', function() {
   let username = $(this).attr('id');
 
   $.ajax({
       type: 'POST',
-      url: '/profile/' + username + '/moveToInterested',
+      url: '/profile/' + username + '/updateMinorDeclaration',
+      contentType: "application/json",
       success: function(response) {
         msgToast("Student successfully made interested")
         localStorage.setItem('activeTab', 'declared');
@@ -77,23 +81,21 @@ $(document).on('click', '.move_to_interested', function() {
           } 
       });
   });
-
-$(document).ready(function() {
+  
   setTimeout(function() {
-  let activeTab = localStorage.getItem('activeTab');
-
-  if (activeTab === 'declared') {
-      $('#declared').addClass('show active'); 
-      $('#interested').removeClass('show active'); 
-
-      $('.nav-tabs .nav-link').removeClass('active'); 
-      $('#declared-tab').addClass('active'); 
-
-      localStorage.removeItem('activeTab'); 
-      }
-    }, 100);
-  });
-});
+    let activeTab = localStorage.getItem('activeTab');
+  
+    if (activeTab === 'declared') {
+        $('#declared').addClass('show active'); 
+        $('#interested').removeClass('show active'); 
+  
+        $('.nav-tabs .nav-link').removeClass('active'); 
+        $('#declared-tab').addClass('active'); 
+  
+        localStorage.removeItem('activeTab'); 
+        }
+      }, 100);
+})
 
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
