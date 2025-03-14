@@ -111,29 +111,6 @@ $(document).ready(function() {
   // ************** END OTHER ENGAGEMENT ************** //
 })
 
-$('#requestOtherEngagementForm').on('submit', function(event) {
-  event.preventDefault(); 
-  var formData = new FormData(this); 
-  var actionUrl = $(this).attr('action'); 
-  
-  $.ajax({
-    url: actionUrl,
-    type: 'POST',
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function(response) {
-      $('#pills-otherEngagement').html(response);
-      $('#otherEngagement').tab('show');
-      location.reload()
-    },
-    error: function(xhr, status, error) {
-      console.error('Error:', error);
-    }
-  });
-});
-    })
-
 function showEngagementInformation(engagementInfoDict) {
   let type = engagementInfoDict['type'],
       id = engagementInfoDict['id'],

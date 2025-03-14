@@ -6,7 +6,7 @@ from app.models.program import Program
 import glob
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None, filepath=""):
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None):
         self.files = files 
         if not isinstance(self.files, list):
                 self.files = [self.files]  
@@ -38,9 +38,9 @@ class FileHandler:
             if self.eventId or self.courseId or self.programId or self.proposalId:
                 filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
-            print('AttributeError') 
+            pass
         except FileExistsError:
-            print('AttributeError')
+            pass
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
