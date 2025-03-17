@@ -136,13 +136,14 @@ def getParticipationStatusForTrainings(program, userList, term):
 
     :returns: trainings for program and if the user participated
     """
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == term.academicYear)
-    isRelevantProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
+    print(program)
+    isRelevantTraining = ((Event.isAllVolunteerTraining | ((Event.isTraining) & (Event.program == program))) & 
+                              (Event.term.academicYear == term.academicYear))
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                              .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                              .join(Term)
-                             .where(isRelevantAllVolunteer | isRelevantProgramTraining, (Event.isCanceled != True)).order_by(Event.startDate))
+                             .where(isRelevantTraining, (Event.isCanceled != True)).order_by(Event.startDate))
 
     # Create a dictionary where the keys are trainings and values are a list of those who attended
     trainingData = {}
