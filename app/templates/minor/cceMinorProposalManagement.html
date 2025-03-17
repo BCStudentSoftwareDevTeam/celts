@@ -14,12 +14,12 @@
         <tbody>
             {% for proposal in proposalList %}
                 <tr>
-                    <td id="type-{{ proposal['type'] }}-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
-                    <td id="creator-{{ proposal['type'] }}-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
-                    <td id="supervisor-{{ proposal['type'] }}-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
-                    <td id="term-{{ proposal['type'] }}-{{ proposal['id'] }}">{{ proposal['term'] }}</td>
+                    <td id="type-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
+                    <td id="creator-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
+                    <td id="supervisor-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
+                    <td id="term-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
                     <td>
-                        <a class="status-key text-dark" id="status-{{ proposal['type'] }}-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
+                        <a class="status-key text-dark" id="status-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
                     </td>
                     <td>
                         <select class="form-select proposalData" id="{{proposal['id']}}" onchange='changeAction(this)'>
