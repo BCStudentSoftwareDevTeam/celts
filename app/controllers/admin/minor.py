@@ -8,7 +8,6 @@ from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInter
 
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
-    print("i'm running _____________________________________")
     if not g.current_user.isAdmin:
         abort(403)
     

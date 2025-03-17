@@ -170,7 +170,3 @@ $(document).ready(function() {
 
   $('#emailAll').on('click', emailAll);
 });
-
-$(document).ready(function() {
-  
-})
