@@ -7,7 +7,7 @@ from app.models.program import Program
 import glob
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None, filepath=""):
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None):
         self.files = files 
         if not isinstance(self.files, list):
                 self.files = [self.files]  
@@ -16,6 +16,7 @@ class FileHandler:
         self.eventId = eventId
         self.programId = programId
         self.proposalId = proposalId 
+
         if courseId:
             self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
@@ -77,7 +78,7 @@ class FileHandler:
                     AttachmentUpload.create(program=self.programId, fileName=fileName)
                     currentProgramID = fileName
                     saveFileToFilesystem = currentProgramID
-
+                    
                 elif self.proposalId:
                     fileType = file.filename.split('.')[-1]
                     fileName = f"{self.proposalId}.{fileType}"
@@ -95,8 +96,8 @@ class FileHandler:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            print(e)
 
     def retrievePath(self, files):
         pathDict = {}

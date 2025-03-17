@@ -8,7 +8,7 @@ class AttachmentUpload(baseModel):
     event = ForeignKeyField(Event, null=True)
     course = ForeignKeyField(Course, null=True, on_delete="CASCADE")
     program = ForeignKeyField(Program, null=True)
-    proposal = ForeignKeyField(CCEMinorProposal, on_delete="CASCADE")
+    proposal = ForeignKeyField(CCEMinorProposal, null=True)
     isDisplayed = BooleanField(default=False)
     fileName = CharField()
 
