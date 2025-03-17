@@ -38,6 +38,18 @@ def createSummerExperience(username, formData):
         print(f"Error saving summer experience: {e}")
         raise e
 
+def updateSummerExperience(proposalID, formData):
+    """
+        Given the username of the student and the formData which includes all of
+        the SummerExperience information, create a new SummerExperience object.
+    """
+    try:
+        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+        CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
+    except Exception as e:
+        print(f"Error saving summer experience: {e}")
+        raise e
+
 def getCCEMinorProposals(username):
     proposalList = []
 
@@ -263,6 +275,13 @@ def createOtherEngagementRequest(username, formData):
                             student = user,
                             **formData
                             )
+
+def updateOtherEngagementRequest(proposalID, formData):
+    """
+        Update an existing CCEMinorProposal entry based off of the form data
+    """
+
+    CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
     
 def saveSummerExperience(username, summerExperience, currentUser):
     """

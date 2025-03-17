@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block app_content %}    
+    {% set viewing = not {{editable}} and {{otherExperience}} %}
     <div name="Community-Engaged Summer Experience" class="pt-4">
       <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/summerExperience" method="POST">
         <div class='row'>
@@ -33,7 +34,7 @@
                     <label class="form-label" for="term"><strong>Summer Year</strong></label>
                     <select class="form-select" id="term" name="term" required>
                         <option value="" disabled selected>Select Year</option>
-                        {% for term in summerTerms %}
+                        {% for term in selectableTerms %}
                                 <option value="{{ term }}">{{ term.description }}</option>
                         {% endfor %}
                     </select>

@@ -6,14 +6,14 @@
 
 <div class="form-group">
     <label class="form-label" for="orgName"><strong>Name</strong></label>
-    <input class="form-control" id="orgName" name="orgName" placeholder="Company or organization's name" required/>
+    <input class="form-control" id="orgName" name="orgName" placeholder="Company or organization's name" required value="{{ proposal.orgName if proposal else '' }}" {% if viewing %} disabled {% endif %}/>
 </div>
 
 <br>
 
 <div class="form-group">
     <label class="form-label" for="orgAddress"><strong>Address</strong></label>
-    <input class="form-control" id="orgAddress" name="orgAddress" placeholder="Company or organization's physical address" required/>
+    <input class="form-control" id="orgAddress" name="orgAddress" placeholder="Company or organization's physical address" required value="{{ proposal.orgAddress if proposal else '' }}" {% if viewing %} disabled {% endif %}/>
 </div>
 
 <br>
@@ -21,10 +21,10 @@
 <div class="row">
     <div class="form-group col-6">
         <label class="form-label" for="orgPhone"><strong>Phone Number</strong></label>
-        <input class="form-control phone-input" type="text" id="orgPhone" name="orgPhone" placeholder="Company or organization's phone number" required/>
+        <input class="form-control phone-input" type="text" id="orgPhone" name="orgPhone" placeholder="Company or organization's phone number" required value="{{ proposal.orgPhone if proposal else '' }}" {% if viewing %} disabled {% endif %}/>
     </div>
     <div class="form-group col-6">
         <label class="form-label" for="orgWebsite"><strong>Website</strong></label>
-        <input class="form-control" id="orgWebsite" name="orgWebsite" placeholder="Company or organization's website" required/>
+        <input class="form-control" id="orgWebsite" name="orgWebsite" placeholder="Company or organization's website" required value="{{ proposal.orgWebsite if proposal else '' }}" {% if viewing %} disabled {% endif %}/>
     </div>
 </div>
