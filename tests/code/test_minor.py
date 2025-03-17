@@ -567,8 +567,6 @@ def test_removeProposal():
 
     with mainDB.atomic() as transaction:
 
-        print('####')
-
         if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
             removeProposal(98, testInfo)
             print(removeProposal(98, testInfo))
