@@ -24,6 +24,18 @@ function emailAll(){
 }
 
 $(document).ready(function() {
+  let flashMessage = localStorage.getItem('flashMessage');
+  let flashType = localStorage.getItem('flashType');
+
+  if (flashMessage) {
+    msgFlash(flashMessage, flashType); 
+
+    setTimeout(function() {
+      localStorage.removeItem('flashMessage'); 
+      localStorage.removeItem('flashType');
+    }, 1500);    
+  }
+
   $('.remove_minor_candidate').on('click', function() {
       let username = $(this).attr('id'); 
       if ($('#declared').hasClass('show active')) {
@@ -38,7 +50,8 @@ $(document).ready(function() {
           data: JSON.stringify({ "isAdding": isAdding }),
           contentType: "application/json",
           success: function(response) {
-            msgToast("Student successfully removed")
+            localStorage.setItem('flashMessage', "Student successfully removed");
+            localStorage.setItem('flashType', "success");
             window.location.reload(true)
           },
           error: function(error) {
@@ -55,8 +68,9 @@ $('.declare_interested_student').on('click', function() {
       url: '/profile/' + username + '/updateMinorDeclaration',
       contentType: "application/json",
       success: function(response) {
-        msgToast("Student successfully declared")
         location.reload();
+        localStorage.setItem('flashMessage', "Student successfully marked as Declared");
+        localStorage.setItem('flashType', "success");
       },
       error: function(error) {
         console.log("error")
@@ -72,8 +86,9 @@ $('.move_to_interested').on('click', function() {
       url: '/profile/' + username + '/updateMinorDeclaration',
       contentType: "application/json",
       success: function(response) {
-        msgToast("Student successfully made interested")
-        localStorage.setItem('activeTab', 'declared');
+        localStorage.setItem('activeTab', 'declared'); 
+        localStorage.setItem('flashMessage', "Student has been moved to Interested");
+        localStorage.setItem('flashType', "success");
         location.reload();
       },
       error: function(error) {
