@@ -103,11 +103,13 @@ $(document).ready(function(){
       $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
       $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
+      $('#noManagersText').addClass("d-none")
       const managers = $(this).attr('data-managers').split(',');
       const managersTable = $('#programManagersTable');
       managersTable.empty();
       
       if(managers[0].length == 0){
+        $('#noManagersText').removeClass("d-none")
         return;
       };
 
