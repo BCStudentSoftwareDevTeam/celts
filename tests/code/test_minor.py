@@ -17,8 +17,12 @@ from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
+from app.models.attachmentUpload import AttachmentUpload
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
+from app.logic.fileHandler import FileHandler
+from werkzeug.datastructures import FileStorage
+
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -559,22 +563,19 @@ def test_removeProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
 
+    testProposalId = 999
+
     with mainDB.atomic() as transaction:
 
-        if 98 in CCEMinorProposal.select(CCEMinorProposal.id):
-            removeProposal(98, testInfo)
-            print(removeProposal(98, testInfo))
+        assert list(CCEMinorProposal.select(CCEMinorProposal.id).where(CCEMinorProposal.id == testProposalId)) == []
+            
 
-        CCEMinorProposal.create(id=98,
-                                username = 'glek',
-                            proposalType = 'Other Engagement',
-                            createdBy = g.current_user,
-                            supervisor = "FINN",
-                            term = "2",
-                            action = "action",
-                            status = 'Pending',
-                            )
-        
+        User.create(username="glek",
+                    firstName="Not",
+                    lastName="Yet",
+                    email="glek@berea.edu",
+                    bnumber="B91111111")
+
 
         testInfo = {'term': 3,
                     'experienceName': 'Test Experience',
@@ -587,19 +588,93 @@ def test_removeProposal():
                     'supervisorName': 'kafui',
                     'supervisorEmail': 'test@supervisor.com',
                     'totalHours': 300,
-                    'weeks': 10,
+                    'totalWeeks': 10,
                     'experienceDescription': 'Test Description',
-                    'filename': 'test_file.txt',
                    }
-        
+
+
+        testProposal = CCEMinorProposal.create(id=testProposalId,
+                                student = 'glek',
+                                proposalType = 'Other Engagement',
+                                createdBy = "ramsayb2",
+                                status = 'Pending',
+                                **testInfo
+                            )
+        assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testProposal]
         
         with app.app_context():
+            print('####')
             g.current_user = "glek"
-            removeProposal(98, testInfo)
+            removeProposal(testProposalId)
 
-            assert CCEMinorProposal.get_by_id(98, testInfo) is not None
-
-        with pytest.raises(DoesNotExist):
-            CCEMinorProposal.get_by_id(98)
+        assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
 
         transaction.rollback()
+
+
+
+# creates base object for events tests
+proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
+
+handledEventFile = FileHandler(proposalFileStorageObject, proposalId=999)
+
+handledEventFileRecurring = FileHandler(proposalFileStorageObject, proposalId=999)
+@pytest.mark.integration
+def test_saveFiles():
+    with mainDB.atomic() as transaction:
+        # test event
+        handledEventFile.saveFiles(saveOriginalFile = AttachmentUpload.get_by_id(999))
+        
+        assert AttachmentUpload.select().where(AttachmentUpload.fileName == '999/proposalId.pdf').exists()
+        
+        # test saving 2nd event in a hypothetical recurring series
+        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        assert AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').exists()
+        assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
+        
+        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
+
+        # test course
+        handledCourseFile.saveFiles()
+        assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'coursefile.pdf').exists()
+
+        # removes saved paths from file directory
+        os.remove(handledEventFile.getFileFullPath('15/eventfile.pdf'))
+        os.remove(handledCourseFile.getFileFullPath('coursefile.pdf'))
+        
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_deleteFile():
+    with mainDB.atomic() as transaction:
+        # creates file in event file directory for deletion
+        handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
+
+        # creates a second file to simulate recurring events
+        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        
+        # creates a course file for deletion
+        handledCourseFile.saveFiles()
+
+        # delete events
+        path = handledEventFile.getFileFullPath("15/eventfile.pdf")
+
+        # if multiple event attachments reference the same path, the path is only removed after the final referencing instance has been deleted.
+        firstevent = AttachmentUpload.get(AttachmentUpload.event == 15)
+        handledEventFile.deleteFile(firstevent.id)
+        assert os.path.exists(path)==True
+    
+        secondevent = AttachmentUpload.get(AttachmentUpload.event == 16)
+        handledEventFile.deleteFile(secondevent.id)
+        assert os.path.exists(path)==False
+
+        # delete courses
+        coursefile = AttachmentUpload.get(AttachmentUpload.course == 1)
+        
+        path = handledCourseFile.getFileFullPath('coursefile.pdf')
+
+        handledCourseFile.deleteFile(coursefile.id)
+        
+        assert os.path.exists(path)==False
+

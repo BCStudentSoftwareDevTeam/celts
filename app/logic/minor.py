@@ -329,5 +329,5 @@ def removeProposal(proposalID) -> None:
     """
     proposalAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
     proposalFileHandler=FileHandler(proposalId=proposalID)
-    proposalFileHandler.deleteFile(proposalAttachment.ID)
+    proposalFileHandler.deleteFile(proposalAttachment.id)
     CCEMinorProposal.delete().where(CCEMinorProposal.id == int(proposalID)).execute()
