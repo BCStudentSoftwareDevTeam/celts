@@ -57,6 +57,7 @@ def editOrViewProposal(proposalID: int):
     if request.method == "GET" and 'view' in request.path:
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/requestSummerExperience.html",
                                 editable = False,
+                                contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 user = User.get_by_id(proposal.student),
                                 proposal = proposal)
     
@@ -70,6 +71,7 @@ def editOrViewProposal(proposalID: int):
     
     return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/requestSummerExperience.html",
                             editable = True,
+                            contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                             selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
                             user = User.get_by_id(proposal.student),
                             proposal = proposal)
@@ -91,6 +93,7 @@ def requestSummerExperience(username):
 
     return render_template("minor/summerExperience.html",
                             selectableTerms = summerTerms,
+                            contentAreas = [],
                             user = User.get_by_id(username),
                             )
 

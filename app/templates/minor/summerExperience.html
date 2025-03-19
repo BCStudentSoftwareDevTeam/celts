@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block app_content %}    
-    {% set viewing = not {{editable}} and {{otherExperience}} %}
+    {% set viewing = not editable and otherExperience %}
     <div name="Community-Engaged Summer Experience" class="pt-4">
       <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/summerExperience" method="POST">
         <div class='row'>
@@ -32,10 +32,19 @@
     
                 <div class="form-group">
                     <label class="form-label" for="term"><strong>Summer Year</strong></label>
-                    <select class="form-select" id="term" name="term" required>
-                        <option value="" disabled selected>Select Year</option>
+                    <select class="form-select" id="term" name="term" required
+                        {% if viewing %}
+                            disabled                  
+                        {% endif %}>
+                        <option value="" disabled 
+                            {% if not proposal %} selected {% endif %}>
+                            Select Year
+                        </option>
                         {% for term in selectableTerms %}
-                                <option value="{{ term }}">{{ term.description }}</option>
+                            <option value="{{ term }}" 
+                                {% if proposal and proposal.term == term %} selected {% endif %}>
+                                {{ term.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -56,61 +65,87 @@
                     <label class="form-label" for="roleDescription"><strong>Briefly describe your role and scope of work with this organization during your community-engaged experience. 
                         Your experience should focus on applied work with a public-facing institution (non-profit, community-based, governmental, or private sector)
                         that is responsive to community-identified initiatives or needs:</strong></label>
-                    <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Enter your role description" required></textarea><br>
+                    <textarea class="form-control" rows="4" cols="72" id="roleDescription" name="roleDescription" placeholder="Enter your role description" required
+                        {% if viewing %} disabled {% endif %}>{{ proposal.roleDescription if proposal else '' }}</textarea>
+                    <br>
                 </div>
                 
                 <div class="form-group col">
                     <label class="form-label"><strong>Which of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
-                    <input type="radio" id="internship" name="experienceType" value="Internship" required>
+                    <input type="radio" id="internship" name="experienceType" value="Internship" required
+                        {% if viewing %} disabled {% endif %} >
                     <label for="internship">Internship</label><br>
-                    <input type="radio" id="cbr" name="experienceType" value="Community-based research" required>
+                    <input type="radio" id="cbr" name="experienceType" value="Community-based research" required
+                        {% if viewing %} disabled {% endif %}>
                     <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
-                    <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position" required>
+                    <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position" required
+                        {% if viewing %} disabled {% endif %}>
                     <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
-                    <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship" required>
+                    <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship" required
+                        {% if viewing %} disabled {% endif %}>
                     <label for="epgInternship">EPG Summer Internship</label><br>
-                    <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service" required>
+                    <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service" required
+                        {% if viewing %} disabled {% endif %}>
                     <label for="bonnerService">Bonner Scholar Summer of Service</label><br>
-                    <input type="radio" id="otherExperience" name="experienceType" value="Other" required>
+                    <input type="radio" id="otherExperience" name="experienceType" value="Other" required
+                        {% if viewing %} disabled {% endif %}>
                     <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
-                    <input type="text" class="form-control" id="otherExperienceDescription" name="otherExperienceDescription" placeholder="Enter your summer experience description."></input><br>
+                    <input type="text" class="form-control" id="experienceDescription" name="experienceDescription" placeholder="Enter your summer experience description."
+                        {% if viewing %} disabled {% endif %}>
+                    </input>
+                    <br>
                 </div>
                 <div class="form-group">
                     <label class="form-label"><strong>Which of the four key content areas of the Community and Civic Engagement Minor will your Community-Engaged Summer Experience address? Please select all that apply.</strong></label><br>
-                    <input type="checkbox" id="powerInequality" required name="contentArea" value="Power and inequality">
+                    <input type="checkbox" id="powerInequality" required name="contentArea" value="Power and inequality"
+                        {% if viewing %} disabled {% endif %}
+                        {% if 'Power and inequality' in contentAreas %} checked {% endif %}/>
                     <label for="powerInequality">Power and inequality</label><br>
-                    <input type="checkbox" id="communityIdentity" required name="contentArea" value="Community and identity">
+                    <input type="checkbox" id="communityIdentity" required name="contentArea" value="Community and identity"
+                        {% if viewing %} disabled {% endif %}
+                        {% if 'Community and identity' in contentAreas %} checked {% endif %}/>
                     <label for="communityIdentity">Community and identity</label><br>
-                    <input type="checkbox" id="civicLiteracy" required name="contentArea" value="Civic literacy">
+                    <input type="checkbox" id="civicLiteracy" required name="contentArea" value="Civic literacy"
+                        {% if viewing %} disabled {% endif %}
+                        {% if 'Civic literacy' in contentAreas %} checked {% endif %}/>
                     <label for="civicLiteracy">Civic literacy</label><br>
-                    <input type="checkbox" id="civicSkills" required name="contentArea" value="Civic skills">
+                    <input type="checkbox" id="civicSkills" required name="contentArea" value="Civic skills"
+                        {% if viewing %} disabled {% endif %}
+                        {% if 'Civic skills' in contentAreas %} checked {% endif %}/>
                     <label for="civicSkills">Civic skills</label><br><br>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
-                    <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes">
+                    <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes"
+                        {% if viewing %} disabled {% endif %}>
                     <label for="yes300hours">Yes</label><br>
-                    <input type="radio" id="no300hours" name="experienceHoursOver300" value="No">
+                    <input type="radio" id="no300hours" name="experienceHoursOver300" value="No"
+                        {% if viewing %} disabled {% endif %}>
                     <label for="no300hours">No</label>
 
                     <div id="hoursBelow300Container" class="row mt-2">
                         <div class="form-group col-6">
                             <label for="totalHours"><b>Hours</b></label><br>
-                            <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours."></input>
+                            <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours." 
+                                {% if viewing %} disabled {% endif %}>
+                            </input>
                         </div>
                         <div class="form-group col-6">
                             <label for="totalWeeks"><b>Weeks</b></label><br>
-                            <input class="form-control" type="text" id="totalWeeks" name="totalWeeks" required placeholder="Enter the number of weeks."></input>
+                            <input class="form-control" type="text" id="totalWeeks" name="totalWeeks" required placeholder="Enter the number of weeks."
+                                {% if viewing %} disabled {% endif %}>
+                            </input>
                         </div>
                     </div>
                 </div>
                 
                 <br><br>
-          
-                <div class="text-center">
-                    <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
-                </div>
+                {% if not viewing %}
+                    <div class="text-center">
+                        <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+                    </div>
+                {% endif %}
             </div>
         </div>
       </form>
