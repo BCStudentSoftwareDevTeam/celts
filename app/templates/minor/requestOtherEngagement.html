@@ -42,6 +42,11 @@
                   {% if not proposal %} selected {% endif %}>
                   Select Year
                 </option> 
+                {% if viewing %}
+                  <option value="" selected disabled>
+                    {{selectedTerm.description}}
+                  </option>  
+                {% endif %}
                 {% for term in selectableTerms %}
                   <option value="{{ term }}" 
                     {% if proposal and proposal.term == term %} selected {% endif %}>
@@ -99,18 +104,17 @@
           <div class="form-group">
               <label class="form-label" for="experienceDescription"><strong>Experience Description</strong></label>
               <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription"
-                {% if viewing %} disabled {% endif %}>
-                {{ proposal.experienceDescription if proposal else '' }}
-              </textarea>
+                {% if viewing %} disabled {% endif %}>{{ proposal.experienceDescription if proposal else '' }}</textarea>
           </div>
           
           <br><br>
 
-          {% if not viewing %}
-            <div class="text-center">
-              <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
-            </div>
-          {% endif %}
+          <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+            <input class="btn btn-secondary" id="exitButton" type="button" value="Exit"/> 
+            {% if not viewing %}
+                <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
+            {% endif %}
+          </div>
       </div>
   </form>
 {% endblock %}

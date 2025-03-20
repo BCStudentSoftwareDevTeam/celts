@@ -24,6 +24,8 @@ def createSummerExperience(username, formData):
         the SummerExperience information, create a new SummerExperience object.
     """
     try:
+        # if the Total Hours and Total Weeks fields are disabled they will default to 0 which will actually mean over 300
+        # (don't blame us blame CELTS)
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
         CCEMinorProposal.create(

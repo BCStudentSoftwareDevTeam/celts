@@ -55,10 +55,12 @@ def editOrViewProposal(proposalID: int):
         return abort(403)
     
     if request.method == "GET" and 'view' in request.path:
-        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/requestSummerExperience.html",
+        selectedTerm = Term.get_by_id(proposal.term)
+        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
                                 editable = False,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 user = User.get_by_id(proposal.student),
+                                selectedTerm = selectedTerm,
                                 proposal = proposal)
     
     if request.method == "POST":
@@ -69,7 +71,7 @@ def editOrViewProposal(proposalID: int):
  
         return redirect(url_for('minor.viewCceMinor', username=proposal.student))
     
-    return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/requestSummerExperience.html",
+    return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
                             editable = True,
                             contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                             selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),

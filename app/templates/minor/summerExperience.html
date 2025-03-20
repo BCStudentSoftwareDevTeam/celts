@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block app_content %}    
-    {% set viewing = not editable and otherExperience %}
+    {% set viewing = not editable and proposal %}
     <div name="Community-Engaged Summer Experience" class="pt-4">
       <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/summerExperience" method="POST">
         <div class='row'>
@@ -40,6 +40,11 @@
                             {% if not proposal %} selected {% endif %}>
                             Select Year
                         </option>
+                        {% if viewing %}
+                            <option value="" selected disabled>
+                                {{selectedTerm.description}}
+                            </option>  
+                        {% endif %}
                         {% for term in selectableTerms %}
                             <option value="{{ term }}" 
                                 {% if proposal and proposal.term == term %} selected {% endif %}>
@@ -73,25 +78,32 @@
                 <div class="form-group col">
                     <label class="form-label"><strong>Which of the following existing community-based experiences will you take part in during the summer? Please select one.</strong></label><br>
                     <input type="radio" id="internship" name="experienceType" value="Internship" required
-                        {% if viewing %} disabled {% endif %} >
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Internship" %} checked {% endif %}/>
                     <label for="internship">Internship</label><br>
                     <input type="radio" id="cbr" name="experienceType" value="Community-based research" required
-                        {% if viewing %} disabled {% endif %}>
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Community-based research" %} checked {% endif %}/>
                     <label for="cbr">Community-based research (CBR) within URCPP or other research that meets established criteria</label><br>
                     <input type="radio" id="communityLabor" name="experienceType" value="Community-Based Labor Position" required
-                        {% if viewing %} disabled {% endif %}>
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Community-Based Labor Position" %} checked {% endif %}/>
                     <label for="communityLabor">Community-Based Labor Position, either in Berea or through the Off-Campus Summer Labor Experience</label><br>
                     <input type="radio" id="epgInternship" name="experienceType" value="EPG Summer Internship" required
-                        {% if viewing %} disabled {% endif %}>
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Internship" %} checked {% endif %}/>
                     <label for="epgInternship">EPG Summer Internship</label><br>
                     <input type="radio" id="bonnerService" name="experienceType" value="Bonner Scholar Summer of Service" required
-                        {% if viewing %} disabled {% endif %}>
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Bonner Scholar Summer of Service" %} checked {% endif %}/>
                     <label for="bonnerService">Bonner Scholar Summer of Service</label><br>
                     <input type="radio" id="otherExperience" name="experienceType" value="Other" required
-                        {% if viewing %} disabled {% endif %}>
+                        {% if viewing %} disabled {% endif %}
+                        {% if proposal and proposal.experienceType == "Other" %} checked {% endif %}/>
                     <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
-                    <input type="text" class="form-control" id="experienceDescription" name="experienceDescription" placeholder="Enter your summer experience description."
-                        {% if viewing %} disabled {% endif %}>
+                    <input type="text" class="form-control" id="otherExperienceDescription" name="experienceDescription" placeholder="Enter your summer experience description."
+                        value="{{ proposal.experienceDescription if proposal else '' }}"
+                        {% if viewing %} disabled {% endif %}/>
                     </input>
                     <br>
                 </div>
@@ -118,16 +130,19 @@
                 <div class="form-group">
                     <label class="form-label" for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
                     <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes"
+                        {% if proposal and (proposal.totalHours == 300) %} checked {% endif %}
                         {% if viewing %} disabled {% endif %}>
                     <label for="yes300hours">Yes</label><br>
                     <input type="radio" id="no300hours" name="experienceHoursOver300" value="No"
+                        {% if proposal and (proposal.totalHours < 300) %} checked {% endif %}
                         {% if viewing %} disabled {% endif %}>
                     <label for="no300hours">No</label>
 
                     <div id="hoursBelow300Container" class="row mt-2">
                         <div class="form-group col-6">
                             <label for="totalHours"><b>Hours</b></label><br>
-                            <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours." 
+                            <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours."
+                                value="300" 
                                 {% if viewing %} disabled {% endif %}>
                             </input>
                         </div>
@@ -141,11 +156,12 @@
                 </div>
                 
                 <br><br>
-                {% if not viewing %}
-                    <div class="text-center">
+                <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+                    <input class="btn btn-secondary" id="exitButton" type="button" value="Exit"/> 
+                    {% if not viewing %}
                         <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
       </form>

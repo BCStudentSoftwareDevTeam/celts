@@ -16,6 +16,10 @@ $(document).ready(function() {
       }
   })
 
+  $('#exitButton').on('click', function() {
+    let username = $("#username").val()
+    window.location.href = `/profile/${username}/cceMinor` 
+  }) 
   // ************** SUSTAINED COMMUNITY ENGAGEMENTS ************** //
   $('.engagement-row').on("click", function() {
     showEngagementInformation($(this).data('engagement-data'));
@@ -199,8 +203,10 @@ function toggleUnder300HoursTextarea() {
   var conditionalTextBox = $('#hoursBelow300Container');
   if (yesRadio.is(':checked')) {
     conditionalTextBox.hide()
+    $('#totalHours').val(300)
   } else {
-    conditionalTextBox.show() 
+    conditionalTextBox.show()
+    $('#totalHours').val('')
   }
 }
 
