@@ -598,5 +598,5 @@ def updateMinorDeclaration(username):
     else:
         abort(403)
         
-    return ""
+    return redirect(url_for('admin.manageMinor'))
 

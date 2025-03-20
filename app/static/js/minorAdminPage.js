@@ -184,4 +184,12 @@ $(document).ready(function() {
   });
 
   $('#emailAll').on('click', emailAll);
+
+  $(".updateMinorInterestButton").on("click", function(e){
+    e.preventDefault();
+    let interestForm = $("#updateMinorInterestForm");
+    let url = $(this).data("url")
+    interestForm.attr("action", url)
+    interestForm.submit()
+  });
 });
