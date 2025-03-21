@@ -45,7 +45,7 @@
     <div>{{volunteer.major}}</div>
     {% endif %}
     {% if volunteer.classLevel -%}
-    <div>{{volunteer.classLevel}}</div>
+    <div>{{volunteer.classLevel}} </div>
     {% endif %}
     {% if volunteer.cpoNumber %}
       <div>
@@ -513,8 +513,16 @@
                 <li>{{req.name}}
                 {% if req.completed %}
                   <span class="bi bi-check fs-3 text-success"></span>
-                {% else %}
+                {% elif req.completed == False and req.frequency == "once" %}
                   <span class="bi bi-x fs-3"></span>
+                {% elif req.completed == False and req.frequency == "twice" %}
+                  {% for i in range(2) %}
+                    <span class="bi bi-x fs-3"></span>
+                  {% endfor %}                
+                {% elif req.completed == False and req.frequency == "term"%}
+                  {% for i in range(2) %}
+                    <span class="bi bi-x fs-3"></span>
+                  {% endfor %}
                 {% endif %}
                 </li>
               {% endfor %}

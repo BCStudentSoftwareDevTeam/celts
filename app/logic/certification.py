@@ -1,9 +1,38 @@
 from peewee import JOIN, DoesNotExist, Case
-
+from app.models.term import Term
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.requirementMatch import RequirementMatch
 from app.models.eventParticipant import EventParticipant
+from app.models.user import User
+
+def termsAttended(certification=None, username=None):
+    termsAttended = 0
+    if certification:
+        if username:
+            attendance = RequirementMatch.select(RequirementMatch).where(RequirementMatch.requirement == certification).get()
+    termsAttended = attendance.count()
+    return termsAttended
+            
+def termsMissed(certification=None, username=None): 
+    classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
+    termMissed = 0
+    currentTerm = Term.select(Term).where(Term.isCurrentTerm == True).get() 
+
+    if currentTerm.isSummer == True:
+        current = f'Fall {currentTerm.year}'
+        currentTerm = Term.select(Term).where(Term.description == current).get()
+    else:
+        current = currentTerm.description
+
+    for level in range(4):
+        if User.classLevel == classLevel[level] and current == f'Spring {currentTerm.year}':
+            termMissed = level
+        elif User.classLevel == classLevel[level]:
+            termMissed = level*2
+    
+    return termMissed - termsAttended(certification, username)
+
 
 def getCertRequirementsWithCompletion(*, certification, username):
     """
@@ -28,7 +57,6 @@ def getCertRequirements(certification=None, username=None):
     reqList = (Certification.select(Certification, CertificationRequirement)
                             .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
                             .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
-
     if certification:
         if username:
             # I don't know how to add something to a select, so we have to recreate the whole query :(
@@ -40,7 +68,6 @@ def getCertRequirements(certification=None, username=None):
                 .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))
                 .where(EventParticipant.user.is_null(True) | (EventParticipant.user == username))
                 .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
-
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
         reqList = reqList.distinct()
@@ -61,7 +88,6 @@ def getCertRequirements(certification=None, username=None):
 
         if getattr(cert, 'requirement', None):
             certs[cert.id]["requirements"].append(cert.requirement)
-
     return certs
 
 def updateCertRequirements(certId, newRequirements):
