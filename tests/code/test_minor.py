@@ -605,20 +605,17 @@ def test_removeProposal():
 
         # creates a base object for proposal events 
         proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
+        
+        testFile = AttachmentUpload.create(proposalFileStorageObject)
+        print(testFile)
 
         handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=999)
 
-        filepath = handledProposalFile.getFileFullPath("999/" + "".join(proposalFileStorageObject[0].filename))
+        filepath = handledProposalFile.getFileFullPath("999/" + "".join(testFile))
         assert filepath == 'app/static/files/proposalattachments/999/proposal.pdf'
 
-        #creating an attachmentupload object pointing to that file
-        attachObj = AttachmentUpload.create(filepath)
-
-
         # remove save paths from the file directory 
-        os.remove(handledProposalFile.getFileFullPath(attachObj))
-        handledProposalFile.saveFiles 
-
+        os.remove(handledProposalFile.getFileFullPath(filepath))
 
         with app.app_context():
             print('####')
