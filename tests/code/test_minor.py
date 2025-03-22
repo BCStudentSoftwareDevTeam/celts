@@ -606,23 +606,21 @@ def test_removeProposal():
         # creates a base object for proposal events 
         proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
         
-        testFile = AttachmentUpload.create(proposalFileStorageObject)
-        print(testFile)
+        testFile = AttachmentUpload.create(fileName = proposalFileStorageObject)
 
         handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=999)
 
         filepath = handledProposalFile.getFileFullPath("999/" + "".join(testFile))
         assert filepath == 'app/static/files/proposalattachments/999/proposal.pdf'
 
-        # remove save paths from the file directory 
-        os.remove(handledProposalFile.getFileFullPath(filepath))
-
         with app.app_context():
             print('####')
             g.current_user = "glek"
-            removeProposal(testProposalId)
+            removeProposal(testProposalId, filepath, testFile)
 
         assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
+        assert len(testFile) == 0
+        assert len(filepath) == 0 
 
         transaction.rollback()
  
