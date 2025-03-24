@@ -605,22 +605,27 @@ def test_removeProposal():
 
         # creates a base object for proposal events 
         proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
-        
-        testFile = AttachmentUpload.create(fileName = proposalFileStorageObject)
 
         handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=999)
 
-        filepath = handledProposalFile.getFileFullPath("999/" + "".join(testFile))
-        assert filepath == 'app/static/files/proposalattachments/999/proposal.pdf'
+        # uploading a file to proposalattachments 
+        handledProposalFile.saveFiles()
+        
+        try:
+            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
+            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
 
-        with app.app_context():
-            print('####')
-            g.current_user = "glek"
-            removeProposal(testProposalId, filepath, testFile)
+            with app.app_context():
+                g.current_user = "glek"
+                removeProposal(testProposalId)
 
-        assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
-        assert len(testFile) == 0
-        assert len(filepath) == 0 
+            assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
+
+            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
+            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
+
+        except:
+            os.remove(handledProposalFile.getFileFullPath('999.pdf'))
 
         transaction.rollback()
  
