@@ -177,6 +177,7 @@ def createEvent(templateid, programid):
     requirements, bonnerCohorts = [], []
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        print("ccceee", requirements)
         rawBonnerCohorts = getBonnerCohorts(limit=5)
         bonnerCohorts = {}
         

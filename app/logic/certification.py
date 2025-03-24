@@ -6,32 +6,29 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 
-def termsAttended(certification=None, username=None):
-    termsAttended = 0
+def termsAttended(certification, username=None):
     if certification:
         if username:
-            attendance = RequirementMatch.select(RequirementMatch).where(RequirementMatch.requirement == certification).get()
-    termsAttended = attendance.count()
+            attendance = RequirementMatch.select().where(RequirementMatch.requirement_id == certification)
+    termsAttended = len(attendance)
+    print("ssdt", termsAttended)
     return termsAttended
             
 def termsMissed(certification=None, username=None): 
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
-    termMissed = 0
     currentTerm = Term.select(Term).where(Term.isCurrentTerm == True).get() 
-
     if currentTerm.isSummer == True:
         current = f'Fall {currentTerm.year}'
         currentTerm = Term.select(Term).where(Term.description == current).get()
     else:
         current = currentTerm.description
-
     for level in range(4):
         if User.classLevel == classLevel[level] and current == f'Spring {currentTerm.year}':
             termMissed = level
         elif User.classLevel == classLevel[level]:
             termMissed = level*2
-    
-    return termMissed - termsAttended(certification, username)
+    termMissed = termMissed - termsAttended(certification, username)
+    return termMissed
 
 
 def getCertRequirementsWithCompletion(*, certification, username):
@@ -76,7 +73,11 @@ def getCertRequirements(certification=None, username=None):
         for cert in reqList:
             if username:
                 cert.requirement.completed = bool(cert.__dict__['completed'])
+                if cert.requirement.frequency == "term":
+                    cert.requirement.missedTerms = termsMissed(cert.requirement.id, username)
+                    cert.requirement.attendedTerms = termsAttended(cert.requirement.id, username)
             certs.append(cert.requirement)
+        print("ccceee", certs)
         return certs
 
         #return [cert.requirement for cert in reqList]
@@ -85,7 +86,6 @@ def getCertRequirements(certification=None, username=None):
     for cert in reqList:
         if cert.id not in certs.keys():
             certs[cert.id] = {"data": cert, "requirements": []}
-
         if getattr(cert, 'requirement', None):
             certs[cert.id]["requirements"].append(cert.requirement)
     return certs
