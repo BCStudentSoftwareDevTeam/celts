@@ -595,8 +595,11 @@ def indicateMinorInterest(username):
 def updateMinorDeclaration(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
         declareMinorInterest(username)
+        flash("Candidate minor successfully updated", "success")
     else:
+        flash("Error updating candidate minor status", "danger")
         abort(403)
+        
         
     return redirect(url_for('admin.manageMinor'))
 

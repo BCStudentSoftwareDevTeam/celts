@@ -27,10 +27,6 @@ $(document).ready(function() {
 
   $('.remove_minor_candidate').on('click', function() {
       let username = $(this).attr('id'); 
-      if ($('#declared').hasClass('show active')) {
-        localStorage.setItem('activeTab', 'declared');
-      }
-
       let isAdding = false
       
       $.ajax({
@@ -39,8 +35,6 @@ $(document).ready(function() {
           data: JSON.stringify({ "isAdding": isAdding }),
           contentType: "application/json",
           success: function(response) {
-            localStorage.setItem('flashMessage', "Student successfully removed");
-            localStorage.setItem('flashType', "success");
             window.location.reload(true)
           },
           error: function(error) {
@@ -48,20 +42,6 @@ $(document).ready(function() {
           }
       });
   });
-  
-  setTimeout(function() {
-    let activeTab = localStorage.getItem('activeTab');
-  
-    if (activeTab === 'declared') {
-        $('#declared').addClass('show active'); 
-        $('#interested').removeClass('show active'); 
-  
-        $('.nav-tabs .nav-link').removeClass('active'); 
-        $('#declared-tab').addClass('active'); 
-  
-        localStorage.removeItem('activeTab'); 
-        }
-      }, 100);
 })
 
 function getInterestedStudents() {
