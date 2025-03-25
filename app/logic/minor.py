@@ -327,7 +327,11 @@ def removeProposal(proposalID) -> None:
     """
     Delete summerexperience or otherexperience of the CCEMinorProposal Table  for entry proposalType
     """
+
     proposalAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
-    proposalFileHandler=FileHandler(proposalId=proposalID)
-    proposalFileHandler.deleteFile(proposalAttachment.id)
+    if proposalAttachment:
+        proposalFileHandler=FileHandler(proposalId=proposalID)
+        proposalFileHandler.deleteFile(proposalAttachment.id)
+
+    
     CCEMinorProposal.delete().where(CCEMinorProposal.id == int(proposalID)).execute()
