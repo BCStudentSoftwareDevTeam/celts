@@ -11,6 +11,7 @@ from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
+from collections import defaultdict
 
 def trainedParticipants(programID, targetTerm):
     """
@@ -136,31 +137,37 @@ def getParticipationStatusForTrainings(program, userList, term):
 
     :returns: trainings for program and if the user participated
     """
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == term.academicYear)
-    isRelevantProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
+    isRelevantTraining = ((Event.isAllVolunteerTraining | ((Event.isTraining) & (Event.program == program))) & 
+                              (Event.term.academicYear == term.academicYear))
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                              .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                              .join(Term)
-                             .where(isRelevantAllVolunteer | isRelevantProgramTraining, (Event.isCanceled != True)).order_by(Event.startDate))
+                             .where(isRelevantTraining, (Event.isCanceled != True)).order_by(Event.startDate))
 
-    # Create a dictionary where the keys are trainings and values are a list of those who attended
-    trainingData = {}
+    # Create a dictionary where the keys are trainings and values are a set of those who attended
+    trainingData = defaultdict(set)
     for training in programTrainings:
         try:
             if training.isPastStart:
-                trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
+                trainingData[training].add(training.eventparticipant.user_id)
             else:  # The training has yet to happen
-                trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
+                trainingData[training].add(training.eventrsvp.user_id)
         except AttributeError:
-            trainingData[training] = trainingData.get(training, [])
-    # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
-    userParticipationStatus = {}
-    for user in userList:
-        for training, attendeeList in trainingData.items():
-            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
+            pass
+    # Create a dictionary binding usernames to a list of [training, hasAttended] pairs. The tuples consist of the training (event object) and whether or not they attended it (bool)
 
-    return userParticipationStatus
+    # Necessarily complex algorithm to merge the attendances of trainings which have the same name
+    # Structure of userParticipationStatus for a single user:
+    # {user.username: {training1.name: [EventObject, hasAttended], training2.name: [EventObject, hasAttended]}, ...}
+    userParticipationStatus = {user.username: {} for user in userList}
+    for training, attendeeList in trainingData.items():
+        for user in userList:
+            if training.name not in userParticipationStatus[user.username] or user.username in attendeeList:
+                userParticipationStatus[user.username][training.name] = [training, user.username in attendeeList]
+    
+    return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
+
 
 def sortParticipantsByStatus(event):
     """
