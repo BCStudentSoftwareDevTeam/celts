@@ -20,6 +20,54 @@ from app.models.individualRequirement import IndividualRequirement
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
+@pytest.fixture
+def testUser(request):
+    """Fixture to create a user"""
+    defaultUser = {
+        "username": "FINN",
+        "firstName": "Test",
+        "lastName": "User",
+        "email": "usert@example.com",
+        "bnumber": "B90000000"
+    }
+    # create a user but override default values with those put in the parameters.
+    print(getattr(request, "param", defaultUser))
+    return User.create(getattr(request, "param", defaultUser))
+
+@pytest.fixture
+def testTerm(request):
+    """Fixture to create a term."""
+    defaultTerm = {
+        "description": "Summer 2025",
+        "year": 2025,
+        "academicYear": "2024-2025",
+        "isSummer": 0,
+        "isCurrentTerm": 0
+    }
+    # create a term but override default values with those put in the parameters.
+    print(getattr(request, "param", defaultTerm))
+    return Term.create(getattr(request, "param", defaultTerm))
+
+@pytest.fixture
+def testProposal(request):
+    """Fixture to create form data for CCEMinorProposals."""
+    defaultProposal = {
+        "term": 3,
+        "roleDescription": "Assistant to Finn",
+        "experienceType": "Internship",
+        "contentArea": ["Power and inequality", "Civic literacy"],
+        "orgName": "Finn's Org",
+        "orgAddress": "Finn's House",
+        "orgPhone": "513-384-FINN",
+        "orgWebsite": "www.finn.com",
+        "supervisorName": "Finn",
+        "supervisorPhone": "513-384-FINN",
+        "supervisorEmail": "finn@finn.com",
+    }
+    # override default values with those put in the parameters.
+    return getattr(request, "param", defaultProposal)
+
+
 @pytest.mark.integration
 def test_getCourseInformation():
     with mainDB.atomic() as transaction:
@@ -112,13 +160,13 @@ def test_getProgramEngagementHistory():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCCEMinorProposals():
+def test_getCCEMinorProposals(testUser):
+    # testUser is a fixture
+    sampleUser = testUser
 
-    
+    assert getCCEMinorProposals(sampleUser.username) == []
 
-
-    getCCEMinorProposals("ayisie")
-
+    createOtherEngagementRequest()
 
 
 @pytest.mark.integration
@@ -510,14 +558,29 @@ def test_createSummerExperience():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_createOtherEngagementRequest():
+@pytest.mark.parametrize("testUser", [
+    {"username": "FINN"}
+], indirect=True)
+@pytest.mark.parametrize("testProposal", [
+    {
+        'term': 3,
+        'experienceName': 'Test Experience',
+        'orgName': 'Test Company',
+        'orgAddress': '123 test ln',
+        'orgPhone': '(123)-456-7890',
+        'orgPhone': '(123)-456-7890',
+        'orgWebsite': "kafui.com",
+        'supervisorPhone': '(123)-798-3516',
+        'supervisorName': 'kafui',
+        'supervisorEmail': 'test@supervisor.com',
+        'totalHours': 300,
+        'totalWeeks': 10,
+        'experienceDescription': 'Test Description',
+        'filename': 'test_file.txt',
+    },
+], indirect=True)
+def test_createOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
-        
         User.create(username="glek",
                     firstName="kafui",
                     lastName="gle",
