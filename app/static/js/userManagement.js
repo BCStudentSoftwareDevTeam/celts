@@ -1,5 +1,7 @@
 import searchUser from './searchUser.js'
 
+var newManagers = []  // global var
+
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }
@@ -163,6 +165,7 @@ function editProgramManager(username, fullName, programId, action){
     data: data,
     success: function(s){
       if (action === 'add'){
+        $('#noManagersText').addClass("d-none")
         $('#programManagersTable').append(createProgramManagerRow(username, fullName))
         updateManagers(programId)
       } else {
@@ -175,6 +178,9 @@ function editProgramManager(username, fullName, programId, action){
           .remove()
           updateManagers(programId)
         })
+        if (newManagers.length){
+          $('#noManagersText').removeClass("d-none")
+        }
       }
     },
     error: function(error, status){
@@ -185,7 +191,7 @@ function editProgramManager(username, fullName, programId, action){
 }
 
 function updateManagers(programId){
-  let newManagers = []
+  newManagers.length = 0;
   let username = ""
   let fullName = "";
   $("#programManagersTable").children().each((index, manager) => {
