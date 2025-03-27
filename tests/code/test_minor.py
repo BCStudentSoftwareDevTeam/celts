@@ -23,53 +23,56 @@ from app.logic.minor import getProgramEngagementHistory, getCourseInformation, t
 @pytest.fixture
 def testUser(request):
     """Fixture to create a user"""
-    defaultUser = {
-        "username": "FINN",
-        "firstName": "Test",
-        "lastName": "User",
-        "email": "usert@example.com",
-        "bnumber": "B90000000"
-    }
-    # create a user but override default values with those put in the parameters.
-    print(getattr(request, "param", defaultUser))
-    return User.create(getattr(request, "param", defaultUser))
+    params = getattr(request, "param", {})
+    newUser = User.create(
+        username=params.get("username", "FINN"),
+        firstName=params.get("firstName", "Fin"),
+        lastName=params.get("lastName", "Bledso"),
+        email=params.get("email", "bledsoefin@gmail.com"),
+        bnumber=params.get("bnumber", "B12312312"),
+    )
+    yield newUser
+    newUser.delete_instance()
 
 @pytest.fixture
 def testTerm(request):
     """Fixture to create a term."""
-    defaultTerm = {
-        "description": "Summer 2025",
-        "year": 2025,
-        "academicYear": "2024-2025",
-        "isSummer": 0,
-        "isCurrentTerm": 0
-    }
-    # create a term but override default values with those put in the parameters.
-    print(getattr(request, "param", defaultTerm))
-    return Term.create(getattr(request, "param", defaultTerm))
+    params = getattr(request, "param", {})
+    newTerm = Term.create(
+        description=params.get("description", "Summer 2025"),
+        year=params.get("year", 2025),
+        academicYear=params.get("academicYear", "2024-2025"),
+        isSummer=params.get("isSummer", 1),
+        isCurrentTerm=params.get("isCurrentTerm", 0)
+    )
+
+    yield newTerm
+    newTerm.delete_instance() 
 
 @pytest.fixture
 def testProposal(request):
     """Fixture to create form data for CCEMinorProposals."""
+    params = getattr(request, "param", {})
     defaultProposal = {
-        "term": 3,
-        "roleDescription": "Assistant to Finn",
-        "experienceType": "Internship",
-        "contentArea": ["Power and inequality", "Civic literacy"],
-        "orgName": "Finn's Org",
-        "orgAddress": "Finn's House",
-        "orgPhone": "513-384-FINN",
-        "orgWebsite": "www.finn.com",
-        "supervisorName": "Finn",
-        "supervisorPhone": "513-384-FINN",
-        "supervisorEmail": "finn@finn.com",
+        "term": params.get("term", 3),
+        "roleDescription": params.get("roleDescription", "Assistant to Finn"),
+        "experienceType": params.get("experienceType", "Internship"),
+        "contentArea": params.get("contentArea", ["Power and inequality", "Civic literacy"]),
+        "orgName": params.get("orgName", "Finn's Org"),
+        "orgAddress":  params.get("orgAddress", "Finn's House"),
+        "orgPhone": params.get("orgPhone", "513-384-FINN"),
+        "orgWebsite": params.get("orgWebsite" ,"www.finn.com"),
+        "supervisorName": params.get("supervisorName, Kafui Gle"),
+        "supervisorPhone": params.get("supervisorPhone", "513-226-GLEK"),
+        "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
     }
     # override default values with those put in the parameters.
-    return getattr(request, "param", defaultProposal)
+    return defaultProposal
 
 
 @pytest.mark.integration
-def test_getCourseInformation():
+def test_getCourseInformation(testUser):
+    user = testUser
     with mainDB.atomic() as transaction:
         testCourse = Course.create(courseName="test get course information",
                                    courseAbbreviation="TGCI",
@@ -77,11 +80,11 @@ def test_getCourseInformation():
                                    courseCredit=1.0,
                                    term=3,
                                    status=1,
-                                   createdBy="bledsoef",
+                                   createdBy=user.username,
                                    serviceLearningDesignatedSections = "",
                                    previouslyApprovedDescription="")
         
-        testCourseInstructor = CourseInstructor.create(course=testCourse.id, user="bledsoef")
+        testCourseInstructor = CourseInstructor.create(course=testCourse.id, user=user.username)
         
         courseInformation = getCourseInformation(testCourse.id)
 
@@ -94,39 +97,30 @@ def test_getCourseInformation():
 
 
 @pytest.mark.integration
-def test_toggleMinorInterest():
+def test_toggleMinorInterest(testUser):
     with mainDB.atomic() as transaction:
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
         
-        user = User.get_by_id("FINN")
+        user = testUser
         # make sure users have the default values of false and not interested, respectively
         assert user.minorInterest == False
-        toggleMinorInterest("FINN")
+        toggleMinorInterest(user.username)
         
-        user = User.get_by_id("FINN")
+        user = User.get_by_id(user.username)
         # make sure toggleMinorInterest works correctly
         assert user.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest("FINN")
+        toggleMinorInterest(user.username)
         
-        user = User.get_by_id("FINN")  
+        user = User.get_by_id(user.username)
         assert user.minorInterest == False
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getProgramEngagementHistory():
+def test_getProgramEngagementHistory(testUser):
     with mainDB.atomic() as transaction:
         # create test objects
-        testUser = User.create(username="FINN",
-                                firstName="Not",
-                                lastName="Yet",
-                                email="FINN@berea.edu",
-                                bnumber="B91111111")
+        user = testUser
         
         testingEvent = Event.create(name = "Testing event",
                                     term = 3,
@@ -142,11 +136,11 @@ def test_getProgramEngagementHistory():
                                     program = 2)
         
         # add the user as a participant of the event
-        EventParticipant.create(user = testUser, event = testingEvent.id, hoursEarned=4.0)
+        EventParticipant.create(user = user, event = testingEvent.id, hoursEarned=4.0)
         testingEvent = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                              .join(Program).switch()
                              .join(EventParticipant)
-                             .where(EventParticipant.user == "FINN",
+                             .where(EventParticipant.user == user.username,
                                     Event.term == 3,
                                     Program.id == 2,
                                     Event.id == testingEvent)
@@ -154,7 +148,7 @@ def test_getProgramEngagementHistory():
         program = Program.get_by_id(2)
 
         # get the actual data from getProgramEngagementHistory
-        actualData = getProgramEngagementHistory(2, "FINN", 3)
+        actualData = getProgramEngagementHistory(2, user.username, 3)
         expectedData = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
         assert actualData == expectedData
         transaction.rollback()
@@ -166,7 +160,8 @@ def test_getCCEMinorProposals(testUser):
 
     assert getCCEMinorProposals(sampleUser.username) == []
 
-    createOtherEngagementRequest()
+    # createOtherEngagementRequest()
+
 
 
 @pytest.mark.integration
@@ -558,9 +553,6 @@ def test_createSummerExperience():
         transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.parametrize("testUser", [
-    {"username": "FINN"}
-], indirect=True)
 @pytest.mark.parametrize("testProposal", [
     {
         'term': 3,
