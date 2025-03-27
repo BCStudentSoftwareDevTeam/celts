@@ -614,18 +614,24 @@ def test_removeProposal():
         try:
             assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
             assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
-
+            
             with app.app_context():
                 g.current_user = "glek"
                 removeProposal(testProposalId)
 
             assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
-
+        
             assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
             assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
 
-        except:
-            os.remove(handledProposalFile.getFileFullPath('999.pdf'))
+        except Exception as e:
+            raise e 
+        
+        finally:
+            fileExists = AttachmentUpload.get_or_none(proposal_id = testProposalId)
+            fullFilePath = handledProposalFile.getFileFullPath('999.pdf')
+            if fileExists:
+                os.remove(fullFilePath)
 
         transaction.rollback()
  

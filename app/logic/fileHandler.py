@@ -41,10 +41,9 @@ class FileHandler:
                 filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
             pass
-            print('AttributeError')
         except FileExistsError:
             pass
-            print('AttributeError')
+           
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):

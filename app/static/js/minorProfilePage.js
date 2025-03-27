@@ -2,7 +2,7 @@ import { validateEmail } from "./emailValidation.mjs";
 
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
-    $("#withdrawBtn").on("click", withdraw);
+  $("#withdrawBtn").on("click", withdrawProposal);
 
   function changeAction(action){
       let proposalID = action.id;
@@ -15,7 +15,7 @@ $(document).ready(function() {
     }
 
 
-  function withdraw(){
+  function withdrawProposal(){
       // uses hidden label to withdraw course
       let proposalID = $("#proposalID").val();
       let username = $("#username").val()
@@ -26,7 +26,7 @@ $(document).ready(function() {
           location.reload();
         },  
         error: function(request, status, error) {
-            console.log(status,error);
+            console.log(status, error);
         }
       })
     };

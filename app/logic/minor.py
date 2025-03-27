@@ -325,13 +325,14 @@ def removeSummerExperience(username):
 
 def removeProposal(proposalID) -> None:
     """
-    Delete summerexperience or otherexperience of the CCEMinorProposal Table  for entry proposalType
+    Delete summer experience or other engagement objects from the CCEMinorProposal table. 
+    File objects attached to the CCEMinorProposal object are also deleted. 
     """
+    proposalID = int(proposalID)
 
     proposalAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
     if proposalAttachment:
-        proposalFileHandler=FileHandler(proposalId=proposalID)
+        proposalFileHandler = FileHandler(proposalId=proposalID)
         proposalFileHandler.deleteFile(proposalAttachment.id)
 
-    
-    CCEMinorProposal.delete().where(CCEMinorProposal.id == int(proposalID)).execute()
+    CCEMinorProposal.delete().where(CCEMinorProposal.id == proposalID).execute()
