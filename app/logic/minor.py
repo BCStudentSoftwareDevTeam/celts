@@ -65,6 +65,28 @@ def getMinorProgress():
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
+def getMinorSpreadsheet():
+    """
+        Returns a spreadsheet containing users and related spreadsheet information.
+    """
+    # If we're in 2025, can we get the minor information for 2023?
+    columnNames = ["Name", "B-Number", "Sustained Engagements", "Summer Experience"]
+
+    filepath = f"{app.config['files']['base_path']}/minor_data.xlsx"
+    workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
+    worksheet = workbook.add_worksheet('minor_information')
+
+    # process column names and create spacing ??
+    currentLetter = "A"
+    for columnName in columnNames:
+        worksheet.write(f"{currentLetter}1", columnName, bold)
+        worksheet.set_column(f"{currentLetter}:{currentLetter}", 30)
+        currentLetter = chr(ord(f"{currentLetter}") + 1)
+
+    # now i need to get the data for the columns and write into the spreadsheet
+    return minorSpreadsheet
+
+
 def toggleMinorInterest(username):
     """
         Given a username, update their minor interest and minor status.

@@ -8,7 +8,7 @@ from app.models.attachmentUpload import AttachmentUpload
 
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience, getMinorSpreadsheet
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -40,6 +40,15 @@ def getEngagementInformation(username, type, id, term):
         information = getCourseInformation(id)
 
     return information
+
+@minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
+def returnMinorSpreadsheet():
+    """
+        Returns a spreadsheet containing users and related spreadsheet information.
+    """
+    minorSpreadsheet = getMinorSpreadsheet()   # can we get for any term or only curr term?
+
+    return minorSpreadsheet
 
 @minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
 def modifyCommunityEngagement(username):
