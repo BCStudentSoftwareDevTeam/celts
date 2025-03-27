@@ -155,8 +155,8 @@ function createProgramManagerRow(username, fullName) {
 
 function editProgramManager(username, fullName, programId, action){
   let data = {
-      user_name: username,
-      program_id: programId,
+      username: username,
+      programId: programId,
       action: action,
   }
   $.ajax({

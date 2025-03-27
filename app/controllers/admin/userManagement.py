@@ -46,10 +46,6 @@ def manageUsers():
             else:
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
-    elif method == "addProgramManager":
-        setProgramManager(user, 'add')
-    elif method == "removeProgramManager":
-        setProgramManager()
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
@@ -83,7 +79,7 @@ def updateProgramInfo(programID):
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
-    current_programs = (
+    currentPrograms = (
             Program
             .select(
                 Program,
@@ -99,7 +95,7 @@ def userManagement():
     if g.current_user.isCeltsAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,
-                                programs = list(current_programs),
+                                programs = list(currentPrograms),
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
                                 )
