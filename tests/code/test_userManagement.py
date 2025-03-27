@@ -148,14 +148,57 @@ def test_changeProgramInfo():
 def test_updatedProgramManager():
     with mainDB.atomic() as transaction:
         # Make student a program manager.
-        user = User.get_by_id("mupotsal")
+        nonStudentorStaffUser = User.create(username = "prospectiveProgramManager",
+                                     bnumber = "B00000000003",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = False,
+                                     isFaculty = False,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+                                     
+        studentUser = User.create(username = "secondProspectiveProgramManager",
+                                     bnumber = "B00000000023",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = True,
+                                     isFaculty = False,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+
+        facultyUser = User.create(username = "thirdProspectiveProgramManager",
+                                     bnumber = "B00000000033",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = False,
+                                     isFaculty = True,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+
         program = Program.get_by_id(1)
-        setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is not None
+        setProgramManager(nonStudentorStaffUser, program, "add")
+        setProgramManager(studentUser, program, "add")
+        setProgramManager(facultyUser, program, "add")
+        assert ProgramManager.get_or_none(program = program, user = nonStudentorStaffUser) is not None
+        assert ProgramManager.get_or_none(program = program, user = studentUser) is not None
+        assert ProgramManager.get_or_none(program = program, user = facultyUser) is not None
 
         # Remove the user that was added as a Program Manager
-        setProgramManager(user, program, "remove")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
+        setProgramManager(nonStudentorStaffUser, program, "remove")
+        setProgramManager(studentUser, program, "remove")
+        setProgramManager(facultyUser, program, "remove")
+        assert ProgramManager.get_or_none(program = program, user = nonStudentorStaffUser) is None
+        assert ProgramManager.get_or_none(program = program, user = studentUser) is None
+        assert ProgramManager.get_or_none(program = program, user = facultyUser) is None
     
         transaction.rollback()
 

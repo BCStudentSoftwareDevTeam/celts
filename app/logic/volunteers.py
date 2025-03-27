@@ -87,15 +87,15 @@ def deleteUserBackgroundCheck(bgCheckId, user):
 
 def setProgramManager(username, program_id, action):
     '''
-    adds and removes the studentstaff from program that makes them student manager.
+    Assigns or removes a user as a student manager for a program.
 
     param: username - a string
            program_id - id
            action: add, remove
 
     '''
-    studentstaff=User.get(User.username==username)
+    manager=User.get(User.username==username)
     if action == "add":
-        studentstaff.addProgramManager(program_id)
+        manager.addProgramManager(program_id)
     elif action == "remove":
-        studentstaff.removeProgramManager(program_id)
+        manager.removeProgramManager(program_id)
