@@ -458,15 +458,11 @@ def volunteerRegister():
 
     isAdded = checkUserRsvp(user, event)
     isEligible = isEligibleForProgram(program, user)
-    listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
     if isEligible:
         personAdded = addPersonToEvent(user, event)
-        if personAdded and listOfRequirements:
-            reqListToString = ', '.join(listOfRequirements)
-            flash(f"{user.firstName} {user.lastName} successfully registered.", "success")
-        elif personAdded:
+        if personAdded:
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")
