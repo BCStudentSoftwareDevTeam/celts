@@ -18,9 +18,21 @@ from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
-
+from app.logic.minor import ( 
+    createOtherEngagementRequest,
+    getMinorInterest,
+    getMinorProgress,
+    setCommunityEngagementForUser,
+    createSummerExperience,
+    getProgramEngagementHistory,
+    getCourseInformation, 
+    toggleMinorInterest, 
+    getCommunityEngagementByTerm,
+    getEngagementTotal, 
+    getCCEMinorProposals,
+    updateOtherEngagementRequest,
+    updateSummerExperience
+)
 @pytest.fixture
 def testUser(request):
     """Fixture to create a user"""
@@ -75,8 +87,6 @@ def testProposal(request):
         defaultProposal = {
             "term": params.get("term", 3),
             "experienceName": params.get("experienceName", "Assistant to Finn"),
-            "experienceType": params.get("experienceType", "Internship"),
-            "contentArea": params.get("contentArea", ["Power and inequality", "Civic literacy"]),
             "orgName": params.get("orgName", "Finn's Org"),
             "orgAddress":  params.get("orgAddress", "Finn's House"),
             "orgPhone": params.get("orgPhone", "513-384-FINN"),
@@ -569,3 +579,90 @@ def test_createOtherEngagementRequest(testUser, testProposal):
         assert len(initialOtherExperiences) == 1 
 
         transaction.rollback()
+
+
+@pytest.mark.parametrize("testProposal", [
+    {
+        "proposalType": "otherEngagement",
+        "experienceName": "Assistant to Finn",
+        "orgName": "Finn's Assistants",
+        "experienceDescription": "Catering to Finn's every need"
+    }
+], indirect=True)
+@pytest.mark.integration
+def test_updateOtherEngagementRequest(testUser, testProposal):
+    with mainDB.atomic() as transaction:
+        user = testUser
+        User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+        
+        # Save the requested event to the database
+        createdOtherEngagementRequest = None
+        with app.app_context():
+            g.current_user = "glek"
+            createdOtherEngagementRequest = createOtherEngagementRequest(user.username, ImmutableMultiDict(testProposal))
+
+        proposalID = createdOtherEngagementRequest.id
+
+        assert createdOtherEngagementRequest.experienceName == "Assistant to Finn"
+        assert createdOtherEngagementRequest.orgName == "Finn's Assistants"
+        assert createdOtherEngagementRequest.experienceDescription == "Catering to Finn's every need" 
+
+        testProposal["experienceName"] = "Opponent to Finn"
+        testProposal["orgName"] = "Finn's Ops"
+        testProposal["experienceDescription"] = "Hating on Finn 24/7"
+
+        updateOtherEngagementRequest(proposalID, ImmutableMultiDict(testProposal))
+
+        updatedProposal = CCEMinorProposal.get_by_id(proposalID)
+        
+        assert updatedProposal.experienceName == "Opponent to Finn"
+        assert updatedProposal.orgName == "Finn's Ops"
+        assert updatedProposal.experienceDescription == "Hating on Finn 24/7"
+
+        transaction.rollback()
+
+
+@pytest.mark.parametrize("testProposal", [
+    {
+        "proposalType": "summerExperience",
+        "experienceType": "Internship",
+        "totalHours": 301
+    }
+], indirect=True)
+@pytest.mark.integration
+def test_updateSummerExperience(testUser, testProposal):
+    with mainDB.atomic() as transaction:
+        user = testUser
+        User.create(username="glek",
+                    firstName="kafui",
+                    lastName="gle",
+                    email="kaf@berea.edu",
+                    bnumber="B91111113")
+        
+        # Save the requested event to the database
+        createdSummerExperience = None
+        with app.app_context():
+            g.current_user = "glek"
+            createdSummerExperience = createSummerExperience(user.username, ImmutableMultiDict(testProposal))
+
+        proposalID = createdSummerExperience.id
+
+        assert createdSummerExperience.totalHours == 301
+        assert createdSummerExperience.experienceType == "Internship"
+
+        testProposal["experienceType"] = "Not an internship"
+        testProposal["totalHours"] = 201
+
+        updateSummerExperience(proposalID, ImmutableMultiDict(testProposal))
+
+        updatedProposal = CCEMinorProposal.get_by_id(proposalID)
+        
+        assert updatedProposal.totalHours == 201
+        assert updatedProposal.experienceType == "Not an internship"
+
+        transaction.rollback()
+
