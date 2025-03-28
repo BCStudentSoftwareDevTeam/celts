@@ -2,7 +2,9 @@ from collections import defaultdict
 from typing import List, Dict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
+import xlsxwriter
 
+from app import app
 from app.models.user import User
 from app.models.term import Term
 from app.models.event import Event
@@ -56,9 +58,10 @@ def getMinorProgress():
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
-    engagedStudentsList = [{'username': student.username,
-                            'firstName': student.firstName,
+    engagedStudentsList = [{'firstName': student.firstName,
                             'lastName': student.lastName,
+                            'username': student.username,
+                            'B-Number': student.bnumber,
                             'hasGraduated': student.hasGraduated, 
                             'engagementCount': student.engagementCount - student.hasSummer,
                             'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
@@ -70,21 +73,37 @@ def getMinorSpreadsheet():
         Returns a spreadsheet containing users and related spreadsheet information.
     """
     # If we're in 2025, can we get the minor information for 2023?
-    columnNames = ["Name", "B-Number", "Sustained Engagements", "Summer Experience"]
+    studentProgress = getMinorProgress()
+    columnNames = studentProgress[0]
+    columnNames = ["First Name", "Last Name", "Username", "B-Number", "Graduation Status", "Number of Engagements", "Requested Community Engagement", "Completed Summer Experience"]
 
     filepath = f"{app.config['files']['base_path']}/minor_data.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
+
     worksheet = workbook.add_worksheet('minor_information')
+    format_row = workbook.add_format({'align': 'left'})
 
-    # process column names and create spacing ??
-    currentLetter = "A"
+    columnIndex = 1
+    worksheet.set_column(columnIndex, len(columnNames), 30, workbook.add_format({'bold': True}))
     for columnName in columnNames:
-        worksheet.write(f"{currentLetter}1", columnName, bold)
-        worksheet.set_column(f"{currentLetter}:{currentLetter}", 30)
-        currentLetter = chr(ord(f"{currentLetter}") + 1)
+        worksheet.write(1, columnIndex, columnName)
+        columnIndex += 1
 
-    # now i need to get the data for the columns and write into the spreadsheet
-    return minorSpreadsheet
+    for rowNumber, student in enumerate(studentProgress, 2):
+        student['hasGraduated'] = "Graduated" if student['hasGraduated'] else "Currently Enrolled"
+        student['hasSummer'] = "Yes" if student['hasSummer'] == "Complete" else "No"
+        student['hasCommunityEngagementRequest'] = "Yes" if student['hasCommunityEngagementRequest'] == 1 else "No"
+        worksheet.set_row(rowNumber, None, format_row)
+        if student['B-Number'] == None: student["B-Number"] = "No B-Number Found"
+
+        print(student)
+        for columnNumber, key in enumerate(student, 1):
+            worksheet.write(rowNumber, columnNumber, student[key])
+
+    
+    workbook.close()
+    
+    return filepath
 
 
 def toggleMinorInterest(username):

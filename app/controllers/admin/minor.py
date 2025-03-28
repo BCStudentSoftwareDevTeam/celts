@@ -1,10 +1,10 @@
-from flask import render_template, g, abort, request, redirect, url_for
+from flask import render_template, g, abort, request, redirect, url_for, send_file
 
 from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest
+from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
 
 @admin_bp.route('/admin/cceMinor', methods=['POST','GET'])
 def manageMinor():
@@ -32,5 +32,12 @@ def manageMinor():
                             sustainedEngagement = sustainedEngagement,
                             )
 
+@admin_bp.route("/admin/cceMinor/download")
+def downloadSpreadsheet():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newfile = getMinorSpreadsheet()
+    return send_file(open(newfile, 'rb'), download_name='minor_progress.xlsx', as_attachment=True)
 
 
