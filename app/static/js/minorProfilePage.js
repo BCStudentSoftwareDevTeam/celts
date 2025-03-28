@@ -18,7 +18,7 @@ $(document).ready(function() {
 
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
-    window.location.href = `/profile/${username}/cceMinor` 
+    window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 
   }) 
   // ************** SUSTAINED COMMUNITY ENGAGEMENTS ************** //
   $('.engagement-row').on("click", function() {
