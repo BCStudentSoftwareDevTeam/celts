@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from peewee import *
 from flask import g
 from collections import OrderedDict
@@ -20,8 +21,79 @@ from app.models.individualRequirement import IndividualRequirement
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 
+@pytest.fixture
+def testUser(request):
+    """Fixture to create a user"""
+    params = getattr(request, "param", {})
+    newUser = User.create(
+        username=params.get("username", f"bledsoef{uuid.uuid4().hex[:8]}"), # create a random username to make sure there are no conflicts with duplicates
+        firstName=params.get("firstName", "Fin"),
+        lastName=params.get("lastName", "Bledso"),
+        email=params.get("email", "bledsoefin@gmail.com"),
+        bnumber=params.get("bnumber", f"B{uuid.uuid4().hex[:8]}"),
+    )
+    yield newUser
+    newUser.delete_instance()
+
+@pytest.fixture
+def testTerm(request):
+    """Fixture to create a term."""
+    params = getattr(request, "param", {})
+    newTerm = Term.create(
+        description=params.get("description", "Summer 2025"),
+        year=params.get("year", 2025),
+        academicYear=params.get("academicYear", "2024-2025"),
+        isSummer=params.get("isSummer", 1),
+        isCurrentTerm=params.get("isCurrentTerm", 0)
+    )
+
+    yield newTerm
+    newTerm.delete_instance() 
+
+@pytest.fixture
+def testProposal(request):
+    """Fixture to create form data for CCEMinorProposals."""
+    params = getattr(request, "param", {})
+    proposalType = params.get("proposalType", "summerExperience")
+    if proposalType == "summerExperience":
+        defaultProposal = {
+            "term": params.get("term", 3),
+            "roleDescription": params.get("roleDescription", "Assistant to Finn"),
+            "experienceType": params.get("experienceType", "Internship"),
+            "contentArea": params.get("contentArea", ["Power and inequality", "Civic literacy"]),
+            "orgName": params.get("orgName", "Finn's Org"),
+            "orgAddress":  params.get("orgAddress", "Finn's House"),
+            "orgPhone": params.get("orgPhone", "513-384-FINN"),
+            "orgWebsite": params.get("orgWebsite" ,"www.finn.com"),
+            "supervisorName": params.get("supervisorName", "Kafui Gle"),
+            "supervisorPhone": params.get("supervisorPhone", "513-226-GLEK"),
+            "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
+            'totalHours': params.get("totalHours", 300),
+            'totalWeeks': params.get("totalWeeks", 10),
+        }
+    else:
+        defaultProposal = {
+            "term": params.get("term", 3),
+            "experienceName": params.get("experienceName", "Assistant to Finn"),
+            "experienceType": params.get("experienceType", "Internship"),
+            "contentArea": params.get("contentArea", ["Power and inequality", "Civic literacy"]),
+            "orgName": params.get("orgName", "Finn's Org"),
+            "orgAddress":  params.get("orgAddress", "Finn's House"),
+            "orgPhone": params.get("orgPhone", "513-384-FINN"),
+            "orgWebsite": params.get("orgWebsite" ,"www.finn.com"),
+            "supervisorName": params.get("supervisorName", "Kafui Gle"),
+            "supervisorPhone": params.get("supervisorPhone", "513-226-GLEK"),
+            "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
+            'totalHours': params.get("totalHours", 300),
+            'totalWeeks': params.get("totalWeeks", 10),
+            'experienceDescription': params.get("experienceDescription", "Working day and night to make sure Finn's needs are met"),
+        } 
+    # override default values with those put in the parameters.
+    return defaultProposal
+
+
 @pytest.mark.integration
-def test_getCourseInformation():
+def test_getCourseInformation(testUser):
     with mainDB.atomic() as transaction:
         testCourse = Course.create(courseName="test get course information",
                                    courseAbbreviation="TGCI",
@@ -29,11 +101,11 @@ def test_getCourseInformation():
                                    courseCredit=1.0,
                                    term=3,
                                    status=1,
-                                   createdBy="bledsoef",
+                                   createdBy=testUser.username,
                                    serviceLearningDesignatedSections = "",
                                    previouslyApprovedDescription="")
         
-        testCourseInstructor = CourseInstructor.create(course=testCourse.id, user="bledsoef")
+        testCourseInstructor = CourseInstructor.create(course=testCourse.id, user=testUser.username)
         
         courseInformation = getCourseInformation(testCourse.id)
 
@@ -46,40 +118,27 @@ def test_getCourseInformation():
 
 
 @pytest.mark.integration
-def test_toggleMinorInterest():
+def test_toggleMinorInterest(testUser):
     with mainDB.atomic() as transaction:
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
-        
-        user = User.get_by_id("FINN")
         # make sure users have the default values of false and not interested, respectively
-        assert user.minorInterest == False
-        toggleMinorInterest("FINN")
+        assert testUser.minorInterest == False
+        toggleMinorInterest(testUser.username)
         
-        user = User.get_by_id("FINN")
+        testUser = User.get_by_id(testUser.username)
         # make sure toggleMinorInterest works correctly
-        assert user.minorInterest == True
+        assert testUser.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest("FINN")
+        toggleMinorInterest(testUser.username)
         
-        user = User.get_by_id("FINN")  
-        assert user.minorInterest == False
+        testUser = User.get_by_id(testUser.username)
+        assert testUser.minorInterest == False
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getProgramEngagementHistory():
+def test_getProgramEngagementHistory(testUser):
     with mainDB.atomic() as transaction:
         # create test objects
-        testUser = User.create(username="FINN",
-                                firstName="Not",
-                                lastName="Yet",
-                                email="FINN@berea.edu",
-                                bnumber="B91111111")
-        
         testingEvent = Event.create(name = "Testing event",
                                     term = 3,
                                     description = "This Event is Created to be tested.",
@@ -98,7 +157,7 @@ def test_getProgramEngagementHistory():
         testingEvent = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                              .join(Program).switch()
                              .join(EventParticipant)
-                             .where(EventParticipant.user == "FINN",
+                             .where(EventParticipant.user == testUser.username,
                                     Event.term == 3,
                                     Program.id == 2,
                                     Event.id == testingEvent)
@@ -106,31 +165,57 @@ def test_getProgramEngagementHistory():
         program = Program.get_by_id(2)
 
         # get the actual data from getProgramEngagementHistory
-        actualData = getProgramEngagementHistory(2, "FINN", 3)
+        actualData = getProgramEngagementHistory(2, testUser.username, 3)
         expectedData = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
         assert actualData == expectedData
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCCEMinorProposals():
+@pytest.mark.parametrize("testProposal", [
+    {"proposalType": "otherEngagement"},
+    {"proposalType": "summerExperience"},
+ 
+], indirect=True)
+def test_getCCEMinorProposals(testUser, testProposal):
 
+    with mainDB.atomic() as transaction:
+
+        assert getCCEMinorProposals(testUser.username) == []
+
+        with app.app_context():
+            g.current_user = testUser.username
+            createOtherEngagementRequest(testUser.username, testProposal)
+
+        assert len(getCCEMinorProposals(testUser.username)) == 1
+        
+        with app.app_context():
+            g.current_user = testUser.username
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
+
+        assert len(getCCEMinorProposals(testUser.username)) == 2
+        
+        summerExperienceCount = 0
+        otherExperienceCount = 0
+        for experience in getCCEMinorProposals(testUser.username):
+            if experience["type"] == "Summer Experience":
+                summerExperienceCount+=1
+            elif experience["type"] == "Other Engagement":
+                otherExperienceCount+=1
+            else:
+                raise AssertionError
+            
+        assert summerExperienceCount == 1
+        assert otherExperienceCount == 1
+
+        transaction.rollback()
     
 
 
-    getCCEMinorProposals("ayisie")
-
-
-
 @pytest.mark.integration
-def test_getCommunityEngagementByTerm():
+def test_getCommunityEngagementByTerm(testUser):
     with mainDB.atomic() as transaction:
-        # create testing objects  
-        testUser = User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")   
-        
+        # create testing objects   
+
         testingServiceEvent = Event.create(name = "Testing event",
                                     term = 1, # Fall 2020
                                     description = "This Service Event is Created to be tested.",
@@ -168,19 +253,13 @@ def test_getCommunityEngagementByTerm():
                 ("Summer 2021", 3):[{"name":serviceCourse.courseName, "id":serviceCourse.id, "type":"course", "matched": False, "term":serviceCourse.term.id}]})
         
         # get the actual result from getCommunityEngagementByTerm
-        actualServiceResult = getCommunityEngagementByTerm("FINN")
+        actualServiceResult = getCommunityEngagementByTerm(testUser.username)
 
         assert actualServiceResult == expectedServiceResult
         transaction.rollback()
 
     with mainDB.atomic() as transaction:
-        # create testing objects
-        testUser = User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
-            
+        
         testingNonServiceEvent = Event.create(name = "Testing non-service event",
                                     term = 2,
                                     description = "This Non-Service Event is Created to be tested.",
@@ -223,7 +302,7 @@ def test_getCommunityEngagementByTerm():
             ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
         
         # get the actual result from getCommunityEngagementByTerm
-        actualNonServiceResult = getCommunityEngagementByTerm("FINN")
+        actualNonServiceResult = getCommunityEngagementByTerm(testUser.username)
 
         assert actualNonServiceResult == expectedNonServiceResult
         assert actualNonServiceResult != unexpectedResultWithoutServiceEvent
@@ -437,116 +516,55 @@ def test_getMinorProgress():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_createSummerExperience():
+def test_createSummerExperience(testUser, testTerm, testProposal):
     with mainDB.atomic() as transaction:
         # create testing objects
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
         
+        testProposal["term"] = testTerm
+
         User.create(username="glek",
                     firstName="kafui",
                     lastName="gle",
                     email="kaf@berea.edu",
                     bnumber="B91111113")
         
-        newTerm = Term.create(description="Summer 2025",
-            year=2025,
-            academicYear="2024-2025",
-            isSummer=1,
-            isCurrentTerm=0)
-        
-        testFormData1 = ImmutableMultiDict({
-            "term": newTerm,
-            "roleDescription": "Assistant to Finn",
-            "experienceType": "Internship",
-            "contentArea": ["Power and inequality", "Civic literacy"],
-            "orgName": "Finn's Org",
-            "orgAddress": "Finn's House",
-            "orgPhone": "513-384-FINN",
-            "orgWebsite": "www.finn.com",
-            "supervisorName": "Finn",
-            "supervisorPhone": "513-384-FINN",
-            "supervisorEmail": "finn@finn.com",
-        })
-
-        testFormData2 = ImmutableMultiDict({
-            "term": newTerm,
-            "roleDescription": "Assistant to Finn",
-            "experienceType": "Some other experience type",
-            "contentArea": ["Power and inequality", "Civic literacy"],
-            "orgName": "Finn's Org",
-            "orgAddress": "Finn's House",
-            "orgPhone": "513-384-FINN",
-            "orgWebsite": "www.finn.com",
-            "supervisorName": "Finn",
-            "supervisorPhone": "513-384-FINN",
-            "supervisorEmail": "finn@finn.com",
-        })
-        
         # verify FINN has no summer experiences in currently
-        initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
+        initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
 
         assert len(initialSummerExperiences) == 0
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
             g.current_user = "glek"
-            createSummerExperience('FINN', testFormData1)
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
 
-        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
+        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
-        # create the summer experience with the test data and verify FINN has a new entry
-        with app.app_context():
-            g.current_user = "glek"
-            createSummerExperience("FINN", testFormData2)
-
-        newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == "FINN", CCEMinorProposal.proposalType == 'Summer Experience'))
-        assert len(newSummerExperiences) == 2
-
+        assert newSummerExperiences[0].createdBy.username == "glek"
+        
         transaction.rollback()
 
+@pytest.mark.parametrize("testProposal", [
+    {"proposalType": "otherEngagement"}
+], indirect=True)
 @pytest.mark.integration
-def test_createOtherEngagementRequest():
+def test_createOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        User.create(username="FINN",
-                    firstName="Not",
-                    lastName="Yet",
-                    email="FINN@berea.edu",
-                    bnumber="B91111111")
-        
+        user = testUser
         User.create(username="glek",
                     firstName="kafui",
                     lastName="gle",
                     email="kaf@berea.edu",
                     bnumber="B91111113")
         
-        testInfo = {'term': 3,
-                    'experienceName': 'Test Experience',
-                    'orgName': 'Test Company',
-                    'orgAddress': '123 test ln',
-                    'orgPhone': '(123)-456-7890',
-                    'orgPhone': '(123)-456-7890',
-                    'orgWebsite': "kafui.com",
-                    'supervisorPhone': '(123)-798-3516',
-                    'supervisorName': 'kafui',
-                    'supervisorEmail': 'test@supervisor.com',
-                    'totalHours': 300,
-                    'totalWeeks': 10,
-                    'experienceDescription': 'Test Description',
-                    'filename': 'test_file.txt',
-                   }
-
         # Save the requested event to the database
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagementRequest('FINN', testInfo)
+            createOtherEngagementRequest(user.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
-        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == "FINN")
+        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == testUser.username)
        
         assert len(initialOtherExperiences) == 1 
 

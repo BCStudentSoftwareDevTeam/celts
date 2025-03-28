@@ -129,9 +129,10 @@
                 
                 <div class="form-group">
                     <label class="form-label" for="experienceHoursOver300"><strong>Will your experience include at least 300 hours of work over the span of at least 8 weeks?</strong></label><br>
-                    <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes"
+                    <input type="radio" id="yes300hours" name="experienceHoursOver300" value="Yes" required
                         {% if proposal and (proposal.totalHours == 300) %} checked {% endif %}
                         {% if viewing %} disabled {% endif %}>
+
                     <label for="yes300hours">Yes</label><br>
                     <input type="radio" id="no300hours" name="experienceHoursOver300" value="No"
                         {% if proposal and (proposal.totalHours < 300) %} checked {% endif %}

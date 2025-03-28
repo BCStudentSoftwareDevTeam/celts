@@ -74,6 +74,15 @@ $(document).ready(function() {
     let hoursWeeksBoxes = $("#totalHours, #totalWeeks")
     hoursWeeksBoxes.prop('required', true); 
   })
+
+  $("#totalHours").on("input", function() {
+    if ($(this).val() >= 300) {
+      this.setCustomValidity('Please enter a number less than 300.')     
+      this.reportValidity()        
+    } else {
+      this.setCustomValidity('')
+    }
+  })
     
   // Determine which checkbox was clicked and its current checked status, uncheck others
   let typeBoxes = $("#powerInequality, #communityIdentity, #civicLiteracy, #civicSkills")
