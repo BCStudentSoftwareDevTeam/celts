@@ -25,12 +25,12 @@
     <div class="row">
       <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
         <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link {{ 'active' if activeTab == 'sustainedCommunityEngagements' or activeTab is not defined else '' }}" id="sustainedCommunityEngagements"
-            data-bs-toggle="pill" data-bs-target="#pills-sustainedCommunityEngagements" type="button" role="tab" aria-controls="pills-sustainedCommunityEngagements" aria-selected="true">Sustained Community Engagements</button>
+          <button class="nav-link {{ 'active' if activeTab == 'sustainedCommunityEngagements' else '' }}" id="sustainedCommunityEngagements"
+            data-bs-toggle="pill" data-bs-target="#pills-sustainedCommunityEngagements" type="button" role="tab" aria-controls="pills-sustainedCommunityEngagements" aria-selected="{{'true' if activeTab == 'sustainedCommunityEngagements' else 'false'}}">Sustained Community Engagements</button>
         </li>
         <li class="col-md-3 col-12 nav-item" role="presentation">
           <button class="nav-link {{ 'active' if activeTab == 'manageProposals' else '' }}" id="manageProposals"
-            data-bs-toggle="pill" data-bs-target="#pills-manageProposals" type="button" role="tab" aria-controls="pills-manageProposals" aria-selected="false">Manage Proposals</button>
+            data-bs-toggle="pill" data-bs-target="#pills-manageProposals" type="button" role="tab" aria-controls="pills-manageProposals" aria-selected="{{'true' if activeTab == 'manageProposals' else 'false'}}">Manage Proposals</button>
         </li>
       </ul>
     </div>
