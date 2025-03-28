@@ -65,8 +65,7 @@ def manageVolunteersPage(eventID):
   
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
         
-        allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
-        
+        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
         # ----------- Get miscellaneous data -----------
 
         participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
