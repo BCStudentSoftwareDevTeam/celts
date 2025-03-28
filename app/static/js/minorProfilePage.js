@@ -51,7 +51,7 @@ $(document).ready(function() {
       contentType: false,
       processData: false,
       success: function(response) { 
-          window.location.href = `/profile/${username}/cceMinor`
+          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
@@ -109,7 +109,7 @@ $(document).ready(function() {
       contentType: false,
       processData: false,
       success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor`
+        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
