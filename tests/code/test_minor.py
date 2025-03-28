@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from peewee import *
 from flask import g
 from collections import OrderedDict
@@ -25,11 +26,11 @@ def testUser(request):
     """Fixture to create a user"""
     params = getattr(request, "param", {})
     newUser = User.create(
-        username=params.get("username", "FINN"),
+        username=params.get("username", f"bledsoef{uuid.uuid4().hex[:8]}"), # create a random username to make sure there are no conflicts with duplicates
         firstName=params.get("firstName", "Fin"),
         lastName=params.get("lastName", "Bledso"),
         email=params.get("email", "bledsoefin@gmail.com"),
-        bnumber=params.get("bnumber", "B12312312"),
+        bnumber=params.get("bnumber", f"B{uuid.uuid4().hex[:8]}"),
     )
     yield newUser
     newUser.delete_instance()
@@ -170,13 +171,44 @@ def test_getProgramEngagementHistory(testUser):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCCEMinorProposals(testUser):
-    # testUser is a fixture
+@pytest.mark.parametrize("testProposal", [
+    {"proposalType": "otherEngagement"},
+    {"proposalType": "summerExperience"},
+ 
+], indirect=True)
+def test_getCCEMinorProposals(testUser, testProposal):
 
-    assert getCCEMinorProposals(testUser.username) == []
+    with mainDB.atomic() as transaction:
 
-    # createOtherEngagementRequest()
+        assert getCCEMinorProposals(testUser.username) == []
 
+        with app.app_context():
+            g.current_user = testUser.username
+            createOtherEngagementRequest(testUser.username, testProposal)
+
+        assert len(getCCEMinorProposals(testUser.username)) == 1
+        
+        with app.app_context():
+            g.current_user = testUser.username
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
+
+        assert len(getCCEMinorProposals(testUser.username)) == 2
+        
+        summerExperienceCount = 0
+        otherExperienceCount = 0
+        for experience in getCCEMinorProposals(testUser.username):
+            if experience["type"] == "Summer Experience":
+                summerExperienceCount+=1
+            elif experience["type"] == "Other Engagement":
+                otherExperienceCount+=1
+            else:
+                raise AssertionError
+            
+        assert summerExperienceCount == 1
+        assert otherExperienceCount == 1
+
+        transaction.rollback()
+    
 
 
 @pytest.mark.integration
