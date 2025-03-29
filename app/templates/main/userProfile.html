@@ -510,9 +510,6 @@
               <h5>Requirement Progress</h5>
               <ul>
               {% for req in bonnerRequirements %}
-                <span>{{req.name}}</span>
-              {% endfor %}
-              {% for req in bonnerRequirements %}
                 <li>{{req.name}}
                 {% if req.frequency == "term"%}
                   {% for a in range(req.missedTerms) %}

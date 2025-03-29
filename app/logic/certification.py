@@ -7,16 +7,26 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 
 def termsAttended(certification, username=None):
-    if certification:
-        if username:
-            attendance = RequirementMatch.select().where(RequirementMatch.requirement_id == certification)
+    '''
+    Function to differentiate retreived terms attended by a user for certification that has a frequency of term
+    '''
+    if username:
+        attendance = (RequirementMatch
+                   .select()
+                   .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))  # Join EventParticipant
+                   .where(RequirementMatch.requirement_id == certification)  # Filter by requirement_id
+                   .where(EventParticipant.user == username))  # Filter by user
     termsAttended = len(attendance)
-    print("ssdt", termsAttended)
     return termsAttended
             
 def termsMissed(certification=None, username=None): 
+    '''
+    Function to hypothetically populated the maximum amount of certification a student can miss based on their class classification
+    '''
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     currentTerm = Term.select(Term).where(Term.isCurrentTerm == True).get() 
+
+    # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term
     if currentTerm.isSummer == True:
         current = f'Fall {currentTerm.year}'
         currentTerm = Term.select(Term).where(Term.description == current).get()
@@ -65,22 +75,28 @@ def getCertRequirements(certification=None, username=None):
                 .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))
                 .where(EventParticipant.user.is_null(True) | (EventParticipant.user == username))
                 .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
+
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
-        reqList = reqList.distinct()
-
         certs = []
         for cert in reqList:
             if username:
                 cert.requirement.completed = bool(cert.__dict__['completed'])
+                # this is to get the calculation when it comes to events with term as their frequency
                 if cert.requirement.frequency == "term":
                     cert.requirement.missedTerms = termsMissed(cert.requirement.id, username)
                     cert.requirement.attendedTerms = termsAttended(cert.requirement.id, username)
             certs.append(cert.requirement)
-        print("ccceee", certs)
-        return certs
 
-        #return [cert.requirement for cert in reqList]
+        # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist
+        newCerts = []
+        certsIndex = 0
+        for cert in certs:
+            if certs[certsIndex] not in newCerts:
+                newCerts.append(certs[certsIndex])
+            certsIndex += 1
+        certs = newCerts
+        return certs
     
     certs = {}
     for cert in reqList:
