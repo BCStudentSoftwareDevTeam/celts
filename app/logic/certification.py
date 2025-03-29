@@ -10,14 +10,16 @@ def termsAttended(certification, username=None):
     '''
     Function to differentiate retreived terms attended by a user for certification that has a frequency of term
     '''
+    attendedTerms = []
     if username:
         attendance = (RequirementMatch
                    .select()
                    .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))  # Join EventParticipant
                    .where(RequirementMatch.requirement_id == certification)  # Filter by requirement_id
                    .where(EventParticipant.user == username))  # Filter by user
-    termsAttended = len(attendance)
-    return termsAttended
+    for attend in range(len(attendance)):
+        attendedTerms.append(attendance[attend].event.term.description)
+    return attendedTerms
             
 def termsMissed(certification=None, username=None): 
     '''
@@ -37,7 +39,8 @@ def termsMissed(certification=None, username=None):
             termMissed = level
         elif User.classLevel == classLevel[level]:
             termMissed = level*2
-    termMissed = termMissed - termsAttended(certification, username)
+    termAttended = termsAttended(certification, username)
+    termMissed = termMissed - len(termAttended)
     return termMissed
 
 
@@ -85,7 +88,8 @@ def getCertRequirements(certification=None, username=None):
                 # this is to get the calculation when it comes to events with term as their frequency
                 if cert.requirement.frequency == "term":
                     cert.requirement.missedTerms = termsMissed(cert.requirement.id, username)
-                    cert.requirement.attendedTerms = termsAttended(cert.requirement.id, username)
+                    cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
+                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
             certs.append(cert.requirement)
 
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist
