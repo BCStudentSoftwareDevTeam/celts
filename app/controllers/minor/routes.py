@@ -25,8 +25,7 @@ def viewCceMinor(username):
                             proposalList = getCCEMinorProposals(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
-                            activeTab=activeTab,
-                            allTerms = getSummerExperience(username))
+                            activeTab=activeTab)
     
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
 def requestOtherEngagement(username):
