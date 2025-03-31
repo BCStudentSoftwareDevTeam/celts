@@ -75,7 +75,7 @@ def getMinorSpreadsheet():
     # If we're in 2025, can we get the minor information for 2023?
     studentProgress = getMinorProgress()
     columnNames = studentProgress[0]
-    columnNames = ["First Name", "Last Name", "Username", "B-Number", "Graduation Status", "Number of Engagements", "Requested Community Engagement", "Completed Summer Experience"]
+    columnNames = ["First Name", "Last Name", "Username", "B-Number", "Number of Engagements", "Completed Summer Experience"]
 
     filepath = f"{app.config['files']['base_path']}/minor_data.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
@@ -90,9 +90,10 @@ def getMinorSpreadsheet():
         columnIndex += 1
 
     for rowNumber, student in enumerate(studentProgress, 2):
-        student['hasGraduated'] = "Graduated" if student['hasGraduated'] else "Currently Enrolled"
+        if student['hasGraduated']: continue
+        student.pop('hasCommunityEngagementRequest')
+        student.pop('hasGraduated')
         student['hasSummer'] = "Yes" if student['hasSummer'] == "Complete" else "No"
-        student['hasCommunityEngagementRequest'] = "Yes" if student['hasCommunityEngagementRequest'] == 1 else "No"
         worksheet.set_row(rowNumber, None, format_row)
         if student['B-Number'] == None: student["B-Number"] = "No B-Number Found"
 
