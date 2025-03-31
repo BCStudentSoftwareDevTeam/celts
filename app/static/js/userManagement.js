@@ -35,7 +35,7 @@ $(document).ready(function(){
       searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
   });
   $("#searchProgramManagersInput").on("input", function() {
-      searchUser("searchProgramManagersInput", callbackProgramManager, true, "parentManager", "student");
+      searchUser("searchProgramManagersInput", callbackProgramManager, true, "parentManager", "all");
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();

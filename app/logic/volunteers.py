@@ -94,8 +94,8 @@ def setProgramManager(username, program_id, action):
            action: add, remove
 
     '''
-    manager=User.get(User.username==username)
+    programManager = User.get(User.username==username)
     if action == "add":
-        manager.addProgramManager(program_id)
+        programManager.addProgramManager(program_id)
     elif action == "remove":
-        manager.removeProgramManager(program_id)
+        programManager.removeProgramManager(program_id)
