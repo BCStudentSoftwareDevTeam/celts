@@ -100,6 +100,7 @@ $(document).ready(function() {
     event.preventDefault(); 
     var formData = new FormData(this); 
     var actionUrl = $(this).attr('action'); 
+    console.log(actionUrl)
     let username = $("#username").val()
     console.log(username)
     $.ajax({
@@ -120,6 +121,35 @@ $(document).ready(function() {
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
+
+
+  if(!viewing()) {
+    $("#submitButton").click(function(){
+        $("#submitProposalBtn").prop("disabled", true)
+        saveCourseData("/serviceLearning/approveCourse", function(response) {
+            window.location.replace("/manageServiceLearning")
+        })
+    });
+
+
+
+    function saveCourseData(url, successCallback) {
+        if (!validateForm()) return false;
+        var formData = $("form").serialize()
+        var instructorData = $.param(getCourseInstructors())
+    
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData + "&" + instructorData,
+            success: successCallback,
+            error: function(request, status, error) {
+             msgFlash("Error saving changes!", "danger")
+           }
+      });
+    }
+
+
 
   // ************** END OTHER ENGAGEMENT ************** //
 })
