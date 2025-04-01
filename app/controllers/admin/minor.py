@@ -13,7 +13,6 @@ def manageMinor():
     
     if request.method == 'POST':
         interested_students = request.form.getlist('interestedStudents[]')
-
         for i in interested_students:
             user = User.get(username=i)
             if not user.minorInterest:

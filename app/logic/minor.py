@@ -76,6 +76,7 @@ def toggleMinorInterest(username, isAdding):
             return {"error": "User not found"}, 404
         
         user.minorInterest = isAdding
+        user.declaredMinor = False
         user.save()
 
     except Exception as e:
