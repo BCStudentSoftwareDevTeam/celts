@@ -24,40 +24,45 @@
 
 
 {% block app_content %}
-<h1 class="text-center mb-5">Graduation Managment</h1>
-<div class="col-md-3 me-auto"></div>
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="btn-group">
-    <button type="button" class="btn btn-primary dropdown-toggle" id = "main-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-      All
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" data-filter="all" >All</a>
-      <a class="dropdown-item" data-filter="bonner" >Bonner Students</a>
-      <a class="dropdown-item" data-filter="cce" data-cce = "{{CCEstudents}}" >CCE Minor</a>
+<h1 class="text-center mb-5">Graduation Management</h1>
+<div class="col-md-3"></div>
+<div class="d-flex align-items-center mb-3">
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="btn-group">
+      <div id="categoryDropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle me-1" id="main-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+          All
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" data-filter="all">All</a>
+          <a class="dropdown-item" data-filter="bonner">Bonner Students</a>
+          <a class="dropdown-item" data-filter="cce" data-cce="{{CCEstudents}}">CCE Minor</a>
+        </div>
+      </div>
+      <div id="bonnerDropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle me-1" id = "cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+          Bonner Cohorts by Year
+        </button>
+        <div class="dropdown-menu">
+          {%for year in bonnercohorts%}
+            <a class="dropdown-item dropdown-item-new" data-filter = "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnercohorts[year]}}" >{{year}}-{{year+1}}</a> 
+          {%endfor%}
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="btn-group" id = "bongroup">
-    <button type="button" class="btn btn-primary dropdown-toggle bonner-filter" id = "cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
-      Bonner Cohorts by Year
-    </button>
-    <div class="dropdown-menu">
-      {%for year in bonnercohorts%}
-        <a class="dropdown-item dropdown-item-new" data-filter = "bonner" data-cohort-year= "{{year}}" data-cohort-users = "{{bonnercohorts[year]}}" >{{year}}-{{year+1}}</a> 
-      {%endfor%}
-    </div>
+
+    <a href="/gradStudentsxls/all" align="right" id="exportFile" target="_blank">
+      <button class="btn btn-success" id="export">Export</button>
+    </a>
   </div>
 
-  <a href="/gradStudentsxls/all" id="exportFile" target="_blank">
-    <button class="btn btn-success" id="export">Export</button>
-  </a>
 </div>
 
 <table class="display" id="gradStudentsTable">
     <thead>
         <tr>
-            <th>Name</th>
             <th>Graduated</th>
+            <th>Name</th>
             <th>Class Level</th>
         </tr>
     </thead>
