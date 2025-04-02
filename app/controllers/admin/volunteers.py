@@ -65,8 +65,7 @@ def manageVolunteersPage(eventID):
   
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
         
-        allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
-        
+        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
         # ----------- Get miscellaneous data -----------
 
         participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
@@ -214,9 +213,9 @@ def deleteBackgroundCheck():
 def updateProgramManager():
     if g.current_user.isCeltsAdmin:
         data =request.form
-        username = User.get(User.username == data["user_name"])
-        program = Program.get_by_id(data['program_id'])
-        setProgramManager(data["user_name"], data["program_id"], data["action"])
+        username = User.get(User.username == data["username"])
+        program = Program.get_by_id(data['programId'])
+        setProgramManager(data["username"], data["programId"], data["action"])
         createActivityLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:

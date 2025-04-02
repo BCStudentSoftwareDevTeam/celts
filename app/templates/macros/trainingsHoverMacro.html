@@ -13,9 +13,9 @@
                 {% set isRsvpd = rsvpdOrAttended %}
                 {% set date = training.startDate.strftime("%m/%d/%Y") %}
                 {% if isRsvpd %}
-                    <p><b>{{trainingName}}</b>: <br>Rsvp'd for training on {{date}}</p>
+                    <p><b>{{trainingName}}</b>: <br>RSVP'd for training on {{date}}</p>
                 {% else %}
-                    <p><b>{{trainingName}}</b>: <br>Not Rsvp'd for training on {{date}}</p>
+                    <p><b>{{trainingName}}</b>: <br>Not RSVP'd for this training, next training on {{date}}</p>
                 {% endif %}
             {% endif%}
         {% endfor %}
