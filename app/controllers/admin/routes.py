@@ -370,8 +370,6 @@ def eventDisplay(eventId):
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
-        
-        
 
         return render_template("events/eventView.html",
                                 eventData=eventData,
