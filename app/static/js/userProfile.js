@@ -329,8 +329,8 @@ $(document).ready(function(){
 
 });
 
-function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
-  let program_id=$(el).attr('data-programid');
+function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
+  let programId=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
@@ -340,9 +340,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"user_name":volunteer_username, //student staff: user_name
-            "program_id":program_id,       // program id
-            "action":action,          //action: add or remove
+    data : {"username":volunteerUsername, 
+            "programId":programId,       
+            "action":action,          
              },
 
      success: function(s){
