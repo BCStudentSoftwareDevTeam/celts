@@ -15,11 +15,11 @@ $(document).ready(function() {
         $('#main-filter').first().text(buttonText);
         $('#cohortFilter').text('Bonner Cohort');
 
-
-
         $('#exportFile').attr('href', `/gradStudentsxls/${filterType}`);
 
         if (filterType === 'all') {
+            $('#bonnerDropdown').hide()
+
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
                 $(this.node()).show();  
@@ -27,6 +27,8 @@ $(document).ready(function() {
             gradStudentsTable.draw(); 
             
         } else if (filterType === 'bonner' )  {
+            $('#bonnerDropdown').show()
+
             gradStudentsTable.rows().every(function() {
                 var studentType = $(this.node()).data('student-type'); 
                 if (studentType === 'bonner') {
@@ -38,6 +40,8 @@ $(document).ready(function() {
             gradStudentsTable.draw();
         
         } else if (filterType === 'cce') {
+            $('#bonnerDropdown').hide()
+
             var cceUsers = $(this).data('cce'); 
 
             const sanitizedString = cceUsers
@@ -129,64 +133,40 @@ $(document).ready(function() {
         gradStudentsTable.draw();
     });
 
-$('.graduated-checkbox').change(function() {
-    let hasGraduated = $(this).is(':checked');
-    let username = $(this).data('username');
-    let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
-    let graduationURL = "/" + username + "/" + routeUrl + "/";
+    $('.graduated-checkbox').change(function() {
+        let hasGraduated = $(this).is(':checked');
+        let username = $(this).data('username');
+        let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
+        let graduationURL = "/" + username + "/" + routeUrl + "/";
 
-    $.ajax({
-        type: "POST",
-        url: graduationURL,
-        success: function(response) {
+        $.ajax({
+            type: "POST",
+            url: graduationURL,
+            success: function(response) {
 
-            if ($('.alert').length >= 1 ){
+                if ($('.alert').length >= 1 ){
 
-                $('.alert').alert('close'); 
-            };
-            console.log("Graduation status updated successfully!");
-            msgFlash("Graduation status updated successfully!", "success");
-            MessageDelay()
-        },
-        error: function(status, error) {
-            msgFlash("Error updating graduation status.", "error");
-            console.error("Error updating graduation status:", error);
-            MessageDelay()
-        }
+                    $('.alert').alert('close'); 
+                };
+                console.log("Graduation status updated successfully!");
+                msgFlash("Graduation status updated successfully!", "success");
+                messageDelay()
+            },
+            error: function(status, error) {
+                msgFlash("Error updating graduation status.", "error");
+                console.error("Error updating graduation status:", error);
+                messageDelay()
+            }
+        });
     });
-});
+})
 
+function messageDelay(){
 
-    $('#selectAll').click(function() {
-
-        if (selectAllMode) {
-            gradStudentsTable.rows().every(function() {
-                var rowNode = this.node(); 
-                if ($(rowNode).is(':visible')) {
-                    $(rowNode).find('.graduated-checkbox').prop('checked', true ).change();
-                } 
-            });
-            $(this).text('Deselect All');
-        } else {
-
-            gradStudentsTable.rows().every(function() {
-                var rowNode = this.node(); 
-                if ($(rowNode).is(':visible')) {
-                    $(rowNode).find('.graduated-checkbox').prop('checked', false ).change();
-                } 
-            });
-            $(this).text('Select All');
-        }
-        selectAllMode = !selectAllMode; 
-    });
-});
-
-function MessageDelay(){
-
-     return setTimeout(FadeMessage,5000)
+     return setTimeout(fadeMessage, 5000)
 }
 
-function FadeMessage(){
+function fadeMessage(){
     if ($('.alert').length > 0 ){
         $('.alert').fadeOut('fast');  
     };
