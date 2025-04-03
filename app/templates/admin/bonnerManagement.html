@@ -38,7 +38,7 @@
                         {% set show = "active" if subTab|int == year else "" %}
                         {% set aria = "true" if subTab|int == year else "false" %}
                         <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
-                    {% endfor %}
+                    {% endfor %}  
                 </div>
                 <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
                     {% for year, users in cohorts.items() %}

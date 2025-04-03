@@ -33,7 +33,7 @@ from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createActivityLog
-from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.certification import getCertRequirementsWithCompletion, termsMissed
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
@@ -218,9 +218,7 @@ def viewUsersProfile(username):
                                      "onTranscript": onTranscript}),
 
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
-
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
