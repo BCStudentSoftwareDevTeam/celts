@@ -16,6 +16,7 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
+from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -54,14 +55,14 @@ def test_toggleMinorInterest():
         user = User.get_by_id("FINN")
         # make sure users have the default values of false and not interested, respectively
         assert user.minorInterest == False
-        toggleMinorInterest("FINN")
+        toggleMinorInterest("FINN", True)
         
         user = User.get_by_id("FINN")
         # make sure toggleMinorInterest works correctly
         assert user.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest("FINN")
+        toggleMinorInterest("FINN", False)
         
         user = User.get_by_id("FINN")  
         assert user.minorInterest == False
@@ -545,4 +546,80 @@ def test_getSummerTerms():
 
         assert len(list(noSummerTerms)) == 0
 
+        transaction.rollback()
+        
+        
+@pytest.mark.integration
+def testDeclareMinorInterest():
+    
+    with mainDB.atomic() as transaction:
+        # Get three students with interest in minor
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        # Declare students interested in minor
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == True
+        assert student2.declaredMinor == True
+        assert student3.declaredMinor == True
+        
+        # Undeclare students
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def testGetDeclaredMinorStudents():
+    
+    with mainDB.atomic() as transaction:
+        # Get all the declared students
+        declaredStudents = getDeclaredMinorStudents()
+        
+        assert declaredStudents == []
+        assert len(declaredStudents) == 0
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        student1.declaredMinor = True
+        student2.declaredMinor = True
+        student3.declaredMinor = True
+        
+        student1.save()
+        student2.save()
+        student3.save()
+        
+        # Get all the declared students after recent changes
+        newDeclaredStudents = getDeclaredMinorStudents()
+        
+        assert len(newDeclaredStudents) == 3
+        
         transaction.rollback()
