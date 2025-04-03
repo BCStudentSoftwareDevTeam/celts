@@ -1,29 +1,12 @@
 import searchUser from './searchUser.js'
 
-function emailMinorCandidates(studentEmails){
-  // If there are any students interested or declared, open the mailto link
-  if (studentEmails.length) {
-    const windowRef = window.open(`mailto:${studentEmails}`, '_blank');
-    windowRef.focus();
-    setTimeout(function(){
-      if(!windowRef.document) {
-          windowRef.close();
-      }
-    }, 500);
-  } else {
-    msgFlash("No interested or declared students to email.", "info")
-  }
-}
-
-function emailAll(){
-  let declaredStudentEmails =  $("#declaredStudentEmails").val();
-  let interestedStudentEmails =  $("#interestedStudentEmails").val();
-  let allMinorCandidateEmails = declaredStudentEmails + ";" + interestedStudentEmails;
-  
-  emailMinorCandidates(allMinorCandidateEmails);
-}
 
 $(document).ready(function() {
+  $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    let activeTab = $(e.target).attr('id').replace('-tab', '');
+    let newUrl = window.location.pathname + '?tab=' + activeTab;
+    history.pushState(null, '', newUrl);
+  });
 
   $('.remove_minor_candidate').on('click', function() {
       let username = $(this).attr('id'); 
@@ -35,14 +18,72 @@ $(document).ready(function() {
           data: JSON.stringify({ "isAdding": isAdding }),
           contentType: "application/json",
           success: function(response) {
-            window.location.reload(true)
+            location.reload()
           },
           error: function(error) {
            console.log("error")
           }
       });
   });
+
+
+  $('#engagedStudentsTable').DataTable();
+  $('#interestedStudentsTable').DataTable();
+  $('#declaredStudentsTable').DataTable();
+
+  $('#emailAllInterested').on('click', function() {
+    emailMinorCandidates($("#interestedStudentEmails").val())
+  });
+
+  $('#emailAllDeclared').on('click', function() {
+    emailMinorCandidates($("#declaredStudentEmails").val())
+  });
+
+  $('#emailAll').on('click', emailAll);
+
+  $(".updateMinorInterestButton").on("click", function(e){
+    e.preventDefault();
+    let interestForm = $("#updateMinorInterestForm");
+    let url = $(this).data("url");
+    let activeTab = $(".nav-tabs .active").attr("id").replace("-tab", "");
+
+    // Append the active tab to the form action URL
+    interestForm.attr("action", url + "?tab=" + activeTab);
+    interestForm.submit();
+    });
+
+  let urlParams = new URLSearchParams(window.location.search);
+  let activeTab = urlParams.get('tab');
+  if (activeTab) {
+      $('#studentTabs button[data-bs-target="#' + activeTab + '"]').tab('show');
+  }
+
 })
+
+
+function emailMinorCandidates(studentEmails){
+  // If there are any students interested or declared, open the mailto link
+  if (studentEmails.length) {
+    const windowRef = window.open(`mailto:${studentEmails}`, '_blank');
+    windowRef.focus();
+    setTimeout(function(){
+      if(!windowRef.document) {
+          windowRef.close();
+      }
+    }, 500);
+  } else {
+    msgFlash("No candidates to email.", "info")
+  }
+}
+
+function emailAll(){
+  let declaredStudentEmails =  $("#declaredStudentEmails").val();
+  let interestedStudentEmails =  $("#interestedStudentEmails").val();
+  let allMinorCandidateEmails = declaredStudentEmails + ";" + interestedStudentEmails;
+  
+  emailMinorCandidates(allMinorCandidateEmails);
+}
+
 
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
@@ -102,26 +143,3 @@ $("#addStudentInput").on("input", function() {
 searchUser("addStudentInput", callback, true, "addInterestedStudentsModal");
 });
 
-$(document).ready(function() {
-  $('#engagedStudentsTable').DataTable();
-  $('#interestedStudentsTable').DataTable();
-  $('#declaredStudentsTable').DataTable();
-
-  $('#emailAllInterested').on('click', function() {
-    emailMinorCandidates($("#interestedStudentEmails").val())
-  });
-
-  $('#emailAllDeclared').on('click', function() {
-    emailMinorCandidates($("#declaredStudentEmails").val())
-  });
-
-  $('#emailAll').on('click', emailAll);
-
-  $(".updateMinorInterestButton").on("click", function(e){
-    e.preventDefault();
-    let interestForm = $("#updateMinorInterestForm");
-    let url = $(this).data("url")
-    interestForm.attr("action", url)
-    interestForm.submit()
-  });
-});

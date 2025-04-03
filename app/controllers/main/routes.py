@@ -600,6 +600,6 @@ def updateMinorDeclaration(username):
         flash("Error updating candidate minor status", "danger")
         abort(403)
         
-        
-    return redirect(url_for('admin.manageMinor'))
+    tab = request.args.get("tab", "interested")
+    return redirect(url_for('admin.manageMinor', tab=tab))
 

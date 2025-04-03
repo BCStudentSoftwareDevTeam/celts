@@ -575,6 +575,19 @@ def testDeclareMinorInterest():
         assert student2.declaredMinor == True
         assert student3.declaredMinor == True
         
+        # Undeclare students
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
         transaction.rollback()
 
 
@@ -592,9 +605,13 @@ def testGetDeclaredMinorStudents():
         student2 = User.get_by_id("partont")
         student3 = User.get_by_id("bryanta")
         
-        student1.declaredMinor = not student1.declaredMinor
-        student2.declaredMinor = not student2.declaredMinor
-        student3.declaredMinor = not student3.declaredMinor
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        student1.declaredMinor = True
+        student2.declaredMinor = True
+        student3.declaredMinor = True
         
         student1.save()
         student2.save()
@@ -606,5 +623,3 @@ def testGetDeclaredMinorStudents():
         assert len(newDeclaredStudents) == 3
         
         transaction.rollback()
-        
-    pass
