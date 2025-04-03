@@ -1,0 +1,63 @@
+{% macro minorCandidatesTab(tabData, defaultActiveTab='interested') %}
+    <ul class="nav nav-tabs" id="studentTabs" role="tablist">
+    {% for tab in tabData %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link {% if tab.id == defaultActiveTab %}active{% endif %}" 
+                  id="{{ tab.id }}-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#{{ tab.id }}" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="{{ tab.id }}" 
+                  aria-selected="{% if tab.id == defaultActiveTab %}true{% else %}false{% endif %}">
+            {{ tab.label }}
+          </button>
+        </li>
+    {% endfor %}
+  </ul>
+  
+  <div class="tab-content mt-3" id="studentTabsContent">
+    <form id="updateMinorInterestForm" class="d-none" method="POST"></form>
+    
+    {% for tab in tabData %}
+        <div class="tab-pane fade {% if tab.id == defaultActiveTab %}show active{% endif %}" 
+             id="{{ tab.id }}" 
+             role="tabpanel" 
+             aria-labelledby="{{ tab.id }}-tab">
+          <table class="display" id="{{ tab.id }}StudentsTable">
+            <thead>
+              <tr>
+                <th class="w-75">Name</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in tab.students %}
+                <tr>
+                  <td class="w-75">
+                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">
+                      {{student.firstName}} {{student.lastName}}
+                    </a>
+                  </td>
+                  <td class="text-center">
+                    <button class="updateMinorInterestButton btn btn-primary btn-sm me-3" 
+                            data-url="/profile/{{student.username}}/updateMinorDeclaration" 
+                            id="{{student.username}}" 
+                            data-username="{{student.username}}">{{ tab.actionLabel }}
+                    </button>
+                    <button type="button" 
+                            class="remove_minor_candidate btn btn-danger btn-sm" 
+                            id="{{student.username}}" 
+                            aria-label="remove minor candidate">Remove Student
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+              <input id="{{ tab.id }}StudentEmails" hidden value="{{ tab.emailString }}"/>
+            </tbody>
+          </table>
+        </div>
+    {% endfor %}
+  </div>
+
+{% endmacro %}
