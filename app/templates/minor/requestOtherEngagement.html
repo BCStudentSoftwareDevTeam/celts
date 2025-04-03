@@ -17,8 +17,8 @@
 {% endblock %}
 
 {% block app_content %}
-   {% set viewing = (not editable) and (otherExperience != None) %}
-   <form id='otherEngagementForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/otherEngagement" method="POST">
+   {% set viewing = (not editable) and proposal %}
+   <form id='proposalForm' enctype="multipart/form-data" role='form' action="{{postRoute}}" method="POST">
       <div class='row'>
         <div class="container">
           <div class="container text-center">
@@ -28,7 +28,6 @@
                     Please fill out this form to submit a proposal for another community engaged experience that pertains to at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
                 </p>
                   <input type="hidden" value="{{ user.username }}" id="username"/>
-                  <input type="hidden" id="otherEngagementID" name="experienceID" value="{{proposal.id if proposal else None}}">
               </div>
           </div>
   
@@ -109,12 +108,24 @@
           
           <br><br>
 
-          <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
-            <input class="btn btn-secondary" id="exitButton" type="button" value="Exit"/> 
-            {% if not viewing %}
-                <input class="btn btn-primary" type="submit" value="Save"/> 
-                <input class="btn btn-primary" type="submit" value="Save and Approve"/> 
-            {% endif %}
+          <div class="row align-items-end pt-5 pb-5">
+            <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
+              <input class="btn btn-secondary justify-start" id="exitButton" type="button" value="Back"/> 
+            </div>
+            <div class="col-2 col-xl-1 col-12 text-sm-center">
+              <span class="step"></span>
+              <span class="step"></span>
+              <span class="step"></span>
+            </div>
+            <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+              {% if not viewing %}
+                  <input class="btn btn-primary" type="button" id="saveAndExitButton" value="Save and Exit"/>
+                  <input class="btn btn-primary" type="button" value="Submit"/> 
+                  {% if g.current_user.isCeltsAdmin and proposal %}
+                    <input class="btn btn-success" type="button" value="Submit and Approve"/> 
+                  {% endif %}
+              {% endif %}
+            </div>
           </div>
       </div>
   </form>

@@ -19,7 +19,7 @@ from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.logic.minor import ( 
-    createOtherEngagementRequest,
+    createOtherEngagement,
     getMinorInterest,
     getMinorProgress,
     setCommunityEngagementForUser,
@@ -82,6 +82,7 @@ def testProposal(request):
             "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
             'totalHours': params.get("totalHours", 300),
             'totalWeeks': params.get("totalWeeks", 10),
+            'status': params.get("status", 'In Progress'), 
         }
     else:
         defaultProposal = {
@@ -97,6 +98,7 @@ def testProposal(request):
             'totalHours': params.get("totalHours", 300),
             'totalWeeks': params.get("totalWeeks", 10),
             'experienceDescription': params.get("experienceDescription", "Working day and night to make sure Finn's needs are met"),
+            'status': params.get("status", 'In Progress'), 
         } 
     # override default values with those put in the parameters.
     return defaultProposal
@@ -183,8 +185,6 @@ def test_getProgramEngagementHistory(testUser):
 @pytest.mark.integration
 @pytest.mark.parametrize("testProposal", [
     {"proposalType": "otherEngagement"},
-    {"proposalType": "summerExperience"},
- 
 ], indirect=True)
 def test_getCCEMinorProposals(testUser, testProposal):
 
@@ -194,10 +194,18 @@ def test_getCCEMinorProposals(testUser, testProposal):
 
         with app.app_context():
             g.current_user = testUser.username
-            createOtherEngagementRequest(testUser.username, testProposal)
+            createOtherEngagement(testUser.username, testProposal)
 
         assert len(getCCEMinorProposals(testUser.username)) == 1
         
+        # convert the otherEngagement to a summerExperience proposal type
+        testProposal.pop("experienceName") 
+        testProposal.pop("experienceDescription") 
+
+        testProposal["roleDescription"] = "Assistant to Finn"
+        testProposal["experienceType"] = "Internship"
+        testProposal["contentArea"] = ["Power and inequality", "Civic literacy"]
+
         with app.app_context():
             g.current_user = testUser.username
             createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
@@ -494,27 +502,29 @@ def test_getMinorProgress():
             "supervisorName": "Finn",
             "supervisorPhone": "513-384-FINN",
             "supervisorEmail": "finn@finn.com",
+            "status": "In Progress"
         })
    
         khattsRequestedEngagement = {'term': 3,
-                    'experienceName': 'Test Experience',
-                    'orgName': 'Test Company',
-                    'orgAddress': '123 test ln',
-                    'orgPhone': '(123)-456-7890',
-                    'orgPhone': '(123)-456-7890',
-                    'orgWebsite': "kafui.com",
-                    'supervisorPhone': '(123)-798-3516',
-                    'supervisorName': 'kafui',
-                    'supervisorEmail': 'test@supervisor.com',
-                    'totalHours': 300,
-                    'totalWeeks': 10,
-                    'experienceDescription': 'Test Description',
-                   }
+            'experienceName': 'Test Experience',
+            'orgName': 'Test Company',
+            'orgAddress': '123 test ln',
+            'orgPhone': '(123)-456-7890',
+            'orgPhone': '(123)-456-7890',
+            'orgWebsite': "kafui.com",
+            'supervisorPhone': '(123)-798-3516',
+            'supervisorName': 'kafui',
+            'supervisorEmail': 'test@supervisor.com',
+            'totalHours': 300,
+            'totalWeeks': 10,
+            'experienceDescription': 'Test Description',
+            "status": "In Progress"
+        }
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
         with app.app_context():
             g.current_user = "ramsayb2"
-            createOtherEngagementRequest("khatts", khattsRequestedEngagement)
+            createOtherEngagement("khatts", khattsRequestedEngagement)
             createSummerExperience("khatts", khattsSummerExperience)
 
         minorProgressWithSummerAndRequestOther = getMinorProgress()
@@ -559,7 +569,7 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
     {"proposalType": "otherEngagement"}
 ], indirect=True)
 @pytest.mark.integration
-def test_createOtherEngagementRequest(testUser, testProposal):
+def test_createOtherEngagement(testUser, testProposal):
     with mainDB.atomic() as transaction:
         user = testUser
         User.create(username="glek",
@@ -571,7 +581,7 @@ def test_createOtherEngagementRequest(testUser, testProposal):
         # Save the requested event to the database
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagementRequest(user.username, testProposal)
+            createOtherEngagement(user.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
         initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == testUser.username)
@@ -603,7 +613,7 @@ def test_updateOtherEngagementRequest(testUser, testProposal):
         createdOtherEngagementRequest = None
         with app.app_context():
             g.current_user = "glek"
-            createdOtherEngagementRequest = createOtherEngagementRequest(user.username, ImmutableMultiDict(testProposal))
+            createdOtherEngagementRequest = createOtherEngagement(user.username, ImmutableMultiDict(testProposal))
 
         proposalID = createdOtherEngagementRequest.id
 

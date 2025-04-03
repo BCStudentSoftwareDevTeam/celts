@@ -7,7 +7,7 @@ from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, updateOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
+from app.logic.minor import createOtherEngagement, updateOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -30,7 +30,7 @@ def viewCceMinor(username):
                             allTerms = getSummerExperience(username))
     
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
-def requestOtherEngagement(username):
+def createOtherEngagementRequest(username):
     """
         Load minor management page with community engagements and summer experience
     """
@@ -39,13 +39,16 @@ def requestOtherEngagement(username):
 
     # once we submit the form for creation
     if request.method == "POST":
-        createOtherEngagementRequest(username, request.form)
+        formData = request.form.copy()
+        createOtherEngagement(username, formData)
+        
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
                             editable = True,
                             user = User.get_by_id(username),
                             selectableTerms = selectSurroundingTerms(g.current_term),
+                            postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
                             otherEngagement = None)
 
 @minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
@@ -66,23 +69,24 @@ def editOrViewProposal(proposalID: int):
                                 selectedTerm = selectedTerm,
                                 proposal = proposal)
     
-    if request.method == "POST":
-        if "OtherEngagement" in request.path:
-            updateOtherEngagementRequest(proposalID, request.form)
-        else:
-            updateSummerExperience(proposalID, request.form)
- 
-        return redirect(url_for('minor.viewCceMinor', username=proposal.student))
+    if request.method == "GET" and 'edit' in request.path:
+        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
+                                editable = True,
+                                contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
+                                selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
+                                user = User.get_by_id(proposal.student),
+                                postRoute = f"/cceMinor/editSummerExperience/{proposal.id}" if "SummerExperience" in request.path else f"/cceMinor/editOtherEngagement/{proposal.id}",
+                                proposal = proposal)
     
-    return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                            editable = True,
-                            contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
-                            selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
-                            user = User.get_by_id(proposal.student),
-                            proposal = proposal)
+    if "OtherEngagement" in request.path:
+        updateOtherEngagementRequest(proposalID, request.form.copy())
+    else:
+        updateSummerExperience(proposalID, request.form)
+ 
+    return redirect(url_for('minor.viewCceMinor', username=proposal.student))
 
 @minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
-def requestSummerExperience(username):
+def createSummerExperienceExperience(username):
     """
         Load minor management page with community engagements and summer experience
     """

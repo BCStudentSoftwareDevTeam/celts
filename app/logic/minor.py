@@ -32,7 +32,6 @@ def createSummerExperience(username, formData):
             student=user,
             proposalType = 'Summer Experience',
             contentAreas = contentAreas,
-            status="Pending",
             createdBy = g.current_user,
             **formData,
         )
@@ -48,7 +47,6 @@ def updateSummerExperience(proposalID, formData):
     try:
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
         formData = dict(formData)
-        print(formData)
         formData.pop("contentArea")
         CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
     except Exception as e:
@@ -268,7 +266,7 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def createOtherEngagementRequest(username, formData):
+def createOtherEngagement(username, formData):
     """
         Create a CCEMinorProposal entry based off of the form data
     """
@@ -276,7 +274,6 @@ def createOtherEngagementRequest(username, formData):
 
     return CCEMinorProposal.create(proposalType = 'Other Engagement',
                             createdBy = g.current_user,
-                            status = 'Pending',
                             student = user,
                             **formData
                             )
@@ -285,7 +282,6 @@ def updateOtherEngagementRequest(proposalID, formData):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
-
     CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
     
 def saveSummerExperience(username, summerExperience, currentUser):

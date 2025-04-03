@@ -16,6 +16,33 @@ $(document).ready(function() {
       }
   })
 
+  function saveProposalData(status) {
+    var formData = $("#proposalForm").serialize()
+    var actionURL = $("#proposalForm").attr('action')
+    let username = $("#username").val()
+    $.ajax({
+      url: actionURL,
+      type: 'POST',
+      data: formData + "&status=" + status,
+      processData: true,
+      success: function(response) {
+        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+}
+
+  $('#submitButton').on('click', function() {
+
+  })
+  $('#saveAndExitButton').on('click', function() {
+    saveProposalData("In Progress")
+  })
+  $('#submitAndApproveButton').on('click', function() {
+    
+  })
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
     window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 
@@ -37,27 +64,6 @@ $(document).ready(function() {
   // ************** SUMMER EXPERIENCE ************** //
   $('#hoursBelow300Container').hide()
   $('#otherExperienceDescription').hide()
-
-  $('#summerExperienceForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    let username = $("#username").val()
-    
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) { 
-          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  });
 
   $("input[name='experienceHoursOver300']").on("change", function() {
     toggleUnder300HoursTextarea();
@@ -96,27 +102,6 @@ $(document).ready(function() {
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
-  $('#otherEngagementForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    let username = $("#username").val()
-    console.log(username)
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  }); 
-
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });

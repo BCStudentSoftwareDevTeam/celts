@@ -19,7 +19,7 @@
 {% block app_content %}    
     {% set viewing = not editable and proposal %}
     <div name="Community-Engaged Summer Experience" class="pt-4">
-      <form id='summerExperienceForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/summerExperience" method="POST">
+      <form id='proposalForm' enctype="multipart/form-data" role='form' action="{{postRoute}}" method="POST">
         <div class='row'>
             <div class="container">
                 <div class='form-group mb-4 text-center'>
@@ -157,12 +157,25 @@
                 </div>
                 
                 <br><br>
-                <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
-                    <input class="btn btn-secondary" id="exitButton" type="button" value="Exit"/> 
-                    {% if not viewing %}
-                        <input class="btn btn-primary" type="submit" value="Send Request for Approval"/> 
-                    {% endif %}
-                </div>
+                <div class="row align-items-end pt-5 pb-5">
+                    <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
+                      <input class="btn btn-secondary justify-start" id="exitButton" type="button" value="Back"/> 
+                    </div>
+                    <div class="col-2 col-xl-1 col-12 text-sm-center">
+                      <span class="step"></span>
+                      <span class="step"></span>
+                      <span class="step"></span>
+                    </div>
+                    <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+                      {% if not viewing %}
+                          <input class="btn btn-primary" id="saveAndExitButton" type="button" value="Save and Exit"/>
+                          <input class="btn btn-primary" id="submitButton" type="button" value="Submit"/> 
+                          {% if g.current_user.isCeltsAdmin and proposal %}
+                            <input class="btn btn-success" id="submitAndApproveButton" type="button" value="Submit and Approve"/> 
+                          {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
             </div>
         </div>
       </form>
