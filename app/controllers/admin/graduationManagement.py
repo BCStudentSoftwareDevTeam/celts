@@ -15,11 +15,9 @@ def graduationManagement():
 
     users = getGraduationManagementUsers()
 
-    cohortYears = getBonnerCohorts().keys()
-
     return render_template('/admin/graduationManagement.html', 
                            users = users,
-                           cohortYears=cohortYears)
+                           cohortYears = getBonnerCohorts().keys())
 
 
 @admin_bp.route('/<username>/setGraduationStatus/', methods=['POST'])
@@ -36,7 +34,7 @@ def setGraduationStatus(username):
     except Exception as e:
         flash(f"Error updating graduation status for {username}", "danger")
     
-    return redirect(url_for("admin.graduationManagement"))
+    return ""
 
 
 @admin_bp.route("/gradStudentsxls/<filterType>", methods=['GET'])

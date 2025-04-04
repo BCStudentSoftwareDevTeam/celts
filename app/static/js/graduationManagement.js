@@ -54,9 +54,12 @@ $(document).ready(function() {
             type: "POST",
             data: {status: hasGraduated ? 1 : 0},
             url: `/${username}/setGraduationStatus`,
-            success: function(response) {},
+            success: function(response) {
+                location.reload()
+            },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);
+                location.reload()
             }
         });
     });
