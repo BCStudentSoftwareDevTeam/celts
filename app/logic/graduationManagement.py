@@ -1,43 +1,41 @@
-from collections import defaultdict
-from typing import List, Dict
-from playhouse.shortcuts import model_to_dict
-from peewee import JOIN, fn, Case, DoesNotExist
 import xlsxwriter
 from app import app
+from peewee import JOIN
 
 from app.models.user import User
-from app.logic.minor import getMinorProgress
-from app.logic.bonner import getBonnerCohorts
 from app.models.bonnerCohort import BonnerCohort
-from app.models.term import Term
+from app.logic.minor import getMinorProgress
 
-
-def getGraduatedStudent(username):
+def getGraduationManagementUsers():
     """
-    This function marks students as graduated
-    Parameters:
-    username: username of the user graduating
+    Function to fetch all senior students along with their CCE Minor Progress and Bonner Status 
+    """
+    elibibleUsers = (User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName, BonnerCohort.year)
+                 .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
+                 .where(User.classLevel=='Senior'))
+
+    cceStudents = set([user["username"] for user in getMinorProgress()])
+
+    graduationManagementUsers = []
+    for user in elibibleUsers:
+        userDict = user.__dict__
+        graduationManagementUsers.append({
+            "user": user,
+            "cohort": userDict['bonnercohort'].year if 'bonnercohort' in userDict else None,
+            "minorProgress": user.username in cceStudents})
+
+    return graduationManagementUsers
+
+
+def setGraduatedStatus(username, status):
+    """
+    Update a students graduation status based on the parameter status.
     """
     gradStudent = User.get(User.username == username)
-    if gradStudent:
-        gradStudent.hasGraduated = True
-        gradStudent.save()
-        return True
-    return False
-
-def removeGraduatedStudent(username):
-    """
-    This function unmarks students as graduated
-    Parameters:
-    username: username of the user graduating
-
-    """
-    notGradStudent = User.get(User.username == username)
-    if notGradStudent:
-        notGradStudent.hasGraduated = False
-        notGradStudent.save()
-        return True
-    return False
+    
+    gradStudent.hasGraduated = int(status)
+    gradStudent.save()
+ 
 
 def makeGraduatedXls(filterType):
     """
@@ -47,12 +45,8 @@ def makeGraduatedXls(filterType):
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
-    
-    print('filtertype:' , filterType, "#####")
-
 
     CCEusers = getMinorProgress()
-    bonnercohorts = getBonnerCohorts()
 
     filepath = app.config['files']['base_path'] + '/GraduatedStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})

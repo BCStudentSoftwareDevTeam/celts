@@ -4,15 +4,14 @@ $(document).ready(function() {
         searching: true,
         info: true
     });
-    let selectAllMode = true;
 
-    $('.alert').alert('close'); 
+    $("#bonnerDropdown").hide()
 
-    $('.dropdown-item').click(function() {
+    $('.main-dropdown-item').click(function() {
         var filterType = $(this).data('filter'); 
         var buttonText = $(this).text();
 
-        $('#main-filter').first().text(buttonText);
+        $('#mainFilter').first().text(buttonText);
         $('#cohortFilter').text('Bonner Cohort');
 
         $('#exportFile').attr('href', `/gradStudentsxls/${filterType}`);
@@ -22,152 +21,56 @@ $(document).ready(function() {
 
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
-                $(this.node()).show();  
+                $(this.node()).show();
             });
             gradStudentsTable.draw(); 
             
-        } else if (filterType === 'bonner' )  {
+        } else if (filterType === 'bonner' ) {
             $('#bonnerDropdown').show()
 
-            gradStudentsTable.rows().every(function() {
-                var studentType = $(this.node()).data('student-type'); 
-                if (studentType === 'bonner') {
-                    $(this.node()).show(); 
-                } else {
-                    $(this.node()).hide();
-                }
-            });
-            gradStudentsTable.draw();
-        
+            filterTable('student-type', "bonner")
+
         } else if (filterType === 'cce') {
             $('#bonnerDropdown').hide()
-
-            var cceUsers = $(this).data('cce'); 
-
-            const sanitizedString = cceUsers
-              .replace(/'/g, '"') 
-              .replace(/False/g, 'false') 
-              .replace(/Decimal\('(\d+)'\)/g, '$1'); 
             
-            const CCElist = {};
-            
-            const userItems = sanitizedString.slice(1, -1).split('}, {');
-            
-            userItems.forEach(item => {
-  
-              item = item.replace(/[{}/]/g, '').trim();
-            
-
-              const pairs = item.split(', ');
-            
-              let username, engagementCount;
-            
-              pairs.forEach(pair => {
-                const [key, value] = pair.split(': '); 
-                if (key.trim() === '"username"') {
-                  username = value.replace(/"/g, '');
-                } else if (key.trim() === '"engagementCount"') {
-                  engagementCount = parseFloat(value[9]); 
-                  
-                }
-              });
-            
-              
-              if (username && engagementCount !== undefined) {
-                CCElist[username] = engagementCount; 
-              }
-            });
-            
-
-            gradStudentsTable.rows().every(function() {
-                var studentUserName = $(this.node()).data('username');
-                for ( const [key, value] of Object.entries(CCElist)){
-                    var username = key;
-                    if ( studentUserName == username && CCElist[key] > 0 ) {
-                        $(this.node()).show(); 
-                        break;
-                    } else {
-                        $(this.node()).hide();
-                    }
-                }
-            });
-            gradStudentsTable.draw();
+            filterTable('cce-progress', "True")
         }
     });
 
-    $('.dropdown-item-new').click(function() {
-
-        var cohortusers = $(this).data('cohort-users');
+    $('.bonner-dropdown-item').click(function() {
+        var cohortYear = $(this).data('cohort-year');
         var buttonText = $(this).text();
 
         $('#cohortFilter').text(buttonText);
-        $('#main-filter').first().text('All');
 
-        $('#selectAll').text('Select All');
-        selectAllMode = true
-
-        gradStudentsTable.rows().every(function(){
-            $(this.node()).hide();
-        })
-        const cleanedString = cohortusers
-            .replace(/^\[|\]$/g, '') 
-            .replace(/<User:\s*|>/g, '') 
-            .trim(); 
-
-        const CohortArray = cleanedString.split(',').map(user => user.trim());
-
-        gradStudentsTable.rows().every(function() {
-            var studentUserName = $(this.node()).data('username');
-
-            for ( let i = 0 ; i < CohortArray.length ; i++){
-                
-                var studentType = $(this.node()).data('student-type'); 
-                if (studentType === 'bonner' && studentUserName == CohortArray[i]) {
-                    $(this.node()).show(); 
-                    break;
-                } else {
-                    $(this.node()).hide();
-                }
-            }         
-        });
-        gradStudentsTable.draw();
+        filterTable('cohort-year', cohortYear)
     });
 
     $('.graduated-checkbox').change(function() {
         let hasGraduated = $(this).is(':checked');
         let username = $(this).data('username');
-        let routeUrl = hasGraduated ? "hasGraduated" : "hasNotGraduated";
-        let graduationURL = "/" + username + "/" + routeUrl + "/";
 
         $.ajax({
             type: "POST",
-            url: graduationURL,
-            success: function(response) {
-
-                if ($('.alert').length >= 1 ){
-
-                    $('.alert').alert('close'); 
-                };
-                console.log("Graduation status updated successfully!");
-                msgFlash("Graduation status updated successfully!", "success");
-                messageDelay()
-            },
+            data: {status: hasGraduated ? 1 : 0},
+            url: `/${username}/setGraduationStatus`,
+            success: function(response) {},
             error: function(status, error) {
-                msgFlash("Error updating graduation status.", "error");
                 console.error("Error updating graduation status:", error);
-                messageDelay()
             }
         });
     });
+
+    function filterTable(dataFilter, condition) {
+        gradStudentsTable.rows().every(function() {
+            var data = $(this.node()).data(dataFilter); 
+            if (data === condition) {
+                $(this.node()).show(); 
+            } else {
+                $(this.node()).hide();
+            }
+        });
+        gradStudentsTable.draw();
+    }
 })
 
-function messageDelay(){
-
-     return setTimeout(fadeMessage, 5000)
-}
-
-function fadeMessage(){
-    if ($('.alert').length > 0 ){
-        $('.alert').fadeOut('fast');  
-    };
-}
