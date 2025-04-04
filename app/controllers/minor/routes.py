@@ -4,12 +4,9 @@ from peewee import DoesNotExist
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
-from app.models.attachmentUpload import AttachmentUpload
-
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -20,14 +17,54 @@ def viewCceMinor(username):
         return abort(403)
 
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    selectedSummerTerm, summerExperience = getSummerExperience(username)
+
+    activeTab = request.args.get("tab", "sustainedCommunityEngagements")
+
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
+                            proposalList = getCCEMinorProposals(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = summerExperience if summerExperience else "",
-                            selectedSummerTerm = selectedSummerTerm,
                             totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
-                            summerTerms = getSummerTerms())
+                            activeTab=activeTab)
+    
+@minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
+def requestOtherEngagement(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin or g.current_user.username == username):
+        return abort(403)
+
+    # once we submit the form for creation
+    if request.method == "POST":
+        createOtherEngagementRequest(username, request.form)
+        return redirect(url_for('minor.viewCceMinor', username=username))
+    
+    return render_template("minor/requestOtherEngagement.html",
+                            user = User.get_by_id(username),
+                            selectableTerms = selectSurroundingTerms(g.current_term),
+                            allTerms = getSummerExperience(username))
+
+
+@minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
+def requestSummerExperience(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
+    if not (g.current_user.isAdmin or g.current_user.username == username):
+        return abort(403)
+    
+    # once we submit the form for creation
+    if request.method == "POST":
+        createSummerExperience(username, request.form)
+        return redirect(url_for('minor.viewCceMinor', username=username))
+    
+    summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)
+
+    return render_template("minor/summerExperience.html",
+                            summerTerms = summerTerms,
+                            user = User.get_by_id(username),
+                            )
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
@@ -57,41 +94,3 @@ def modifyCommunityEngagement(username):
     
     return ""
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
-def requestOtherEngagement(username):
-    """
-        Load the "request other" form and submit it.
-    """
-    user = User.get_by_id(username)
-    terms = selectSurroundingTerms(g.current_term)
-    
-
-    if request.method == 'POST':
-        filename = None
-        attachment = request.files.get("attachmentObject")
-        if attachment:
-                addFile = FileHandler(getFilesFromRequest(request))
-                addFile.saveFiles()
-                filename = attachment.filename
-        formData = request.form.copy()
-        formData["filename"] = filename
-        saveOtherEngagementRequest(formData)
-        flash("Other community engagement request submitted.", "success")
-        return redirect(url_for("minor.viewCceMinor", username=user))
-
-
-    return render_template("/minor/requestOtherEngagement.html",
-                            user=user,
-                            terms=terms)
-
-@minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    saveSummerExperience(username, request.form, g.current_user)
-
-    return ""
-
-@minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
-def deleteSummerExperience(username):        
-    removeSummerExperience(username)
-
-    return ""
