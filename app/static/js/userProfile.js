@@ -1,16 +1,17 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let data = {"username":username}
+    let isAdding = true 
+    
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",
-        data: data,
+        data: JSON.stringify({ "isAdding": isAdding }),
+        contentType: "application/json",
         success: function(s) {
-
         },
         error: function(request, status, error) {
-          console.log(error)
+          console.log(status, error)
           msgToast("Error!", "Failed to save changes!")
         }
     });
