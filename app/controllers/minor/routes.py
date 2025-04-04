@@ -40,7 +40,7 @@ def createOtherEngagementRequest(username):
     # once we submit the form for creation
     if request.method == "POST":
         formData = request.form.copy()
-        createOtherEngagement(username, formData)
+        createOtherEngagementRequest(username, formData)
         
         return redirect(url_for('minor.viewCceMinor', username=username))
     
@@ -48,7 +48,7 @@ def createOtherEngagementRequest(username):
                             editable = True,
                             user = User.get_by_id(username),
                             selectableTerms = selectSurroundingTerms(g.current_term),
-                            postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
+                            postRoute = f"/cceMinor/{username}/otherEngagement", 
                             otherEngagement = None)
 
 @minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])

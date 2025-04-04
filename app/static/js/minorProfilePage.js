@@ -35,12 +35,14 @@ $(document).ready(function() {
 }
 
   $('#submitButton').on('click', function() {
+     saveProposalData("Submitted")
 
   })
   $('#saveAndExitButton').on('click', function() {
     saveProposalData("In Progress")
   })
   $('#submitAndApproveButton').on('click', function() {
+    saveProposalData("Approved")
     
   })
   $('#exitButton').on('click', function() {
