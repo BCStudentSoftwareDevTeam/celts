@@ -26,12 +26,11 @@ def createSummerExperience(username, formData):
     try:
         user = User.get(User.username == username)
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        formData = dict(formData)
-        formData.pop("contentArea")
-        return CCEMinorProposal.create(
+        CCEMinorProposal.create(
             student=user,
             proposalType = 'Summer Experience',
             contentAreas = contentAreas,
+            status="Pending",
             createdBy = g.current_user,
             **formData,
         )
@@ -46,8 +45,6 @@ def updateSummerExperience(proposalID, formData):
     """
     try:
         contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        formData = dict(formData)
-        formData.pop("contentArea")
         CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
     except Exception as e:
         print(f"Error saving summer experience: {e}")
@@ -266,14 +263,15 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def createOtherEngagement(username, formData):
+def createOtherEngagementRequest(username, formData):
     """
         Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
 
-    return CCEMinorProposal.create(proposalType = 'Other Engagement',
+    CCEMinorProposal.create(proposalType = 'Other Engagement',
                             createdBy = g.current_user,
+                            status = 'Pending',
                             student = user,
                             **formData
                             )
@@ -282,6 +280,8 @@ def updateOtherEngagementRequest(proposalID, formData):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
+
+    
     CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
     
 def saveSummerExperience(username, summerExperience, currentUser):
