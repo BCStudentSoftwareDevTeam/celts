@@ -129,7 +129,7 @@ def test_toggleMinorInterest(testUser):
         assert testUser.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest(testUser.username, True)
+        toggleMinorInterest(testUser.username, False)
         
         testUser = User.get_by_id(testUser.username)
         assert testUser.minorInterest == False
