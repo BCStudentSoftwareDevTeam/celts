@@ -5,7 +5,7 @@ from peewee import *
 from flask import g
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
-from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from app import app
 
 from app.models import mainDB
@@ -22,13 +22,9 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
-<<<<<<< HEAD
-from app.logic.fileHandler import FileHandler
-from werkzeug.datastructures import FileStorage
-
-=======
 from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
->>>>>>> 1e270f70da842b6140997d186b86138684acfbf3
+from app.logic.fileHandler import FileHandler
+
 
 @pytest.fixture
 def testUser(request):
