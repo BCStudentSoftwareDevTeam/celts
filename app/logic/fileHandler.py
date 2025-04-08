@@ -6,7 +6,7 @@ from app.models.program import Program
 import glob
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None, programId=None):
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None):
         self.files = files 
         if not isinstance(self.files, list):
                 self.files = [self.files]  
@@ -14,12 +14,15 @@ class FileHandler:
         self.courseId = courseId
         self.eventId = eventId
         self.programId = programId
+        self.proposalId = proposalId
         if courseId:
             self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         elif programId:
             self.path = os.path.join(self.path, app.config['files']['program_attachment_path']) 
+        elif proposalId:
+            self.path = os.path.join(self.path, app.config['files']['proposal_attachment_path']) 
         
     def makeDirectory(self):
         try:
@@ -32,7 +35,7 @@ class FileHandler:
     
     def getFileFullPath(self, newfilename=''):
         try:
-            if self.eventId or self.courseId or self.programId:
+            if self.eventId or self.courseId or self.programId or self.proposalId:
                 filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
             pass
@@ -72,6 +75,17 @@ class FileHandler:
                     currentProgramID = fileName
                     saveFileToFilesystem = currentProgramID
 
+
+                elif self.proposalId:
+                    fileType = file.filename.split('.')[-1]
+                    fileName = f"{self.proposalId}.{fileType}"
+                    isFileInProposal = AttachmentUpload.select().where(AttachmentUpload.proposal == self.proposalId,
+                                                                    AttachmentUpload.fileName == fileName).exists()
+                    if not isFileInProposal:
+                        # add the new file
+                        AttachmentUpload.create(proposal=self.proposalId, fileName=fileName)
+                        saveFileToFilesystem = fileName
+
                 else:
                     saveFileToFilesystem = file.filename
 
@@ -79,8 +93,8 @@ class FileHandler:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            print(e)
 
     def retrievePath(self, files):
         pathDict = {}

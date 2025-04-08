@@ -51,7 +51,7 @@
                   {% for admin in currentAdmins %}
                      <tr>
                        <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
-                       <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
+                       <td class="text-end"><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
                      </tr>
                   {% endfor %}
                 </tbody>
@@ -71,7 +71,7 @@
                   {% for studentStaff in currentStudentStaff %}
                     <tr>
                       <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
-                      <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
+                      <td class="text-end"><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
                      </tr>
                   {% endfor %}
                 </tbody>
@@ -135,7 +135,7 @@
           </div>
   
           {% for program in programs %}
-          <div class="d-flex justify-content-between align-items-center mb-2 w-100 ps-3" style="max-width: 350px;">
+          <div class="d-flex justify-content-between align-items-center mb-2 w-50 ps-3">
             <div class="flex-grow-1 text-start">
               <span class="form-label borderless">{{ program.programName }}</span>
             </div>
@@ -158,6 +158,13 @@
                         "bereaUrl": "{{ program.bereaUrl if program.bereaUrl else "" }}"
                     }'>
                       Edit Details</button>
+              <button class ="btn btn-success btn-sm editProgramManagersButton"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#editProgramManagers"
+                      data-managers="{{program.managers}}"
+                      data-programid="{{program.id}}"
+                      data-name="{{program.programName}}"
+                      > Edit Managers </button>
             </div>
           </div>
           {% endfor %}
@@ -178,7 +185,7 @@
           <div class="modal-body">
             <div class="container">
               <div class="row">
-                <!-- Left modal column -->
+                <!-- Left modal column-->
                 <div class="col-md-6">
                   <div class="mb-3">
                     <label for="programName" class="form-label mt-2">Program Name</label>
@@ -241,6 +248,37 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- Program Management Modal -->
+  <div class="modal fade" id="editProgramManagers">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="programNameHeader"> Edit Program Managers </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+          <a id="programPlaceholder" class="d-none" data-programid=""></a>
+          <div class="modal-body">
+            <div id="parentManager">
+              {{createInputsButtons("searchProgramManagersInput", "Add Manager")}}<br>
+            </div>
+            <table class="table mb-0">
+            <thead>
+              <tr>
+                <th colspan="2" scope="col">Program Managers</th>
+              </tr>
+            </thead>
+            <tbody id="programManagersTable">
+              
+            </tbody>
+          </table>
+        <p id="noManagersText" class="text-center mt-2">This program has no assigned managers.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}

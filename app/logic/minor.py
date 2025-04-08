@@ -1,7 +1,8 @@
 from collections import defaultdict
 from typing import List, Dict
+from flask import flash, g
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN, fn, Case, DoesNotExist
+from peewee import JOIN, fn, Case, DoesNotExist, SQL
 import xlsxwriter
 
 from app import app
@@ -16,7 +17,45 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
-from app.models.communityEngagementRequest import CommunityEngagementRequest
+from app.models.cceMinorProposal import CCEMinorProposal
+
+
+def createSummerExperience(username, formData):
+    """
+        Given the username of the student and the formData which includes all of
+        the SummerExperience information, create a new SummerExperience object.
+    """
+    try:
+        user = User.get(User.username == username)
+        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+        CCEMinorProposal.create(
+            student=user,
+            proposalType = 'Summer Experience',
+            contentAreas = contentAreas,
+            status="Pending",
+            createdBy = g.current_user,
+            **formData,
+        )
+    except Exception as e:
+        print(f"Error saving summer experience: {e}")
+        raise e
+
+def getCCEMinorProposals(username):
+    proposalList = []
+
+    cceMinorProposals = list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
+
+    for experience in cceMinorProposals:
+        proposalList.append({
+            "id": experience.id,
+            "type": experience.proposalType,
+            "createdBy": experience.createdBy, 
+            "supervisor": experience.supervisorName,
+            "term": experience.term,
+            "status": experience.status,
+        })
+
+    return proposalList 
 
 def getEngagementTotal(engagementData):
     """ 
@@ -33,7 +72,7 @@ def getMinorInterest() -> List[Dict]:
     """
     interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-                              .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
+                              .where(User.isStudent & User.minorInterest & ~User.declaredMinor & IndividualRequirement.username.is_null(True)))
 
     interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
@@ -45,18 +84,18 @@ def getMinorProgress():
         and returns a list of dicts containing the student, how many engagements they have completed, 
         and if they have completed the summer experience. 
     """
-    summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
+    summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     engagedStudentsWithCount = (
         User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
                                                                     fn.SUM(summerCase).alias('hasSummer'),
-                                                                    fn.IF(fn.COUNT(CommunityEngagementRequest.id) > 0, True, False).alias('hasCommunityEngagementRequest'))
+                                                                    fn.IF(fn.COUNT(CCEMinorProposal.id) > 0, True, False).alias('hasCCEMinorProposal'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
-            .switch(User).join(CommunityEngagementRequest, JOIN.LEFT_OUTER, on= (User.username == CommunityEngagementRequest.user,))
+            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
             .where(CertificationRequirement.certification_id == Certification.CCE)
             .group_by(User.firstName, User.lastName, User.username)
-            .order_by(fn.COUNT(IndividualRequirement.id).desc())
+            .order_by(SQL("engagementCount").desc())
     )
     engagedStudentsList = [{'firstName': student.firstName,
                             'lastName': student.lastName,
@@ -64,7 +103,7 @@ def getMinorProgress():
                             'B-Number': student.bnumber,
                             'hasGraduated': student.hasGraduated, 
                             'engagementCount': student.engagementCount - student.hasSummer,
-                            'hasCommunityEngagementRequest': student.hasCommunityEngagementRequest,
+                            'hasCCEMinorProposal': student.hasCCEMinorProposal,
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
@@ -109,10 +148,45 @@ def toggleMinorInterest(username):
     """
         Given a username, update their minor interest and minor status.
     """
-    user = User.get(username=username)
-    user.minorInterest = not user.minorInterest
+    
+    try:
+        user = User.get(username=username)
+        if not user:
+            return {"error": "User not found"}, 404
+        
+        user.minorInterest = isAdding
+        user.declaredMinor = False
+        user.save()
 
-    user.save()
+    except Exception as e:
+        print(f"Error updating minor interest: {e}")
+        return {"error": str(e)}, 500
+    
+def declareMinorInterest(username):
+    """
+    Given a username, update their minor declaration
+    """
+    user = User.get_by_id(username)
+    
+    if not user:
+        raise ValueError(f"User with username '{username}' not found.")
+    
+    user.declaredMinor = not user.declaredMinor
+    
+    try:
+        user.save()
+    except Exception as e:
+        raise RuntimeError(f"Failed to declare interested student: {e}")
+    
+def getDeclaredMinorStudents():
+    """
+    Get a list of the students who have declared minor
+    """
+    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor)
+
+    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
+
+    return interestedStudentList
     
 def getCourseInformation(id):
     """
@@ -252,14 +326,21 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def saveOtherEngagementRequest(engagementRequest):
+def createOtherEngagementRequest(username, formData):
     """
-        Create a CommunityEngagementRequest entry based off of the form data
+        Create a CCEMinorProposal entry based off of the form data
     """
-    engagementRequest['status'] = "Pending"
-    CommunityEngagementRequest.create(**engagementRequest)
-    
+    user = User.get(User.username == username)
 
+    cceObject = CCEMinorProposal.create(proposalType = 'Other Engagement',
+                            createdBy = g.current_user,
+                            status = 'Pending',
+                            student = user,
+                            **formData
+                            )
+
+    return cceObject
+    
 def saveSummerExperience(username, summerExperience, currentUser):
     """
         :param username: username of the student that the summer experience is for
@@ -312,12 +393,3 @@ def removeSummerExperience(username):
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
-
-
-def getSummerTerms():
-    """
-        Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
-    """
-    summerTerms = list(Term.select().where(Term.isSummer).order_by(Term.termOrder))
-
-    return summerTerms
