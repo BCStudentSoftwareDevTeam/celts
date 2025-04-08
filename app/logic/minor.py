@@ -74,7 +74,7 @@ def getMinorInterest() -> List[Dict]:
     """
     interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-                              .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
+                              .where(User.isStudent & User.minorInterest & ~User.declaredMinor & IndividualRequirement.username.is_null(True)))
 
     interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
@@ -108,14 +108,49 @@ def getMinorProgress():
                             'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
-def toggleMinorInterest(username):
+def toggleMinorInterest(username, isAdding):
     """
         Given a username, update their minor interest and minor status.
     """
-    user = User.get(username=username)
-    user.minorInterest = not user.minorInterest
+    
+    try:
+        user = User.get(username=username)
+        if not user:
+            return {"error": "User not found"}, 404
+        
+        user.minorInterest = isAdding
+        user.declaredMinor = False
+        user.save()
 
-    user.save()
+    except Exception as e:
+        print(f"Error updating minor interest: {e}")
+        return {"error": str(e)}, 500
+    
+def declareMinorInterest(username):
+    """
+    Given a username, update their minor declaration
+    """
+    user = User.get_by_id(username)
+    
+    if not user:
+        raise ValueError(f"User with username '{username}' not found.")
+    
+    user.declaredMinor = not user.declaredMinor
+    
+    try:
+        user.save()
+    except Exception as e:
+        raise RuntimeError(f"Failed to declare interested student: {e}")
+    
+def getDeclaredMinorStudents():
+    """
+    Get a list of the students who have declared minor
+    """
+    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor)
+
+    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
+
+    return interestedStudentList
     
 def getCourseInformation(id):
     """
