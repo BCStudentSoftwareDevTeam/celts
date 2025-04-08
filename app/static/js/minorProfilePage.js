@@ -36,6 +36,7 @@ function changeAction(action){
             console.log(status, error);
         }
       })
+      resetAllSelections()
     };
 
 
