@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
+from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -62,13 +62,13 @@ def special_otherEvents():
         nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
-def test_studentled_events(training_events):
+def test_getStudentLedEvents(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
-def test_getUpcomingStudentLed_events():
+def test_getUpcomingStudentLedCount():
     with mainDB.atomic() as transaction: 
         testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
         currentTestTerm = Term.get_by_id(5)
@@ -144,7 +144,7 @@ def test_getUpcomingStudentLed_events():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_training_events(training_events):
+def test_getTrainingEvents(training_events):
     with mainDB.atomic() as transaction:
         testTerm = Term.create( description = "Test Term",
                                 year = 1919,
@@ -185,7 +185,6 @@ def test_training_events(training_events):
                                              isTraining = True,
                                              startDate = "1919-12-12",
                                              program = testNotBonnerProgram.id)
-   
 
         userFaculty = User.create(username = "TestNotBonner",
                                   bnumber = "B000000000",
@@ -260,10 +259,37 @@ def test_training_events(training_events):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_bonner_events(special_bonner):
+def test_getBonnerEvents(special_bonner):
     bonner = special_bonner
     allBonnerProgram = [bonner]
     assert allBonnerProgram == getBonnerEvents(2)
+
+@pytest.mark.integration
+def test_getEngagementEvents():
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create( description = "Test Term",
+                                year = 1919,
+                                academicYear = "1919-1920",
+                                isSummer = False,
+                                isCurrentTerm = False)
+        
+        engagementEvent = Event.create(name = "Bonner Test Training",
+                                             term = testTerm,
+                                             description = "Not Bonner",
+                                             timeStart = "18:00:00",
+                                             timeEnd = "21:00:00",
+                                             location = "basement",
+                                             isEngagement = True,
+                                             startDate = "1919-12-12",
+                                             program = 1)
+        
+        returnedEvent = getEngagementEvents(testTerm)
+        returnedNonEngEvent = getEngagementEvents(2)
+        assert len(returnedEvent) == 1
+        assert len(returnedNonEngEvent) == 0
+        assert returnedEvent == [engagementEvent]
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getOtherEvents(special_otherEvents):

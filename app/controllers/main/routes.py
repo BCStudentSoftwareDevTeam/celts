@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents, getEngagementEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -35,7 +35,7 @@ from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
+from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
@@ -76,9 +76,9 @@ def events(selectedTerm, activeTab, programID):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
+        
     currentTime = datetime.datetime.now()
-
-    listOfTerms = Term.select()
+    listOfTerms = Term.select().order_by(Term.termOrder)
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
@@ -88,6 +88,7 @@ def events(selectedTerm, activeTab, programID):
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
+    engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
 
@@ -104,6 +105,7 @@ def events(selectedTerm, activeTab, programID):
     # Get the count of all term events for each category to display in the event list page.
     studentLedEventsCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
+    engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
 
@@ -113,6 +115,9 @@ def events(selectedTerm, activeTab, programID):
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
+        for event in engagementEvents:
+            if event.isPastEnd:
+                engagementEventsCount -= 1
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
@@ -125,6 +130,7 @@ def events(selectedTerm, activeTab, programID):
         return jsonify({
             "studentLedEventsCount": studentLedEventsCount,
             "trainingEventsCount": trainingEventsCount,
+            "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount,
             "toggleStatus": toggleState
@@ -134,6 +140,7 @@ def events(selectedTerm, activeTab, programID):
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
+                            engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
                             otherEvents = otherEvents,
                             listOfTerms = listOfTerms,
@@ -574,9 +581,25 @@ def getDietInfo():
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
-        toggleMinorInterest(username)
+        data = request.get_json()
+        isAdding = data.get("isAdding", False)
+        
+        toggleMinorInterest(username, isAdding)
 
     else:
         abort(403)
     
     return ""
+
+@main_bp.route('/profile/<username>/updateMinorDeclaration', methods=["POST"])
+def updateMinorDeclaration(username):
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        declareMinorInterest(username)
+        flash("Candidate minor successfully updated", "success")
+    else:
+        flash("Error updating candidate minor status", "danger")
+        abort(403)
+        
+    tab = request.args.get("tab", "interested")
+    return redirect(url_for('admin.manageMinor', tab=tab))
+
