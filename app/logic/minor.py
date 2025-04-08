@@ -96,8 +96,6 @@ def getMinorSpreadsheet():
         student['hasSummer'] = "Yes" if student['hasSummer'] == "Complete" else "No"
         worksheet.set_row(rowNumber, None, format_row)
         if student['B-Number'] == None: student["B-Number"] = "No B-Number Found"
-
-        print(student)
         for columnNumber, key in enumerate(student, 1):
             worksheet.write(rowNumber, columnNumber, student[key])
 
