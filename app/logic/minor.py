@@ -144,7 +144,7 @@ def getMinorSpreadsheet():
     return filepath
 
 
-def toggleMinorInterest(username):
+def toggleMinorInterest(username, isAdding):
     """
         Given a username, update their minor interest and minor status.
     """
