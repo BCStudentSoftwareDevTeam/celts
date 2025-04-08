@@ -35,7 +35,7 @@ from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
+from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
@@ -581,9 +581,25 @@ def getDietInfo():
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
-        toggleMinorInterest(username)
+        data = request.get_json()
+        isAdding = data.get("isAdding", False)
+        
+        toggleMinorInterest(username, isAdding)
 
     else:
         abort(403)
     
     return ""
+
+@main_bp.route('/profile/<username>/updateMinorDeclaration', methods=["POST"])
+def updateMinorDeclaration(username):
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        declareMinorInterest(username)
+        flash("Candidate minor successfully updated", "success")
+    else:
+        flash("Error updating candidate minor status", "danger")
+        abort(403)
+        
+    tab = request.args.get("tab", "interested")
+    return redirect(url_for('admin.manageMinor', tab=tab))
+
