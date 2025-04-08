@@ -20,10 +20,10 @@ $(document).ready(function() {
       let proposalID = $("#proposalID").val();
       let username = $("#username").val()
       $.ajax({
-        url: `/cceMinor/withdraw/${username}/${proposalID}?tab=manageProposals`,
+        url: `/cceMinor/withdraw/${username}/${proposalID}`,
         type: "POST",
         success: function(s){
-          location.reload();
+          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
         },  
         error: function(request, status, error) {
             console.log(status, error);
