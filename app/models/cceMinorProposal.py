@@ -3,6 +3,7 @@ from app.models.term import Term
 from app.models.user import User
 import datetime 
 
+
 class CCEMinorProposal(baseModel):
     student = ForeignKeyField(User)
     term = ForeignKeyField(Term)
@@ -22,7 +23,6 @@ class CCEMinorProposal(baseModel):
     totalHours = IntegerField(null=True)
     totalWeeks = IntegerField(null=True)
     description = TextField()
-    filename = CharField(null=True)
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])

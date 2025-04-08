@@ -33,7 +33,7 @@
                     <label class="form-label" for="term"><strong>Summer Year</strong></label>
                     <select class="form-select" id="term" name="term" required>
                         <option value="" disabled selected>Select Year</option>
-                        {% for term in summerTerms %}
+                        {% for term in terms %}
                                 <option value="{{ term }}">{{ term.description }}</option>
                         {% endfor %}
                     </select>
