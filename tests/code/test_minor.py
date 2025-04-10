@@ -486,7 +486,7 @@ def test_getMinorProgress():
             "supervisorEmail": "finn@finn.com",
         })
    
-        khattsRequestedEngagement = {'term': 3,
+        khattsRequestedEngagement = ({'term': 3,
                     'experienceName': 'Test Experience',
                     'orgName': 'Test Company',
                     'orgAddress': '123 test ln',
@@ -499,7 +499,7 @@ def test_getMinorProgress():
                     'totalHours': 300,
                     'totalWeeks': 10,
                     'experienceDescription': 'Test Description',
-                   }
+        })
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
         with app.app_context():
@@ -551,7 +551,6 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 @pytest.mark.integration
 def test_createOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        user = testUser
         User.create(username="glek",
                     firstName="kafui",
                     lastName="gle",
@@ -561,10 +560,10 @@ def test_createOtherEngagementRequest(testUser, testProposal):
         # Save the requested event to the database
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagementRequest(user.username, testProposal)
+            createOtherEngagementRequest(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
-        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == testUser.username)
+        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType == 'Other Engagement', CCEMinorProposal.student == testUser.username)
        
         assert len(initialOtherExperiences) == 1 
 
