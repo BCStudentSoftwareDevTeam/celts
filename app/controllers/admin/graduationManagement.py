@@ -26,6 +26,9 @@ def setGraduationStatus(username):
     This function 
     username: unique value of a user to correctly identify them
     """
+    if not g.current_user.isAdmin:
+        abort(403)
+        
     try:
         status = request.form["status"]
         setGraduatedStatus(username, status)
