@@ -8,7 +8,6 @@ $(document).ready(function() {
     $('.main-dropdown-item').click(function() { 
         var filterType = $(this).data('filter'); 
         var buttonText = $(this).text();
-        console.log(buttonText)
 
         handleMainFilterChange(filterType, buttonText) 
     });
@@ -113,7 +112,6 @@ $(document).ready(function() {
     function initializePage() {
         var mainFilterState = sessionStorage.getItem('mainFilterState') || 'all';
         var cohortFilterState = sessionStorage.getItem('cohortFilterState') || 'all';
-        console.log(cohortFilterState)
         var showGraduatedToggleState = sessionStorage.getItem('showGraduatedToggleState') || false;
 
         if (mainFilterState == 'cce') {
