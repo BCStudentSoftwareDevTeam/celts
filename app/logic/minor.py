@@ -130,7 +130,7 @@ def getMinorSpreadsheet():
 
     for rowNumber, student in enumerate(studentProgress, 2):
         if student['hasGraduated']: continue
-        student.pop('hasCommunityEngagementRequest')
+        student.pop('hasCCEMinorProposal')
         student.pop('hasGraduated')
         student['hasSummer'] = "Yes" if student['hasSummer'] == "Complete" else "No"
         worksheet.set_row(rowNumber, None, format_row)
