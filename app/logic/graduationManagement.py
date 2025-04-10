@@ -10,9 +10,10 @@ def getGraduationManagementUsers():
     """
     Function to fetch all senior students along with their CCE Minor Progress and Bonner Status 
     """
+
     elibibleUsers = (User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName, BonnerCohort.year)
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
-                 .where(User.classLevel=='Senior'))
+                 .where(User.classLevel == 'Senior'))
 
     cceStudents = set([user["username"] for user in getMinorProgress()])
 
