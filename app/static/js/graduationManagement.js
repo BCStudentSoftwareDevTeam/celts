@@ -2,6 +2,7 @@ $(document).ready(function() {
     let gradStudentsTable = $('#gradStudentsTable').DataTable({
         paging: true,
         searching: true,
+        info: false,
     });
     initializePage()
 
