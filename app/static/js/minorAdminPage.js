@@ -1,6 +1,5 @@
 import searchUser from './searchUser.js'
 
-
 $(document).ready(function() {
   $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     let activeTab = $(e.target).attr('id').replace('-tab', '');
@@ -57,8 +56,21 @@ $(document).ready(function() {
   if (activeTab) {
       $('#studentTabs button[data-bs-target="#' + activeTab + '"]').tab('show');
   }
-
+  $("#cceMinor").on("click", ()=>{
+    $.ajax({
+      type: 'GET',
+      url: '/profile/' + username + '/cceMinor',
+      data: JSON,
+      success: function(response) {
+        location.reload()
+      },
+      error: function(error) {
+       console.log("error")
+      }
+  });
+  })
 })
+
 
 
 function emailMinorCandidates(studentEmails){

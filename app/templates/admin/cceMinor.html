@@ -19,7 +19,26 @@
       <h2>CCE Minor Progress</h2>
   </div>
   <div class="col-auto">
+    <button type="button" id="cceMinor" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#cceChart">
+      View Chart
+    </button>
     <a class="btn btn-success" role="button" href="/admin/cceMinor/download">Download Report</a>
+  </div>
+</div>
+<!-- #################  Modal  ################# -->
+<div class="modal fade" id="cceChart" tabindex="-1" aria-labelledby="CCEMinorChart" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">CCE Student Experience Chart</h5>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Download Chart</button>
+      </div>
+    </div>
   </div>
 </div>
 <table class="display" id="engagedStudentsTable">
@@ -111,7 +130,6 @@
 </div>
 
 <!-- #################  Modal  ################# -->
-
 <div class="modal fade" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
