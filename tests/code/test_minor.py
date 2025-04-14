@@ -31,8 +31,11 @@ from app.logic.minor import (
     getEngagementTotal, 
     getCCEMinorProposals,
     updateOtherEngagementRequest,
-    updateSummerExperience
+    updateSummerExperience,
+    getDeclaredMinorStudents,
+    declareMinorInterest
 )
+
 @pytest.fixture
 def testUser(request):
     """Fixture to create a user"""
@@ -103,7 +106,6 @@ def testProposal(request):
     # override default values with those put in the parameters.
     return defaultProposal
 
-
 @pytest.mark.integration
 def test_getCourseInformation(testUser):
     with mainDB.atomic() as transaction:
@@ -134,14 +136,14 @@ def test_toggleMinorInterest(testUser):
     with mainDB.atomic() as transaction:
         # make sure users have the default values of false and not interested, respectively
         assert testUser.minorInterest == False
-        toggleMinorInterest(testUser.username)
+        toggleMinorInterest(testUser.username, True)
         
         testUser = User.get_by_id(testUser.username)
         # make sure toggleMinorInterest works correctly
         assert testUser.minorInterest == True
         
         # verify unchecking box will restore defaults
-        toggleMinorInterest(testUser.username)
+        toggleMinorInterest(testUser.username, False)
         
         testUser = User.get_by_id(testUser.username)
         assert testUser.minorInterest == False
@@ -590,7 +592,6 @@ def test_createOtherEngagement(testUser, testProposal):
 
         transaction.rollback()
 
-
 @pytest.mark.parametrize("testProposal", [
     {
         "proposalType": "otherEngagement",
@@ -676,3 +677,77 @@ def test_updateSummerExperience(testUser, testProposal):
 
         transaction.rollback()
 
+@pytest.mark.integration
+def testDeclareMinorInterest():
+    
+    with mainDB.atomic() as transaction:
+        # Get three students with interest in minor
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        # Declare students interested in minor
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == True
+        assert student2.declaredMinor == True
+        assert student3.declaredMinor == True
+        
+        # Undeclare students
+        declareMinorInterest("agliullovak")
+        declareMinorInterest("partont")
+        declareMinorInterest("bryanta")
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def testGetDeclaredMinorStudents():
+    
+    with mainDB.atomic() as transaction:
+        # Get all the declared students
+        declaredStudents = getDeclaredMinorStudents()
+        
+        assert declaredStudents == []
+        assert len(declaredStudents) == 0
+        
+        student1 = User.get_by_id("agliullovak")
+        student2 = User.get_by_id("partont")
+        student3 = User.get_by_id("bryanta")
+        
+        assert student1.declaredMinor == False
+        assert student2.declaredMinor == False
+        assert student3.declaredMinor == False
+        
+        student1.declaredMinor = True
+        student2.declaredMinor = True
+        student3.declaredMinor = True
+        
+        student1.save()
+        student2.save()
+        student3.save()
+        
+        # Get all the declared students after recent changes
+        newDeclaredStudents = getDeclaredMinorStudents()
+        
+        assert len(newDeclaredStudents) == 3
+        
+        transaction.rollback()
