@@ -150,7 +150,6 @@
           </div>
         </div>
         <div class="form-group col-md-6">
-          {% if template.tag != 'all-volunteer' %}
           <div class="form-check form-switch pb-1">
             <fieldset>
               <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
@@ -158,7 +157,6 @@
                 {{"checked" if eventData.isSeries}} />
             </fieldset>
           </div>
-          {% endif %}
         </div>
       </div>
       {% endif %}
@@ -443,8 +441,12 @@
         
         <!-- Template eventOffering row -->
         <div class="d-flex justify-content-start ms-1 form-check form-switch">
-          <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
-          <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
+          {% if template.tag != "all-volunteer" %}
+            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
+            <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
+          {% else %}
+            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" hidden name="isRepeating" />
+          {% endif %}
         </div>
         
         <div class="d-none mb-2" id="repeatingEventsDiv">
