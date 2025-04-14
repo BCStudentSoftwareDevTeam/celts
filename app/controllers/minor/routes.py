@@ -7,7 +7,7 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, removeProposal
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, removeProposal, getMinorSpreadsheet
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -85,6 +85,7 @@ def getEngagementInformation(username, type, id, term):
 
     return information
 
+
 @minor_bp.route('/cceMinor/withdraw/<username>/<proposalID>', methods = ['POST'])
 def withdrawProposal(username, proposalID):
     try:
@@ -98,6 +99,15 @@ def withdrawProposal(username, proposalID):
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
     
+
+@minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
+def returnMinorSpreadsheet():
+    """
+        Returns a spreadsheet containing users and related spreadsheet information.
+    """
+    minorSpreadsheet = getMinorSpreadsheet()   # can we get for any term or only curr term?
+
+    return minorSpreadsheet
 
 @minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
 def modifyCommunityEngagement(username):
