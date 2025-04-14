@@ -1,6 +1,7 @@
 {% set title = "Create Single Event" %}
 
 {% set isNewEvent = 'create' in request.path %}
+{% set showRecurringToggle = True %}
 {% if isNewEvent %}
   {% if eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == '' %}
     {% set page_title = 'Create a ' + eventData["program"].programName %}
@@ -10,6 +11,7 @@
 
   {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
+    {% set showRecurringToggle = False %}
 
   {% elif template.tag == 'no-program' %}
     {% set page_title = 'Create Other CELTS-Sponsored Event' %}
@@ -441,7 +443,7 @@
         
         <!-- Template eventOffering row -->
         <div class="d-flex justify-content-start ms-1 form-check form-switch">
-          {% if template.tag != "all-volunteer" %}
+          {% if showRecurringToggle %}
             <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
             <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
           {% else %}
