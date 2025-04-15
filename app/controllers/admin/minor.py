@@ -1,10 +1,26 @@
-from flask import render_template, g, abort, request, redirect, url_for, send_file
-
+from flask import render_template, g, abort, request, redirect, url_for, send_file, jsonify
+from app.logic.minor import getMinorProgress
 from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
 from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet, getDeclaredMinorStudents
+
+@admin_bp.route('/profile/<username>/cceMinorChart', methods=['GET'])
+def cceMinorChart(username):
+    print("****" * 19)
+    if not g.current_user.isAdmin:
+        abort(403)
+    else:
+        progress_list = getMinorProgress()
+        turnToChart = []
+        for progress in progress_list:
+            turnToChart.append({'name':progress["firstName"] + " " + progress["lastName"], "engagementCount" : progress['engagementCount'], "completeSummer": "Yes" if progress['hasSummer'] == "Complete" else "No"})
+        return jsonify(turnToChart)
+    
+        
+        
+    
 
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
@@ -26,7 +42,8 @@ def manageMinor():
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
     declaredStudentsList = getDeclaredMinorStudents()
-    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])    
+    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])   
+    adminUsername = g.current_user.username 
 
     return render_template('/admin/cceMinor.html',
                             interestedStudentsList = interestedStudentsList,
@@ -34,6 +51,7 @@ def manageMinor():
                             interestedStudentEmailString = interestedStudentEmailString,
                             declaredStudentEmailString = declaredStudentEmailString,
                             sustainedEngagement = sustainedEngagement,
+                            adminUsername = adminUsername,
                             )
 
 @admin_bp.route("/admin/cceMinor/download")

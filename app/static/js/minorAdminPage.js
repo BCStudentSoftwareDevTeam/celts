@@ -56,16 +56,64 @@ $(document).ready(function() {
   if (activeTab) {
       $('#studentTabs button[data-bs-target="#' + activeTab + '"]').tab('show');
   }
-  $("#cceMinor").on("click", ()=>{
+  $("#cceMinor").on("click", function(){
+    let username = $(this).data("username");
+    const xValues = [];
+    const yValues = [];
+    const barColors = [];
     $.ajax({
       type: 'GET',
-      url: '/profile/' + username + '/cceMinor',
+      url: '/profile/' + username + '/cceMinorChart',
       data: JSON,
-      success: function(response) {
-        location.reload()
+      success: function(responses) {
+        for (let i = 0; i <responses.length; i++){
+          xValues.push(responses[i].engagementCount);
+          yValues.push(responses[i].name);
+          barColors.push(responses[i].completeSummer === "Yes" ? "green" : "red");
+        }
+        const cceChart = document.getElementById('cceChartGen');
+        const maxValue = Math.max(...xValues.map(Number))+2;
+        if (cceChart) {
+          new Chart(cceChart, {
+            type: "bar",
+            data: {
+              labels: yValues,
+              datasets: [{
+                label: "Summer Completed",
+                backgroundColor: barColors == "green"?"green":"red",
+                data: xValues
+              }],
+              datasets: [{
+                label: "Summer Not Completed",
+                backgroundColor: barColors == "red"?"red":"green",
+                data: xValues
+              }]
+            },
+            options: {
+              y: {
+                beginAtZero: true,
+                max: maxValue
+              },
+              plugins: {
+                legend: {
+                  display: true,           // Show legend
+                  position: 'top',         // Position of the legend
+                  labels: {
+                    fontColor: "black",    // Text color of legend items
+                    fontSize: 15           // Font size of legend items
+                  }
+                },
+                title: {
+                  display: true,
+                  text: "Students' Engagement Chart"
+                }
+              }
+            }
+          });
+        }
       },
       error: function(error) {
-       console.log("error")
+        console.log("error")
       }
   });
   })
