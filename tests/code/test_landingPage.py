@@ -50,7 +50,7 @@ def test_managerProgramDict():
     with mainDB.atomic() as transaction:
         user = User.get(User.username == "ramsayb2")
         dict = getManagerProgramDict(user)
-        assert os.path.join('static', 'images/landingPage/Hunger Initiatives.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
+        assert os.path.join('static', 'files/programattachments/1.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
 
         noImageProgram = Program.create(programName = "Program with No Image",
                                         isStudentLed = False,

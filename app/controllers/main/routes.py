@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents, getEngagementEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -35,7 +35,7 @@ from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
+from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
@@ -57,7 +57,7 @@ def landingPage():
     # Limit returned list to events in the future
     futureEvents = [p for p in programsWithEventsList if not p.event.isPastEnd]
 
-    return render_template("/main/landingPage.html", 
+    return render_template("/main/landingPage.html",
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList = futureEvents)
@@ -76,21 +76,22 @@ def events(selectedTerm, activeTab, programID):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
+        
     currentTime = datetime.datetime.now()
-    
-    listOfTerms = Term.select()
+    listOfTerms = Term.select().order_by(Term.termOrder)
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term: Term = Term.get_by_id(currentTerm) 
-    
+    term: Term = Term.get_by_id(currentTerm)
+
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
+    engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session    
@@ -104,6 +105,7 @@ def events(selectedTerm, activeTab, programID):
     # Get the count of all term events for each category to display in the event list page.
     studentLedEventsCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
+    engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
     otherEventsCount: int = len(otherEvents)
 
@@ -113,6 +115,9 @@ def events(selectedTerm, activeTab, programID):
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
+        for event in engagementEvents:
+            if event.isPastEnd:
+                engagementEventsCount -= 1
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
@@ -125,6 +130,7 @@ def events(selectedTerm, activeTab, programID):
         return jsonify({
             "studentLedEventsCount": studentLedEventsCount,
             "trainingEventsCount": trainingEventsCount,
+            "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
             "otherEventsCount": otherEventsCount,
             "toggleStatus": toggleState
@@ -134,6 +140,7 @@ def events(selectedTerm, activeTab, programID):
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
                             trainingEvents = trainingEvents,
+                            engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
                             otherEvents = otherEvents,
                             listOfTerms = listOfTerms,
@@ -179,6 +186,8 @@ def viewUsersProfile(username):
 
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
+        
+        
 
         eligibilityTable = []
         
@@ -188,8 +197,15 @@ def viewUsersProfile(username):
                                     .where(ProgramBan.user == volunteer,
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
+            onTranscriptQuery = list(ProgramBan.select(ProgramBan)
+                                .where(ProgramBan.user == volunteer, 
+                                      ProgramBan.program == program,
+                                      ProgramBan.unbanNote.is_null(), 
+                                      ProgramBan.removeFromTranscript == 0))
+            
+            onTranscript = True if len(onTranscriptQuery) > 0 else False
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try: 
+            try:
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -198,7 +214,9 @@ def viewUsersProfile(username):
                                      "completedTraining": allTrainingsComplete,
                                      "trainingList": userParticipatedTrainingEvents,
                                      "isNotBanned": (not banNotes),
-                                     "banNote": noteForDict})
+                                     "banNote": noteForDict,
+                                     "onTranscript": onTranscript}),
+
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
@@ -245,7 +263,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-    
+
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -253,6 +271,7 @@ def emergencyContactInfo(username):
         rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
+
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
@@ -288,6 +307,7 @@ def insuranceInfo(username):
         rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
+
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
 
@@ -300,7 +320,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-   
+
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -354,6 +374,7 @@ def ban(program_id, username):
     postData = request.form
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
+    
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
@@ -495,6 +516,31 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
+@main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
+def updateTranscript(username, program_id):
+    # Check user permissions
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    # Get the data sent from the client-side JavaScript
+    data = request.json
+
+    # Retrieve removeFromTranscript value from the request data
+    removeFromTranscript = data.get('removeFromTranscript')
+
+    # Update the ProgramBan object matching the program_id and username
+    try:
+        bannedProgramForUser = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user) & (ProgramBan.unbanNote.is_null()))
+        bannedProgramForUser.removeFromTranscript = removeFromTranscript
+        bannedProgramForUser.save()
+        return jsonify({'status': 'success'})
+    except ProgramBan.DoesNotExist:
+        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
+
+
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
@@ -520,10 +566,10 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-    
+
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user) 
+        userInfo = User.get(User.username == user)
         if len(dietInfo) > 0:
             createActivityLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
@@ -535,9 +581,25 @@ def getDietInfo():
 @main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
-        toggleMinorInterest(username)
+        data = request.get_json()
+        isAdding = data.get("isAdding", False)
+        
+        toggleMinorInterest(username, isAdding)
 
     else:
         abort(403)
     
     return ""
+
+@main_bp.route('/profile/<username>/updateMinorDeclaration', methods=["POST"])
+def updateMinorDeclaration(username):
+    if g.current_user.isCeltsAdmin or g.current_user.username == username:
+        declareMinorInterest(username)
+        flash("Candidate minor successfully updated", "success")
+    else:
+        flash("Error updating candidate minor status", "danger")
+        abort(403)
+        
+    tab = request.args.get("tab", "interested")
+    return redirect(url_for('admin.manageMinor', tab=tab))
+

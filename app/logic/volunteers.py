@@ -74,17 +74,28 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
         else:
             createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
+def deleteUserBackgroundCheck(bgCheckId, user):
+    """
+    Deletes the user's background check by marking it as deleted with a timestamp and user information.
+    """
+    bgCheck = BackgroundCheck.get_or_none(BackgroundCheck.id == bgCheckId)
+
+    if bgCheck:
+        (BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: user})
+                         .where(BackgroundCheck.id == bgCheck.id)
+                         .execute())
+
 def setProgramManager(username, program_id, action):
     '''
-    adds and removes the studentstaff from program that makes them student manager.
+    Assigns or removes a user as a student manager for a program.
 
-    param: uername - a string
+    param: username - a string
            program_id - id
            action: add, remove
 
     '''
-    studentstaff=User.get(User.username==username)
-    if action == "add" and studentstaff.isCeltsStudentStaff==True:
-        studentstaff.addProgramManager(program_id)
+    programManager = User.get(User.username==username)
+    if action == "add":
+        programManager.addProgramManager(program_id)
     elif action == "remove":
-        studentstaff.removeProgramManager(program_id)
+        programManager.removeProgramManager(program_id)

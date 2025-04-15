@@ -2,18 +2,28 @@ import os
 from flask import redirect, url_for
 from app import app
 from app.models.attachmentUpload import AttachmentUpload
+from app.models.program import Program
+import glob
 
 class FileHandler:
-    def __init__(self, files=None, courseId=None, eventId=None):
-        self.files = files
-        self.path = app.config['files']['base_path']
+    def __init__(self, files=None, courseId=None, eventId=None, programId=None, proposalId=None):
+        self.files = files 
+        if not isinstance(self.files, list):
+                self.files = [self.files]  
+        self.path = app.config['files']['base_path']    
         self.courseId = courseId
         self.eventId = eventId
+        self.programId = programId
+        self.proposalId = proposalId
         if courseId:
             self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
-    
+        elif programId:
+            self.path = os.path.join(self.path, app.config['files']['program_attachment_path']) 
+        elif proposalId:
+            self.path = os.path.join(self.path, app.config['files']['proposal_attachment_path']) 
+        
     def makeDirectory(self):
         try:
             extraDir = str(self.eventId) if self.eventId else ""
@@ -25,7 +35,8 @@ class FileHandler:
     
     def getFileFullPath(self, newfilename=''):
         try:
-            filePath = (os.path.join(self.path, newfilename))
+            if self.eventId or self.courseId or self.programId or self.proposalId:
+                filePath = (os.path.join(self.path, newfilename))
         except AttributeError:
             pass
         except FileExistsError:
@@ -33,9 +44,10 @@ class FileHandler:
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
-        try:
+        try:          
             for file in self.files:
                 saveFileToFilesystem = None
+
                 if self.eventId:
                     attachmentName = str(saveOriginalFile.id) + "/" + file.filename
                     isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
@@ -49,13 +61,40 @@ class FileHandler:
                     if not isFileInCourse:
                         AttachmentUpload.create(course=self.courseId, fileName=file.filename)
                         saveFileToFilesystem = file.filename
+                elif self.programId:
+
+                    # remove the existing file
+                    deleteFileObject = AttachmentUpload.get_or_none(program=self.programId)
+                    if deleteFileObject:
+                        self.deleteFile(deleteFileObject.id)
+
+                    # add the new file
+                    fileType = file.filename.split('.')[-1]
+                    fileName = f"{self.programId}.{fileType}"
+                    AttachmentUpload.create(program=self.programId, fileName=fileName)
+                    currentProgramID = fileName
+                    saveFileToFilesystem = currentProgramID
+
+
+                elif self.proposalId:
+                    fileType = file.filename.split('.')[-1]
+                    fileName = f"{self.proposalId}.{fileType}"
+                    isFileInProposal = AttachmentUpload.select().where(AttachmentUpload.proposal == self.proposalId,
+                                                                    AttachmentUpload.fileName == fileName).exists()
+                    if not isFileInProposal:
+                        # add the new file
+                        AttachmentUpload.create(proposal=self.proposalId, fileName=fileName)
+                        saveFileToFilesystem = fileName
+
                 else:
                     saveFileToFilesystem = file.filename
+
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
-        except AttributeError:
-            pass
+
+        except AttributeError as e:
+            print(e)
 
     def retrievePath(self, files):
         pathDict = {}

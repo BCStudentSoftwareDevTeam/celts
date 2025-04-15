@@ -1,0 +1,108 @@
+
+<div class="tab-pane fade show {{ 'active' if activeTab == 'manageProposals' else '' }}" id="pills-manageProposals" role="tabpanel" aria-labelledby="manageProposals">
+
+    <div class="table-responsive" id="proposalTable">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Type</th>
+            <th scope="col">Created By</th>
+            <th scope="col">Supervisor</th>
+            <th scope="col">Term</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for proposal in proposalList %}
+                <tr>
+                    <td id="type-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
+                    <td id="creator-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
+                    <td id="supervisor-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
+                    <td id="term-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
+                    <td>
+                        <a class="status-key text-dark" id="status-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
+                    </td>
+                    <td>
+                        <select class="form-select proposalData" id="{{proposal['id']}}" onchange='changeAction(this)'>
+                        <option value="---" disabled selected>Select Action</option>
+                        <option value="View">View</option>
+                        <option value="Withdraw">Withdraw</option>
+                        <option value="Edit">Edit</option>
+                        <option value="Notes">Notes</option>
+                        <option value="Print">Print</option>
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    {% if not proposalList %}
+        <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated CCE Minor proposals.</p>
+    {% endif %}
+    </div>
+    <div align="right">
+    <a class="btn btn-primary" href='/cceMinor/{{user.username}}/otherEngagement'>Request Other Engagement</a>
+    <a class="btn btn-primary" href='/cceMinor/{{user.username}}/summerExperience'>Request Summer Experience</a>
+    </div>
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Proposal</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to withdraw this CCE Minor proposal?<br><br>
+            <span class="text-danger bi bi-exclamation-triangle-fill"></span>
+            <b>Note: This action is irreversible. Once withdrawn, the proposal will be forever deleted.</b>
+            </p>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="withdrawBtn">Withdraw</button>
+        </div>
+        </div>
+    </div>
+    </div>
+    <div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="renewModalLabel">Renew Course</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body table-responsive">
+            <table class="table table-striped ml-4" id="SLCProposalTable">
+                <tbody id="facultyTable">
+                <tr>
+                    <td class="fw-bold">Course Name</td>
+                    <td id="renewName"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Instructor(s)</td>
+                    <td id="renewFaculty"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Status</td>
+                    <td id="renewStatus"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p>Choose a term for the new course:</p>
+            <select class="form-select courseRenewal" id="renewTerm">
+            <option value="---" disabled selected>Select Term</option>
+            {% for term in termList %}
+            <option value="{{term}}">{{term.description}}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="renewBtn" disabled>Renew</button>
+        </div>
+        </div>
+    </div>
+  </div>
+</div>

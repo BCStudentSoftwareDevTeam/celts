@@ -1,5 +1,6 @@
-from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify
+from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
 from peewee import DoesNotExist, JOIN
+from datetime import datetime
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
@@ -8,9 +9,9 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
-from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
+from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.createLogs import createActivityLog, createRsvpLog
@@ -64,15 +65,14 @@ def manageVolunteersPage(eventID):
   
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
         
-        allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
-        
+        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
         # ----------- Get miscellaneous data -----------
 
         participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
 
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
-        recurringVolunteers = getPreviousRecurringEventData(event.recurringId)
+        repeatingVolunteers = getPreviousSeriesEventData(event.seriesId)
 
         currentRsvpAmount = getEventRsvpCount(event.id)
 
@@ -83,7 +83,7 @@ def manageVolunteersPage(eventID):
                                 eventWaitlistData = eventWaitlistData,
                                 eventLength = eventLengthInHours,
                                 event = event,
-                                recurringVolunteers = recurringVolunteers,
+                                repeatingVolunteers = repeatingVolunteers,
                                 bannedUsersForProgram = bannedUsersForProgram,
                                 trainedParticipantsForProgramAndTerm = trainedParticipantsForProgramAndTerm,
                                 participationStatusForTrainings = participationStatusForTrainings,
@@ -197,23 +197,25 @@ def addBackgroundCheck():
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
         addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
-        return " "
+        return ""
 
 @admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
 def deleteBackgroundCheck():
     if g.current_user.isCeltsAdmin:
-        eventData = request.form
-        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
-        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
+        backgroundData = request.form
+        bgToDelete = BackgroundCheck.get_by_id(backgroundData['bgID'])
+        session["lastDeletedBgCheck"] = bgToDelete.id
+        user = g.current_user
+        deleteUserBackgroundCheck(bgToDelete.id, user)
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():
     if g.current_user.isCeltsAdmin:
         data =request.form
-        username = User.get(User.username == data["user_name"])
-        program = Program.get_by_id(data['program_id'])
-        setProgramManager(data["user_name"], data["program_id"], data["action"])
+        username = User.get(User.username == data["username"])
+        program = Program.get_by_id(data['programId'])
+        setProgramManager(data["username"], data["programId"], data["action"])
         createActivityLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:

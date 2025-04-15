@@ -228,6 +228,21 @@ users = [
         "isStaff": True,
         "minorInterest": 0,
     },
+    {
+        "username" : "makindeo",
+        "bnumber" : "B00791326",
+        "email": "makindeo@berea.edu",
+        "phoneNumber": "(555)555-5555",
+        "firstName" : "Oluwagbayi",
+        "lastName" : "Makinde",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "classLevel": "Senior",
+        "minorInterest": 1,
+    },
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -243,6 +258,7 @@ bonners = [
     { "year": 2022, "user": "ayisie" },
     { "year": 2022, "user": "neillz" },
     { "year": 2022, "user": "ramsayb2" },
+    { "year": 2022, "user": "makindeo" },
     ]
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
@@ -416,6 +432,24 @@ terms = [
         "isCurrentTerm": False,
         "termOrder": "2022-1"
     },
+    {
+        "id": 9,
+        "description": "Spring 2024",
+        "year": 2024,
+        "academicYear": "2023-2024",
+        "isSummer": False,
+        "isCurrentTerm": False,
+        "termOrder": "2024-1"
+    },
+    {
+        "id": 10,
+        "description": "Fall 2023",
+        "year": 2023,
+        "academicYear": "2023-2024",
+        "isSummer": False,
+        "isCurrentTerm": False,
+        "termOrder": "2023-3"
+    },
 
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -428,11 +462,12 @@ programs = [
         "facebookUrl": None,
         "bereaUrl": None,
         "programDescription": "Each year 200 people stand in line to get into Woods-Penniman for the Annual Empty Bowls Event sponsored by the Berea College ceramics students and CELTS. Students, faculty, staff and community members each pay $10 for a beautiful bowl, soup and the privilege of helping those in need in our community.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 2,
@@ -441,11 +476,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaBuddies",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-buddies",
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "bereabuddies@berea.edu",
-        "contactName": ""
+        "contactName": "",
 
     },
     {
@@ -455,11 +491,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/profile.php?id=100085958053273",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/adopt-a-grandparent",
         "programDescription": "Adopt-a-Grandparent (AGP) is an outreach program for Berea elders. The program matches college student volunteers with residents of local long-term care centers. Volunteers visit with residents for at least an hour per week, and participate in special monthly programs.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 4,
@@ -468,11 +505,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/peoplewhocareBC",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/people-who-care-program",
         "programDescription":"People Who Care (PWC) helps to connect Berea College students with organizations and opportunities that promote change through advocacy, education, action, and direct community service. Volunteers may serve at local shelters, work with the Fair Trade University Campaign, or help to raise awareness about local issues like domestic violence, homelessness, fair trade, and AIDS awareness education. Students are welcome to participate as volunteers in PWC’s projects.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 5,
@@ -481,11 +519,12 @@ programs = [
         "facebookUrl": None,
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/bonner-scholars-program",
         "programDescription": "The Bonner Scholars Program is a unique opportunity for students who want to combine a strong commitment to service with personal growth, teamwork, leadership development, and scholarship. Students who have completed an application for the Berea College class of 2026 may apply to be a Bonner Scholar.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": True,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 6,
@@ -494,11 +533,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/profile.php?id=100068874352425",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/habitat-for-humanity",
         "programDescription": "Through the work of Habitat for Humanity International, thousands of low-income families have found hope through affordable housing. Hard work and volunteering have resulted in the organization sheltering more than two million people worldwide.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 7,
@@ -507,11 +547,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaTeenMentoring",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-teen-mentoring",
         "programDescription": "Berea Teen Mentoring (BTM) brings Berea community youth, from ages 13-18, into a group setting for mentorship and enrichment programs. Staff members are assisted during the weekly program by Berea College student volunteers, who act as mentors for these program participants. The mission of the program is to stimulate and cultivate personal growth for young adults in the Berea community.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 8,
@@ -520,11 +561,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/HOPBerea",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/hispanic-outreach-program",
         "programDescription": "The Hispanic Outreach Program (HOP) is a service-learning effort which brings together CELTS, several community organizations, and the Department of Foreign Languages at Berea College. HOP aims to build bridges among the Spanish-speaking and English-speaking residents of Madison County.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 9,
@@ -533,11 +575,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/BereaCollegeCELTS",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
         "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
+        "partner": None,
         "isStudentLed": False,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": True,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     },
     {
         "id": 10,
@@ -546,11 +589,12 @@ programs = [
         "facebookUrl": "https://www.facebook.com/CELTSbereatutoring",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-tutoring",
         "programDescription": "Berea Tutoring provides an encouraging atmosphere for local students who need help in achieving academic success, and for college volunteers who want to learn more about teaching or volunteering. Our mission is to increase conceptual understanding in academic subject areas, enrich educational experiences, and build self-confidence by providing college-aged tutors to local school children.",
+        "partner": None,
         "isStudentLed": True,
         "isBonnerScholars": False,
         "isOtherCeltsSponsored": False,
         "contactEmail": "",
-        "contactName": ""
+        "contactName": "",
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -566,7 +610,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -582,7 +625,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -598,7 +640,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Patio",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -613,7 +654,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -628,7 +668,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -643,7 +682,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -658,7 +696,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 1
@@ -673,7 +710,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -688,7 +724,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Farm",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 2
@@ -704,7 +739,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -719,7 +753,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -734,7 +767,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Boone Tavern",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 3
@@ -749,7 +781,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -765,7 +796,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -780,7 +810,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -796,7 +825,6 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
         "program": 9
@@ -1350,7 +1378,7 @@ emailTemplates = [
     {
     #'id': 1,
     'subject': 'Test Email',
-    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
+    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date} and this {start_time}-{end_time}.',
     'action': 'sent',
     'purpose': 'Test',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
@@ -1358,14 +1386,14 @@ emailTemplates = [
     {
     #'id': 2,
     'subject': 'Test Email 2',
-    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
+    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
     'subject': 'Event Reminder',
-    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} on {start_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
     'action': 'sent',
     'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
@@ -1456,12 +1484,50 @@ ActivityLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
+    "program": None,
+    "course": None,
     "event": 1,
     "fileName":"Map1.pdf"
     },
     {
     "event": 2,
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
+    },
+    {
+    "program": 1,
+    "fileName": "1.jpg"
+    },
+    {
+    "program": 2,
+    "fileName": "2.jpg"
+    },
+    {
+    "program": 3,
+    "fileName": "3.jpg"
+    },
+    {
+    "program": 4,
+    "fileName": "4.jpeg"
+    },
+    {
+    "program": 5,
+    "fileName": "5.jpg"
+    },
+    {
+    "program": 6,
+    "fileName": "6.jpg"
+    },
+    {
+    "program": 7,
+    "fileName": "7.jpeg"
+    },
+    {
+    "program": 8,
+    "fileName": "8.jpeg"
+    },
+    {
+    "program": 10,
+    "fileName": "10.jpg"
     }
 ]
 AttachmentUpload.insert_many(files).on_conflict_replace().execute()

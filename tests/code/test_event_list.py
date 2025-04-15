@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
+from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -24,7 +24,6 @@ def training_events():
                              location = "basement",
                              isTraining = True,
                              startDate = "2021-12-12",
-                             endDate = "2021-12-13",
                              program = 2)
 
     yield testEvent
@@ -40,7 +39,6 @@ def special_bonner():
                                timeEnd = "22:00:00",
                                location = "moon",
                                startDate = "2021-12-12",
-                               endDate = "2021-12-13",
                                program = 5)
 
 
@@ -58,26 +56,25 @@ def special_otherEvents():
                                        location = "moon",
                                        isTraining = False,
                                        startDate = "2021-12-12",
-                                       endDate = "2021-12-13",
                                        program = 9)
 
         yield nonProgramEvent
         nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
-def test_studentled_events(training_events):
+def test_getStudentLedEvents(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
-def test_getUpcomingStudentLed_events():
+def test_getUpcomingStudentLedCount():
     with mainDB.atomic() as transaction: 
         testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
         currentTestTerm = Term.get_by_id(5)
 
         # In case any events are put in term 5 in testData, put them into the past.
-        Event.update(startDate = date(2021,7,1), endDate = date(2021,7,1)).where(Event.term_id == 5).execute()
+        Event.update(startDate = date(2021,7,1)).where(Event.term_id == 5).execute()
 
         # Student Led event in the future
         futureAgpEvent = Event.create(name = "Test future AGP event",
@@ -88,7 +85,6 @@ def test_getUpcomingStudentLed_events():
                                       location = "The Moon",
                                       isTraining = False,
                                       startDate = "2021-08-02",
-                                      endDate = "2021-08-02",
                                       program = 3)
          
         # Student Led event to be canceled 
@@ -100,7 +96,6 @@ def test_getUpcomingStudentLed_events():
                                         location = "The Sun",
                                         isTraining = False,
                                         startDate = "2021-08-02",
-                                        endDate = "2021-08-02",
                                         program = 3)
         
         # Student Led event that start in the future but will be moved to the past
@@ -112,7 +107,6 @@ def test_getUpcomingStudentLed_events():
                                         location = "Mars",
                                         isTraining = False,
                                         startDate = "2021-08-02",
-                                        endDate = "2021-08-02",
                                         program = 3)
         
         # verify that there are three upcoming events for AGP (program id 3)
@@ -127,8 +121,7 @@ def test_getUpcomingStudentLed_events():
         # Move pastStudentLed start date to the same day as testDate and set timeEnd to the time on testDate
         (Event.update(timeStart = datetime.strptime("03:00", "%H:%M").time(), 
                       timeEnd = datetime.strptime("04:00", "%H:%M").time(), 
-                      startDate = date(2021,8,1), 
-                      endDate = date(2021,8,1))
+                      startDate = date(2021,8,1))
               .where(Event.id == pastStudentLed.id)).execute()
         
         upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
@@ -143,7 +136,6 @@ def test_getUpcomingStudentLed_events():
                                           location = "The Moon",
                                           isTraining = False,
                                           startDate = "2021-08-02",
-                                          endDate = "2021-08-02",
                                           program = 2)
         
         upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
@@ -152,7 +144,7 @@ def test_getUpcomingStudentLed_events():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_training_events(training_events):
+def test_getTrainingEvents(training_events):
     with mainDB.atomic() as transaction:
         testTerm = Term.create( description = "Test Term",
                                 year = 1919,
@@ -182,7 +174,6 @@ def test_training_events(training_events):
                                           location = "basement",
                                           isTraining = True,
                                           startDate = "1919-12-13",
-                                          endDate = "1919-12-14",
                                           program = testBonnerProgram.id)
        
         testNotBonnerTraining = Event.create(name = "Bonner Test Training",
@@ -193,9 +184,7 @@ def test_training_events(training_events):
                                              location = "basement",
                                              isTraining = True,
                                              startDate = "1919-12-12",
-                                             endDate = "1919-12-13",
                                              program = testNotBonnerProgram.id)
-   
 
         userFaculty = User.create(username = "TestNotBonner",
                                   bnumber = "B000000000",
@@ -270,10 +259,37 @@ def test_training_events(training_events):
         transaction.rollback()
 
 @pytest.mark.integration
-def test_bonner_events(special_bonner):
+def test_getBonnerEvents(special_bonner):
     bonner = special_bonner
     allBonnerProgram = [bonner]
     assert allBonnerProgram == getBonnerEvents(2)
+
+@pytest.mark.integration
+def test_getEngagementEvents():
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create( description = "Test Term",
+                                year = 1919,
+                                academicYear = "1919-1920",
+                                isSummer = False,
+                                isCurrentTerm = False)
+        
+        engagementEvent = Event.create(name = "Bonner Test Training",
+                                             term = testTerm,
+                                             description = "Not Bonner",
+                                             timeStart = "18:00:00",
+                                             timeEnd = "21:00:00",
+                                             location = "basement",
+                                             isEngagement = True,
+                                             startDate = "1919-12-12",
+                                             program = 1)
+        
+        returnedEvent = getEngagementEvents(testTerm)
+        returnedNonEngEvent = getEngagementEvents(2)
+        assert len(returnedEvent) == 1
+        assert len(returnedNonEngEvent) == 0
+        assert returnedEvent == [engagementEvent]
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getOtherEvents(special_otherEvents):
@@ -292,7 +308,6 @@ def test_eventViewCount():
                                  location = "basement",
                                  isTraining = True,
                                  startDate = "2021-12-12",
-                                 endDate = "2021-12-13",
                                  program = 9)
         
         viewer = User.create(username = "eventViewer",

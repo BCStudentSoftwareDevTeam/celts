@@ -1,11 +1,31 @@
 import searchUser from './searchUser.js'
 
+var newManagers = []  // global var
+
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
+
+function callbackProgramManager(selected, action = 'add') {
+  let row = $(`#programManagersTable tr[data-username="${selected["username"]}"]`);
+  let userDoesNotExist = row.length === 0;
+  let programId = $('#programPlaceholder').attr('data-programid');
+
+  if ((action === 'remove') || (userDoesNotExist && action === 'add')){
+    editProgramManager(
+      selected['username'],
+      `${selected['firstName'] + ' ' + selected['lastName']}`,
+      programId,
+      action
+    );
+  } else {
+    return;
+  }
+}
+
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -13,6 +33,9 @@ $(document).ready(function(){
   });
   $("#searchCeltsStudentStaffInput").on("input", function(){
       searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+  });
+  $("#searchProgramManagersInput").on("input", function() {
+      searchUser("searchProgramManagersInput", callbackProgramManager, true, "parentManager", "all");
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
@@ -23,6 +46,17 @@ $(document).ready(function(){
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
+  $("#programManagersTable").on("click", ".removeProgramManager", function(){
+    let row = $(this).closest("tr");
+    let fullName = row.find("td").eq(0).text().trim();
+    let [firstName, lastName] = fullName.split(" ");
+    callbackProgramManager({
+      username: row.data("username"),
+      firstName: firstName,
+      lastName: lastName
+    }, "remove");
+    });
+  
   $('#searchCeltsAdminInput').keydown(function(e){
       if (e.key === "Enter"){
           submitRequest("addCeltsAdmin", $(this).val())
@@ -43,7 +77,50 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
+  $('[data-bs-target="#adminProgramManagement"]').on('click', function() {
+    // Get the JSON data from the data-programinfo attribute
+    const programInfo = JSON.parse($(this).attr('data-programinfo'));
+    // Directly populate modal fields
+    $("#programName").val(programInfo.programName);
+    $("#programDescription").val(programInfo.programDescription);
+    $("#partner").val(programInfo.partner);
+    $("#contactEmail").val(programInfo.contactEmail);
+    $("#contactName").val(programInfo.contactName);
+    $("#location").val(programInfo.location);
+    $("#programid").val(programInfo.programid)
+    $("#instagramUrl").val(programInfo.instagramUrl);
+    $("#facebookUrl").val(programInfo.facebookUrl);
+    $("#bereaUrl").val(programInfo.bereaUrl);
+    $('#modalProgramImage').val('');
+    $('#modalProgramImageContainer').html('');
+
+    handleFileSelection('modalProgramImage', true);
+    // Update the form action URL dynamically
+    let updateForm = $('#updateProgramForm');
+    updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
+    });
+
+    $(".editProgramManagersButton").on('click', function(){
+      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
+      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
+
+      $('#noManagersText').addClass("d-none")
+      const managers = $(this).attr('data-managers').split(',');
+      const managersTable = $('#programManagersTable');
+      managersTable.empty();
+      
+      if(managers[0].length == 0){
+        $('#noManagersText').removeClass("d-none")
+        return;
+      };
+
+      managers.forEach(manager => {
+        let [managerName, managerUser] = manager.split('#');
+        managersTable.append(createProgramManagerRow(managerUser, managerName))
+      });
+    })
 });
+
 function submitRequest(method, username){
   let data = {
       method: method,
@@ -62,6 +139,68 @@ function submitRequest(method, username){
       console.log(error, status)
     }
   })
+}
+
+function createProgramManagerRow(username, fullName) {
+  return `
+      <tr data-username="${username}">
+      <td id="${username}"> ${fullName} </td>
+      <td class="text-end">
+          <button data-username="${username}" type="button" 
+          class="btn btn-danger removeProgramManager">Remove</button>
+      </td>
+      </tr>
+  `;
+}
+
+function editProgramManager(username, fullName, programId, action){
+  let data = {
+      username: username,
+      programId: programId,
+      action: action,
+  }
+  $.ajax({
+    url: "/updateProgramManager",
+    type: "POST",
+    data: data,
+    success: function(s){
+      if (action === 'add'){
+        $('#noManagersText').addClass("d-none")
+        $('#programManagersTable').append(createProgramManagerRow(username, fullName))
+        updateManagers(programId)
+      } else {
+        $(`#programManagersTable #${username}`)
+        .animate({
+          opacity: 0,
+        }, 500, function() {
+          $(`#programManagersTable #${username}`)
+          .closest('tr')
+          .remove()
+          updateManagers(programId)
+        })
+        if (newManagers.length){
+          $('#noManagersText').removeClass("d-none")
+        }
+      }
+    },
+    error: function(error, status){
+      console.log(error, status)
+      msgFlash('Failed to update the Program Manager Table. Please try again')
+    }
+  })
+}
+
+function updateManagers(programId){
+  newManagers.length = 0;
+  let username = ""
+  let fullName = "";
+  $("#programManagersTable").children().each((index, manager) => {
+    username = $(manager).find("td:first-child").attr("id");
+    fullName = $(manager).find("td:first-child").html().trim();
+    newManagers.push(`${fullName}#${username}`);
+  });
+  let managersString = newManagers.join(",");
+  $(`.editProgramManagersButton[data-programid='${programId}'`).attr('data-managers', managersString)
 }
 
 function submitTerm(){

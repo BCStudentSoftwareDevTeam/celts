@@ -1,4 +1,5 @@
 import pytest
+import io
 from flask import g
 from app import app
 from app.logic.userManagement import *
@@ -8,6 +9,9 @@ from app.models.programManager import ProgramManager
 from app.logic.volunteers import setProgramManager
 from peewee import DoesNotExist
 from app.models import mainDB
+import os
+import time
+from werkzeug.datastructures import FileStorage
 
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
@@ -81,56 +85,121 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
+        baseProgramData = {
+            "programName" : "Test Program Name",
+            "programDescription" : "This is the original test description",
+            "partner" : "Original Test Partner",
+            "contactName" : "",
+            "contactEmail" : '',
+            "location" : "",
+            "instagramUrl" : "",
+            "bereaUrl" : "",
+            "facebookUrl" : ""
+        }
 
-        programId = 3
-        eventName = "Test Event Name"
-        contactName = "New Test Name"
-        contactEmail = 'newtest@email'
-        location = "Danforth Tech"
-        currentProgramInfo = Program.get_by_id(programId)
+        desiredProgramData = {
+            "programName" : "Test Program Name",
+            "programDescription" : "This is a test Description",
+            "partner" : "Test Partner",
+            "contactName" : "New Test Name",
+            "contactEmail" : 'newtest@email',
+            "location" : "Danforth Tech",
+            "instagramUrl" : "www.instagram.com",
+            "bereaUrl" : "www.berea.edu",
+            "facebookUrl" : "www.facebook.com"
+        }
+        newProgram = Program.create(**baseProgramData)
 
-        assert currentProgramInfo.programName == "Adopt-a-Grandparent"
+        currentProgramInfo = Program.get_by_id(newProgram.id)
+        currentProgramID = currentProgramInfo.id
+
+        AttachmentUpload.create(program=currentProgramID, fileName=f'{currentProgramID}.jpg')
+
+        assert currentProgramInfo.programName == desiredProgramData["programName"]
+        assert currentProgramInfo.programDescription != desiredProgramData['programDescription']
+        assert currentProgramInfo.partner != desiredProgramData['partner']
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
         assert currentProgramInfo.defaultLocation == ""
+        assert currentProgramInfo.instagramUrl != None
+        assert currentProgramInfo.bereaUrl != None
+        assert currentProgramInfo.facebookUrl != None
+       
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, contactEmail, contactName, location, programId)
+            changeProgramInfo(currentProgramID, None, **desiredProgramData)
 
-        currentProgramInfo = Program.select().where(Program.id==programId).get()
-
-        assert currentProgramInfo.programName == eventName
-        assert currentProgramInfo.contactName == contactName
-        assert currentProgramInfo.contactEmail == contactEmail
-        assert currentProgramInfo.defaultLocation == location
+        currentProgramInfo = Program.select().where(Program.id==currentProgramID).get()
+        
+        assert currentProgramInfo.programName == desiredProgramData["programName"]
+        assert currentProgramInfo.programDescription == desiredProgramData["programDescription"]
+        assert currentProgramInfo.partner == desiredProgramData["partner"]
+        assert currentProgramInfo.contactName == desiredProgramData["contactName"]
+        assert currentProgramInfo.contactEmail == desiredProgramData["contactEmail"]
+        assert currentProgramInfo.defaultLocation == desiredProgramData["location"]
+        assert currentProgramInfo.instagramUrl == desiredProgramData["instagramUrl"]
+        assert currentProgramInfo.facebookUrl == desiredProgramData["facebookUrl"]
+        assert currentProgramInfo.bereaUrl == desiredProgramData["bereaUrl"]
 
         transaction.rollback()
 
 @pytest.mark.integration
 def test_updatedProgramManager():
     with mainDB.atomic() as transaction:
-        # Try to add a student who isnt Student Staff into a Program Manager: They should not be added.
-        user = User.get_by_id("mupotsal")
-        user.isCeltsStudentStaff = False
-        user.save()
+        # Make student a program manager.
+        nonStudentorStaffUser = User.create(username = "prospectiveProgramManager",
+                                     bnumber = "B00000000003",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = False,
+                                     isFaculty = False,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+                                     
+        studentUser = User.create(username = "secondProspectiveProgramManager",
+                                     bnumber = "B00000000023",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = True,
+                                     isFaculty = False,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+
+        facultyUser = User.create(username = "thirdProspectiveProgramManager",
+                                     bnumber = "B00000000033",
+                                     email = "test@test.com",
+                                     phoneNumber = "000-000-0000",
+                                     firstName = "prosp",
+                                     lastName = "ect",
+                                     isStudent = False,
+                                     isFaculty = True,
+                                     isStaff = False,
+                                     isCeltsAdmin = False,
+                                     isCeltsStudentStaff = False)
+
         program = Program.get_by_id(1)
-
-        setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
-
-        # Make the previous student into a Student Staff then try to make them
-        # a Program Manager again: They should be added to Program Managers.
-        user.isCeltsStudentStaff = True
-        user.save()
-
-        setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is not None
+        setProgramManager(nonStudentorStaffUser, program, "add")
+        setProgramManager(studentUser, program, "add")
+        setProgramManager(facultyUser, program, "add")
+        assert ProgramManager.get_or_none(program = program, user = nonStudentorStaffUser) is not None
+        assert ProgramManager.get_or_none(program = program, user = studentUser) is not None
+        assert ProgramManager.get_or_none(program = program, user = facultyUser) is not None
 
         # Remove the user that was added as a Program Manager
-        setProgramManager(user, program, "remove")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
-
+        setProgramManager(nonStudentorStaffUser, program, "remove")
+        setProgramManager(studentUser, program, "remove")
+        setProgramManager(facultyUser, program, "remove")
+        assert ProgramManager.get_or_none(program = program, user = nonStudentorStaffUser) is None
+        assert ProgramManager.get_or_none(program = program, user = studentUser) is None
+        assert ProgramManager.get_or_none(program = program, user = facultyUser) is None
+    
         transaction.rollback()
 
 @pytest.mark.integration

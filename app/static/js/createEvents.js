@@ -1,26 +1,6 @@
 import searchUser from './searchUser.js'
 let pendingmultipleEvents = []
 
-// updates max and min dates of the datepickers as the other datepicker changes
-// No need for / for Firefox compatiblity 
-function updateDate(obj) {
-  var selectedDate = $(obj).datepicker("getDate"); 
-  var newMonth = selectedDate.getMonth();
-  var newYear = selectedDate.getFullYear();
-  var newDay = selectedDate.getDate();
-
-  if (obj.className.includes("startDatePicker")) {
-    $("#endDatePicker-" + $(obj).data("page-location")).datepicker("option", "minDate", new Date(newYear, newMonth, newDay));
-  } else if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-" + $(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
-  }
-
-  if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(newYear, newMonth, newDay)});
-    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
-  }
-}
-
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr) {
@@ -35,27 +15,45 @@ function format24to12HourTime(timeStr) {
   return formattedTime;
 }
 
-function calculateRecurringEventFrequency(){
-  var eventDatesAndName = {name:$("#inputEventName").val(),
-                            isRecurring: true,
-                            startDate:$(".startDatePicker")[0].value,
-                            endDate:$(".endDatePicker")[0].value}
+function format12to24HourTime(timeStr) {
+  // break the time into hours, minutes, and meridian (AM, PM)
+  const [timePart, meridian] = timeStr.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+
+  if (meridian === "PM" && hours !== 12) {
+      hours += 12;
+  } else if (meridian === "AM" && hours === 12) {
+      hours = 0; // midnight
+  }
+
+  // format hours and minutes to always be 2 digits
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}`;
+}
+
+function calculateRepeatingEventFrequency(){
+  var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
+                            isRepeating: true,
+                            startDate:$("#repeatingEventsStartDate").val(),
+                            endDate:$("#repeatingEventsEndDate").val()}
   $.ajax({
     type:"POST",
-    url: "/makeRecurringEvents",
+    url: "/makeRepeatingEvents",
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
     success: function(jsonData){
-      var recurringEvents = JSON.parse(jsonData)
-      var recurringTable = $("#recurringEventsTable")
-      $("#recurringEventsTable tbody tr").remove();
-      for(var event of recurringEvents){
-        var eventdate = new Date(event.date).toLocaleDateString()
-        recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");           
-        }
+      var generatedEvents = JSON.parse(jsonData)
+      $("#generatedEventsTable tbody tr").remove();
+      for(var event of generatedEvents){
+        loadRepeatingOfferingToModal(event)
+      }
+      $("#generatedEvents").removeClass("d-none");
     },
     error: function(error){
       console.log(error)
+      displayNotification("Failed to generate events.");
     }
   });
 }
@@ -63,15 +61,13 @@ function calculateRecurringEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
+  $('#eventTime, #eventDate').removeClass('d-none');
 }
 
-function setViewForMultipleOffering(){
+function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-  $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').addClass('d-none');
+  $('#eventTime, #eventDate').addClass('d-none');
 }
 
 function displayNotification(message) {
@@ -84,26 +80,55 @@ function displayNotification(message) {
   });
 }
 
-function isDateInPast(dateString) {
-  const date = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today;
+function isDateInPast(dateString, timeString) {
+  const combineDateTime = `${dateString}T${timeString}:00`;
+  const setDate = new Date(combineDateTime).getTime();
+  const today = Date.now();
+  return setDate < today;
+}
+
+function initializeFlatpickr(obj) {
+  flatpickr(obj, {
+    enableTime: true,
+    wrap: true,
+    noCalendar: true,
+    dateFormat: "h:i K",
+    time_24hr: false,
+    minTime: "08:00",
+    maxTime: "22:00",
+    minuteIncrement: 15,
+    allowInput: true 
+  });
 }
 
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
 
-  let clonedMultipleOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+  let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+
   // insert values for the newly created row
-  if (eventName) {clonedMultipleOffering.find('.multipleOfferingNameField').val(eventName)}
-  if (eventDate) {clonedMultipleOffering.find('.multipleOfferingDatePicker').val(eventDate)}
-  if (startTime) {clonedMultipleOffering.find('.multipleOfferingStartTime').val(startTime)}
-  if (endTime) {clonedMultipleOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (isDuplicate) {clonedMultipleOffering.addClass('border-red')}
+  if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
+  if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
+  if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
+  if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
+  if (isDuplicate) {clonedOffering.addClass('border-red')}
 
-  $("#multipleOfferingSlots").append(clonedMultipleOffering);
-  pendingmultipleEvents.push(clonedMultipleOffering);
+  $("#multipleOfferingSlots").append(clonedOffering);
+  pendingmultipleEvents.push(clonedOffering);
 
+  if (navigator.userAgent.indexOf("Chrome") == -1) {
+    initializeFlatpickr(clonedOffering.find('#flatpickr1'))
+    initializeFlatpickr(clonedOffering.find('#flatpickr2'))
+    $(".timepicker").prop("type", "text");
+    $(".timeIcons").prop("hidden", false);
+
+    var formattedStartTime = format24to12HourTime(clonedOffering.find(".multipleOfferingStartTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime(clonedOffering.find(".multipleOfferingEndTime").prop("defaultValue"));
+    clonedOffering.find(".multipleOfferingStartTime").val(formattedStartTime);
+    clonedOffering.find(".multipleOfferingEndTime").val(formattedEndTime);
+  }
+
+  /* still necessary? seems like it's already doing this somewhere
+   
   //this is so that the trash icon can be used to delete the event
   clonedMultipleOffering.find(".deleteMultipleOffering").on("click", function() {
     let attachedRow = $(this).closest(".eventOffering")
@@ -115,21 +140,23 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
         attachedRow.remove();
     });
   });
-  return clonedMultipleOffering
+  */
+  return clonedOffering
 }
 
-$('#multipleOfferingSave').on('click', function() {
+$('#saveSeries').on('click', function() {
   //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
   let isEmpty = false;
   let hasValidTimes = true;
   let hasDuplicateListings = false;
   let hasInvalidDates = false;
-  const allowPastStart = $("#allowPastStart").is(":checked");
 
 
   // Check if the input field is empty
@@ -155,7 +182,15 @@ $('#multipleOfferingSave').on('click', function() {
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
-    if(startTimeInputs[i].value < endTimeInputs[i].value){
+    let startTime = startTimeInputs[i].value
+    let endTime = endTimeInputs[i].value
+    
+    if (navigator.userAgent.indexOf("Chrome") == -1) {
+      startTime = format12to24HourTime(startTime)
+      endTime = format12to24HourTime(endTime)
+    }
+
+    if(startTime < endTime){
       $(startTimeInputs[i]).removeClass('border-red');
       $(endTimeInputs[i]).removeClass('border-red');
     } else {
@@ -163,6 +198,10 @@ $('#multipleOfferingSave').on('click', function() {
       $(endTimeInputs[i]).addClass('border-red');
       hasValidTimes = false;
     }
+  }
+
+  if ($(dataTable).children().length < 1){
+    displayNotification("Please create events.")
   }
 
   // Check if there are duplicate event offerings
@@ -183,16 +222,6 @@ $('#multipleOfferingSave').on('click', function() {
     }
   }
 
-  // Add past date validation
-  datePickerInputs.each(function(index, element) {
-    if (!allowPastStart && isDateInPast($(element).val())) {
-      $(element).addClass('border-red');
-      hasInvalidDates = true;
-    } else {
-      $(element).removeClass('border-red');
-    }
-  }); 
-
   if (isEmpty){
     let emptyFieldMessage = "Event name or date field is empty";
     displayNotification(emptyFieldMessage);
@@ -204,55 +233,113 @@ $('#multipleOfferingSave').on('click', function() {
   else if (hasDuplicateListings) {
     let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
     displayNotification(eventConflictMessage);
-  }
-  else if (hasInvalidDates) {
-    displayNotification ("Some events have dates in the past. Please correct them or enable 'Allow start date to be in the past'.", "danger");
-  }
-  else {
-    let offerings = [];
-    eventOfferings.each(function(index, element) {
-      offerings.push({
-        eventName: $(element).find('.multipleOfferingNameField').val(),
-        eventDate: $(element).find('.multipleOfferingDatePicker').val(),
-        startTime: $(element).find('.multipleOfferingStartTime').val(),
-        endTime: $(element).find('.multipleOfferingEndTime').val()
-      });
-    });
-
-    let offeringsJson = JSON.stringify(offerings);
-    $("#multipleOfferingData").val(offeringsJson);
-
+  } else {
+    saveOfferingsFromModal();
+    $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
-    $("#checkIsMultipleOffering").prop('checked', true);
-    $('#modalMultipleOffering').modal('hide');
-    msgFlash("Multiple time offering events saved!", "success");
+    $("#checkIsSeries").prop('checked', true);
+    // Remove the modal and overlay from the DOM
+    $('#modalSeries').modal('hide');
   }
 });
 
 
 // Save the offerings from the modal to the hidden input field
+function saveOfferingsFromModal() {
+  let offerings = [];
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  $("#formIsRepeating").prop("checked", isRepeatingStatus);
+  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
+  $(dataTable).children().each(function(index, element) {
+    let rowData;
+    if (isRepeatingStatus){
+      rowData = $.map($(element).find("td"), function(td){
+        let input = $(td).find("input");
+        if (input.length){
+          return input.val();
+        } else {
+          return $(td).text().trim();
+        }
+      })}
+    else {
+      rowData = $.map($(element).find("input"), (el) => $(el).val());
+    }
+
+    let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2]
+    let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+    if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime)
+        endTime = format12to24HourTime(endTime)
+    }
+    offerings.push({
+        eventName: rowData[0],
+        eventDate: rowData[1],
+        startTime: startTime,
+        endTime: endTime,
+    })
+  });
+
+
+  $(dataTable).children().remove();
+  let offeringsJson = JSON.stringify(offerings);
+  $("#seriesData").val(offeringsJson);
+}
+
+function verifyRepeatingFields(){
+  // verifies all fields in the repeating table are not empty.
+  let repeatingFields = $(".repeatingEventsField");
+  let allFieldsFilled = true;
+  repeatingFields.each(function() {
+    let value = $(this).val();
+    if (value === "" || value == null){
+      allFieldsFilled = false;
+      return false;
+    }
+  })
+  return allFieldsFilled
+}
+
+
+
 function loadOfferingsToModal(){
-  let offerings = JSON.parse($("#multipleOfferingData").val())
+  let offerings = JSON.parse($("#seriesData").val())
+  if (offerings.length < 1) {return;}
+  let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
   offerings.forEach((offering, i) =>{
-    let newOfferingModalRow = createOfferingModalRow(offering)
-    //stripes odd event sections in event modal
-    newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
-  })    
+    if (isRepeatingStatus){
+      loadRepeatingOfferingToModal(offering);
+    } else {
+      let newOfferingModalRow = createOfferingModalRow(offering);
+      //stripes odd event sections in event modal
+      newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
+    }})
+}
+
+function loadRepeatingOfferingToModal(offering){
+  var seriesTable = $("#generatedEventsTable");
+  var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
+  seriesTable.append(
+    "<tr class='eventOffering'>" +
+    "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
+    "<td id='offeringDate'>" + eventDate + "</td>" +
+    "<td><div class='deleteGeneratedEvent'><span class='bi bi-trash btn btn-danger'></span></div></td>" +
+    "</tr>"
+  );
 }
 
 // Update the table of offerings with the offerings from the hidden input field
 function updateOfferingsTable() {
-  let offerings = JSON.parse($("#multipleOfferingData").val())
-
-  var multipleOfferingTable = $("#multipleOfferingEventsTable");
-  multipleOfferingTable.find("tbody tr").remove(); // Clear existing rows
+  let offerings = JSON.parse($("#seriesData").val())
+  var offeringsTable = $("#offeringsTable");
+  offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function(offering){
-    //fromat to 12hr time for display
+    //format to 12hr time for display
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
-    multipleOfferingTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
+    offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
                                     "<td>" + offering.eventName + "</td>" +
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
@@ -262,12 +349,11 @@ function updateOfferingsTable() {
   });
 }
 
-
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
   var dateObj = new Date(originalDate);
-  //ensures that time zone is not inconsistent, keeping the date consistent with what the user selects
-  dateObj.setUTCHours(0, 0, 0, 0);
+  // dateObj.setUTCHours(0, 0, 0, 0); // set the timezone
+
   var month = dateObj.toLocaleString('default', { month: 'short' });
   var day = dateObj.getUTCDate();
   var year = dateObj.getUTCFullYear();
@@ -277,41 +363,43 @@ function formatDate(originalDate) {
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
+  var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
+
   //makes sure bonners toggle will stay on between event pages
-  if (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit') {
+  if (isEditPage) {
     if ($("#checkBonners")) {
       $("#checkBonners").prop('checked', true);
-  }
-}
-// Initialize datepicker with proper options
-$.datepicker.setDefaults({
-  dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-  minDate: new Date()
-});
-
-$(".datePicker").datepicker({
-  dateFormat: 'mm/dd/yy',
-  minDate: new Date() 
-});
-
-  $(".datePicker").each(function() {
-  var dateStr = $(this).val();
-  if (dateStr) {
-    var dateObj = new Date(dateStr);
-    if (!isNaN(dateObj.getTime())) {
-      $(this).datepicker("setDate", dateObj);
     }
   }
-});
 
-// Update datepicker min and max dates on change
-$(".startDatePicker, .endDatePicker").change(function () {
-  updateDate(this);
-});
-  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
-    calculateRecurringEventFrequency();
+  // don't use a minimum if we are editing an existing event
+  var minDate = new Date()
+  if (isEditPage) {
+      minDate = null;
   }
-    handleFileSelection("attachmentObject")
+
+  // Initialize datepicker with proper options
+  $.datepicker.setDefaults({
+    dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
+    minDate: minDate
+  });
+
+  $(".datePicker").datepicker({
+    dateFormat: 'mm/dd/yy',
+    minDate: minDate
+  });
+
+  $(".datePicker").each(function(idx, el) {
+    var dateStr = $(el).val();
+    if (dateStr) {
+      var dateObj = new Date(dateStr);
+      if (!isNaN(dateObj.getTime())) {
+        $(el).datepicker("setDate", dateObj);
+      }
+    }
+  });
+
+  handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
     if ($("#checkRSVP").is(":checked")) {
@@ -320,6 +408,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
       $("#limitGroup").hide();
     }
   });
+
   // Determine which checkbox was clicked and its current checked status, uncheck others
   let typeBoxes = $("#checkIsTraining, #checkServiceHours, #checkEngagement, #checkBonners")
   typeBoxes.on('click', function (event) {
@@ -346,61 +435,111 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   updateOfferingsTable();
   
-  if ($("#checkIsMultipleOffering").is(":checked")){
-    setViewForMultipleOffering();
+  if ($("#checkIsSeries").is(":checked")){
+    setViewForSeries();
   }
   
   let modalOpenedByEditButton = false;
-  //#checkIsRecurring, #checkIsMultipleOffering are attributes for the toggle buttons on create event page
-  $("#checkIsRecurring, #checkIsMultipleOffering, #edit_modal").click(function(event) { 
+  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
+  $("#checkIsSeries, #edit_modal").click(function(event) {
+
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
       $('#eventName').val($('#inputEventName').val());
     }
-    // retrieves toggle status, 'on' or undefined
-    let recurringStatus = $("#checkIsRecurring").is(":checked")
-    let multipleOfferingStatus = $("#checkIsMultipleOffering").is(":checked")
+    let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-
-    if (multipleOfferingStatus == true && recurringStatus == true){
-      msgFlash("You may not toggle recurring event and multiple time offering event at the same time!", "danger");
-      $(event.target).prop('checked', false);
-      return; 
-    }
-    if (recurringStatus == true) {
-      $(".endDateStyle, #recurringTableDiv").removeClass('d-none');
-      $("#checkIsMultipleOffering").prop('checked', false);
-      $('#multipleOfferingTableDiv').addClass('d-none');
-      $(".endDatePicker").prop('required', true);
-    } 
-    else if (multipleOfferingStatus == true) {
-      setViewForMultipleOffering();
+    if (isSeries) {
+      setViewForSeries();
       loadOfferingsToModal();
-      $('#modalMultipleOffering').modal('show');
+      $('#modalSeries').modal('show');
+
+      // Disable single event name field
+      $('#inputEventName').prop('readonly', true)
+      $('#inputEventName').prop('placeholder', '')
+      $('#inputEventName').val('')
+
+    } else {
+      setViewForSingleOffering()
+      $('#multipleOfferingTableDiv').addClass('d-none');
+      // Enable single event name field
+      $('#inputEventName').prop('readonly', false)
+      $('#inputEventName').prop('placeholder', 'Enter event name')
     }
-    else { 
-      //adds the display none button of bootstrap so that the end-date div disappears for recurring even
-      $(".endDateStyle, #recurringTableDiv").addClass('d-none');
-      $(".endDatePicker").prop('required', false);
-      //set page UI back to default
-      $("#multipleOfferingTableDiv").addClass('d-none');
-      $('#modalMultipleOffering').modal('hide');
-      $('#nonMultipleOfferingTime, #nonMultipleOfferingDate').removeClass('d-none');
-      $(".startDatePicker").prop('required', true);
-    }
+    
   });
 
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
     if (modalOpenedByEditButton == false) {
-      $('#modalMultipleOffering').modal('hide');
-      $("#checkIsMultipleOffering").prop('checked', false);
+      $('#modalSeries').modal('hide');
+      $("#checkIsSeries").prop('checked', false);
       setViewForSingleOffering()
     }
     pendingmultipleEvents.forEach(function(element){
       element.remove();
+    });
+    let isSeries = $("#checkIsSeries").is(":checked")
+    if (!isSeries){
+      // Enable single event name field
+      $('#inputEventName').prop('readonly', false)
+      $('#inputEventName').prop('placeholder', 'Enter event name')
+    }
+  });
 
+  $("#checkIsRepeating").change(function() {
+    if ($(this).is(':checked')) {
+      $('.addMultipleOfferingEvent').hide();
+      $("#repeatingEventsDiv").removeClass('d-none');
+      $("#multipleOfferingSlots").children().remove();
+      $("#multipleOfferingSlots").addClass('d-none');
+    } else {
+      $('.addMultipleOfferingEvent').show(); 
+      $("#repeatingEventsDiv").addClass('d-none');
+      $("#multipleOfferingSlots").removeClass('d-none');
+    }
+  });
+  
+  $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
+
+  function handleRepeatingEventsChange() {
+    if (verifyRepeatingFields()) {
+      let table = $("#generatedEventsList").children();
+      let startDate = new Date($("#repeatingEventsStartDate").val());
+      let endDate = new Date($("#repeatingEventsEndDate").val());
+      let startTime = $("#repeatingEventsStartTime").val();
+      let endTime = $("#repeatingEventsEndTime").val();
+
+      if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime)
+        endTime = format12to24HourTime(endTime)
+      }
+
+      if (endDate <= startDate) {
+        displayNotification("The end date must be after the start date.");
+        table.each(function(){$(this).remove()})
+        $("#generatedEvents").addClass('d-none');
+        return;
+      }
+      if (endTime <= startTime){
+        displayNotification("The end time must be after the start time.");
+        table.each(function(){$(this).remove()})
+        $("#generatedEvents").addClass('d-none');
+        return;
+      }
+
+      calculateRepeatingEventFrequency();
+    }
+  }
+
+  $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
+    let attachedRow = $(this).closest(".eventOffering")
+    attachedRow.animate({
+      opacity: 0,
+    }, 500, function() {
+        // After the animation completes, remove the row
+        attachedRow.remove();
     });
   });
   
@@ -415,14 +554,8 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    $('input.timepicker').timepicker({
-      timeFormat: 'hh:mm p',
-      scrollbar: true,
-      dropdown: true,
-      dynamic: true,
-      minTime: "08:00am",
-      maxTime: "10:00pm"
-    });
+    initializeFlatpickr(".flatpickr")
+    
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 
@@ -430,6 +563,7 @@ $(".startDatePicker, .endDatePicker").change(function () {
     var formattedEndTime = format24to12HourTime($(".endTime").prop("defaultValue"));
     $(".startTime").val(formattedStartTime);
     $(".endTime").val(formattedEndTime);
+
   } else {
     $(".timepicker").prop("type", "time");
     $(".timeIcons").prop("hidden", true);
@@ -450,12 +584,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
 
   $(".endDate").click(function () {
     $("#endDatePicker-" + $(this).data("page-location")).datepicker("show");
-  });
-
-  $(".startDatePicker, .endDatePicker").change(function () {
-    if ($(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()) {
-      calculateRecurringEventFrequency();
-    }
   });
 
   var facilitatorArray = []
@@ -487,14 +615,6 @@ $(".startDatePicker, .endDatePicker").change(function () {
     facilitatorArray.splice(index, 1);
     $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
     $(this).closest("tr").remove();
-  });
-
-  $(".endDatePicker").change(function () {
-    updateDate(this);
-  });
-
-  $(".startDatePicker").change(function(){
-     updateDate(this)
   });
 
   $("#inputCharacters").keyup(function () {

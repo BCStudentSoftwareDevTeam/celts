@@ -43,7 +43,7 @@ pem add app.models.eventTemplate.EventTemplate
 pem add app.models.eventParticipant.EventParticipant
 pem add app.models.interest.Interest
 pem add app.models.note.Note
-pem add app.models.partner.Partner
+# pem add app.models.partner.Partner
 pem add app.models.program.Program
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
@@ -68,9 +68,9 @@ pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
 pem add app.models.eventRsvpLog.EventRsvpLog
 pem add app.models.celtsLabor.CeltsLabor
-pem add app.models.communityEngagementRequest.CommunityEngagementRequest
+pem add app.models.cceMinorProposal.CCEMinorProposal
 pem add app.models.individualRequirement.IndividualRequirement
-
+pem add app.models.eventCohort.EventCohort
 
 pem watch
 pem migrate

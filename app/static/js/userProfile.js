@@ -1,20 +1,21 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let data = {"username":username}
+    let isAdding = true 
+    
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",
-        data: data,
+        data: JSON.stringify({ "isAdding": isAdding }),
+        contentType: "application/json",
         success: function(s) {
-
         },
         error: function(request, status, error) {
-          console.log(error)
+          console.log(status, error)
           msgToast("Error!", "Failed to save changes!")
         }
     });
-  })    
+  })
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -25,7 +26,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-  
+
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -42,6 +43,39 @@ $(document).ready(function(){
       }
     });
   });
+
+  $('.onTranscriptCheckbox').click(function() {
+    var onTranscript = $(this).is(':checked');
+    var username = $(this).data('username');
+    var programID = $(this).data("programid");
+    displayTranscriptStatus(programID);
+    
+    $.ajax({
+        type: "POST",
+        url: `/profile/${username}/updateTranscript/${programID}`,
+        contentType: "application/json",
+        data: JSON.stringify({ username: username, removeFromTranscript: !onTranscript, programID: programID }),
+        success: function(response) {
+
+        },
+        error: function(error) {
+            console.error("An error occurred:", error);
+        }
+    });
+
+  });
+
+  function displayTranscriptStatus(programID) {
+    $('#transcriptStatus-' + programID).show();
+    $('#transcriptStatus-' + programID).text("Saved!");
+    $('#transcriptStatus-' + programID).css('color', 'blue');
+    //show for 0.5s and fade out last for 0.5s
+    setTimeout(function() {
+      $('#transcriptStatus-' + programID).fadeOut(500, function() {
+          $(this).text(''); 
+      });
+    }, 500);
+  }
 
   function changeAction(e){
     let profileAction = $(this).val()
@@ -74,33 +108,34 @@ $(document).ready(function(){
     /*
      * Ban Functionality
      */
-  $(".ban").click(function() {
+  $(".banEdit").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
-                                     //Should only diplay when the modal is going to unban a user
+    banNoteDiv.hide();                //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
+    var banValue = $(this).val()
 
-    banButton.text($(this).val() + " Volunteer");
-    banButton.data("programID", $(this).data("programid"))
-    banButton.data("username", $("#notifyInput").data("username"))
-    banButton.data("banOrUnban", $(this).val());
+    banButton.text(banValue + " Volunteer");
+    programID = $(this).data("programid"); // Assign value to programID variable
+    banButton.data("programID", programID)
+    banButton.data("username", $(".banEdit").data("username"))
+    banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title").text($(this).val() + " Volunteer");
+    $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
-    banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
-    if( $(this).val()=="Unban"){
+    if(banValue == "Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
-
+    
   });
 
 
@@ -114,11 +149,12 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
+    
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
       data: {"note": $("#banNoteTxtArea").val(),
-             "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
+             "endDate":$("#banEndDatepicker").val(), //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
         reloadWithAccordion("programTable")
@@ -148,9 +184,9 @@ $(document).ready(function(){
         $("#noteModal").modal("toggle")
     });
 
-    $("#addVisibility").click(function() { 
+    $("#addVisibility").click(function() {
         var bonnerChecked = $("input[name='bonner']:checked").val()
-    
+
         if (bonnerChecked == 'on') {
             bonnerNoteOn()
         } else {
@@ -198,7 +234,7 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () { 
+    $(".savebtn").click(function () {
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
@@ -255,13 +291,14 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", "Successfully deleted background check.")
+        msgToast("Background Check", `Successfully deleted background check. <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`)
       },
       error: function(error, status){
         console.log(error,status)
       }
     })
   });
+
   // Popover functionality
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
@@ -292,8 +329,8 @@ $(document).ready(function(){
 
 });
 
-function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
-  let program_id=$(el).attr('data-programid');
+function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
+  let programId=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
@@ -303,9 +340,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"user_name":volunteer_username, //student staff: user_name
-            "program_id":program_id,       // program id
-            "action":action,          //action: add or remove
+    data : {"username":volunteerUsername, 
+            "programId":programId,       
+            "action":action,          
              },
 
      success: function(s){
@@ -320,4 +357,3 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
-
