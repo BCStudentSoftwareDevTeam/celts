@@ -278,11 +278,12 @@ def createOtherEngagement(username, formData):
                             **formData
                             )
 
-def updateOtherEngagementRequest(proposalID, formData):
+def updateOtherEngagementRequest(proposalID, formData, status):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
     CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
+    # CCEMinorProposal.update(CCEMinorProposal.id == status).execute()
     
 def saveSummerExperience(username, summerExperience, currentUser):
     """

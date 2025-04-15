@@ -108,6 +108,7 @@
           
           <br><br>
 
+<<<<<<< HEAD
           <div class="row align-items-end pt-5 pb-5">
             <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
               <input class="btn btn-secondary justify-start" id="exitButton" type="button" value="Back"/> 
@@ -126,6 +127,15 @@
                   {% endif %}
               {% endif %}
             </div>
+=======
+          <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+            <input class="btn btn-secondary" id="exitButton" type="button" value="Exit"/> 
+            {% if not viewing %}
+                <input class="btn btn-primary" type="submit"  id = "saveBtn" value="Save"/>
+                <input class="btn btn-primary" type="button" id = "submitProposalBtn" value="Submit Proposal"/> 
+                <input class="btn btn-primary" type="button"  id = "submitApproveBtn"value="Submit and Approve"/> 
+            {% endif %}
+>>>>>>> 4c3003469db964884063dd6920227859abb2a51b
           </div>
       </div>
   </form>
