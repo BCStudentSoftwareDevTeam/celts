@@ -171,6 +171,18 @@ def addToDb(userList):
         return [usersAdded, usersUpdated]
 
 def getFacultyStaffData():
+    """
+    This function pulls all the faculty and staff data from Tracy
+    Tracy's STUSTAFF table has the following columns:
+    1. PIDM
+    2. ID
+    3. FIRST_NAME
+    4. LAST_NAME
+    5. EMAIL
+    6. CPO
+    7. ORG
+    8. DEPT_NAME
+    """
     logger.info("Retrieving Faculty and Staff data from Tracy...")
     try:
         c = getMssqlCursor()
@@ -196,6 +208,23 @@ def getFacultyStaffData():
         raise
 
 def getStudentData():
+    """
+    This function pulls all the faculty and staff data from Tracy
+    Tracy's STUDATA table has the following columns:
+	  1. PIDM
+	  2. ID 
+	  3. FIRST_NAME
+	  4. LAST_NAME
+	  5. CLASS_LEVEL
+	  6. ACADEMIC_FOCUS
+	  7. MAJOR
+	  8. PROBATION
+	  9. ADVISOR
+	 10. STU_EMAIL
+	 11. STU_CPO
+	 12. LAST_POSN
+	 13. LAST_SUP_PIDM
+    """
     logger.info("Retrieving Student data from Tracy...")
     try:
         c = getMssqlCursor()
