@@ -34,14 +34,15 @@ $(document).ready(function() {
     });
 }
 
-  $('#submitButton').on('click', function() {
 
+  $('#saveAsDraftButton').on('click', function() {
+    saveProposalData("Draft")
   })
-  $('#saveAndExitButton').on('click', function() {
-    saveProposalData("In Progress")
+  $('#submitButton').on('click', function() {
+    saveProposalData("Submitted")
   })
-  $('#submitAndApproveButton').on('click', function() {
-    
+  $('#saveAndApproveButton').on('click', function() {
+    saveProposalData("Approved")
   })
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
@@ -101,63 +102,10 @@ $(document).ready(function() {
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
-<<<<<<< HEAD
-=======
-  $('#otherEngagementForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    console.log(actionUrl)
-    let username = $("#username").val()
-    console.log(username)
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  }); 
 
->>>>>>> 4c3003469db964884063dd6920227859abb2a51b
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
-
-
-  if(!viewing()) {
-    $("#submitButton").click(function(){
-        $("#submitProposalBtn").prop("disabled", true)
-        saveCourseData("/serviceLearning/approveCourse", function(response) {
-            window.location.replace("/manageServiceLearning")
-        })
-    });
-
-
-
-    function saveCourseData(url, successCallback) {
-        if (!validateForm()) return false;
-        var formData = $("form").serialize()
-        var instructorData = $.param(getCourseInstructors())
-    
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData + "&" + instructorData,
-            success: successCallback,
-            error: function(request, status, error) {
-             msgFlash("Error saving changes!", "danger")
-           }
-      });
-    }
-
-
 
   // ************** END OTHER ENGAGEMENT ************** //
 })

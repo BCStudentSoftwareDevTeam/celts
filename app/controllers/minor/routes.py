@@ -78,6 +78,7 @@ def editOrViewProposal(proposalID: int):
                                 proposal = proposal)
     
     if "OtherEngagement" in request.path:
+        print(request.form.copy())
         updateOtherEngagementRequest(proposalID, request.form.copy())
     else:
         updateSummerExperience(proposalID, request.form)

@@ -313,7 +313,7 @@ def createOtherEngagement(username, formData):
                             **formData
                             )
 
-def updateOtherEngagementRequest(proposalID, formData, status):
+def updateOtherEngagementRequest(proposalID, formData):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
