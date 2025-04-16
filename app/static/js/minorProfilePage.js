@@ -21,9 +21,9 @@ $(document).ready(function() {
     showEngagementInformation($(this).data('engagement-data'));
   });
   $('.engagement-row input').on("click", function(e) {
-      e.stopPropagation()
+       e.stopPropagation()
 
-      engagementData = $(this).parents('.engagement-row').data('engagement-data');
+      let engagementData = $(this).parents('.engagement-row').data('engagement-data');
       toggleEngagementCredit($(this).is(':checked'), engagementData, this)
   });
 
