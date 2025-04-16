@@ -573,7 +573,6 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 @pytest.mark.integration
 def test_createOtherEngagement(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        user = testUser
         User.create(username="glek",
                     firstName="kafui",
                     lastName="gle",
@@ -583,10 +582,10 @@ def test_createOtherEngagement(testUser, testProposal):
         # Save the requested event to the database
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagement(user.username, testProposal)
+            createOtherEngagementRequest(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
-        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType== 'Other Engagement', CCEMinorProposal.student == testUser.username)
+        initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType == 'Other Engagement', CCEMinorProposal.student == testUser.username)
        
         assert len(initialOtherExperiences) == 1 
 
