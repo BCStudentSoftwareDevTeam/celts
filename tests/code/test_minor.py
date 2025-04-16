@@ -582,7 +582,7 @@ def test_createOtherEngagement(testUser, testProposal):
         # Save the requested event to the database
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagementRequest(testUser.username, testProposal)
+            createOtherEngagement(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
         initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType == 'Other Engagement', CCEMinorProposal.student == testUser.username)
