@@ -5,9 +5,10 @@ from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.term import Term
+from app.models.attachmentUpload import AttachmentUpload
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagement, updateOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals
+from app.logic.minor import createOtherEngagement, updateOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getMinorSpreadsheet, getCCEMinorProposals
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -35,12 +36,16 @@ def createOtherEngagementRequest(username):
     """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
+    
 
     # once we submit the form for creation
     if request.method == "POST":
-        formData = request.form.copy()
-        createOtherEngagement(username, formData)
-        
+        createdProposal = createOtherEngagement(username, request.form.copy())
+        attachment = request.files.get("attachmentObject")
+        if attachment:
+            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+            addFile.saveFiles()
+
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
@@ -116,6 +121,15 @@ def getEngagementInformation(username, type, id, term):
         information = getCourseInformation(id)
 
     return information
+
+@minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
+def returnMinorSpreadsheet():
+    """
+        Returns a spreadsheet containing users and related spreadsheet information.
+    """
+    minorSpreadsheet = getMinorSpreadsheet()   # can we get for any term or only curr term?
+
+    return minorSpreadsheet
 
 @minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
 def modifyCommunityEngagement(username):

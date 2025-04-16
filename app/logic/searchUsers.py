@@ -24,6 +24,8 @@ def searchUsers(query, category=None):
         userWhere = (User.isCeltsStudentStaff)
     elif category == "celtsLinkAdmin":
         userWhere = (User.isFaculty | User.isStaff | User.isCeltsStudentStaff)
+    elif category == "all":
+        userWhere = (True)
     else:
         userWhere = (User.isStudent)
 
