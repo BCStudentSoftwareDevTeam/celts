@@ -40,36 +40,35 @@ def main():
     """
     This function runs the updateRecords function once the script is run.
     """
-    logger.info("Script started.")
-    logger.info("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
+    logger.debug("Script started.")
+    logger.debug("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
     
     logger.info("Getting Updated Names, Majors, and Class Levels")
     
     studentData = addToDb(getStudentData())
     studentAdded = studentData[0]
     studentUpdated = studentData[1]
-    logger.info(f"{studentAdded} students were added.")
-    logger.info(f"{studentUpdated} students were updated.")
-    logger.info("Finished updating student data.")
+    logger.info(f"  {studentAdded} students were added.")
+    logger.info(f"  {studentUpdated} students were updated.")
     
     facultyStaffData = addToDb(getFacultyStaffData())
     facultyStaffAdded = facultyStaffData[0]
     facultyStaffUpdated = facultyStaffData[1]
-    logger.info(f"{facultyStaffAdded} faculties/staffs were added.")
-    logger.info(f"{facultyStaffUpdated} faculties/staffs were updated.")
-    logger.info("Finished updating faculty and staff data.")
+    logger.info(f"  {facultyStaffAdded} faculties/staffs were added.")
+    logger.info(f"  {facultyStaffUpdated} faculties/staffs were updated.")
 
     logger.info("Getting Preferred Names from LDAP")
     ldap = getLdapConn()
-    logger.info("LDAP Connected.")
+    logger.debug(" LDAP Connected.")
 
+    logger.debug(" 1500 is the max returned by LDAP. If we hit 1500 we are losing data.")
     people = fetchLdapList(ldap, alphaRange('a','d'))
     people += fetchLdapList(ldap, alphaRange('e','j'))
     people += fetchLdapList(ldap, alphaRange('k','p'))
     people += fetchLdapList(ldap, alphaRange('q','z'))
 
     updateFromLdap(people)
-    logger.info("Update from LDAP Complete.")
+    logger.debug("Script completed.")
 
 def alphaRange(start, end):
     return [chr(i) for i in range(ord(start), ord(end)+1)]
@@ -79,11 +78,11 @@ def getLdapConn():
         server = Server('berea.edu', port=389, use_ssl=False, get_info=ALL)
         conn = Connection(server, user=app.config['ldap']['user'], password=app.config['ldap']['password'])
         if not conn.bind():
-            logger.error(f"LDAP bind failed: {conn.result}")
+            logger.error(f" LDAP bind failed: {conn.result}")
             raise Exception("BindError")
         return conn
     except Exception as e:
-        logger.error(f"Failed to connect to LDAP: {e}")
+        logger.error(f" Failed to connect to LDAP: {e}")
         raise
 
 def fetchLdapList(conn, startletters):
@@ -93,24 +92,29 @@ def fetchLdapList(conn, startletters):
             f"(|" + "".join(map(lambda s: f"(givenname={s}*)", startletters)) + ")",
             attributes=['samaccountname', 'givenname', 'sn', 'employeeid']
         )
-        logger.info(f"Found {len(conn.entries)} entries for {startletters[0]}-{startletters[-1]} in AD")
+        logger.debug(f" Found {len(conn.entries)} entries for {startletters[0]}-{startletters[-1]} in AD")
         return conn.entries
     except Exception as e:
-        logger.error(f"Failed to fetch LDAP list for {startletters[0]}-{startletters[-1]}: {e}")
+        logger.error(f" Failed to fetch LDAP list for {startletters[0]}-{startletters[-1]}: {e}")
         raise
 
 def updateFromLdap(people):
+    total_updates = 0
     for person in people:
         bnumber = str(get_key(person, 'employeeid')).strip()
         preferred = str(get_key(person, 'givenname')).strip()
+        #logger.debug(f"--{bnumber}--{preferred}--")
 
         if preferred:
             try:
                 count = User.update(firstName=preferred).where(User.bnumber == bnumber).execute()
+                total_updates += count
                 if count:
-                    logger.debug(f"Updated {bnumber} name to {preferred}")
+                    logger.debug(f" Updated {bnumber} name to {preferred}")
+
             except Exception as e:
-                logger.error(f"Failed to update user {bnumber} with preferred name {preferred}: {e}")
+                logger.error(f" Failed to update user {bnumber} with preferred name {preferred}: {e}")
+    logger.info(f"  Updated {total_updates} names.")
 
 def get_key(entry, key):
     if key in entry:
@@ -130,10 +134,10 @@ def getMssqlCursor():
     )
     try:
         pyconn = pyodbc.connect(pyodbc_uri)
-        logger.info("Connected to Tracy database.")
+        logger.debug(" Connected to Tracy database.")
         return pyconn.cursor()
     except Exception as e:
-        logger.error(f"Failed to connect to Tracy database: {e}")
+        logger.error(f" Failed to connect to Tracy database: {e}")
         raise
 
 def addToDb(userList):
@@ -142,7 +146,7 @@ def addToDb(userList):
     for user in userList:
         try:
             User.insert(user).execute()
-            logger.debug(f"Inserted user {user['bnumber']}")
+            logger.debug(f" Inserted user {user['bnumber']}")
             usersAdded += 1
         except peewee.IntegrityError as e:
             try:
@@ -155,14 +159,14 @@ def addToDb(userList):
                         classLevel=user['classLevel'],
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
-                    logger.debug(f"Updated user {user['bnumber']}")
+                    logger.debug(f" Updated user {user['bnumber']}")
                     usersUpdated += 1
                 else:
                     logger.warning(f"No username for {user['bnumber']}!", user)
             except Exception as e:
-                logger.error(f"Failed to update user {user['bnumber']}: {e}")
+                logger.error(f" Failed to update user {user['bnumber']}: {e}")
         except Exception as e:
-            logger.error(f"Failed to insert or update user {user['bnumber']}: {e}")
+            logger.error(f" Failed to insert or update user {user['bnumber']}: {e}")
             
         return [usersAdded, usersUpdated]
 
@@ -188,7 +192,7 @@ def getFacultyStaffData():
             for row in c.execute('select * from STUSTAFF')
         ]
     except Exception as e:
-        logger.error(f"Failed to retrieve Faculty and Staff data: {e}")
+        logger.error(f" Failed to retrieve Faculty and Staff data: {e}")
         raise
 
 def getStudentData():
@@ -211,7 +215,7 @@ def getStudentData():
             for row in c.execute('select * from STUDATA')
         ]
     except Exception as e:
-        logger.error(f"Failed to retrieve Student data: {e}")
+        logger.error(f" Failed to retrieve Student data: {e}")
         raise
 
 if __name__ == '__main__':
