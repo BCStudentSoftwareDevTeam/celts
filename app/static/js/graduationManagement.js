@@ -45,16 +45,16 @@ $(document).ready(function() {
 
     })
 
-    function filterTable(dataFilter, condition) {
+    function filterTable(dataField, expectedValue) {
         gradStudentsTable.rows().every(function() {
             var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
             if (!showGraduatedStudents() && (hasGraduated == true)) {
                 $(this.node()).hide();
                 return 
             }
-            var data = $(this.node()).data(dataFilter); 
+            var data = $(this.node()).data(dataField); 
 
-            if (data === condition) {
+            if (data === expectedValue) {
                 $(this.node()).show(); 
             } else {
                 $(this.node()).hide();
