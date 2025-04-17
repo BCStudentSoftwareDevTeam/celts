@@ -2,6 +2,45 @@ import { validateEmail } from "./emailValidation.mjs";
 
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
+  $("#withdrawBtn").on("click", withdrawProposal);
+
+function changeAction(action){
+      let proposalID = action.id;
+      let proposalAction = action.value;
+      // decides what to do based on selection
+    if (proposalAction == "Withdraw"){
+        $('#proposalID').val(proposalID);
+        $('#withdrawModal').modal('show');
+       
+      }
+      resetAllSelections()
+    }
+   
+
+ function resetAllSelections() {
+      $('.form-select').val('---');
+ }
+
+    
+  function withdrawProposal(){
+      // uses hidden label to withdraw course
+      let proposalID = $("#proposalID").val();
+      let username = $("#username").val()
+      $.ajax({
+        url: `/cceMinor/withdraw/${username}/${proposalID}`,
+        type: "POST",
+        success: function(s){
+          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
+        },  
+        error: function(request, status, error) {
+            console.log(status, error);
+        }
+      })
+      resetAllSelections()
+    };
+
+
+  window.changeAction = changeAction;
 
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
@@ -9,6 +48,7 @@ $(document).ready(function() {
       let digits = matches?matches.length:0;
       if (digits == 0 || digits == 10){
           this.setCustomValidity('')
+
       }
       else{
           this.setCustomValidity('Please enter a valid phone number.')    
@@ -24,6 +64,7 @@ $(document).ready(function() {
       e.stopPropagation()
 
       let engagementData = $(this).parents('.engagement-row').data('engagement-data');
+    
       toggleEngagementCredit($(this).is(':checked'), engagementData, this)
   });
 
