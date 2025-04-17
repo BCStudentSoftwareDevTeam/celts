@@ -66,11 +66,13 @@ $(document).ready(function() {
       url: '/profile/' + username + '/cceMinorChart',
       data: JSON,
       success: function(responses) {
+        responses[2].completeSummer = "Yes";
         for (let i = 0; i <responses.length; i++){
           xValues.push(responses[i].engagementCount);
           yValues.push(responses[i].name);
           barColors.push(responses[i].completeSummer === "Yes" ? "green" : "red");
         }
+        console.table(barColors);
         const cceChart = document.getElementById('cceChartGen');
         const maxValue = Math.max(...xValues.map(Number))+2;
         if (cceChart) {
@@ -80,12 +82,7 @@ $(document).ready(function() {
               labels: yValues,
               datasets: [{
                 label: "Summer Completed",
-                backgroundColor: barColors == "green"?"green":"red",
-                data: xValues
-              }],
-              datasets: [{
-                label: "Summer Not Completed",
-                backgroundColor: barColors == "red"?"red":"green",
+                backgroundColor: barColors,
                 data: xValues
               }]
             },
@@ -96,16 +93,19 @@ $(document).ready(function() {
               },
               plugins: {
                 legend: {
-                  display: true,           // Show legend
-                  position: 'top',         // Position of the legend
-                  labels: {
-                    fontColor: "black",    // Text color of legend items
-                    fontSize: 15           // Font size of legend items
-                  }
+                  display: false,           // Show legend
                 },
-                title: {
-                  display: true,
-                  text: "Students' Engagement Chart"
+                tooltip: {
+                  callbacks: {
+                    label: function(context) { // context here from chart.js acts like "this"
+                      const value = context.formattedValue;
+                      const completed = barColors[context.dataIndex] === "green" ? "Yes" : "No";
+                      return [
+                        `Engagements: ${value}`,
+                        `Summer Completed: ${completed}`
+                       ];
+                    }
+                  }
                 }
               }
             }
@@ -115,8 +115,18 @@ $(document).ready(function() {
       error: function(error) {
         console.log("error")
       }
-  });
+    });
   })
+  $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
+    const element = document.querySelector(".ccePrint"); // do not use jquery when it comes to accessing DOM elements
+    html2canvas(element).then(canvas => {
+      const downloadLink = document.createElement('a'); // create a link
+      downloadLink.href = canvas.toDataURL(); // turn it inot a data url
+      downloadLink.download = fileName; //put the file name as download
+      downloadLink.click(); // stimulate the click
+    })
+  })
+
 })
 
 

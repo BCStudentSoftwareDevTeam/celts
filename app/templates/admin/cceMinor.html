@@ -6,6 +6,8 @@
   <script type="module" src="/static/js/minorAdminPage.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
   {% block styles %}
     {{super()}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
@@ -25,20 +27,32 @@
     <a class="btn btn-success" role="button" href="/admin/cceMinor/download">Download Report</a>
   </div>
 </div>
-<!-- #################  Modal  ################# -->
+<!-- #################  Modal for CCE Minor Graph ################# -->
 <div class="modal fade" id="cceChart" tabindex="-1" aria-labelledby="CCEMinorChart" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">CCE Student Experience Chart</h5>
+      <div class="ccePrint">
+        <div class="modal-header">
+          <h5 class="modal-title">CCE Student Experience Chart</h5>
+        </div>
+        <div class="modal-body">
+          <span>
+            <span class="d-flex flex-row">
+              <span>Summer Complete: </span>
+              <div class="bg-success mt-2 mx-3" style="width:10px; height:10px;"></div>
+            </span>
+            <span class="d-flex flex-row">
+              <span>Summer Incomplete: </span>
+              <div class="bg-danger mt-2 mx-3" style="width:10px; height:10px;"></div>
+            </span>
+          </span>
+          <canvas id="cceChartGen" width="400" height="400"></canvas>
+        </div>
       </div>
-      <div class="modal-body">
-        <canvas id="cceChartGen" width="400" height="400">hello</canvas>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Download Chart</button>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="cceDownload">Download Chart</button>
+        </div>
     </div>
   </div>
 </div>
