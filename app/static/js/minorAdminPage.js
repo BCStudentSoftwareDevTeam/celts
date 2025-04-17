@@ -66,13 +66,11 @@ $(document).ready(function() {
       url: '/profile/' + username + '/cceMinorChart',
       data: JSON,
       success: function(responses) {
-        responses[2].completeSummer = "Yes";
         for (let i = 0; i <responses.length; i++){
           xValues.push(responses[i].engagementCount);
           yValues.push(responses[i].name);
           barColors.push(responses[i].completeSummer === "Yes" ? "green" : "red");
         }
-        console.table(barColors);
         const cceChart = document.getElementById('cceChartGen');
         const maxValue = Math.max(...xValues.map(Number))+2;
         if (cceChart) {
