@@ -32,10 +32,8 @@ def setGraduationStatus(username):
     try:
         status = request.form["status"]
         setGraduatedStatus(username, status)
-        flash(f"Successfully updated graduation status for {username}", "success")
 
     except Exception as e:
-        flash(f"Error updating graduation status for {username}", "danger")
         print(e)
     
     return ""

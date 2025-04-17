@@ -29,11 +29,12 @@ $(document).ready(function() {
             data: {status: hasGraduated ? 1 : 0},
             url: `/${username}/setGraduationStatus`,
             success: function(response) {
-                location.reload()
+                initializePage()
+                msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);
-                location.reload()
+                msgFlash(`Error saving graduation status for ${username}.`)
             }
         });
     });
@@ -41,13 +42,14 @@ $(document).ready(function() {
     $('#showGraduatedToggle').click(function() {
         let isToggled = $(this).is(':checked')
         sessionStorage.setItem('showGraduatedToggleState', isToggled ? 1 : 0)
-        location.reload()
+        initializePage()
+
     })
 
     function filterTable(dataFilter, condition) {
         gradStudentsTable.rows().every(function() {
-            var hasGraduated = $(this.node()).data("has-graduated"); 
-            if (!showGraduatedStudents() && (hasGraduated == "True")) {
+            var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
+            if (!showGraduatedStudents() && (hasGraduated == true)) {
                 $(this.node()).hide();
                 return 
             }
@@ -87,8 +89,8 @@ $(document).ready(function() {
 
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
-                var hasGraduated = $(this.node()).data("has-graduated"); 
-                if (!showGraduatedStudents() && (hasGraduated == "True")) {
+                var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
+                if (!showGraduatedStudents() && (hasGraduated == true)) {
                     $(this.node()).hide();
                     return 
                 }

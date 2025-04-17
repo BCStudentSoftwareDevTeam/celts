@@ -65,7 +65,7 @@
   <tbody>
     {% for userData in users %}
     {% set user = userData['user'] %}
-    <tr data-has-graduated="{{user.hasGraduated}}" data-cce-progress="{{userData['minorProgress']}}" data-cohort-year="{{userData['cohort']}}" data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
+    <tr data-cce-progress="{{userData['minorProgress']}}" data-cohort-year="{{userData['cohort']}}" data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
       <td style="width: 5%;"><input type="checkbox" class="mx-auto w-100 graduated-checkbox" id="gradCheck" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }}</a></td>
       <td>{{ user.classLevel }}</td>

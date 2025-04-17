@@ -96,7 +96,6 @@ $(document).ready(function() {
     var formData = new FormData(this); 
     var actionUrl = $(this).attr('action'); 
     let username = $("#username").val()
-    console.log(username)
     $.ajax({
       url: actionUrl,
       type: 'POST',
