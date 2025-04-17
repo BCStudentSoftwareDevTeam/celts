@@ -2,6 +2,7 @@ import os
 from flask import redirect, url_for
 from app import app
 from app.models.attachmentUpload import AttachmentUpload
+from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.program import Program
 import glob
 
@@ -14,7 +15,8 @@ class FileHandler:
         self.courseId = courseId
         self.eventId = eventId
         self.programId = programId
-        self.proposalId = proposalId
+        self.proposalId = proposalId 
+
         if courseId:
             self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
@@ -41,6 +43,7 @@ class FileHandler:
             pass
         except FileExistsError:
             pass
+           
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
@@ -74,8 +77,7 @@ class FileHandler:
                     AttachmentUpload.create(program=self.programId, fileName=fileName)
                     currentProgramID = fileName
                     saveFileToFilesystem = currentProgramID
-
-
+                    
                 elif self.proposalId:
                     fileType = file.filename.split('.')[-1]
                     fileName = f"{self.proposalId}.{fileType}"
