@@ -36,6 +36,7 @@ def setGraduationStatus(username):
 
     except Exception as e:
         flash(f"Error updating graduation status for {username}", "danger")
+        print(e)
     
     return ""
 

@@ -571,7 +571,7 @@ def test_createOtherEngagementRequest(testUser, testProposal):
         
         
 @pytest.mark.integration
-def testDeclareMinorInterest():
+def test_declareMinorInterest():
     
     with mainDB.atomic() as transaction:
         # Get three students with interest in minor
@@ -613,7 +613,7 @@ def testDeclareMinorInterest():
 
 
 @pytest.mark.integration
-def testGetDeclaredMinorStudents():
+def test_getDeclaredMinorStudents():
     
     with mainDB.atomic() as transaction:
         # Get all the declared students

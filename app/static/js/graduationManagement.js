@@ -114,6 +114,7 @@ $(document).ready(function() {
         var mainFilterState = sessionStorage.getItem('mainFilterState') || 'all';
         var cohortFilterState = sessionStorage.getItem('cohortFilterState') || 'all';
         var showGraduatedToggleState = sessionStorage.getItem('showGraduatedToggleState') || false;
+        $('#showGraduatedToggle').prop('checked', Number(showGraduatedToggleState));
 
         if (mainFilterState == 'cce') {
             var buttonText = 'CCE Minor'
@@ -132,7 +133,6 @@ $(document).ready(function() {
             }
             handleBonnerFilterChange(cohortFilterState, bonnerButtonText)
         }
-        $('#showGraduatedToggle').prop('checked', Number(showGraduatedToggleState));
     }
 
     function showGraduatedStudents() {
