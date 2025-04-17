@@ -8,7 +8,21 @@ from app.models.term import Term
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import createOtherEngagement, updateOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, updateSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getMinorSpreadsheet, getCCEMinorProposals
+from app.logic.minor import (
+    createOtherEngagement,
+    updateOtherEngagementRequest,
+    setCommunityEngagementForUser,
+    getSummerExperience,
+    getEngagementTotal,
+    createSummerExperience,
+    updateSummerExperience,
+    getProgramEngagementHistory, 
+    getCourseInformation,
+    getCommunityEngagementByTerm,
+    getMinorSpreadsheet,
+    getCCEMinorProposals,
+    removeProposal
+)
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -121,6 +135,21 @@ def getEngagementInformation(username, type, id, term):
         information = getCourseInformation(id)
 
     return information
+
+
+@minor_bp.route('/cceMinor/withdraw/<username>/<proposalID>', methods = ['POST'])
+def withdrawProposal(username, proposalID):
+    try:
+        if g.current_user.isAdmin or g.current_user.isFaculty or g.current_user == username:
+            removeProposal(proposalID)
+            flash("Experience successfully withdrawn", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        print(e)
+        flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+    
 
 @minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
 def returnMinorSpreadsheet():

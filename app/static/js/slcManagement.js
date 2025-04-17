@@ -127,7 +127,7 @@ function renew(){
       }
     })
     resetAllSelections()
-}
+  }
 function withdraw(){
   // uses hidden label to withdraw course
   let courseID = $("#courseID").val();
