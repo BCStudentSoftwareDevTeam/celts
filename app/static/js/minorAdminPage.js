@@ -85,13 +85,25 @@ $(document).ready(function() {
               }]
             },
             options: {
-              y: {
-                beginAtZero: true,
-                max: maxValue
+              scales:{
+                y: {
+                  beginAtZero: true,
+                  max: maxValue,
+                  title:{
+                    display:true,
+                    text:'Hours of Engagements'
+                  }
+                },
+                x: {
+                  title:{
+                    display:true,
+                    text:'Names'
+                  }
+                }
               },
               plugins: {
                 legend: {
-                  display: false,           // Show legend
+                  display: false,
                 },
                 tooltip: {
                   callbacks: {

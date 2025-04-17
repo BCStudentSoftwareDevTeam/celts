@@ -8,7 +8,6 @@ from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInter
 
 @admin_bp.route('/profile/<username>/cceMinorChart', methods=['GET'])
 def cceMinorChart(username):
-    print("****" * 19)
     if not g.current_user.isAdmin:
         abort(403)
     else:
