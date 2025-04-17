@@ -14,6 +14,7 @@ from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
