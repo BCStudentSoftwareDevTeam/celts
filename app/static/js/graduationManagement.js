@@ -8,9 +8,8 @@ $(document).ready(function() {
 
     $('.main-dropdown-item').click(function() { 
         var filterType = $(this).data('filter'); 
-        var buttonText = $(this).text();
 
-        handleMainFilterChange(filterType, buttonText) 
+        handleMainFilterChange(filterType) 
     });
 
     $('.bonner-dropdown-item').click(function() {
@@ -76,7 +75,15 @@ $(document).ready(function() {
         filterTable('cohort-year', cohortYear)
     }
 
-    function handleMainFilterChange(filterType, buttonText) {
+    function handleMainFilterChange(filterType) {
+        if (filterType == 'cce') {
+            var buttonText = 'CCE Minor'
+        } else if (filterType == 'bonner') {
+            var buttonText = 'Bonner Students'
+        } else {
+            var buttonText = 'Filter'
+        }
+
         sessionStorage.setItem('mainFilterState', filterType)
         $('#mainFilter').first().text(buttonText);
         $('#cohortFilter').text('Select Cohort');
@@ -118,14 +125,7 @@ $(document).ready(function() {
         var showGraduatedToggleState = sessionStorage.getItem('showGraduatedToggleState') || false;
         $('#showGraduatedToggle').prop('checked', Number(showGraduatedToggleState));
 
-        if (mainFilterState == 'cce') {
-            var buttonText = 'CCE Minor'
-        } else if (mainFilterState == 'bonner') {
-            var buttonText = 'Bonner Students'
-        } else {
-            buttonText = 'Filter'
-        }
-        handleMainFilterChange(mainFilterState, buttonText)
+        handleMainFilterChange(mainFilterState)
 
         if (mainFilterState == "bonner") {
             var bonnerButtonText = "All"
