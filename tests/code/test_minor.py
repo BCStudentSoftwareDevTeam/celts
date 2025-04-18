@@ -657,7 +657,6 @@ def test_removeProposal(testProposal, testUser):
                                 student = testUser.username,
                                 proposalType = 'Other Engagement',
                                 createdBy = testUser.username,
-                                status = 'Pending',
                                 **testProposal
                             )
         assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testOtherEngagement]
