@@ -1,6 +1,4 @@
 import pytest
-from flask import json, jsonify
-from playhouse.shortcuts import model_to_dict
 
 from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers
 
@@ -53,6 +51,7 @@ def test_setGraduationStatus():
 @pytest.mark.integration
 def test_getGraduationManagementUsers():
     with mainDB.atomic() as transaction:
+        # in order to delete Users we have to delete all tables that reference it as well.
         EventRsvp.delete().execute()
         BonnerCohort.delete().execute()
         CeltsLabor.delete().execute()
@@ -77,6 +76,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '03522492',
                     email = 'usert@berea.deu',
+                    classLevel = "Senior",
                     hasGraduated = False) 
         
         testUser2 = User.create(username = 'usrtst2',
@@ -84,6 +84,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '035224921',
                     email = 'usert@berea.deu',
+                    classLevel = "Senior",
                     hasGraduated = False) 
         
         testUser3 = User.create(username = 'usrtst3',
@@ -91,7 +92,55 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '0352249210',
                     email = 'usert@berea.deu',
+                    classLevel = "Senior",
                     hasGraduated = True) 
         
+        testUser4 = User.create(username = 'usrtst4',
+                    firstName = 'Test',
+                    lastName = 'User',
+                    bnumber = '03522492101',
+                    email = 'usert@berea.deu',
+                    classLevel = "Freshman",
+                    hasGraduated = True) 
+        
+        BonnerCohort.create(year=2025, user=testUser1)
+        BonnerCohort.create(year=2024, user=testUser2)
+
+        sustainedEngagement = {"username": testUser3,
+                                "program": 2,
+                                "course": None,
+                                "description": None,
+                                "term": 3,
+                                "requirement": 14,
+                                "addedBy": testUser4,
+                                "addedOn": "",
+                                }
+        
+        IndividualRequirement.create(**sustainedEngagement)
+
+        actualResult = getGraduationManagementUsers()
+
+        # testUser4 is not a senior so they should not be shown.
+        assert len(actualResult) == 3
+
+        expectedResult = [
+            {
+                'user': testUser1,
+                'cohort': 2025,
+                'minorProgress': False
+            },
+            {  
+                'user': testUser2,
+                'cohort': 2024,
+                'minorProgress': False
+            }, 
+            {
+                'user': testUser3,
+                'cohort': None,
+                'minorProgress': True
+            }
+        ]
+
+        assert expectedResult == actualResult
  
         transaction.rollback()
