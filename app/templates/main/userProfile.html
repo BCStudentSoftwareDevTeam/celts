@@ -510,14 +510,15 @@
               <h5>Requirement Progress</h5>
               <ul>
               {% for req in bonnerRequirements %}
-                <li 
-                {% if req.frequency == "term"%}
-                  data-bs-toggle="tooltip" 
-                  data-bs-placement="top" 
-                  title="You have attended these terms: {% if req.attendedTerms %}{{ req.attendedDescriptions | join(', ') }}{% endif %}"
+                <li>
+                <span {% if req.frequency == "term"%}
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="{% if req.attendedTerms %}You have attended these terms: {{ req.attendedDescriptions | join(', ') }}{%else%} You haven't attended any terms {% endif %}"
                 {% endif %}>
-                {{req.name}}
-                {% if req.frequency == "term"%}
+                  {{req.name}}
+                </span>
+                {% if req.frequency == "term" and g.current_user.isCeltsAdmin == False %}
                   {% for a in range(req.missedTerms) %}
                     <span class="bi bi-x fs-3"></span>
                   {% endfor %}
