@@ -516,9 +516,9 @@
                 data-bs-placement="top" 
                 title="{% if req.attendedTerms %}You have attended these terms: {{ req.attendedDescriptions | join(', ') }}{%else%} You haven't attended any terms {% endif %}"
                 {% endif %}>
-                  {{req.name}}
+                  {{req.name}} {{volunteer.username}}
                 </span>
-                {% if req.frequency == "term" and g.current_user.isCeltsAdmin == False %}
+                {% if req.frequency == "term"%}
                   {% for a in range(req.missedTerms) %}
                     <span class="bi bi-x fs-3"></span>
                   {% endfor %}
