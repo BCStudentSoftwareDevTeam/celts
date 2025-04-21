@@ -4,6 +4,17 @@ $(document).ready(function() {
         searching: true,
         info: false,
     });
+
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        const row = gradStudentsTable.row(dataIndex).node();
+    
+        if ($(row).hasClass('should-hide')) {
+            return false;
+        }
+    
+        return true;
+    });
+
     initializePage()
 
     $('.main-dropdown-item').click(function() { 
@@ -19,24 +30,8 @@ $(document).ready(function() {
         handleBonnerFilterChange(cohortYear, buttonText)
     });
 
-    $('.graduated-checkbox').change(function() {
-        let hasGraduated = $(this).is(':checked');
-        let username = $(this).data('username');
-
-        $.ajax({
-            type: "POST",
-            data: {status: hasGraduated ? 1 : 0},
-            url: `/${username}/setGraduationStatus`,
-            success: function(response) {
-                initializePage()
-                msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
-            },
-            error: function(status, error) {
-                console.error("Error updating graduation status:", error);
-                msgFlash(`Error saving graduation status for ${username}.`)
-            }
-        });
-    });
+    $('.graduated-checkbox').change(checkboxClickHandler);
+    $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
 
     $('#showGraduatedToggle').click(function() {
         let isToggled = $(this).is(':checked')
@@ -49,18 +44,18 @@ $(document).ready(function() {
         gradStudentsTable.rows().every(function() {
             var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
             if (!showGraduatedStudents() && (hasGraduated == true)) {
-                $(this.node()).hide();
+                $(this.node()).addClass('should-hide')
                 return 
             }
             var data = $(this.node()).data(dataField); 
 
             if (data === expectedValue) {
-                $(this.node()).show(); 
+                $(this.node()).removeClass('should-hide')
             } else {
-                $(this.node()).hide();
+                $(this.node()).addClass('should-hide')
             }
         });
-        gradStudentsTable.draw();
+        redrawTable()
     }
 
     function handleBonnerFilterChange(cohortYear, buttonText) {
@@ -98,12 +93,12 @@ $(document).ready(function() {
             gradStudentsTable.rows().every(function() {
                 var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
                 if (!showGraduatedStudents() && (hasGraduated == true)) {
-                    $(this.node()).hide();
-                    return 
+                    $(this.node()).addClass('should-hide')
+                     return 
                 }
-                $(this.node()).show();
+                $(this.node()).removeClass('should-hide');
             });
-            gradStudentsTable.draw(); 
+            redrawTable()
             
         } else if (filterType === 'bonner' ) {
             $('#bonnerDropdown').show()
@@ -118,13 +113,37 @@ $(document).ready(function() {
             filterTable('cce-progress', "True")
         }
     }
+    
+    function redrawTable() {
+        gradStudentsTable.draw(); 
+        $('.graduated-checkbox').not('.hasHandler').change(checkboxClickHandler);
+        $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
+    }
+
+    function checkboxClickHandler() {
+        let hasGraduated = $(this).is(':checked');
+        let username = $(this).data('username');
+
+        $.ajax({
+            type: "POST",
+            data: {status: hasGraduated ? 1 : 0},
+            url: `/${username}/setGraduationStatus`,
+            success: function(response) {
+                initializePage()
+                msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
+            },
+            error: function(status, error) {
+                console.error("Error updating graduation status:", error);
+                msgFlash(`Error saving graduation status for ${username}.`)
+            }
+        });
+    }
 
     function initializePage() {
         var mainFilterState = sessionStorage.getItem('mainFilterState') || 'all';
         var cohortFilterState = sessionStorage.getItem('cohortFilterState') || 'all';
         var showGraduatedToggleState = sessionStorage.getItem('showGraduatedToggleState') || false;
         $('#showGraduatedToggle').prop('checked', Number(showGraduatedToggleState));
-
         handleMainFilterChange(mainFilterState)
 
         if (mainFilterState == "bonner") {
