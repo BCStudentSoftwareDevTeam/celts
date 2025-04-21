@@ -1,11 +1,8 @@
-from flask import render_template, g, abort, request, redirect, url_for, flash, send_file
-from app.models.user import User
+from flask import render_template, g, abort, request
 from app.controllers.admin import admin_bp
-from app.models.bonnerCohort import BonnerCohort
 
 from app.logic.bonner import getBonnerCohorts
-from app.logic.graduationManagement import setGraduatedStatus, makeGraduatedXls, getGraduationManagementUsers
-from app.logic.minor import getMinorProgress
+from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers
 
 
 @admin_bp.route('/admin/graduationManagement', methods=['GET'])
@@ -37,13 +34,3 @@ def setGraduationStatus(username):
         print(e)
     
     return ""
-
-
-@admin_bp.route("/gradStudentsxls/<filterType>", methods=['GET'])
-def gradsXls(filterType):
-    if not g.current_user.isCeltsAdmin:
-        abort(403)
-
-    newfile = makeGraduatedXls(filterType)
-    return send_file(open(newfile, 'rb'), download_name='GraduatedStudents.xlsx', as_attachment=True)
-
