@@ -11,16 +11,12 @@ def cceMinorChart(username):
     if not g.current_user.isAdmin:
         abort(403)
     else:
-        progress_list = getMinorProgress()
+        progressList = getMinorProgress()
         turnToChart = []
-        for progress in progress_list:
+        for progress in progressList:
             turnToChart.append({'name':progress["firstName"] + " " + progress["lastName"], "engagementCount" : progress['engagementCount'], "completeSummer": "Yes" if progress['hasSummer'] == "Complete" else "No"})
         return jsonify(turnToChart)
     
-        
-        
-    
-
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
     if not g.current_user.isAdmin:
