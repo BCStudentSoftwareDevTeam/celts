@@ -76,7 +76,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '03522492',
                     email = 'usert@berea.deu',
-                    classLevel = "Senior",
+                    rawClassLevel = "Senior",
                     hasGraduated = False) 
         
         testUser2 = User.create(username = 'usrtst2',
@@ -84,7 +84,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '035224921',
                     email = 'usert@berea.deu',
-                    classLevel = "Senior",
+                    rawClassLevel = "Senior",
                     hasGraduated = False) 
         
         testUser3 = User.create(username = 'usrtst3',
@@ -92,7 +92,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '0352249210',
                     email = 'usert@berea.deu',
-                    classLevel = "Senior",
+                    rawClassLevel = "Senior",
                     hasGraduated = True) 
         
         testUser4 = User.create(username = 'usrtst4',
@@ -100,7 +100,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '03522492101',
                     email = 'usert@berea.deu',
-                    classLevel = "Freshman",
+                    rawClassLevel = "Freshman",
                     hasGraduated = True) 
         
         BonnerCohort.create(year=2025, user=testUser1)

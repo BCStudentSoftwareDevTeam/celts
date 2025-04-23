@@ -131,11 +131,7 @@ $(document).ready(function() {
             success: function(response) {
                 initializePage()
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
-                if (hasGraduated) {
-                    $(this).closest(".classLevel").innerHTML = "Graduated"
-                } else {
-                    $(this).closest(".classLevel").innerHTML = "Senior" 
-                }
+                $(`#${username}classLevel`).html(hasGraduated ? "Graduated" : "Senior")
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);

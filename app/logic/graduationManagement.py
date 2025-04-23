@@ -11,9 +11,9 @@ def getGraduationManagementUsers():
     Function to fetch all senior students along with their CCE Minor Progress and Bonner Status 
     """
 
-    eligibleUsers = (User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName, BonnerCohort.year)
+    eligibleUsers = (User.select(User.username, User.hasGraduated, User.rawClassLevel, User.firstName, User.lastName, BonnerCohort.year)
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
-                 .where((User.classLevel == 'Senior') | (User.classLevel == "Graduating") | (User.processedClassLevel == "Graduated")))
+                 .where((User.rawClassLevel == 'Senior') | (User.rawClassLevel == "Graduating")))
 
     cceStudents = set([user["username"] for user in getMinorProgress()])
 
@@ -37,11 +37,6 @@ def setGraduatedStatus(username, status):
     # it is necessary we cast this to an int instead of a bool because the
     # status is passed as a string and if we cast it to a bool it will always be True
     gradStudent.hasGraduated = int(status)
-
-    if int(status) == 1:
-        gradStudent.classLevel = "Graduated"
-    else:
-        gradStudent.classLevel = "Senior"
 
     gradStudent.save()
  

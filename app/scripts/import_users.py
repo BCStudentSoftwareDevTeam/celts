@@ -198,7 +198,7 @@ def getFacultyStaffData():
                 "isFaculty": True,
                 "isStaff": False,
                 "major": None,
-                "classLevel": None,
+                "rawCassLevel": None,
                 "cpoNumber": row[5].strip(),
             }
             for row in c.execute('select * from STUSTAFF')
@@ -238,7 +238,7 @@ def getStudentData():
                 "lastName": row[3].strip(),
                 "isStudent": True,
                 "major": row[6].strip(),
-                "classLevel": row[4].strip(),
+                "rawClassLevel": row[4].strip(),
                 "cpoNumber": row[10].strip(),
             }
             for row in c.execute('select * from STUDATA')
