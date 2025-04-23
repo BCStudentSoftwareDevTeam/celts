@@ -112,12 +112,12 @@ def test_getCertRequirementsWithCompletion():
         EventParticipant.create(event_id=14, user_id='ramsayb2')
         RequirementMatch.create(event_id=13, requirement_id=10)
         EventParticipant.create(event_id=13, user_id='ramsayb2')
-        cprcert = 3
+        cprCert = 3
 
-        cprreqs = getCertRequirementsWithCompletion(certification=cprcert, username='ramsayb2')
-        assert len(cprreqs) == 2
-        assert not cprreqs[0].completed, "The first event should not be completed"
-        assert cprreqs[1].completed, "The second event should be completed"
+        cprReqs = getCertRequirementsWithCompletion(certification=cprCert, username='ramsayb2')
+        assert len(cprReqs) == 2
+        assert not cprReqs[0].completed, "The first event should not be completed"
+        assert cprReqs[1].completed, "The second event should be completed"
 
         transaction.rollback()
 

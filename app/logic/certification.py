@@ -9,46 +9,50 @@ from app.models.user import User
 
 def termsAttended(certification=None, username=None):
     '''
-    Function to differentiate retreived terms attended by a user for certification that has a frequency of term
+    Retrieve terms attended by a user for certification and filter them based on frequency of a term
     '''
     attendedTerms = []
+    
     if username:
-        attendance = (RequirementMatch
-                   .select()
-                   .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))  # Join EventParticipant
-                   .where(RequirementMatch.requirement_id == certification)  # Filter by requirement_id
-                   .where(EventParticipant.user == username))  # Filter by user
-    for attend in range(len(attendance)):
-        attendedTerms.append(attendance[attend].event.term.description)
+        attendance = (RequirementMatch.select()
+                                      .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event)) 
+                                      .where(RequirementMatch.requirement_id == certification)  
+                                      .where(EventParticipant.user == username))  
+        
+    for termRecord in range(len(attendance)):
+        attendedTerms.append(attendance[termRecord].event.term.description)
+        
     return attendedTerms
             
 def termsMissed(certification=None, username=None): 
     '''
-    Function to hypothetically populated the maximum amount of certification a student can miss based on their class classification
+    Populate the maximum amount of certification a student can miss based on class classification
     '''
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     currentTerm = Term.select(Term).where(Term.isCurrentTerm == True).get() 
+    
     # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term
     if currentTerm.isSummer == True:
         current = f'Fall {currentTerm.year}'
         currentTerm = Term.select(Term).where(Term.description == current).get()
     else:
         current = currentTerm.description
+        
     for level in range(4):
-        userClass = User.select().where(User.username == username).get()
-        if userClass.classLevel == classLevel[level] and current == f'Spring {currentTerm.year}':
-            missedTerms = (level+1)*2
-        elif userClass.classLevel == classLevel[level]:
-            missedTerms = ((level+1)*2)-1
+        user = User.select().where(User.username == username).get()
+        
+        if user.classLevel == classLevel[level] and current == f'Spring {currentTerm.year}':
+            missedTerms = (level + 1) * 2
+        elif user.classLevel == classLevel[level]:
+            missedTerms = ((level + 1) * 2) - 1
+            
     attendedTerms = termsAttended(certification, username)
     missedTerms = missedTerms - len(attendedTerms)
     return missedTerms
 
-
 def getCertRequirementsWithCompletion(*, certification, username):
     """
-    Function to differentiate between simple requirements and requirements completion checking.
-    See: `getCertRequirements`
+    Differentiate between simple requirements and requirements completion checking.
     """
     return getCertRequirements(certification, username)
 
