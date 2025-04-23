@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block app_content %}
-<h1 class="text-center mb-5">Graduation Management</h1>
+<h1 class="text-center mb-3">Graduation Management</h1>
   <div class="row align-items-end pt-5 pb-2">
     <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
         <div id="categoryDropdown">
@@ -64,7 +64,7 @@
     <tr data-cce-progress="{{userData['minorProgress']}}" data-cohort-year="{{userData['cohort']}}" data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
       <td style="width: 5%;"><input type="checkbox" class="mx-auto w-100 graduated-checkbox" id="gradCheck" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }}</a></td>
-      <td>{{ user.classLevel }}</td>
+      <td class="classLevel">{{ user.classLevel }}</td>
     </tr>
     {% endfor %}
   </tbody>  

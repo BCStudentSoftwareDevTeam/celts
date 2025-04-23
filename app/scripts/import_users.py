@@ -156,7 +156,7 @@ def addToDb(userList):
                         lastName=user['lastName'],
                         email=user['email'],
                         major=user['major'],
-                        classLevel=user['classLevel'],
+                        rawClassLevel=user['classLevel'],
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
                     logger.debug(f" Updated user {user['bnumber']}")

@@ -13,7 +13,7 @@ def getGraduationManagementUsers():
 
     eligibleUsers = (User.select(User.username, User.hasGraduated, User.classLevel, User.firstName, User.lastName, BonnerCohort.year)
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
-                 .where(User.classLevel == 'Senior'))
+                 .where((User.classLevel == 'Senior') | (User.classLevel == "Graduating") | (User.processedClassLevel == "Graduated")))
 
     cceStudents = set([user["username"] for user in getMinorProgress()])
 
@@ -37,5 +37,11 @@ def setGraduatedStatus(username, status):
     # it is necessary we cast this to an int instead of a bool because the
     # status is passed as a string and if we cast it to a bool it will always be True
     gradStudent.hasGraduated = int(status)
+
+    if int(status) == 1:
+        gradStudent.classLevel = "Graduated"
+    else:
+        gradStudent.classLevel = "Senior"
+
     gradStudent.save()
  

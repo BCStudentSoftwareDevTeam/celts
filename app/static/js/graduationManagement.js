@@ -15,6 +15,9 @@ $(document).ready(function() {
         return true;
     });
 
+    $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
+    $('.graduated-checkbox').change(checkboxClickHandler);
+
     initializePage()
 
     $('.main-dropdown-item').click(function() { 
@@ -29,9 +32,6 @@ $(document).ready(function() {
 
         handleBonnerFilterChange(cohortYear, buttonText)
     });
-
-    $('.graduated-checkbox').change(checkboxClickHandler);
-    $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
 
     $('#showGraduatedToggle').click(function() {
         let isToggled = $(this).is(':checked')
@@ -131,6 +131,11 @@ $(document).ready(function() {
             success: function(response) {
                 initializePage()
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
+                if (hasGraduated) {
+                    $(this).closest(".classLevel").innerHTML = "Graduated"
+                } else {
+                    $(this).closest(".classLevel").innerHTML = "Senior" 
+                }
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);
