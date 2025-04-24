@@ -1,5 +1,7 @@
 import pytest
+from flask import g
 
+from app import app
 from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers, updateHideGraduatedStudents
 from app.logic.utils import getHideGraduatedStudentsWhereClause 
 from app.models import mainDB
@@ -102,7 +104,7 @@ def test_getGraduationManagementUsers():
                     email = 'usert@berea.deu',
                     rawClassLevel = "Freshman",
                     hasGraduated = True) 
-        
+
         BonnerCohort.create(year=2025, user=testUser1)
         BonnerCohort.create(year=2024, user=testUser2)
 
@@ -118,7 +120,7 @@ def test_getGraduationManagementUsers():
         
         IndividualRequirement.create(**sustainedEngagement)
 
-        actualResult = getGraduationManagementUsers()
+        actualResult = getGraduationManagementUsers(True)
 
         # testUser4 is not a senior so they should not be shown.
         assert len(actualResult) == 3

@@ -84,13 +84,13 @@ def getMinorInterest() -> List[Dict]:
 
     return interestedStudentList
 
-def getMinorProgress():
+def getMinorProgress(alwaysShowGraduatedStudents=True):
     """
         Get all the users who have an IndividualRequirement record under the CCE certification which 
         and returns a list of dicts containing the student, how many engagements they have completed, 
         and if they have completed the summer experience. 
     """
-    hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user)
+    hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user) if not alwaysShowGraduatedStudents else (True)
 
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
