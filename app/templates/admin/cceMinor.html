@@ -12,6 +12,7 @@
     {{super()}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   {% endblock %}
 {% endblock %}
 {% block app_content %}
@@ -27,6 +28,8 @@
     </button>
   </div>
 </div>
+
+
 <!-- #################  Modal for CCE Minor Graph ################# -->
 <div class="modal fade" id="cceChart" tabindex="-1" aria-labelledby="CCEMinorChart" aria-hidden="true">
   <div class="modal-dialog">
@@ -37,13 +40,17 @@
         </div>
         <div class="modal-body">
           <span>
-            <span class="d-flex flex-row">
-              <span>Summer Complete: </span>
-              <div class="bg-success mt-2 mx-3" style="width:10px; height:10px;"></div>
-            </span>
-            <span class="d-flex flex-row">
-              <span>Summer Incomplete: </span>
-              <div class="bg-danger mt-2 mx-3" style="width:10px; height:10px;"></div>
+            <span class="d-flex flex-row justify-content-between w-100">
+              <div class="col-auto d-flex align-items-center">
+                <span>Summer Incomplete:</span>
+                <div class="bg-danger ms-2" style="width:10px; height:10px;"></div>
+              </div>
+             <div class="col-auto d-flex align-items-center">
+                <span>Summer Complete:</span>
+                <div class="bg-success ms-2" style="width:10px; height:10px;"></div>
+              </div>
+              <br>
+              </br>
             </span>
           </span>
           <canvas id="cceChartGen" width="400" height="400"></canvas>

@@ -61,6 +61,7 @@ $(document).ready(function() {
     const xValues = [];
     const yValues = [];
     const barColors = [];
+
     $.ajax({
       type: 'GET',
       url: '/profile/' + username + '/cceMinorChart',
@@ -100,7 +101,6 @@ $(document).ready(function() {
                 x: {
                   title:{
                     display:true,
-                    text:'Names'
                   }
                 }
               },
@@ -110,7 +110,7 @@ $(document).ready(function() {
                 },
                 tooltip: {
                   callbacks: {
-                    label: function(context) { // context here from chart.js acts like "this"
+                    label: function(context) { 
                       const value = context.formattedValue;
                       const completed = barColors[context.dataIndex] === "green" ? "Yes" : "No";
                       return [
@@ -130,18 +130,19 @@ $(document).ready(function() {
       }
     });
   })
+
+  // Download the chart as an image
   $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
-    const element = document.querySelector(".ccePrint"); // do not use jquery when it comes to accessing DOM elements
+    const element = $(".ccePrint")[0]; 
+
     html2canvas(element).then(canvas => {
-      const downloadLink = document.createElement('a'); // create a link
-      downloadLink.href = canvas.toDataURL(); // turn it inot a data url
-      downloadLink.download = fileName; //put the file name as download
-      downloadLink.click(); // stimulate the click
+      const downloadLink = document.createElement('a');
+      downloadLink.href = canvas.toDataURL(); 
+      downloadLink.download = fileName; 
+      downloadLink.click();
     })
   })
-
 })
-
 
 
 function emailMinorCandidates(studentEmails){
@@ -166,7 +167,6 @@ function emailAll(){
   
   emailMinorCandidates(allMinorCandidateEmails);
 }
-
 
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
