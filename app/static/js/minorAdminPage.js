@@ -67,21 +67,21 @@ $(document).ready(function() {
       data: JSON,
       success: function(responses) {
         for (let i = 0; i <responses.length; i++){
-          xValues.push(responses[i].engagementCount);
-          yValues.push(responses[i].name);
+          yValues.push(responses[i].engagementCount);
+          xValues.push(responses[i].name);
           barColors.push(responses[i].completeSummer === "Yes" ? "green" : "red");
         }
         const cceChart = document.getElementById('cceChartGen');
-        const maxValue = Math.max(...xValues.map(Number))+2;
+        const maxValue = Math.max(...yValues.map(Number))+2;
         if (cceChart) {
           new Chart(cceChart, {
             type: "bar",
             data: {
-              labels: yValues,
+              labels: xValues,
               datasets: [{
                 label: "Summer Completed",
                 backgroundColor: barColors,
-                data: xValues
+                data: yValues
               }]
             },
             options: {
@@ -91,9 +91,12 @@ $(document).ready(function() {
                   max: maxValue,
                   title:{
                     display:true,
-                    text:'Hours of Engagements'
-                  }
-                },
+                    text:'Number of Engagements'
+                  },
+                  ticks: {
+                      stepSize: 1
+                    }
+                  },
                 x: {
                   title:{
                     display:true,
