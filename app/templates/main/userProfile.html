@@ -461,14 +461,15 @@
 <!-- ################# Bonner Scholar ################ -->
   {% set canViewBonner = (g.current_user.isCeltsAdmin or g.current_user == volunteer) %}
   {% if volunteer.isBonnerScholar and canViewBonner %}
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingEight">
-      {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Bonner Program</button>
-    </h3>
-    {% set show = "show" if visibleAccordion == "bonner" else "" %}
-    <div id="collapseEight" class="accordion-collapse collapse {{show}}" aria-labelledby="headingEight" data-bs-parent="#userProfile">
-      <div class="accordion-body container">
+  <div id="bonnerStudent" data-username="{{volunteer.isStudent}}">
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingEight">
+        {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Bonner Program</button>
+      </h3>
+      {% set show = "show" if visibleAccordion == "bonner" else "" %}
+      <div id="collapseEight" class="accordion-collapse collapse {{show}}" aria-labelledby="headingEight" data-bs-parent="#userProfile">
+        <div class="accordion-body container">
           <div class="row">
             <div class="col-md-6">
             {# Bonner Events #}
@@ -541,6 +542,7 @@
         </div>
       </div>
     </div>
+  </div>
   {% endif %}
 <!-- ################# Bonner Scholar ################ -->
 </div>

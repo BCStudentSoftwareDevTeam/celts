@@ -1,4 +1,5 @@
 from peewee import JOIN, DoesNotExist, Case
+from flask import g
 from app.models.event import Event
 from app.models.term import Term
 from app.models.certification import Certification
@@ -12,16 +13,13 @@ def termsAttended(certification=None, username=None):
     Retrieve terms attended by a user for certification and filter them based on frequency of a term
     '''
     attendedTerms = []
-    
     if username:
         attendance = (RequirementMatch.select()
                                       .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event)) 
                                       .where(RequirementMatch.requirement_id == certification)  
                                       .where(EventParticipant.user == username))  
-        
     for termRecord in range(len(attendance)):
         attendedTerms.append(attendance[termRecord].event.term.description)
-        
     return attendedTerms
             
 def termsMissed(certification=None, username=None): 
@@ -29,23 +27,23 @@ def termsMissed(certification=None, username=None):
     Populate the maximum amount of certification a student can miss based on class classification
     '''
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
-    currentTerm = Term.select(Term).where(Term.isCurrentTerm == True).get() 
-    
-    # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term
+    currentTerm = g.current_term 
+    currentDescription = currentTerm.description
+    # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term     
     if currentTerm.isSummer == True:
-        current = f'Fall {currentTerm.year}'
-        currentTerm = Term.select(Term).where(Term.description == current).get()
+        currentDescription = f'Fall {currentTerm.year}'
+        currentTerm = Term.select(Term).where(Term.description == currentDescription).get()
     else:
-        current = currentTerm.description
-        
+        currentDescription = currentTerm.description
+
     for level in range(4):
         user = User.select().where(User.username == username).get()
-        
-        if user.classLevel == classLevel[level] and current == f'Spring {currentTerm.year}':
+        if user.classLevel == classLevel[level] and currentDescription == f'Spring {currentTerm.year}':
             missedTerms = (level + 1) * 2
         elif user.classLevel == classLevel[level]:
             missedTerms = ((level + 1) * 2) - 1
-            
+        else:
+            missedTerms = 1
     attendedTerms = termsAttended(certification, username)
     missedTerms = missedTerms - len(attendedTerms)
     return missedTerms

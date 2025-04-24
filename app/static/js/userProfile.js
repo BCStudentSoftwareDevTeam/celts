@@ -220,7 +220,7 @@ $(document).ready(function(){
         reloadWithAccordion(target)
       }
     });
-});
+  });
 
   $(".deleteNoteButton").click(function() {
     let username = $(this).data('username')
@@ -331,7 +331,10 @@ $(document).ready(function(){
       },
     })
   });
-
+  const bonnerStudent = $("#bonnerStudent").data('username')
+  if (bonnerStudent === "False"){
+    $("#bonnerStudent").prop("hidden", true)
+  }
 });
 
 function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
