@@ -1,6 +1,4 @@
-
 <div class="tab-pane fade show {{ 'active' if activeTab == 'manageProposals' else '' }}" id="pills-manageProposals" role="tabpanel" aria-labelledby="manageProposals">
-
     <div class="table-responsive" id="proposalTable">
     <table class="table table-striped">
         <thead>
@@ -41,6 +39,7 @@
 
         </tbody>
     </table>
+    <input id="proposalID" type="hidden">
     {% if not proposalList %}
         <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated CCE Minor proposals.</p>
     {% endif %}
@@ -67,6 +66,7 @@
             <button type="button" class="btn btn-primary" id="withdrawBtn">Withdraw</button>
         </div>
         </div>
+    </input>
     </div>
     </div>
     <div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
@@ -109,3 +109,5 @@
     </div>
   </div>
 </div>
+
+
