@@ -23,7 +23,7 @@ class CCEMinorProposal(baseModel):
     totalWeeks = IntegerField(null=True)
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
-    status = CharField(constraints=[Check("status in ('Draft', 'Submitted',  'Approved', 'Denied')")])
+    status = CharField(constraints=[Check("status in ('Draft', 'Submitted', 'Approved', 'Denied', 'Completed')")])
 
     @property
     def isOver300Hours(self):
