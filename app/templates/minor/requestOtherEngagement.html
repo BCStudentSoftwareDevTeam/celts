@@ -32,7 +32,7 @@
           </div>
   
           <div class="form-group">
-              <label class="form-label" for="term"><strong>Term</strong></label>
+              <label class="required form-label" for="term"><strong>Term</strong></label>
               <select class="form-select" name="term" id="term" required 
                 {% if viewing %}
                   disabled                  
@@ -58,7 +58,7 @@
           <br>
   
           <div class="form-group">
-              <label class="form-label" for="experienceName"><strong>Experience Title</strong></label>
+              <label class="required form-label" for="experienceName"><strong>Experience Title</strong></label>
               <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required 
                 value="{{ proposal.experienceName if proposal else '' }}"
                 {% if viewing %} disabled {% endif %}/>
@@ -71,7 +71,7 @@
           {% include "minor/supervisorInformation.html" %} 
   
           <div class="form-group">
-              <label class="mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
+              <label class="required mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
               <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" 
                 {% if viewing %} disabled {% endif %}/>
           </div>
@@ -83,7 +83,7 @@
           </div>
   
           <div class="form-group">
-              <label class="form-label" for="totalHours"><strong>Total Hours</strong></label>
+              <label class="required form-label" for="totalHours"><strong>Total Hours</strong></label>
               <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" required type="number" name="totalHours" 
                 value="{{ proposal.totalHours if proposal else '' }}"
                 {% if viewing %} disabled {% endif %}/>
@@ -92,7 +92,7 @@
           <br>
 
           <div class="form-group">
-              <label class="form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
+              <label class="required form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
               <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="totalWeeks"
                 value="{{ proposal.totalWeeks if proposal else '' }}"
                 {% if viewing %} disabled {% endif %}/>
@@ -101,7 +101,7 @@
           <br>
 
           <div class="form-group">
-              <label class="form-label" for="experienceDescription"><strong>Experience Description</strong></label>
+              <label class="required form-label" for="experienceDescription"><strong>Experience Description</strong></label>
               <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription"
                 {% if viewing %} disabled {% endif %}>{{ proposal.experienceDescription if proposal else '' }}</textarea>
           </div>
@@ -120,7 +120,7 @@
             <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
               {% if not viewing %}
                   <input class="btn btn-primary" type="button" id="saveAsDraftButton" value="Save As Draft"/>
-                  <input class="btn btn-primary" type="button"  id="submitButton" value="Submit"/> 
+                  <input class="btn btn-primary" type="button" id="submitButton" value="Submit"/> 
                   {% if g.current_user.isCeltsAdmin and proposal %}
                     <input class="btn btn-success" type="button" id="saveAndApproveButton" value="Save and Approve"/> 
                   {% endif %}
