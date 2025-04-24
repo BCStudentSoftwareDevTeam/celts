@@ -1,4 +1,11 @@
-export default function searchUser(inputId, callback, clear=false, parentElementId=null, category = null)
+export default function searchUser(
+  inputId,
+  callback,
+  alwaysShowGraduatedStudents=false,
+  clear=false,
+  parentElementId=null,
+  category=null,
+)
 {
   var query = $(`#${inputId}`).val()
   let columnDict = {};
@@ -10,7 +17,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         url: `/searchUser/${query}`,
         type: "GET",
         dataType: "json",
-        data:{"category":category},
+        data:{"category":category, "alwaysShowGraduatedStudents": alwaysShowGraduatedStudents ? 1 : 0},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
               return {

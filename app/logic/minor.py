@@ -18,11 +18,11 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
+from app.models.attachmentUpload import AttachmentUpload
 from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCourses import deleteCourseObject
-from app.models.attachmentUpload import AttachmentUpload
-
+from app.logic.utils import getHideGraduatedStudentsWhereClause
 
 def createSummerExperience(username, formData):
     """
@@ -74,9 +74,11 @@ def getMinorInterest() -> List[Dict]:
     """
         Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
     """
+    hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user)
+
     interestedStudents = (User.select(User)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-                              .where(User.isStudent & User.minorInterest & ~User.declaredMinor & IndividualRequirement.username.is_null(True)))
+                              .where(User.isStudent & User.minorInterest & ~User.declaredMinor & IndividualRequirement.username.is_null(True), hideGraduatedStudentsWhere))
 
     interestedStudentList = [model_to_dict(student) for student in interestedStudents]
 
@@ -88,6 +90,8 @@ def getMinorProgress():
         and returns a list of dicts containing the student, how many engagements they have completed, 
         and if they have completed the summer experience. 
     """
+    hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user)
+
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     engagedStudentsWithCount = (
@@ -97,7 +101,7 @@ def getMinorProgress():
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
-            .where(CertificationRequirement.certification_id == Certification.CCE)
+            .where(CertificationRequirement.certification_id == Certification.CCE, hideGraduatedStudentsWhere)
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(SQL("engagementCount").desc())
     )
@@ -186,7 +190,8 @@ def getDeclaredMinorStudents():
     """
     Get a list of the students who have declared minor
     """
-    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor)
+    hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user)
+    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor, hideGraduatedStudentsWhere)
 
     interestedStudentList = [model_to_dict(student) for student in declaredStudents]
 

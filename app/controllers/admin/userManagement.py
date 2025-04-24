@@ -90,8 +90,14 @@ def userManagement():
             .group_by(Program.id)
     )
 
-    currentAdmins = list(User.select().where(User.isCeltsAdmin))
-    currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
+    # hide graduated students if the user has indicated it
+    hideGraduatedStudents = User.get(username=g.current_user).hideGraduatedStudents
+    hideGraduatedStudentsWhere = True
+    if hideGraduatedStudents:
+        hideGraduatedStudentsWhere = (User.hasGraduated == False)
+
+    currentAdmins = list(User.select().where(User.isCeltsAdmin, hideGraduatedStudentsWhere))
+    currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff, hideGraduatedStudentsWhere))
     if g.current_user.isCeltsAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,

@@ -50,7 +50,7 @@ $(document).ready(function() {
   });
 
   $("#courseInstructor").on('input', function() {
-      searchUser("courseInstructor", createNewRow, true, null, "instructor");
+      searchUser("courseInstructor", createNewRow, false, true, null, "instructor");
       setTimeout(function() {
         $(".ui-autocomplete").css("z-index", 9999);
       }, 500);

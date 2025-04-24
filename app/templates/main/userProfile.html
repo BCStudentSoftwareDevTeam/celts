@@ -56,9 +56,14 @@
   </div>
       
   <div class="row pb-2 pe-0">
-    
     <div class="col"></div>
     <div class="col-auto pe-0 ">
+      {% if (volunteer == g.current_user) and (not g.current_user.isStudent) %}
+        <div class="form-check form-switch">
+          <label class="custom-control-label" for='hideGraduatedStudents'><strong>Globally hide graduated students</strong></label>
+          <input class="form-check-input" data-username="{{volunteer.username}}" type="checkbox" {% if volunteer.hideGraduatedStudents %} checked {% endif %} id="hideGraduatedStudents" name="hideGraduatedStudents"/>
+        </div>
+      {% endif %}
       <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
         <option value="" selected disabled hidden>Choose an Action</option>
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}

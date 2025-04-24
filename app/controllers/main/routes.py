@@ -544,14 +544,15 @@ def updateTranscript(username, program_id):
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
-    category= request.args.get("category")
+    category = request.args.get("category")
+    alwaysShowGraduatedStudents = int(request.args.get("alwaysShowGraduatedStudents", 0))
 
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query,category)
+        searchResults = searchUsers(query, category, alwaysShowGraduatedStudents)
         return searchResults
     except Exception as e:
         print(e)

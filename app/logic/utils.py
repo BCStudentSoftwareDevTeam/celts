@@ -5,6 +5,7 @@ from flask import session
 from peewee import DoesNotExist
 
 from app.models.term import Term
+from app.models.user import User
 
 def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
     """
@@ -98,3 +99,12 @@ def setRedirectTarget(target):
     """
     session["redirectTarget"] = target
 
+def getHideGraduatedStudentsWhereClause(username):
+
+    # hide graduated students if the user has indicated it
+    hideGraduatedStudents = User.get(username=username).hideGraduatedStudents
+    hideGraduatedStudentsWhere = True
+    if hideGraduatedStudents:
+        hideGraduatedStudentsWhere = (User.hasGraduated == False)
+    
+    return hideGraduatedStudentsWhere

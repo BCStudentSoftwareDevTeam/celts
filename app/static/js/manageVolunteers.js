@@ -127,7 +127,7 @@ $(document).ready(function() {
   });
 
   $("#addVolunteerInput").on("input", function() {
-    searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
+    searchUser("addVolunteerInput", callback, false, true, "addVolunteerModal");
   });
 
 

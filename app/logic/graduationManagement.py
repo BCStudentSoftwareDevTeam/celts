@@ -39,4 +39,13 @@ def setGraduatedStatus(username, status):
     gradStudent.hasGraduated = int(status)
 
     gradStudent.save()
- 
+
+def updateHideGraduatedStudents(username, checked):
+    user = User.get(User.username == username)
+    
+    # it is necessary we cast this to an int instead of a bool because the
+    # status is passed as a string and if we cast it to a bool it will always be True
+    user.hideGraduatedStudents = int(checked)
+
+    user.save()
+

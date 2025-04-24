@@ -1,7 +1,7 @@
 import pytest
 
-from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers
-
+from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers, updateHideGraduatedStudents
+from app.logic.utils import getHideGraduatedStudentsWhereClause 
 from app.models import mainDB
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -143,4 +143,16 @@ def test_getGraduationManagementUsers():
 
         assert expectedResult == actualResult
  
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_updateHideGraduatedStudents():
+    with mainDB.atomic() as transaction:
+        updateHideGraduatedStudents("ramsayb2", True)
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getHideGraduatedStudentsWhereClause():
+    with mainDB.atomic() as transaction:
+        getHideGraduatedStudentsWhereClause("ramsayb2")
         transaction.rollback()

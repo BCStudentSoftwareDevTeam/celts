@@ -17,7 +17,7 @@ function cohortRequest(year, method, username){
 function addSearchCapabilities(inputElement){
     $(inputElement).on("input", function(){
         let year = $(this).data('year');
-        searchUser(this.id, student => cohortRequest(year, "add", student.username), false, null, "student");
+        searchUser(this.id, student => cohortRequest(year, "add", student.username), false, false, null, "student");
     });
 }
 

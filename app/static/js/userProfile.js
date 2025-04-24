@@ -44,6 +44,27 @@ $(document).ready(function(){
     });
   });
 
+  $('#hideGraduatedStudents').click(function() {
+    let checked = $(this).is(":checked")
+    var username = $(this).data('username');
+    $.ajax({
+      data: {checked: checked ? 1 : 0},
+      method: "POST",
+      url: `/admin/hideGraduatedStudents/${username}`,
+      success: function(response) {
+        if (checked == true) {
+          msgFlash(`Graduated students hidden on CELTS Link for ${username}.`, "success", 1000)
+        } else {
+          msgFlash(`Graduated students shown on CELTS Link for ${username}.`, "success", 1000) 
+        }
+      },
+      error: function(request, status, error) {
+        console.error("Error hiding graduated students:", error);
+        msgFlash(`Error hiding graduated students for ${username}.`)
+      }
+    }); 
+  })
+
   $('.onTranscriptCheckbox').click(function() {
     var onTranscript = $(this).is(':checked');
     var username = $(this).data('username');
