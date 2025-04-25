@@ -119,10 +119,10 @@
             </div>
             <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
               {% if not viewing %}
-                  <input class="btn btn-primary" type="button" id="saveAndExitButton" value="Save and Exit"/>
+                  <input class="btn btn-primary" type="button" id="saveAsDraftButton" value="Save As Draft"/>
                   <input class="btn btn-primary" type="button" id="submitButton" value="Submit"/> 
                   {% if g.current_user.isCeltsAdmin and proposal %}
-                    <input class="btn btn-success" type="button" id="submitAndApproveButton" value="Submit and Approve"/> 
+                    <input class="btn btn-success" type="button" id="saveAndApproveButton" value="Save and Approve"/> 
                   {% endif %}
               {% endif %}
             </div>

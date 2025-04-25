@@ -72,23 +72,22 @@ function changeAction(action){
         console.error('Error:', error);
       }
     });
-}
-
+  }
+  
+  $('#saveAsDraftButton').on('click', function() {
+    saveProposalData("Draft")
+  })
   $('#submitButton').on('click', function() {
     saveProposalData("Submitted")
-
   })
-  $('#saveAndExitButton').on('click', function() {
-    saveProposalData("In Progress")
-  })
-  $('#submitAndApproveButton').on('click', function() {
+  $('#saveAndApproveButton').on('click', function() {
     saveProposalData("Approved")
-    
   })
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
     window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 
   }) 
+
   // ************** SUSTAINED COMMUNITY ENGAGEMENTS ************** //
   $('.engagement-row').on("click", function() {
     showEngagementInformation($(this).data('engagement-data'));
@@ -144,6 +143,7 @@ function changeAction(action){
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
+
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
