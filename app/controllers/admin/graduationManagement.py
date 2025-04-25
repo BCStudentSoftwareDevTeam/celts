@@ -26,11 +26,7 @@ def setGraduationStatus(username):
     if not g.current_user.isAdmin:
         abort(403)
         
-    try:
-        status = request.form["status"]
-        setGraduatedStatus(username, status)
-
-    except Exception as e:
-        raise e
+    status = request.form["status"]
+    setGraduatedStatus(username, status)
     
     return ""
