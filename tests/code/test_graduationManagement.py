@@ -84,7 +84,7 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '035224921',
                     email = 'usert@berea.deu',
-                    rawClassLevel = "Senior",
+                    rawClassLevel = "Graduating",
                     hasGraduated = False) 
         
         testUser3 = User.create(username = 'usrtst3',
@@ -92,16 +92,24 @@ def test_getGraduationManagementUsers():
                     lastName = 'User',
                     bnumber = '0352249210',
                     email = 'usert@berea.deu',
-                    rawClassLevel = "Senior",
-                    hasGraduated = True) 
-        
+                    rawClassLevel = "Graduating",
+                    hasGraduated = True)
+
         testUser4 = User.create(username = 'usrtst4',
+                    firstName = 'Test',
+                    lastName = 'User',
+                    bnumber = '035224923232',
+                    email = 'usert@berea.deu',
+                    rawClassLevel = "Senior",
+                    hasGraduated = True)  
+        
+        testUser5 = User.create(username = 'usrtst5',
                     firstName = 'Test',
                     lastName = 'User',
                     bnumber = '03522492101',
                     email = 'usert@berea.deu',
                     rawClassLevel = "Freshman",
-                    hasGraduated = True) 
+                    hasGraduated = False) 
         
         BonnerCohort.create(year=2025, user=testUser1)
         BonnerCohort.create(year=2024, user=testUser2)
@@ -120,8 +128,8 @@ def test_getGraduationManagementUsers():
 
         actualResult = getGraduationManagementUsers()
 
-        # testUser4 is not a senior so they should not be shown.
-        assert len(actualResult) == 3
+        # testUser4 is not a senior, graduating so they should not be shown.
+        assert len(actualResult) == 4
 
         expectedResult = [
             {
@@ -138,7 +146,13 @@ def test_getGraduationManagementUsers():
                 'user': testUser3,
                 'cohort': None,
                 'minorProgress': True
-            }
+            },
+            {
+                'user': testUser4,
+                'cohort': None,
+                'minorProgress': False
+            }, 
+
         ]
 
         assert expectedResult == actualResult

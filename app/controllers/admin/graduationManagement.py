@@ -31,6 +31,6 @@ def setGraduationStatus(username):
         setGraduatedStatus(username, status)
 
     except Exception as e:
-        print(e)
+        raise e
     
     return ""
