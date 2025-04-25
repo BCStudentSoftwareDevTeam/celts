@@ -3,16 +3,13 @@
         <div class="col-10">
             <ul class="timeline">
                 <li class="{{'completed' if status != 'Draft' else ''}}">
-                    <h6>Proposal Submitted by Student</h6>
-                    <h6 class="text-muted {{'completed' if status != 'Draft' else ''}}">{{'Completed' if status != 'Draft' else 'Not Completed'}}</p>
+                    <h6 class="{{'text-muted' if status == 'Draft' else ''}}">Proposal Submitted by Student</h6>
                 </li>
                 <li class="{{'completed' if (status != 'Draft') and (status != 'Submitted') else ''}}">
-                    <h6 href="#">Proposal Approved by Admin</h6>
-                    <h6 class="text-muted">{{'Completed' if (status != 'Draft') and (status != 'Submitted') else 'Not Completed'}}</p>
+                    <h6 class="{{'text-muted' if (status == 'Draft') or (status == 'Submitted') else ''}}">Proposal Approved by Admin</h6>
                 </li>
                 <li class="{{'completed' if (status != 'Draft') and (status != 'Submitted') and (status != 'Approved') else ''}}">
-                    <h6 href="#">Experience Marked Completed by Admin</h6>
-                    <h6 class="text-muted">{{'Completed' if (status != 'Draft') and (status != 'Submitted') and (status != 'Approved') else 'Not Completed'}}</p>
+                    <h6 class="{{'text-muted' if (status == 'Draft') or (status == 'Submitted') or (status == 'Approved') else ''}}">Experience Marked Completed by Admin</h6>
                 </li>
             </ul>
         </div>
