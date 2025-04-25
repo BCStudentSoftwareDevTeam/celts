@@ -12,5 +12,15 @@ function changeAction(action){
     if (proposalAction == "View"){
         location = `/cceMinor/view${proposalType.replace(/\s+/g, '')}/` + proposalID;
     }
+    if (proposalAction == "Withdraw"){
+        $('#proposalID').val(proposalID);
+        $('#withdrawModal').modal('show');
+       
+      }
+    resetAllSelections()
   }
+
+function resetAllSelections() {
+    $('.form-select').val('---');
+}
 window.changeAction = changeAction;
