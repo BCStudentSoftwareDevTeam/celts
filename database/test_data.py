@@ -48,7 +48,7 @@ users = [
         "isCeltsStudentStaff": False,
         "dietRestriction": "Diary",
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 0,
 
     },
@@ -64,7 +64,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
-        "classLevel": "Senior",
+        "rawClassLevel": "Senior",
         "minorInterest": 1,
     },
     {
@@ -79,7 +79,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
         "major": "Psychology",
-        "classLevel": "Sophomore",
+        "rawClassLevel": "Sophomore",
         "minorInterest": 0,
     },
 
@@ -95,7 +95,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer and Information Science",
-        "classLevel": "Junior",
+        "rawClassLevel": "Junior",
         "minorInterest": 0,
     },
     {
@@ -110,7 +110,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Chemistry",
-        "classLevel": "Junior",
+        "rawClassLevel": "Junior",
         "minorInterest": 1,
 
     },
@@ -126,7 +126,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 1,
     },
     {
@@ -138,7 +138,7 @@ users = [
         "lastName": "Bryant",
         "isStudent": True,
         "major": "Biology",
-        "classLevel": "Senior",
+        "rawClassLevel": "Senior",
         "minorInterest": 1,
 
     },
@@ -151,7 +151,7 @@ users = [
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
         "major": "Computer Science",
-        "classLevel": "Senior",
+        "rawClassLevel": "Senior",
         "minorInterest": 1,
 
     },
@@ -165,7 +165,7 @@ users = [
         "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True,
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 1,
 
     },
@@ -181,7 +181,7 @@ users = [
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 0,
     },
      {
@@ -196,7 +196,7 @@ users = [
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 0,
     },
     {
@@ -212,7 +212,7 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
         "major": None,
-        "classLevel": None,
+        "rawClassLevel": None,
         "minorInterest": 0,
     },
     {
@@ -240,7 +240,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
-        "classLevel": "Senior",
+        "rawClassLevel": "Senior",
         "minorInterest": 1,
     },
 ]

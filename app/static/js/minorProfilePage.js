@@ -143,7 +143,6 @@ function changeAction(action){
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
-
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
