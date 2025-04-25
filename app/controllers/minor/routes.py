@@ -54,7 +54,7 @@ def createOtherEngagementRequest(username):
 
     # once we submit the form for creation
     if request.method == "POST":
-        createdProposal = createOtherEngagement(username, request.form.copy())
+        createdProposal = createOtherEngagement(username, request.form)
         attachment = request.files.get("attachmentObject")
         if attachment:
             addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
