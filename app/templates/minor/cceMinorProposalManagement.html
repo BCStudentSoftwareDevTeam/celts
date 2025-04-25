@@ -19,7 +19,8 @@
                     <td id="supervisor-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
                     <td id="term-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
                     <td>
-                        <a class="status-key text-dark" id="status-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
+                        {% from 'macros/cceMinorStatusMacro.html' import minorStatusMacro %}
+                        {{ minorStatusMacro(proposal['status']) }}
                     </td>
                     <td>
                         <select class="form-select proposalData" id="{{proposal['id']}}" data-type="{{proposal['type']}}" onchange='changeAction(this)'>

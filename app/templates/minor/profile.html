@@ -15,6 +15,7 @@
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/minor.css') }}?u={{ lastStaticUpdate }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cceMinorManagement.css') }}?u={{ lastStaticUpdate }}">
 {% endblock %}
 
 {% block app_content %}
