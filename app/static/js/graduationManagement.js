@@ -6,9 +6,12 @@ $(document).ready(function() {
     });
 
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        // we have to overwrite the datatable's rendering function so that 
+        // when we want to hide any rows, we completely remove them instead 
+        // of hiding them which causes pagination errors. 
         const row = gradStudentsTable.row(dataIndex).node();
     
-        if ($(row).hasClass('should-hide')) {
+        if ($(row).hasClass('hidden')) {
             return false;
         }
     
@@ -43,16 +46,16 @@ $(document).ready(function() {
     function filterTable(dataField, expectedValue) {
         gradStudentsTable.rows().every(function() {
             var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
-            if (!showGraduatedStudents() && (hasGraduated == true)) {
-                $(this.node()).addClass('should-hide')
+            if (!showGraduatedStudents() && hasGraduated) {
+                $(this.node()).addClass('hidden')
                 return 
             }
             var data = $(this.node()).data(dataField); 
 
             if (data === expectedValue) {
-                $(this.node()).removeClass('should-hide')
+                $(this.node()).removeClass('hidden')
             } else {
-                $(this.node()).addClass('should-hide')
+                $(this.node()).addClass('hidden')
             }
         });
         redrawTable()
@@ -92,11 +95,11 @@ $(document).ready(function() {
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
                 var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
-                if (!showGraduatedStudents() && (hasGraduated == true)) {
-                    $(this.node()).addClass('should-hide')
-                     return 
+                if (!showGraduatedStudents() && hasGraduated) {
+                    $(this.node()).addClass('hidden')
+                    return 
                 }
-                $(this.node()).removeClass('should-hide');
+                $(this.node()).removeClass('hidden');
             });
             redrawTable()
             
@@ -131,7 +134,7 @@ $(document).ready(function() {
             success: function(response) {
                 initializePage()
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
-                $(`#${username}classLevel`).html(hasGraduated ? "Graduated" : "Senior")
+                $(`#${username}ClassLevel`).html(hasGraduated ? "Graduated" : "Senior")
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);

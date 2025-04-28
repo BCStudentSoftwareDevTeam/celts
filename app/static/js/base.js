@@ -6,11 +6,11 @@ function flashMessageResponse(message) {
   return '';
 }
 
-function msgFlash(flash_message, status, timeout=null){
+function msgFlash(flashMessage, status, timeout=null){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
-      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${flashMessageResponse(flash_message)}
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
+        ${flashMessageResponse(flashMessage)}
         <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
       </div>`);
     if (timeout) {

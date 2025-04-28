@@ -64,7 +64,7 @@
     <tr data-cce-progress="{{userData['minorProgress']}}" data-cohort-year="{{userData['cohort']}}" data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
       <td style="width: 5%;"><input type="checkbox" class="mx-auto w-100 graduated-checkbox" id="gradCheck" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
       <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }}</a></td>
-      <td id="{{user.username}}classLevel">{{user.processedClassLevel}}</td>
+      <td id="{{user.username}}ClassLevel">{{user.processedClassLevel if user.processedClassLevel != "Graduating" else "Senior"}}</td>
     </tr>
     {% endfor %}
   </tbody>  
