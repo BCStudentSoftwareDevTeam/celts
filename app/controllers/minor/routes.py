@@ -69,27 +69,20 @@ def createOtherEngagementRequest(username):
                             postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
                             otherEngagement = None)
 
-@minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
 @minor_bp.route('/cceMinor/viewOtherEngagement/<proposalID>', methods=['GET'])
 @minor_bp.route('/cceMinor/viewSummerExperience/<proposalID>', methods=['GET'])
+@minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
 @minor_bp.route('/cceMinor/editSummerExperience/<proposalID>', methods=['GET', 'POST'])
 def editOrViewProposal(proposalID: int):
     proposal = CCEMinorProposal.get_by_id(int(proposalID))
     if not (g.current_user.isAdmin or g.current_user.username == proposal.student):
         return abort(403)
     
-    if request.method == "GET" and 'view' in request.path:
+    if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = False,
-                                contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
-                                user = User.get_by_id(proposal.student),
+                                editable = 'view' not in request.path,
                                 selectedTerm = selectedTerm,
-                                proposal = proposal)
-    
-    if request.method == "GET" and 'edit' in request.path:
-        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = True,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
                                 user = User.get_by_id(proposal.student),
@@ -97,7 +90,7 @@ def editOrViewProposal(proposalID: int):
                                 proposal = proposal)
     
     if "OtherEngagement" in request.path:
-        updateOtherEngagementRequest(proposalID, request.form.copy())
+        updateOtherEngagementRequest(proposalID, request.form)
     else:
         updateSummerExperience(proposalID, request.form)
  
