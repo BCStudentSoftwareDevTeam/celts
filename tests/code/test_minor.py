@@ -89,7 +89,7 @@ def testProposal(request):
             "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
             'totalHours': params.get("totalHours", 300),
             'totalWeeks': params.get("totalWeeks", 10),
-            'status': params.get("status", 'In Progress'), 
+            'status': params.get("status", 'Draft'), 
         }
     else:
         defaultProposal = {
@@ -105,7 +105,7 @@ def testProposal(request):
             'totalHours': params.get("totalHours", 300),
             'totalWeeks': params.get("totalWeeks", 10),
             'experienceDescription': params.get("experienceDescription", "Working day and night to make sure Finn's needs are met"),
-            'status': params.get("status", 'In Progress'), 
+            'status': params.get("status", 'Draft'), 
         } 
     # override default values with those put in the parameters.
     return defaultProposal
@@ -508,7 +508,7 @@ def test_getMinorProgress():
             "supervisorName": "Finn",
             "supervisorPhone": "513-384-FINN",
             "supervisorEmail": "finn@finn.com",
-            "status": "In Progress"
+            "status": "Draft"
         })
    
         khattsRequestedEngagement = {'term': 3,
@@ -524,7 +524,7 @@ def test_getMinorProgress():
             'totalHours': 300,
             'totalWeeks': 10,
             'experienceDescription': 'Test Description',
-            "status": "In Progress"
+            "status": "Draft"
         }
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
