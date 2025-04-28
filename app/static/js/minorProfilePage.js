@@ -17,15 +17,20 @@ $(document).ready(function() {
       }
   })
 
+  handleFileSelection("supervisorAttachment", true, "preexistingFiles")
+
   function saveProposalData(status) {
-    var formData = $("#proposalForm").serialize()
+    var formData = new FormData($("#proposalForm")[0]);
+    formData.append("status", status);
+
     var actionURL = $("#proposalForm").attr('action')
     let username = $("#username").val()
     $.ajax({
       url: actionURL,
       type: 'POST',
-      data: formData + "&status=" + status,
-      processData: true,
+      data: formData,
+      processData: false,
+      contentType: false,
       success: function(response) {
         window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
       },

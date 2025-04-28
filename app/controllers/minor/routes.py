@@ -67,7 +67,8 @@ def createOtherEngagementRequest(username):
                             user = User.get_by_id(username),
                             selectableTerms = selectSurroundingTerms(g.current_term),
                             postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
-                            otherEngagement = None)
+                            otherEngagement = None,
+                            attachmentFilePaths = None)
 
 @minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
 @minor_bp.route('/cceMinor/viewOtherEngagement/<proposalID>', methods=['GET'])
@@ -78,6 +79,13 @@ def editOrViewProposal(proposalID: int):
     if not (g.current_user.isAdmin or g.current_user.username == proposal.student):
         return abort(403)
     
+    attachmentObject = AttachmentUpload.get_or_none(proposal=proposalID)
+    attachmentFilePath = None
+
+    if attachmentObject:
+        fileHandler = FileHandler(proposalId=proposalID)
+        attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName)
+        
     if request.method == "GET" and 'view' in request.path:
         selectedTerm = Term.get_by_id(proposal.term)
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
@@ -85,7 +93,9 @@ def editOrViewProposal(proposalID: int):
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 user = User.get_by_id(proposal.student),
                                 selectedTerm = selectedTerm,
-                                proposal = proposal)
+                                proposal = proposal,
+                                attachmentFilePaths = attachmentFilePath
+                                )
     
     if request.method == "GET" and 'edit' in request.path:
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
@@ -94,7 +104,9 @@ def editOrViewProposal(proposalID: int):
                                 selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
                                 user = User.get_by_id(proposal.student),
                                 postRoute = f"/cceMinor/editSummerExperience/{proposal.id}" if "SummerExperience" in request.path else f"/cceMinor/editOtherEngagement/{proposal.id}",
-                                proposal = proposal)
+                                proposal = proposal,
+                                attachmentFilePaths = attachmentFilePath
+                                )
     
     if "OtherEngagement" in request.path:
         updateOtherEngagementRequest(proposalID, request.form.copy())

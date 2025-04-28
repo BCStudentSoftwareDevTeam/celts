@@ -72,8 +72,9 @@
   
           <div class="form-group">
               <label class="required mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
-              <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" 
+              <input class="form-control" id="supervisorAttachment" name="attachmentObject" data-file='{{attachmentFilePaths | tojson}}' type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" 
                 {% if viewing %} disabled {% endif %}/>
+              
           </div>
   
           <div class="form-group">
