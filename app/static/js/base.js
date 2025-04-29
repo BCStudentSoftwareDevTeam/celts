@@ -1,4 +1,4 @@
-const flashMessageResponse = function flashEventResponse(message){
+function flashMessageResponse(message) {
   if (message.slice(-8) == "deleted."){
 
     return `<strong><a href="/event/undo" style="color: dark-green;">Undo</a></strong>` 
@@ -6,19 +6,20 @@ const flashMessageResponse = function flashEventResponse(message){
   return '';
 }
 
-function msgFlash(flash_message, status){
+function msgFlash(flashMessage, status, timeout=null){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
-      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${flashMessageResponse(flash_message)}
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
+        ${flashMessageResponse(flashMessage)}
         <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
       </div>`);
+    if (timeout) {
+      $(".alert").delay(timeout).fadeOut();
+    }
     $(".close-alert").click(function(){
-      $(this).closest(".alert").delay(1000).fadeOut();
+      $(this).closest(".alert").delay(250).fadeOut();
     })
 }
-
-
 
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {

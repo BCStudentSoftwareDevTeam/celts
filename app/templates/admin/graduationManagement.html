@@ -1,0 +1,73 @@
+{% set title = "Graduation Management" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/static/js/graduationManagement.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% block styles %}
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="/static/css/graduationManagement.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  {% endblock %}
+{% endblock %}
+
+{% block app_content %}
+<h1 class="text-center mb-3">Graduation Management</h1>
+  <div class="row align-items-end pt-5 pb-2">
+    <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
+        <div id="categoryDropdown">
+          <button type="button" class="btn btn-primary dropdown-toggle me-1" id="mainFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Filter
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item main-dropdown-item" data-filter="all">All</a>
+            <a class="dropdown-item main-dropdown-item" data-filter="bonner">Bonner Students</a>
+            <a class="dropdown-item main-dropdown-item" data-filter="cce" data-cce="{{CCEstudents}}">CCE Minor</a>
+          </div>
+        </div>
+        <div id="bonnerDropdown">
+          <button type="button" class="btn btn-primary dropdown-toggle me-1" id="cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Cohort
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item bonner-dropdown-item" data-filter="bonner" data-cohort-year="all">All</a> 
+            {% for year in cohortYears%}
+              <a class="dropdown-item bonner-dropdown-item" data-filter="bonner" data-cohort-year="{{year}}">{{year}}-{{year+1}}</a> 
+            {%endfor%}
+          </div>
+        </div>
+  
+    </div>
+    <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+      <div class="form-check form-switch">
+        <label class="custom-control-label" for='showGraduatedToggle'><strong>Include graduated students</strong></label>
+        <input class="form-check-input" type="checkbox" id="showGraduatedToggle" name="showGraduatedToggle"/>
+      </div>
+    </div>
+  </div>
+<table class="display" id="gradStudentsTable">
+    <thead>
+        <tr>
+          {% from 'macros/graduationIconMacro.html' import graduationIcon %}
+          <th>{{ graduationIcon() }}</th>
+          <th>Name</th>
+          <th>Class Level</th>
+        </tr>
+    </thead>
+  <tbody>
+    {% for userData in users %}
+    {% set user = userData['user'] %}
+    <tr data-cce-progress="{{userData['minorProgress']}}" data-cohort-year="{{userData['cohort']}}" data-student-type="{% if user.isBonnerScholar %}bonner{% else %}all{% endif %}" data-username="{{user.username}}">
+      <td style="width: 5%;"><input type="checkbox" class="mx-auto w-100 graduated-checkbox" id="gradCheck" data-username="{{ user.username }}" {% if user.hasGraduated %}checked{% endif %}></td>
+      <td><a href="/profile/{{ user.username }}" target="_blank">{{ user.firstName }} {{ user.lastName }}</a></td>
+      <td id="{{user.username}}ClassLevel">{{user.processedClassLevel if user.processedClassLevel != "Graduating" else "Senior"}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>  
+</table>
+
+{% endblock %}
