@@ -19,14 +19,19 @@ $(document).ready(function() {
       }
   })
 
-  function saveProposalData(status) {
+  function checkHasAttachment() {
     const input = $('#supervisorAttachment');
     if (!input.prop('files') || input.prop('files').length === 0) {
       $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
       $('#supervisorAttachment')[0].reportValidity()        
       return
     }
+  }
 
+  function saveProposalData(status) {
+    if ($('#proposalExperienceType').val() == "Other Engagement") {
+      checkHasAttachment()
+    }
     var formData = new FormData($("#proposalForm")[0]);
     formData.append("status", status);
 
