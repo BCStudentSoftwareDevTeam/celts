@@ -1,6 +1,7 @@
 import pytest
+from flask import g
 from peewee import DoesNotExist
-
+from app import app
 from app.models import mainDB
 from app.models.event import Event
 from app.models.term import Term
@@ -12,6 +13,7 @@ from app.models.eventParticipant import EventParticipant
 
 from app.logic.certification import getCertRequirements, updateCertRequirements, updateCertRequirementForEvent, termsAttended, termsMissed
 from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.loginManager import getCurrentTerm
 
 @pytest.mark.integration
 def test_termsAttended():
@@ -44,46 +46,42 @@ def test_termsAttended():
 @pytest.mark.integration
 def test_termsMissed():
     # created the database and added the test data to test the maximum amount of terms a student can miss based on their class level
-
+    
     with mainDB.atomic() as transaction:
-        term = Term.select().where(Term.isCurrentTerm == True).get()
-        term.isCurrentTerm = False
-        term.save()
-
-        Term.create(id = 1000, description = "Fall 2019", year = 2019, academicYear = 2019-2020, isSummer = False, isCurrentTerm = True, termOrder = 2019-3)
-        Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Fall 2019", program_id = 5)
-        User.create(username='zawn', classLevel='Senior')  
-        CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
-
-        missedTerms = termsMissed(certification=1, username='zawn')
+        with app.app_context():
+            Term.update(isCurrentTerm=False).execute()
+            Term.create(id = 1000, description = "Fall 2019", year = 2019, academicYear = 2019-2020, isSummer = False, isCurrentTerm = True, termOrder = 2019-3)
+            Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Fall 2019", program_id = 5)
+            User.create(username='zawn', classLevel='Senior')  
+            CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
+            g.current_term = getCurrentTerm()
+            missedTerms = termsMissed(certification=1, username='zawn')
         assert missedTerms == 7
         transaction.rollback()
-
+    
+    
     with mainDB.atomic() as transaction:
-        term = Term.select().where(Term.isCurrentTerm == True).get()
-        term.isCurrentTerm = False
-        term.save()
-
-        Term.create(id = 1000, description = "Summer 2022", year = 2022, academicYear = 2022-2023, isSummer = True, isCurrentTerm = True, termOrder = 2022-2)
-        Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Summer 2022", program_id = 5)
-        User.create(username='zawn', classLevel='Freshman')  
-        CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
-
-        missedTerms = termsMissed(certification=1, username='zawn')
+        with app.app_context():
+            Term.update(isCurrentTerm=False).execute()
+            Term.create(id = 1000, description = "Summer 2022", year = 2022, academicYear = 2022-2023, isSummer = True, isCurrentTerm = True, termOrder = 2022-2)
+            Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Summer 2022", program_id = 5)
+            User.create(username='zawn', classLevel='Freshman')  
+            CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
+            g.current_term = getCurrentTerm()
+            missedTerms = termsMissed(certification=1, username='zawn')
         assert missedTerms == 1
         transaction.rollback()
 
+     
     with mainDB.atomic() as transaction:
-        term = Term.select().where(Term.isCurrentTerm == True).get()
-        term.isCurrentTerm = False
-        term.save()
-
-        Term.create(id = 1000, description = "Spring 2021", year = 2021, academicYear = 2020-2021, isSummer = False, isCurrentTerm = True, termOrder = 2021-1)
-        Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Spring 2021", program_id = 5)
-        User.create(username='zawn', classLevel='Senior')  
-        CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
-        
-        missedTerms = termsMissed(certification=1, username='zawn')
+        with app.app_context():
+            Term.update(isCurrentTerm=False).execute()
+            Term.create(id = 1000, description = "Spring 2021", year = 2021, academicYear = 2020-2021, isSummer = False, isCurrentTerm = True, termOrder = 2021-1)
+            Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Spring 2021", program_id = 5)
+            User.create(username='zawn', classLevel='Senior')  
+            CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
+            g.current_term = getCurrentTerm()
+            missedTerms = termsMissed(certification=1, username='zawn')
         assert missedTerms == 8
         transaction.rollback()
 

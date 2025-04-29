@@ -26,6 +26,7 @@ def termsMissed(certification=None, username=None):
     '''
     Populate the maximum amount of certification a student can miss based on class classification
     '''
+    sh = 0
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     currentTerm = g.current_term 
     currentDescription = currentTerm.description
