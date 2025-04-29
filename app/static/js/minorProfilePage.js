@@ -21,9 +21,9 @@ $(document).ready(function() {
 
   function saveProposalData(status) {
     const input = $('#supervisorAttachment');
-    if (!input.files || input.files.length === 0) {
-      $('#supervisorAttachment').setCustomValidity('Please upload a file.');
-      $('#supervisorAttachment').reportValidity()        
+    if (!input.prop('files') || input.prop('files').length === 0) {
+      $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
+      $('#supervisorAttachment')[0].reportValidity()        
       return
     }
 
