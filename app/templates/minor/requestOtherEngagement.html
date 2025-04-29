@@ -28,7 +28,8 @@
                     Please fill out this form to submit a proposal for another community engaged experience that pertains to at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
                 </p>
                   <input type="hidden" value="{{ user.username }}" id="username"/>
-                  <input type="hidden" value="Other Engagement" id="proposalExperienceType"/> 
+                  <input type="hidden" value="Other Engagement" id="proposalExperienceType"/>
+                  <input type="hidden" value="{{viewing if viewing else ''}}" id="isViewing"/>
               </div>
           </div>
   

@@ -30,11 +30,13 @@ $(document).ready(function() {
       }
     });
     if ($('#proposalExperienceType').val() == "Other Engagement") {
-      var count = $('#supervisorAttachment').children().length;
-      if (count == 0) {
+      var fileRowCount = $('#supervisorAttachmentContainer').children().length;
+      if (fileRowCount == 0) {
         $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
         $('#supervisorAttachment')[0].reportValidity()        
         return
+      } else {
+        $('#supervisorAttachment')[0].setCustomValidity(''); 
       }
     }
     var formData = new FormData($("#proposalForm")[0]);

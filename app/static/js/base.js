@@ -187,9 +187,10 @@ function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectConta
       let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
       let trashNum = ($(objectContainerId+ " .row").length)
       let iconClass = getIconClass(file)
-      let fileHTML = generateNewFileHTML(trashNum, iconClass, fileName)
+      let fileHTML = generateFileRowHTML(trashNum, iconClass, fileName)
       if (existingFile) {
-        fileHTML = generateExistingFileHTML(trashNum, iconClass, existingFile.name, existingFile.path)
+        let viewing = $("#isViewing").val()
+        fileHTML = generateFileRowHTML(trashNum, iconClass, existingFile.name, existingFile.path, viewing)
       }
       var fullTrashId = "#trash" + trashNum
       if (single) {
@@ -222,30 +223,21 @@ function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectConta
   }
 }
 
-function generateNewFileHTML(trashNum, iconClass, fileName) {
-  return " \
-  <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
-    <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-    <div id='attachedFile" + trashNum + "' data-filename='" + fileName + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
-    <div class='col' style='text-align:right'> \
-      <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
-        <span class='bi bi-trash fs-6'></span>\
-      </div>\
-    </div> \
-  </div>"
-}
-
-function generateExistingFileHTML(trashNum, iconClass, fileName, filePath) {
-  return " \
-    <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
-      <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-      <a id='attachedFile" + trashNum + "' data-filename='" + fileName + "' href='/" + filePath + "' target='_blank' class='fileName col-auto pt-2' data-toggle='tooltip' data-placement='top' title='" + fileName + "'>" + fileName + "</a> \
-      <div class='col' style='text-align:right'> \
-        <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
-          <span class='bi bi-trash fs-6'></span>\
-        </div>\
-      </div> \
-    </div>" 
+function generateFileRowHTML(trashNum, iconClass, fileName, filePath=null, showTrash=true) {
+  return `
+    <div class='border row p-0 m-0' id='attachedFilesRow${trashNum}'>
+      <i class='col-auto fs-3 px-3 bi ${iconClass}'></i>
+      ${filePath != null ?
+        `<a id='attachedFile${trashNum}' data-filename='${fileName}' href='/${filePath}' target='_blank' class='fileName col-auto pt-2' data-toggle='tooltip' data-placement='top' title='${fileName}'>${fileName}</a>`
+        : `<div id='attachedFile${trashNum}' data-filename='${fileName}' class='fileName col-auto pt-2'>${fileName}</div>`
+      }
+      <div ${showTrash ? 'hidden' : ''} class='col' style='text-align:right'>
+        <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash${trashNum}' data-filenum='${trashNum}'>
+          <span class='bi bi-trash fs-6'></span>
+        </div>
+      </div>
+    </div>
+  `
 }
 
 function getIconClass(file) {

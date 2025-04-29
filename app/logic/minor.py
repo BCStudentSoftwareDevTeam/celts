@@ -344,30 +344,37 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def createOtherEngagement(username, formData):
+def createOtherEngagement(username, request):
     """
         Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
 
-    return CCEMinorProposal.create(proposalType = 'Other Engagement',
-                                   createdBy = g.current_user,
-                                   student = user,
-                                   **formData
+    createdProposal = CCEMinorProposal.create(proposalType = 'Other Engagement',
+                                              createdBy = g.current_user,
+                                              student = user,
+                                              **request.form
                             )
+    proposalObject = CCEMinorProposal.get_by_id(createdProposal)
+    attachment = request.files.get("attachmentObject")
+    if attachment:
+        addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+        addFile.saveFiles(saveOriginalFile=proposalObject)
+
 
 def updateOtherEngagementRequest(proposalID, request):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
     attachment = request.files.get("attachmentObject")
+    proposalObject = CCEMinorProposal.get_by_id(proposalID)
     if attachment:
         # delete the existing file to make space for the new one
         existingAttachment = AttachmentUpload.get(proposal=proposalID)
         deleteFile = FileHandler(proposalId=proposalID)
         deleteFile.deleteFile(existingAttachment.id)
         addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
-        addFile.saveFiles()
+        addFile.saveFiles(saveOriginalFile=proposalObject)
 
     CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
     

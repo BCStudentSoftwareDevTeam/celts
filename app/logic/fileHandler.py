@@ -28,7 +28,12 @@ class FileHandler:
         
     def makeDirectory(self):
         try:
-            extraDir = str(self.eventId) if self.eventId else ""
+            extraDir = ""
+            if self.eventId:
+                extraDir = str(self.eventId)
+            if self.proposalId:
+                extraDir = str(self.proposalId)
+
             os.makedirs(os.path.join(self.path, extraDir))
         except OSError as e:
             if e.errno != 17:
@@ -47,6 +52,9 @@ class FileHandler:
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
+        """
+        saveOriginalFile
+        """
         try:          
             for file in self.files:
                 saveFileToFilesystem = None
@@ -79,14 +87,14 @@ class FileHandler:
                     saveFileToFilesystem = currentProgramID
                     
                 elif self.proposalId:
-                    fileType = file.filename.split('.')[-1]
-                    fileName = f"{self.proposalId}.{fileType}"
+                    attachmentName = str(saveOriginalFile.id) + "/" + file.filename
+
                     isFileInProposal = AttachmentUpload.select().where(AttachmentUpload.proposal == self.proposalId,
-                                                                    AttachmentUpload.fileName == fileName).exists()
+                                                                    AttachmentUpload.fileName == attachmentName).exists()
                     if not isFileInProposal:
                         # add the new file
-                        AttachmentUpload.create(proposal=self.proposalId, fileName=fileName)
-                        saveFileToFilesystem = fileName
+                        AttachmentUpload.create(proposal=self.proposalId, fileName=attachmentName)
+                        saveFileToFilesystem = attachmentName
 
                 else:
                     saveFileToFilesystem = file.filename

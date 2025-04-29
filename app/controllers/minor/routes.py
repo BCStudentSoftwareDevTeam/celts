@@ -53,11 +53,7 @@ def createOtherEngagementRequest(username):
 
     # once we submit the form for creation
     if request.method == "POST":
-        createdProposal = createOtherEngagement(username, request.form)
-        attachment = request.files.get("attachmentObject")
-        if attachment:
-            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
-            addFile.saveFiles()
+        createOtherEngagement(username, request)
 
         return redirect(url_for('minor.viewCceMinor', username=username))
     
@@ -86,7 +82,7 @@ def editOrViewProposal(proposalID: int):
     if attachmentObject:
         fileHandler = FileHandler(proposalId=proposalID)
         attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName).lstrip("app/") # we need to remove app/ from the url because it prevents it from displaying
-        attachmentFileName = attachmentObject.fileName
+        attachmentFileName = attachmentObject.fileName.split("/", 1)[1] # get the name without our prepended id
     
     if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)
