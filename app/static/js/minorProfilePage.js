@@ -19,18 +19,23 @@ $(document).ready(function() {
       }
   })
 
-  function checkHasAttachment() {
-    const input = $('#supervisorAttachment');
-    if (!input.prop('files') || input.prop('files').length === 0) {
-      $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
-      $('#supervisorAttachment')[0].reportValidity()        
-      return
-    }
-  }
-
   function saveProposalData(status) {
+    $("#proposalForm").find('[required]').each(function() {
+      if (!$(this).val()) {
+        this.setCustomValidity('Please fill out this field.')
+        this.reportValidity()
+        return    
+      } else {
+        this.setCustomValidity('')
+      }
+    });
     if ($('#proposalExperienceType').val() == "Other Engagement") {
-      checkHasAttachment()
+      var count = $('#supervisorAttachment').children().length;
+      if (count == 0) {
+        $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
+        $('#supervisorAttachment')[0].reportValidity()        
+        return
+      }
     }
     var formData = new FormData($("#proposalForm")[0]);
     formData.append("status", status);
