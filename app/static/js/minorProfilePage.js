@@ -2,25 +2,8 @@ import { validateEmail } from "./emailValidation.mjs";
 
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
-  $("#withdrawBtn").on("click", withdrawProposal);
 
-  function withdrawProposal(){
-      // uses hidden label to withdraw course
-      let proposalID = $("#proposalID").val();
-      let username = $("#username").val()
-      $.ajax({
-        url: `/cceMinor/withdraw/${username}/${proposalID}`,
-        type: "POST",
-        success: function(s){
-          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-        },  
-        error: function(request, status, error) {
-            console.log(status, error);
-        }
-      })
-      resetAllSelections()
-    };
-
+  handleFileSelection("supervisorAttachment", true)
 
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
@@ -37,14 +20,24 @@ $(document).ready(function() {
   })
 
   function saveProposalData(status) {
-    var formData = $("#proposalForm").serialize()
+    const input = $('#supervisorAttachment');
+    if (!input.files || input.files.length === 0) {
+      $('#supervisorAttachment').setCustomValidity('Please upload a file.');
+      $('#supervisorAttachment').reportValidity()        
+      return
+    }
+
+    var formData = new FormData($("#proposalForm")[0]);
+    formData.append("status", status);
+
     var actionURL = $("#proposalForm").attr('action')
     let username = $("#username").val()
     $.ajax({
       url: actionURL,
       type: 'POST',
-      data: formData + "&status=" + status,
-      processData: true,
+      data: formData,
+      processData: false,
+      contentType: false,
       success: function(response) {
         window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
       },

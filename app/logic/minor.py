@@ -18,9 +18,8 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
-from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCourses import deleteCourseObject
+from app.logic.utils import getFilesFromRequest
 from app.models.attachmentUpload import AttachmentUpload
 
 
@@ -357,11 +356,20 @@ def createOtherEngagement(username, formData):
                                    **formData
                             )
 
-def updateOtherEngagementRequest(proposalID, formData):
+def updateOtherEngagementRequest(proposalID, request):
     """
         Update an existing CCEMinorProposal entry based off of the form data
     """
-    CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
+    attachment = request.files.get("attachmentObject")
+    if attachment:
+        # delete the existing file to make space for the new one
+        existingAttachment = AttachmentUpload.get(proposal=proposalID)
+        deleteFile = FileHandler(proposalId=proposalID)
+        deleteFile.deleteFile(existingAttachment.id)
+        addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
+        addFile.saveFiles()
+
+    CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
     
 def saveSummerExperience(username, summerExperience, currentUser):
     """

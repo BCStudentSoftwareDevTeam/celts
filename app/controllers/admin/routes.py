@@ -316,6 +316,7 @@ def eventDisplay(eventId):
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+    print(filepaths)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
     requirements, bonnerCohorts = [], []
     
