@@ -23,7 +23,7 @@ def test_termsAttended():
             Term.create(id = 1001, description = "Fall 2019", year = 2019, academicYear = 2019-2020, isSummer = False, isCurrentTerm = False, termOrder = 2019-3)
             Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Spring 2020", program_id = 5)
             Event.create(id = 1401, term_id = 1001, name = "Event 2", description = "Fall 2019", program_id = 5)
-            User.create(username='zawn', classLevel='Senior')  
+            User.create(username='zawn', rawClassLevel='Senior')  
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             RequirementMatch.create(event_id=1400, requirement_id=400)
             EventParticipant.create(event_id=1400, user_id='zawn')
@@ -52,7 +52,7 @@ def test_termsMissed():
             Term.update(isCurrentTerm=False).execute()
             Term.create(id = 1000, description = "Fall 2019", year = 2019, academicYear = 2019-2020, isSummer = False, isCurrentTerm = True, termOrder = 2019-3)
             Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Fall 2019", program_id = 5)
-            User.create(username='zawn', classLevel='Senior')  
+            User.create(username='zawn', rawClassLevel='Senior')  
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
@@ -65,26 +65,25 @@ def test_termsMissed():
             Term.update(isCurrentTerm=False).execute()
             Term.create(id = 1000, description = "Summer 2022", year = 2022, academicYear = 2022-2023, isSummer = True, isCurrentTerm = True, termOrder = 2022-2)
             Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Summer 2022", program_id = 5)
-            User.create(username='zawn', classLevel='Freshman')  
+            User.create(username='zawn', rawClassLevel='Freshman')  
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
         assert missedTerms == 1
         transaction.rollback()
-
      
     with mainDB.atomic() as transaction:
         with app.app_context():
             Term.update(isCurrentTerm=False).execute()
             Term.create(id = 1000, description = "Spring 2021", year = 2021, academicYear = 2020-2021, isSummer = False, isCurrentTerm = True, termOrder = 2021-1)
             Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Spring 2021", program_id = 5)
-            User.create(username='zawn', classLevel='Senior')  
+            User.create(username='zawn', rawClassLevel='Senior')  
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
         assert missedTerms == 8
         transaction.rollback()
-
+        
 @pytest.mark.integration
 def test_getCertRequirements():
     allRequirements = getCertRequirements()

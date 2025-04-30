@@ -39,11 +39,11 @@ def termsMissed(certification=None, username=None):
 
     for level in range(4):
         user = User.select().where(User.username == username).get()
-        if user.classLevel == classLevel[level] and currentDescription == f'Spring {currentTerm.year}':
+        if user.rawClassLevel == classLevel[level] and currentDescription == f'Spring {currentTerm.year}':
             missedTerms = (level + 1) * 2
-        elif user.classLevel == classLevel[level]:
+        elif user.rawClassLevel == classLevel[level]:
             missedTerms = ((level + 1) * 2) - 1
-        else:
+        elif str(user.rawClassLevel) == "None":
             missedTerms = 1
     attendedTerms = termsAttended(certification, username)
     missedTerms = missedTerms - len(attendedTerms)
