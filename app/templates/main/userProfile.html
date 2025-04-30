@@ -44,9 +44,7 @@
     {% if volunteer.major -%}
     <div>{{volunteer.major}}</div>
     {% endif %}
-    {% if volunteer.classLevel -%}
-    <div>{{volunteer.classLevel}} </div>
-    {% endif %}
+    <div>{{volunteer.processedClassLevel}}</div>
     {% if volunteer.cpoNumber %}
       <div>
       {{volunteer.cpoNumber}} 
