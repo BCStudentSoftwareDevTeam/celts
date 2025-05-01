@@ -24,12 +24,21 @@ def termsAttended(certification=None, username=None):
             
 def termsMissed(certification=None, username=None): 
     '''
-    Populate the maximum amount of certification a student can miss based on class classification
+    Calculate how many certification-eligible terms a student has missed based on their class level
+    and attendance record.
+
+    Logic:
+    - Each class level is expected to participate in 2 terms per year.
+    - If the user is currently in their final spring term (e.g., Spring of senior year), 
+      they are expected to have completed all terms: missedTerms = (level + 1) * 2.
+    - Otherwise, assume they’ve had one fewer term to attend: missedTerms = ((level + 1) * 2) - 1.
+    - If the user's classification is None, assume just 1 expected term.
+    - Subtract the number of terms the student has attended from the expected total to get the missed count.
     '''
-    sh = 0
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     currentTerm = g.current_term 
     currentDescription = currentTerm.description
+    
     # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term     
     if currentTerm.isSummer == True:
         currentDescription = f'Fall {currentTerm.year}'
@@ -45,8 +54,10 @@ def termsMissed(certification=None, username=None):
             missedTerms = ((level + 1) * 2) - 1
         elif str(user.rawClassLevel) == "None":
             missedTerms = 1
+            
     attendedTerms = termsAttended(certification, username)
     missedTerms = missedTerms - len(attendedTerms)
+    
     return missedTerms
 
 def getCertRequirementsWithCompletion(*, certification, username):
@@ -85,7 +96,7 @@ def getCertRequirements(certification=None, username=None):
 
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
-        certs = []
+        certificationList = []
         for cert in reqList:
             if username:
                 cert.requirement.completed = bool(cert.__dict__['completed'])
@@ -94,25 +105,29 @@ def getCertRequirements(certification=None, username=None):
                     cert.requirement.missedTerms = termsMissed(cert.requirement.id, username)
                     cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
                     cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
-            certs.append(cert.requirement)
+            certificationList.append(cert.requirement)
 
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist
-        newCerts = []
-        certsIndex = 0
-        for cert in certs:
-            if certs[certsIndex] not in newCerts:
-                newCerts.append(certs[certsIndex])
-            certsIndex += 1
-        certs = newCerts
-        return certs
+        validCertification = set()
+        certificationIndex = 0
+        
+        for cert in certificationList:
+            if certificationList[certificationIndex] not in validCertification:
+                validCertification.add(certificationList[certificationIndex])
+            certificationIndex += 1
+            
+        certificationList = list(validCertification)
+        
+        return certificationList
     
-    certs = {}
+    certificationDict = {}
     for cert in reqList:
-        if cert.id not in certs.keys():
-            certs[cert.id] = {"data": cert, "requirements": []}
+        if cert.id not in certificationDict.keys():
+            certificationDict[cert.id] = {"data": cert, "requirements": []}
         if getattr(cert, 'requirement', None):
-            certs[cert.id]["requirements"].append(cert.requirement)
-    return certs
+            certificationDict[cert.id]["requirements"].append(cert.requirement)
+            
+    return certificationDict
 
 def updateCertRequirements(certId, newRequirements):
     """
