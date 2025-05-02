@@ -290,6 +290,7 @@ bonners = [
     { "year": 2022, "user": "ramsayb2" },
     { "year": 2022, "user": "makindeo" },
     { "year": 2022, "user": "michels" },
+    { "year": 2022, "user": "hoerstl" },
     ]
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
