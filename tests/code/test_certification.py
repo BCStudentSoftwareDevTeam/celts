@@ -114,8 +114,8 @@ def test_getCertRequirementsWithCompletion():
         cprReqs = getCertRequirementsWithCompletion(certification=cprCert, username='ramsayb2')
        
         assert len(cprReqs) == 2
-        assert cprReqs[0].completed, "The first event should be marked as completed"
-        assert not cprReqs[1].completed, "The second event should not be marked as completed"
+        assert not cprReqs[0].completed, "The first event should not be marked as completed"
+        assert cprReqs[1].completed, "The second event should be marked as completed"
 
         transaction.rollback()
 
@@ -170,8 +170,12 @@ def test_updateCertRequirements():
                  'required': False}
                 ]
         returnedIds = updateCertRequirements(otherId, newRequirements)
-        selectedIds = (getCertRequirements(certification=otherId))
+        selectedIds = getCertRequirements(certification=otherId)
+        print("Selected IDs: ", selectedIds)
+        print("Returned IDs: ", returnedIds)
         fetchedIds = list(CertificationRequirement.select().where(CertificationRequirement.certification == otherId).order_by(CertificationRequirement.order))
+        print("Fetched IDs: ", fetchedIds)
+        
         
         assert selectedIds == fetchedIds
         assert returnedIds == selectedIds

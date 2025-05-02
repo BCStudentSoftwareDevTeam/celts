@@ -110,13 +110,16 @@ def getCertRequirements(certification=None, username=None):
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist
         validCertification = set()
         certificationIndex = 0
+        uniqueCertification = []
         
         for cert in certificationList:
             if certificationList[certificationIndex] not in validCertification:
                 validCertification.add(certificationList[certificationIndex])
+                uniqueCertification.append(certificationList[certificationIndex])
+                
             certificationIndex += 1
             
-        certificationList = list(validCertification)
+        certificationList = uniqueCertification
         
         return certificationList
     
