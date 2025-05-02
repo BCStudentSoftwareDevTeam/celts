@@ -243,6 +243,21 @@ users = [
         "rawClassLevel": "Senior",
         "minorInterest": 1,
     },
+    {
+        "username" : "michels",
+        "bnumber" : "B00781963",
+        "email": "michels@berea.edu",
+        "phoneNumber": "(555)555-9999",
+        "firstName" : "Stevenson",
+        "lastName" : "Michel",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Senior",
+        "minorInterest": 1,
+    },
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -259,6 +274,7 @@ bonners = [
     { "year": 2022, "user": "neillz" },
     { "year": 2022, "user": "ramsayb2" },
     { "year": 2022, "user": "makindeo" },
+    { "year": 2022, "user": "michels" },
     ]
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
