@@ -171,11 +171,7 @@ def test_updateCertRequirements():
                 ]
         returnedIds = updateCertRequirements(otherId, newRequirements)
         selectedIds = getCertRequirements(certification=otherId)
-        print("Selected IDs: ", selectedIds)
-        print("Returned IDs: ", returnedIds)
         fetchedIds = list(CertificationRequirement.select().where(CertificationRequirement.certification == otherId).order_by(CertificationRequirement.order))
-        print("Fetched IDs: ", fetchedIds)
-        
         
         assert selectedIds == fetchedIds
         assert returnedIds == selectedIds
