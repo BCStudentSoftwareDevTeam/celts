@@ -258,6 +258,21 @@ users = [
         "rawClassLevel": "Senior",
         "minorInterest": 1,
     },
+    {
+        "username" : "hoerstl",
+        "bnumber" : "B00791233",
+        "email": "hoerstl@berea.edu",
+        "phoneNumber": "(555)555-9999",
+        "firstName" : "Lawrence",
+        "lastName" : "Hoerst",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Senior",
+        "minorInterest": 1,
+    },
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
