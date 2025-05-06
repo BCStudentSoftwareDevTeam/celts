@@ -70,7 +70,7 @@ $(document).ready(function(){
         const url = `/bonnerXls/${startingYear}/${noOfYears}`
         const fileName = noOfYears === "all" 
             ? "Bonner Spreadsheet, All Cohorts" 
-            : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`
+            : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears) + 1} - ${Number(startingYear) + 1}`
         $.ajax({
             url: url,
             method: "GET",
