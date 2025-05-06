@@ -10,9 +10,9 @@ from app.logic.volunteerSpreadsheet import *
 @pytest.fixture
 def fixture_info():
     with mainDB.atomic() as transaction:
-        user1 = User.create(username="doej", firstName="John", lastName="Doe", bnumber="B774377", major="Graphics Design", classLevel="Sophomore")
-        user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", classLevel="Junior")
-        user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", classLevel="Senior")
+        user1 = User.create(username="doej", firstName="John", lastName="Doe", bnumber="B774377", major="Graphics Design", rawClassLevel="Sophomore")
+        user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", rawClassLevel="Junior")
+        user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", rawClassLevel="Senior")
 
         term1 = Term.create(id=500, description='Fall 2023', academicYear='2023-2024')
         term2 = Term.create(id=600, description='Fall 2024', academicYear='2024-2025')
@@ -181,19 +181,19 @@ def test_repeatVolunteersPerProgram(fixture_info):
 def test_volunteerMajorAndClass(fixture_info): 
     # Gets the list of majors or the class levels of volunteers
     assert list(volunteerMajorAndClass("2023-2024", User.major)) == list([('Biology', 1), ('Graphics Design', 1)])
-    assert list(volunteerMajorAndClass("2023-2024", User.classLevel)) == [('Junior', 1), ('Sophomore', 1)]
-    assert list(volunteerMajorAndClass("2023-2024", User.classLevel, True)) == [('Sophomore', 1), ('Junior', 1)]
+    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel)) == [('Junior', 1), ('Sophomore', 1)]
+    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel, True)) == [('Sophomore', 1), ('Junior', 1)]
 
     assert list(volunteerMajorAndClass("2024-2025", User.major)) == list([])
-    assert list(volunteerMajorAndClass("2024-2025", User.classLevel)) == []
-    assert list(volunteerMajorAndClass("2024-2025", User.classLevel, True)) == []
+    assert list(volunteerMajorAndClass("2024-2025", User.rawClassLevel)) == []
+    assert list(volunteerMajorAndClass("2024-2025", User.rawClassLevel, True)) == []
 
     User.create(username = 'solijonovam',
                 email = 'solijonovam@berea.edu',
                 firstName = 'Madinabonu',
                 lastName  = 'Solijonova',
                 major = 'Agriculture',
-                classLevel = 'Sophomore')
+                rawClassLevel = 'Sophomore')
     EventParticipant.create(user = 'solijonovam',
                             event = fixture_info['event1'],
                             hoursEarned = 2)
@@ -203,8 +203,8 @@ def test_volunteerMajorAndClass(fixture_info):
 
     # Checks for event participants changes 
     assert list(volunteerMajorAndClass("2023-2024", User.major)) == [('Agriculture', 1), ('Biology', 1), ('Construction', 1), ('Graphics Design', 1)]
-    assert list(volunteerMajorAndClass("2023-2024", User.classLevel)) == [('Junior', 1), ('Senior', 1), ('Sophomore', 2)]
-    assert list(volunteerMajorAndClass("2023-2024", User.classLevel, True)) == [('Sophomore', 2), ('Junior', 1), ('Senior', 1)]
+    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel)) == [('Junior', 1), ('Senior', 1), ('Sophomore', 2)]
+    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel, True)) == [('Sophomore', 2), ('Junior', 1), ('Senior', 1)]
 
 @pytest.mark.integration
 def test_volunteerHoursByProgram(fixture_info):
