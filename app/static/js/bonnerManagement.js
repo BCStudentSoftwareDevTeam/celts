@@ -68,9 +68,17 @@ $(document).ready(function(){
         const startingYear = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
         const noOfYears = this.getAttribute("data-years")
         const url = `/bonnerXls/${startingYear}/${noOfYears}`
-        const fileName = noOfYears === "all" 
-            ? "Bonner Spreadsheet, All Cohorts" 
-            : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears) + 1} - ${Number(startingYear) + 1}`
+        let fileName;
+        if (noOfYears === "all") {
+            fileName = "Bonner Spreadsheet, All Cohorts";
+        } else if (Number(noOfYears) === 1) {
+            fileName = `Bonner Spreadsheet, ${startingYear} - ${Number(startingYear) + 1}`;
+        } else {
+            fileName = `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`;
+        }
+        // const fileName = noOfYears === "all" 
+        //     ? "Bonner Spreadsheet, All Cohorts" 
+        //     : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears) + 1} - ${Number(startingYear) + 1}`
         $.ajax({
             url: url,
             method: "GET",
