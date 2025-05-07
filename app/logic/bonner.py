@@ -6,19 +6,29 @@ import xlsxwriter
 
 from app import app
 from app.models.bonnerCohort import BonnerCohort
+from app.models.certificationRequirement import CertificationRequirement
+from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
+from app.models.requirementMatch import RequirementMatch
 from app.models.user import User
 from app.models.eventCohort import EventCohort
+from app.models.term import Term
 from app.logic.createLogs import createRsvpLog
 
-def makeBonnerXls():
+def makeBonnerXls(selectedYear, noOfYears=1):
     """
     Create and save a BonnerStudents.xlsx file with all of the current and former bonner students.
     Working with XLSX files: https://xlsxwriter.readthedocs.io/index.html
 
+    Params:
+        selectedYear: The cohort year of interest.
+        noOfYears: The number of years to be downloaded.
+
     Returns:
         The file path and name to the newly created file, relative to the web root.
     """
+    selectedYear = int(selectedYear)
     filepath = app.config['files']['base_path'] + '/BonnerStudents.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
     worksheet = workbook.add_worksheet('students')
@@ -33,8 +43,24 @@ def makeBonnerXls():
     worksheet.write('D1', 'Student Email', bold)
     worksheet.set_column('D:D', 20)
 
-    students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+    # bonner event titles
+    bonnerEventsId = 1
+    bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
+    bonnerEventInfo = {bonnerEvent.id:(bonnerEvent.name, index + 4) for index, bonnerEvent in enumerate(bonnerEvents)}
+    allBonnerSpreadsheetPosition = 7
+    currentLetter = "E" # next column
+    for bonnerEvent in bonnerEvents:
+        worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
+        worksheet.set_column(f"{currentLetter}:{currentLetter}", 30)
+        currentLetter = chr(ord(f"{currentLetter}") + 1)
 
+    if noOfYears == "all":
+        students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+    else:
+        noOfYears = int(noOfYears)
+        startingYear = selectedYear - noOfYears + 1
+        students = BonnerCohort.select(BonnerCohort, User).where(BonnerCohort.year.between(startingYear, selectedYear)).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
+    
     prev_year = 0
     row = 0
     for student in students:
@@ -46,6 +72,32 @@ def makeBonnerXls():
         worksheet.write(row, 1, student.user.fullName)
         worksheet.write(row, 2, student.user.bnumber)
         worksheet.write(row, 3, student.user.email)
+
+        # set event fields to the default "incomplete" status
+        for eventName, eventSpreadsheetPosition in bonnerEventInfo.values():
+            worksheet.write(row, eventSpreadsheetPosition, "Incomplete")
+        
+        bonnerEventsAttended = (
+            RequirementMatch
+            .select()
+            .join(Event, on=(RequirementMatch.event == Event.id))
+            .join(EventParticipant, on=(RequirementMatch.event == EventParticipant.event))
+            .join(CertificationRequirement, on=(RequirementMatch.requirement == CertificationRequirement.id))
+            .join(User, on=(EventParticipant.user == User.username))
+            .where((CertificationRequirement.certification_id == bonnerEventsId) & (User.username == student.user.username))
+        )
+
+        allBonnerMeetingDates = []
+        for attendedEvent in bonnerEventsAttended:
+            if bonnerEventInfo.get(attendedEvent.requirement.id):
+                completedEvent = bonnerEventInfo[attendedEvent.requirement.id]
+                worksheet.write(row, completedEvent[1], attendedEvent.event.startDate.strftime('%m/%d/%Y'))
+                if completedEvent[0] == "All Bonner Meeting":
+                    allBonnerMeetingDates.append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
+            else:
+                raise Exception("Untracked requirements found in attended events. Debug required.")
+    
+        worksheet.write(row, allBonnerSpreadsheetPosition, ", ".join(sorted(allBonnerMeetingDates)))
 
         row += 1
 

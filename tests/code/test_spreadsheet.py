@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 
-from app.logic.spreadsheet import *
+from app.logic.volunteerSpreadsheet import *
 
 @pytest.fixture
 def fixture_info():
