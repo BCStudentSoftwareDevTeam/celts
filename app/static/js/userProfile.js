@@ -9,6 +9,7 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(s) {
+          msgToast("Interest", "Successfully expressed interest in the program!")
         },
         error: function(request, status, error) {
           console.log(status, error)
