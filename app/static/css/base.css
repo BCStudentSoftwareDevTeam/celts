@@ -99,6 +99,10 @@ select.empty {
     z-index: 1049;
 }
 
+#sideBarContainer {
+    z-index: 11;
+}
+
 .rsvp-btn{
     padding-top: 4em;
 }
