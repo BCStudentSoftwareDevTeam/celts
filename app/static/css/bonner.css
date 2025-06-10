@@ -41,14 +41,9 @@
     cursor: grabbing;
 }
 
+
 .footer {
-  background-color: #e9ebec;
-  color:#1e2433;
-  text-align: center !important;
-  height: 80px;
-  line-height: 80px; /* Vertically center the text */
   position: fixed;
   bottom: 0;
-  z-index:10
 }
 
