@@ -17,6 +17,7 @@ $(document).ready(function(){
         }
     });
   })
+  
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
