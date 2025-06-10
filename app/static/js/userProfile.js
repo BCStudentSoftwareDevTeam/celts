@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = true 
+    let isAdding = $(this).is(':checked');
     
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
@@ -9,7 +9,7 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(s) {
-          msgToast("Interest", "Successfully expressed interest in the program!")
+          msgToast("Changes saved successfully!", "Your interest has been updated.")
         },
         error: function(request, status, error) {
           console.log(status, error)
