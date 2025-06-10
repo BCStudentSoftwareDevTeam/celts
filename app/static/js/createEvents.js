@@ -547,10 +547,9 @@ $(document).ready(function() {
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(createOfferingModalRow)
 
-  $("#allowPastStart").click(function() {
-    var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
+    var minDate = new Date('10/25/1999') 
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
-  })
+  
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {

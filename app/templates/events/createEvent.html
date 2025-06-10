@@ -57,6 +57,7 @@
           <h1 id="pageTitle">{{page_title}}</h1>
         </div>
       {% endif %}
+
     {% endblock %}
 
     {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
@@ -80,6 +81,19 @@
       </div>
     </div>
   </div>
+                      <div class="form-group col-md-6">
+          <div class="form-check form-switch pb-1"><br>
+            <fieldset>
+              <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
+              <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
+                {{"checked" if eventData.isSeries}} />
+            </fieldset>
+          </div>
+        </div>
+          {% if True %}
+          <p style="color:red; font-weight:bold;"> This date is in the past</p>
+          {% endif %}
+          
 </div>
 <br>
 <!-- Non-Series Start Time -->
@@ -146,20 +160,12 @@
       <div class="row col-md-12">
         <div class="form-group col-md-6">
           <div class="form-check form-switch pb-1">
-            <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the
+            <!-- <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the
                 past.</strong></label>
-            <input class="form-check-input" type="checkbox" id="allowPastStart" />
+            <input class="form-check-input" type="checkbox" id="allowPastStart" /> -->
           </div>
         </div>
-        <div class="form-group col-md-6">
-          <div class="form-check form-switch pb-1">
-            <fieldset>
-              <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
-                {{"checked" if eventData.isSeries}} />
-            </fieldset>
-          </div>
-        </div>
+      
       </div>
       {% endif %}
 
@@ -474,6 +480,8 @@
                   id='repeatingEventsStartDate' />
               </div>
             </div>
+            
+        </div>
              <!-- Repeating Event End Date Picker -->
              <div class="form-group col-md-3">
               <label class="required form-label me-2 mb-0" for="repeatingEventsEndDate"><strong>Last Event Date</strong></label>
@@ -484,7 +492,8 @@
                   id='repeatingEventsEndDate' />
               </div>
             </div>
-            
+
+
             <!-- Repeating Event Start Time -->
             <div class="form-group col-md-3">
               <label class="form-label me-2 mb-0" for="repeatingEventsStartTime"><strong>Start Time</strong></label>
