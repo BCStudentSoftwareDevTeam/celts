@@ -35,10 +35,10 @@
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    <div class="col-md-6 col-lg-3" style="display: flex;">
+    <!-- <div class="col-md-6 col-lg-3" style="display: flex;">
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> &nbsp;
+    </div> &nbsp; -->
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -54,29 +54,48 @@
     </div>
     {%endif%}
   </div>
-      
-  <div class="row pb-2 pe-0">
-    
-    <div class="col"></div>
-    <div class="col-auto pe-0 ">
-      <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
-        <option value="" selected disabled hidden>Choose an Action</option>
-        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-            <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
-            <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
-        {% endif %}
-        {% if g.current_user.isAdmin %}
-          <option value="Manage CCE Minor"> Manage CCE Minor </option>
-        {% endif %}
-        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-            <option value="Print Travel Form"> Print Travel Form </option>
-        {% endif %}
-        <option value="View Service Transcript"> View Service Transcript </option>
-      </select>
+</div>&nbsp;
+
+
+<div class="accordion" id="userProfile">
+
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingInfo">
+      {% set focus = "open" if visibleAccordion == "userInfo" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Edit User Information</button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "action" else ""%}
+    <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="col-md-6 col-lg-3" style="display: flex;">
+      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> 
+              {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+                  <option value="Emergency Contact"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></option>
+                  <option value="Insurance Information"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></option>
+              {% endif %}
+              {% if g.current_user.isAdmin %}
+                <option value="Manage CCE Minor"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </option>
+              {% endif %} &nbsp;
+
+              <div class="container">
+                    <form style="margin-bottom: 10px;">
+                      <div class="form-group">
+                        <label for="usr">Please enter any dietary restrictions you have:</label>
+                        <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+                      </div>
+                      <br>
+                      <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
+                    </form>
+                  </div>
+              <!-- {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+                  <option value="Print Travel Form"> <a href="{{volunteer.username}}/travelForm">Print Travel Form </a></option>
+              {% endif %}
+              <option value="View Service Transcript"> <a href="{{volunteer.username}}/serviceTranscript">View Service Transcript </a></option> -->
+      </div>
     </div>
   </div>
-</div>
-<div class="accordion" id="userProfile">
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -431,7 +450,7 @@
 <!-- ################# Notes Section ################ -->
 
 <!-- ################# Dietary Restrictions Section  ################ -->
-  <div class="accordion-item">
+  <!-- <div class="accordion-item">
     <h3 class="accordion-header" id="headingSeven">
     {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
     <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
@@ -453,7 +472,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 <!-- ################# Dietary Restrictions Section  ################ -->
 
 <!-- ################# Bonner Scholar ################ -->
@@ -524,6 +543,33 @@
     </div>
   {% endif %}
 <!-- ################# Bonner Scholar ################ -->
+
+<!-- ################# Other Actions ################ -->
+  <!-- <div class="accordion-item">
+    <h3 class="accordion-header" id="headingAction">
+      {% set focus = "open" if visibleAccordion == "action" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Other Actions</button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "action" else ""%}
+    <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+              {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+                  <option value="Emergency Contact"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></option>
+                  <option value="Insurance Information"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></option>
+              {% endif %}
+              {% if g.current_user.isAdmin %}
+                <option value="Manage CCE Minor"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </option>
+              {% endif %}
+              {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+                  <option value="Print Travel Form"> <a href="{{volunteer.username}}/travelForm">Print Travel Form </a></option>
+              {% endif %}
+              <option value="View Service Transcript"> <a href="{{volunteer.username}}/serviceTranscript">View Service Transcript </a></option>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- ################# Other Actions ################ -->
+
 </div>
 
 <!-- ################# Add Notes Modal ################ -->
