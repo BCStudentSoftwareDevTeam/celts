@@ -31,6 +31,10 @@
         <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
+          
+        <!-- <div class="insuranceInfoSelect" nowrap>Insurance Info: {{participant.insuranceinfo.name if participant.insuranceinfo}}</div> -->
+          
+        
       </ul>
     </div>
 {% endmacro %}
@@ -42,9 +46,11 @@
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
       <td class="statusSelect" nowrap>{{ volunteerType|title if volunteerType != 'rsvp' else volunteerType|upper}}</td>
       <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
+      
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
-    </tr>
+        <td class="insuranceSelect" nowrap>{{ participant.insuranceInfo}}</td>
+      </tr>
 {% endmacro %}
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
@@ -107,6 +113,8 @@
           <label for="statusSelect">Volunteer Status</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
           <label for="emailSelect">Email</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="insuranceSelect" checked>
+          <label for="InsuranceInformationSelect">Insurance Information</label><br>
           <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
           <label class="bNumberSelect" for="barcodeSelect">B-Number Barcode</label><br>
         </div>
@@ -140,6 +148,7 @@
           <th class="statusSelect">Volunteer Status</th>
           <th class="dietRestrictionSelect">Dietary Restriction</th>
           <th class="emergencyContactSelect">Emergency Contact</th>
+          <th class="insuranceSelect">Insurance Information</th>
         </tr>
       </thead>
       <tbody>
