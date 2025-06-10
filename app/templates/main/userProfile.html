@@ -408,7 +408,7 @@
                   </td>
                   <td>
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                      <="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% endif %}
