@@ -53,7 +53,8 @@ select.empty {
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
-  position: relative;
+  position: fixed;
+  bottom: 0;
   z-index:10
 }
 
