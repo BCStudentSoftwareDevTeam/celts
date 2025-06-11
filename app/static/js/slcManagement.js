@@ -26,7 +26,7 @@ $(document).ready(function() {
       } else if ($(this).attr('data-content') == "Approved") {
         return "This proposal has been approved by CELTS."
 
-      } else if ($(this).attr('data-content') == "In Progress") {
+      } else if ($(this).attr('data-content') == "Draft") {
         return "This proposal has not been submitted for review."
 
       } else if ($(this).attr('data-content') == "Imported") {
