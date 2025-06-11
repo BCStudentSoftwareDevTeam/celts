@@ -35,10 +35,6 @@
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    <!-- <div class="col-md-6 col-lg-3" style="display: flex;">
-      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> &nbsp; -->
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -75,13 +71,10 @@
                 <p value="Emergency Contact" style="margin-bottom: 10px; border-left: 3px solid #007bff; padding-left: 10px;"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></p>
                 <p value="Insurance Information" style="margin-bottom: 10px; border-left: 3px solid #28a745; padding-left: 10px;"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></p>
               {% endif %}
-              {% if g.current_user.isAdmin %}
-                <p value="Manage CCE Minor" style="margin-bottom: 10px; border-left: 3px solid #fd7e14; padding-left: 10px;"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </p>
-              {% endif %}
               <hr>
               <div class="container">
                     <form style="margin-bottom: 10px;">
-                      <p style="font-size: 20px; margin-bottom: 5px;">Dietary Restrictions</p>
+                      <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
                       <div class="form-group">
                         <label for="usr">Please enter any dietary restrictions you have:</label>
                         <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
@@ -90,10 +83,6 @@
                       <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
                     </form>
                   </div>
-              <!-- {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-                  <option value="Print Travel Form"> <a href="{{volunteer.username}}/travelForm">Print Travel Form </a></option>
-              {% endif %}
-              <option value="View Service Transcript"> <a href="{{volunteer.username}}/serviceTranscript">View Service Transcript </a></option> -->
       </div>
     </div> 
   </div>
@@ -109,6 +98,10 @@
       <div class="accordion-body">
         <div class="row table-responsive">
           <table class="table table-striped">
+            {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+                  <p value="Print Travel Form" style="margin-bottom: 10px; border-left: 3px solid #637aff; padding-left: 10px;"> <a href="{{volunteer.username}}/travelForm">Print Travel Form </a></p>
+                  <hr>
+              {% endif %}
             {% if upcomingEvents|length > 0 %}
               <thead class="tableHeader">
                 <th scope="col">Program</th>
@@ -168,6 +161,11 @@
       <div class="accordion-body">
         <div class="table-responsive">
           <table class="table table-striped banTable">
+            <p value="View Service Transcript" style="margin-bottom: 10px; border-left: 3px solid #637aff; padding-left: 10px;"> <a href="{{volunteer.username}}/serviceTranscript">View Service Transcript </a></p>
+            {% if g.current_user.isAdmin %}
+                <p value="Manage CCE Minor" style="margin-bottom: 10px; border-left: 3px solid #fd7e14; padding-left: 10px;"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </p>
+              {% endif %}
+            <hr>
             {% if participatedEvents|length > 0 %}
               <thead>
                 <th scope="col">Program</th>
@@ -450,32 +448,6 @@
   </div>
 <!-- ################# Notes Section ################ -->
 
-<!-- ################# Dietary Restrictions Section  ################ -->
-  <!-- <div class="accordion-item">
-    <h3 class="accordion-header" id="headingSeven">
-    {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
-    <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
-      Dietary Restrictions
-    </button>
-    </h3>
-    {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
-    <div id="collapseSeven" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSeven" data-bs-parent="#userProfile">
-      <div class="accordion-body">
-        <div class="container">
-          <form>
-            <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
-            </div>
-            <br>
-            <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div> -->
-<!-- ################# Dietary Restrictions Section  ################ -->
-
 <!-- ################# Bonner Scholar ################ -->
   {% set canViewBonner = (g.current_user.isCeltsAdmin or g.current_user == volunteer) %}
   {% if volunteer.isBonnerScholar and canViewBonner %}
@@ -544,32 +516,6 @@
     </div>
   {% endif %}
 <!-- ################# Bonner Scholar ################ -->
-
-<!-- ################# Other Actions ################ -->
-  <!-- <div class="accordion-item">
-    <h3 class="accordion-header" id="headingAction">
-      {% set focus = "open" if visibleAccordion == "action" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Other Actions</button>
-    </h3>
-    {% set show = "show" if visibleAccordion == "action" else ""%}
-    <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
-      <div class="accordion-body">
-              {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-                  <option value="Emergency Contact"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></option>
-                  <option value="Insurance Information"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></option>
-              {% endif %}
-              {% if g.current_user.isAdmin %}
-                <option value="Manage CCE Minor"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </option>
-              {% endif %}
-              {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-                  <option value="Print Travel Form"> <a href="{{volunteer.username}}/travelForm">Print Travel Form </a></option>
-              {% endif %}
-              <option value="View Service Transcript"> <a href="{{volunteer.username}}/serviceTranscript">View Service Transcript </a></option>
-      </div>
-    </div>
-  </div> -->
-
-  <!-- ################# Other Actions ################ -->
 
 </div>
 
