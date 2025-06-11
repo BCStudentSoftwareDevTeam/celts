@@ -15,13 +15,23 @@
 {{super()}}
 <script type="module" src="/static/js/volunteerDetails.js"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
 {% endblock %}
 
 {########################### Display macros ###########################}
 {% macro createCard(participant, volunteerType) %}
   
     <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
-      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></h4>
+      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b>
+      {% if participant.insuranceinfo %}
+          
+        {% if participant.insuranceinfo.healthIssues %}
+          
+        <i class="bi bi-star-fill fs-6"></i>
+          {% endif %}
+          {% endif %}  
+      
+      </h4>
       <ul>
         <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
         <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
@@ -32,7 +42,15 @@
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
           
-        <!-- <div class="insuranceInfoSelect" nowrap>Insurance Info: {{participant.insuranceinfo.name if participant.insuranceinfo}}</div> -->
+         <div class="insuranceInfoSelect" nowrap>Insurance Info: 
+          {% if participant.insuranceinfo %}
+          {{participant.insuranceinfo.insuranceCompany}}
+          
+        {% if participant.insuranceinfo.healthIssues %}
+          
+          {% endif %}
+          {% endif %}        
+         </div>
           
         
       </ul>
@@ -49,7 +67,10 @@
       
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
-        <td class="insuranceSelect" nowrap>{{ participant.insuranceInfo}}</td>
+      {% if participant.insuranceinfo %}
+        <td class="insuranceSelect" nowrap> {{ participant.insuranceinfo.policyNumber}}</td>
+
+        {% endif %}
       </tr>
 {% endmacro %}
 
@@ -128,7 +149,10 @@
             </div>
           </div>
         </div>
-      </div>
+
+      <div><i class="bi bi-star-fill fs-6"></i> Star indicates this profile needs to be checked</div>
+      
+        </div>
     </div>
 
     <hr>
