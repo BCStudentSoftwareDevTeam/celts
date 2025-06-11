@@ -62,25 +62,26 @@
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingInfo">
       {% set focus = "open" if visibleAccordion == "userInfo" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Edit User Information</button>
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">User Information</button>
     </h3>
     {% set show = "show" if visibleAccordion == "action" else ""%}
     <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
       <div class="accordion-body">
-        <div class="col-md-6 col-lg-3" style="display: flex;">
-      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-      <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div> 
+        <div class="col-md-6 col-lg-3" style="display: flex; margin-bottom: 10px;">
+          <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+          <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+        </div> 
               {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-                  <option value="Emergency Contact"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></option>
-                  <option value="Insurance Information"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></option>
+                <p value="Emergency Contact" style="margin-bottom: 10px; border-left: 3px solid #007bff; padding-left: 10px;"> <a href="{{volunteer.username}}/emergencyContact">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </a></p>
+                <p value="Insurance Information" style="margin-bottom: 10px; border-left: 3px solid #28a745; padding-left: 10px;"> <a href="{{volunteer.username}}/insuranceInfo">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </a></p>
               {% endif %}
               {% if g.current_user.isAdmin %}
-                <option value="Manage CCE Minor"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </option>
-              {% endif %} &nbsp;
-
+                <p value="Manage CCE Minor" style="margin-bottom: 10px; border-left: 3px solid #fd7e14; padding-left: 10px;"><a href="{{volunteer.username}}/cceMinor">Manage CCE Minor </a> </p>
+              {% endif %}
+              <hr>
               <div class="container">
                     <form style="margin-bottom: 10px;">
+                      <p style="font-size: 20px; margin-bottom: 5px;">Dietary Restrictions</p>
                       <div class="form-group">
                         <label for="usr">Please enter any dietary restrictions you have:</label>
                         <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
