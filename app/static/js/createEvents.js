@@ -509,8 +509,8 @@ $(document).ready(function() {
       let startDate = new Date($("#repeatingEventsStartDate").val());
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
-      let endTime = $("#repeatingEventsEndTime").val();
-
+      let endTime = $("#repeatingEventsEndTime").val();      
+startDatePicker
       if (navigator.userAgent.indexOf("Chrome") == -1) {
         startTime = format12to24HourTime(startTime)
         endTime = format12to24HourTime(endTime)
@@ -549,7 +549,37 @@ $(document).ready(function() {
 
     var minDate = new Date('10/25/1999') 
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+
+    function checkIfDateInPast() {
+      const [month, day, year] = $("#startDatePicker-main").val().split('/')
+      const [startHour, starMin] = $("#startTime-main").val().split(':')
+      const [endHour, endMin] = $("#endTime-main").val().split(':')
+
+      let startDateSelected = new Date(+year, +month - 1, +day, +startHour, +starMin);  
+      let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
+      let now = new Date()
+
+      if (startDateSelected < now && endDateSelected > now) {
+        $("#pastDateWarningText").text("This event is currently happening!")
+      }
+      else if (startDateSelected < now && endDateSelected < now) {
+        $("#pastDateWarningText").text("This event ended in the past!")
+      }
+      else 
+        $("#pastDateWarningText").text("")
+  }
+
+  $("#startDatePicker-main").on("change", function() {    
+    checkIfDateInPast()
+  })
+
+  $("#startTime-main").on("change", function() {    
+    checkIfDateInPast()
+  })
   
+  $("#endTime-main").on("change", function() {    
+    checkIfDateInPast()
+  })
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
