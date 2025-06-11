@@ -103,10 +103,13 @@ def volunteerDetailsPage(eventID):
 
     eventRsvpData = list(EventRsvp.select(EmergencyContact, InsuranceInfo, EventRsvp)
                                   .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
+                                  .switch(EventRsvp)
                                   .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventRsvp.user))
                                   .where(EventRsvp.event==event))
-    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant)
+    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant,InsuranceInfo)
                                                 .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user))
+                                                .switch(EventParticipant)
+                                                .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventParticipant.user))
                                                 .where(EventParticipant.event==event))
     
     
