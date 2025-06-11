@@ -40,3 +40,10 @@
 .sortable-drag {
     cursor: grabbing;
 }
+
+
+.footer {
+  position: fixed;
+  bottom: 0;
+}
+
