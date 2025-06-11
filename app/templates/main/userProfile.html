@@ -25,7 +25,7 @@
     {% else %}
       <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
     {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
+      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
   </div>
 {% endif %}
 <div class="row">
@@ -159,13 +159,14 @@
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              </tr>
+              </tr>              
               {% endfor %}
             {% else %}
               <h5>You have not participated in any events.</h5>
             {% endif %}
-          </table>
+          </table>    
         </div>
+        <button class="btn btn-primary" id="serviceTranscript" data-username="{{volunteer.username}}"> View Service Transcript </button>
       </div>
     </div>
   </div>
