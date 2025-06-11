@@ -124,6 +124,7 @@ $(document).ready(function(){
     banNoteDiv.hide();                //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
     var banValue = $(this).val()
+    
 
     banButton.text(banValue + " Volunteer");
     programID = $(this).data("programid"); // Assign value to programID variable
@@ -132,8 +133,8 @@ $(document).ready(function(){
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).data("name "));
+    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
+    $("#modalProgramName").text("Program:  " + $(this).data("name"));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
