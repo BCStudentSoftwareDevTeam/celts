@@ -111,13 +111,13 @@ def slcExitView():
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
-    Also, it updates the course status as 'in progress'"""
+    Also, it updates the course status as 'Draft'"""
     course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
 
     if not course:
         flash("Error saving changes", "danger")
     else:
-        course.status = CourseStatus.IN_PROGRESS
+        course.status = CourseStatus.DRAFT
         course.save()
         flash(f"Proposal has been saved.", "success")
     if request.path == "/serviceLearning/saveExit":

@@ -1,0 +1,1 @@
+This script will update all the "in progress" to "draft".

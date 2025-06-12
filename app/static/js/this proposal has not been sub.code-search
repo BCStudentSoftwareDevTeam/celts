@@ -1,0 +1,14 @@
+# Query: this proposal has not been sub
+# ContextLines: 1
+
+2 results - 2 files
+
+app/static/js/slcManagement.js:
+  29        } else if ($(this).attr('data-content') == "Draft") {
+  30:         return "This proposal has not been submitted for review."
+  31  
+
+database/app/static/js/slcManagement.js:
+  29        } else if ($(this).attr('data-content') == "Draft") {
+  30:         return "This proposal has not been submitted for review."
+  31  
