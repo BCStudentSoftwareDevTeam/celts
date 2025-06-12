@@ -64,10 +64,10 @@
     <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row mb-3">
-          <div class="col-md-2">
+          <div class="col-md-2" style="margin-right: 20px;">
             <div style="display: flex; margin-top: 3px;">
-              <input type="text" style="border: none; margin-right: 7px;" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-              <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+              <input type="text" style="border: none; margin-right: 10px;" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+              <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button"><i class="bi bi-pen"></i></a>
             </div>
           </div>
           {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
@@ -81,16 +81,16 @@
         </div>
         <hr>
         <div class="container">
-                    <form style="margin-bottom: 10px;">
-                      <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
-                      <div class="form-group">
-                        <label for="usr">Please enter any dietary restrictions you have:</label>
-                        <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
-                      </div>
-                      <br>
-                      <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
-                    </form>
-                  </div>
+          <form style="margin-bottom: 10px;">
+            <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
+            <div class="form-group">
+              <label for="usr">Please enter any dietary restrictions you have:</label>
+              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+            </div>
+            <br>
+            <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
+          </form>
+        </div>
       </div>
     </div> 
   </div>
