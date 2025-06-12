@@ -509,8 +509,8 @@ $(document).ready(function() {
       let startDate = new Date($("#repeatingEventsStartDate").val());
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
-      let endTime = $("#repeatingEventsEndTime").val();      
-startDatePicker
+      let endTime = $("#repeatingEventsEndTime").val();
+
       if (navigator.userAgent.indexOf("Chrome") == -1) {
         startTime = format12to24HourTime(startTime)
         endTime = format12to24HourTime(endTime)
@@ -652,3 +652,7 @@ startDatePicker
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
+
+
+
+
