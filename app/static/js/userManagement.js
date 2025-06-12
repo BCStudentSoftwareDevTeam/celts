@@ -168,7 +168,7 @@ function editProgramManager(username, fullName, programId, action){
         $('#noManagersText').addClass("d-none")
         $('#programManagersTable').append(createProgramManagerRow(username, fullName))
         updateManagers(programId)
-        msgToast("Confirmed")
+        msgToast("Confirmed", "You have just added a new program manager")
       } else {
         $(`#programManagersTable #${username}`)
         .animate({
