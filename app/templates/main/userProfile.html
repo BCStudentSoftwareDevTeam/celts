@@ -10,7 +10,6 @@
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
-  
 {% endblock %}
 
 {% block app_content %}
@@ -51,7 +50,6 @@
     {%endif%}
   </div>
 </div>&nbsp;
-
 
 <div class="accordion" id="userProfile">
 
@@ -529,7 +527,6 @@
 <!-- ################# Bonner Scholar ################ -->
 
 </div>
-
 <!-- ################# Add Notes Modal ################ -->
 <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" style="width:-60px;">
   <form id="addNoteForm">
