@@ -22,7 +22,7 @@ minor </button>
   <div class="card card-body">
     <div id="minorInfoBox" class="float-end rounded d-lg-block collapsed minorInfoBox" >
     <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+      <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
       for more information.
     </p>
     {% if g.current_user.isAdmin %}
@@ -30,7 +30,7 @@ minor </button>
     {% else %}
       <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
     {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
+      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
   </div>
   </div>
 </div>
@@ -167,13 +167,14 @@ minor </button>
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              </tr>
+              </tr>              
               {% endfor %}
             {% else %}
               <h5>You have not participated in any events.</h5>
             {% endif %}
-          </table>
+          </table>    
         </div>
+        <button class="btn btn-primary" id="serviceTranscript" data-username="{{volunteer.username}}"> View Service Transcript </button>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 .main-content {
     min-height: 100vh;
-    margin-bottom: -80px;
+    margin-bottom: 80px;
     width:95%;
     overflow-wrap: break-word;
     position: relative;
@@ -53,7 +53,6 @@ select.empty {
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
-  position: relative;
   z-index:10
 }
 
@@ -98,6 +97,10 @@ select.empty {
 
 .sidebar-icon {
     z-index: 1049;
+}
+
+#sideBarContainer {
+    z-index: 11;
 }
 
 .rsvp-btn{

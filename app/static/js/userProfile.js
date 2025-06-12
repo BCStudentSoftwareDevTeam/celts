@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = $(this).is(":checked");
+    let isAdding = $(this).is(':checked');
     
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
@@ -9,6 +9,7 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(s) {
+          msgToast("Changes saved successfully!", "Your interest has been updated.")
         },
         error: function(request, status, error) {
           console.log(status, error)
@@ -16,6 +17,7 @@ $(document).ready(function(){
         }
     });
   })
+  
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -23,6 +25,7 @@ $(document).ready(function(){
       })
   $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
+  $("#serviceTranscript").click(viewTranscript); 
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -92,6 +95,11 @@ $(document).ready(function(){
       window.location.href = `/profile/${username}/cceMinor`
     }
     $(this).val('')
+  }
+  
+  function viewTranscript(e){
+    let username = $(this).data('username')
+    window.location.href = `/profile/${username}/serviceTranscript`
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
