@@ -58,7 +58,7 @@
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingInfo">
       {% set focus = "open" if visibleAccordion == "userInfo" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Volunteer Information</button>
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAction" aria-expanded="true" aria-controls="collapseAction">Edit Volunteer Information</button>
     </h3>
     {% set show = "show" if visibleAccordion == "action" else ""%}
     <div id="collapseAction" class="accordion-collapse collapse {{show}}" aria-labelledby="headingAction" data-bs-parent="#userProfile">
