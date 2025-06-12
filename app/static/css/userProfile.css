@@ -36,6 +36,12 @@ dd {
     top: 10px;
 }
 
+#minimizedButton {
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+    top: 10px;}
+
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dd:nth-of-type(odd) { background-color:#FFF; } 
