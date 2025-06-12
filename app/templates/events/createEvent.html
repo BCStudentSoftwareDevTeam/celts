@@ -327,7 +327,7 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="submit" class="btn btn-primary saveBtn" value="Save" />
+        <input type="button" class="btn btn-primary saveBtn" id="saveButton" value="Save" />
       </div>
     </div>
   </div>
@@ -611,7 +611,7 @@
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview"
           id="cancelModalPreview">Cancel</button>
         {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-        <button type="submit" name="saveSeries" class="btn btn-primary saveSeries" {{disableSave}}
+        <button type="button" name="saveSeries" class="btn btn-primary saveSeries" {{disableSave}}
           id="saveSeries">Save</button> <!--check if text box empty upon save-->
       </div> 
   </div>

@@ -415,22 +415,33 @@ $(document).ready(function() {
     typeBoxes.not($(event.target)).prop('checked', false);
   });
 
-  $("#saveEvent").on('submit', function (event) {
+  $("#saveButton").on('click', function (event) {
+    event.preventDefault();
     let trainingStatus = $("#checkIsTraining").is(":checked")
     let serviceHourStatus = $("#checkServiceHours").is(":checked")
     let engagementStatus = $("#checkEngagement").is(":checked")
     let bonnersStatus = $("#checkBonners").is(":checked")
+console.log(trainingStatus, serviceHourStatus, engagementStatus, bonnersStatus)
+    document.getElementById("checkEngagement").setCustomValidity(""); // Clear custom validity
+    document.getElementById("checkEngagement").reportValidity();
+
 
     //check if user has selected a toggle, cancel form submission if not
     let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
     if(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus || isAllVolunteer) {
+      
       // Disable button when we are ready to submit
-      $(this).find("input[type=submit]").prop("disabled", true);
+      //$(this).find("input[type=submit]").prop("disabled", true);
+      $("#saveEvent").submit();
     }
     else {
-      msgFlash("You must indicate whether the event is a training, is an engagement, earns service hours, or is a Bonners Scholars event!", "danger");
-      event.preventDefault();
+      
+      // jquery does was not supporting Java 
+      document.getElementById("checkEngagement").setCustomValidity("Please select one of the three events")
+      document.getElementById("checkEngagement").reportValidity();
+     
     } 
+
   });
 
   updateOfferingsTable();
