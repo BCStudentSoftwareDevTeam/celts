@@ -1,5 +1,7 @@
 import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
 import searchUser from './searchUser.js';
+
+
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
   $('.modal').on('hidden.bs.modal', function () {
@@ -26,6 +28,7 @@ $(document).ready(function() {
       } else if ($(this).attr('data-content') == "Approved") {
         return "This proposal has been approved by CELTS."
 
+
       } else if ($(this).attr('data-content') == "Draft") {
         return "This proposal has not been submitted for review."
 
@@ -35,6 +38,13 @@ $(document).ready(function() {
       }
     }
   });
+  function hideElement(elementId) {  // This is to hide the edit button when a course proposal's status is approved
+    if ($(this).attr('data-content') == "Approved"){
+         const element = document.getElementById("{{course.id}}");
+         element.style.display = 'none'; // Hide the element
+  }
+}
+
 
 
   $("#instructorTable").on("click", ".removeButton", function() {
