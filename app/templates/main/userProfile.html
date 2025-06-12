@@ -74,7 +74,7 @@
           <div class="col-md-2">
             <a class="btn btn-secondary btn-sm" href="{{volunteer.username}}/emergencyContact" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact</a>
           </div>
-          <div class="col-md-2">
+          <div class="col">
             <a class="btn btn-secondary btn-sm" href="{{volunteer.username}}/insuranceInfo" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information</a>
           </div>
           {% endif %}
@@ -107,7 +107,7 @@
         <div class="row table-responsive">
           <table class="table table-striped">
             {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-                  <a href="{{volunteer.username}}/travelForm" style="margin-top: 3px; margin-bottom: 10px;"><button class="btn btn-secondary">Print Travel Form</button></a>
+                  <a href="{{volunteer.username}}/travelForm" style="margin-top: 3px; margin-bottom: 10px;"><button class="btn btn-secondary btn-sm">Print Travel Form</button></a>
                   <hr>
               {% endif %}
             {% if upcomingEvents|length > 0 %}
@@ -169,11 +169,11 @@
       <div class="accordion-body">
         <div class="row mb-3" style="margin-bottom: 0px !important;">
           <div class="col-md-2">
-            <a href="{{volunteer.username}}/serviceTranscript" style="margin-top: 20px;"><button class="btn btn-secondary">View Service Transcript</button></a>
+            <a href="{{volunteer.username}}/serviceTranscript" style="margin-top: 20px;"><button class="btn btn-secondary btn-sm">View Service Transcript</button></a>
           </div>
           <div class="col-md-2">
             {% if g.current_user.isAdmin %}
-            <a href="{{volunteer.username}}/cceMinor"><button class="btn btn-warning">Manage CCE Minor</button></a>
+            <a href="{{volunteer.username}}/cceMinor"><button class="btn btn-warning btn-sm">Manage CCE Minor</button></a>
             {% endif %}
           </div>
         </div>
