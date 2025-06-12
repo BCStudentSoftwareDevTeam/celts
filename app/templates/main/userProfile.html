@@ -15,7 +15,13 @@
 
 {% block app_content %}
 {% if volunteer.isStudent and not totalSustainedEngagements%}
-  <div class="float-end rounded d-none d-lg-block minorInfoBox">
+                                        
+  <div id="minorInfoBox" class="float-end rounded d-none d-lg-block collapsed minorInfoBox" >
+     <button id="toggleMinorInfo" class="navbar-toggler text-black border-0 fs-6 ps-3 dropdown-toggle collapsed" type="button"
+    data-bs-toggle="collapse" data-bs-target="#minorInfoBox"
+    aria-controls="#minorInfoBox" aria-expanded="false"
+     aria-label="Toggle navigation"></button>
+
     <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
       <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
       for more information.
