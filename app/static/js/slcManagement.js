@@ -38,14 +38,6 @@ $(document).ready(function() {
       }
     }
   });
-  function hideElement(elementId) {  // This is to hide the edit button when a course proposal's status is approved
-    if ($(this).attr('data-content') == "Approved"){
-         const element = document.getElementById("{{course.id}}");
-         element.style.display = 'none'; // Hide the element
-  }
-}
-
-
 
   $("#instructorTable").on("click", ".removeButton", function() {
     $(this).closest("tr").find(".editButton").each(function() {
