@@ -3,7 +3,9 @@
 
 {% block app_content %}
 <div class="w-100 d-print-inline-block">
+  <div class="float-end"><button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button></div>
   <h1 class="text-center mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
+  <p class="text-center">Volunteering since {{ startDate }}</p>
   {% if studentLabor %}
     <div class="card-body">
       <h5 class="card-title">CELTS Labor History:</h5>
@@ -19,7 +21,7 @@
         {% set programTitle = program %}
       {% endif %}
         <div class="card-body">
-          <h5 class="card-title">{{programTitle}}</h5>
+          <h5 class="card-title bg-light ps-2 pe-5 border-bottom">{{programTitle}}</h5>
           {% for item in allEventTranscript[program] %}
             {% if item[1] != None %}
               <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
@@ -32,15 +34,11 @@
         </div>
     {% endfor %}
   {% endif %}
-
   {% if totalHours["totalHours"] > 0%}
-    <div class="float-end">
-      <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
-    </div>
+    
     {% if slCourses.exists() %}
-      <br><h2 class="m-1">Service-Learning Courses</h2>
-      <table class="table table-bordered table-striped">
+      <h2 class="m-3">Service-Learning Courses</h2>
+      <table class="table table-bordered table-striped m-3">
       <tr>
       <th>Course</th>
       <th>Term</th>
@@ -55,23 +53,29 @@
       {% endfor %}
       </table>
     {% endif %}
-    <div class="pt-4">
-      <div class="float-end">
-      <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+
+    <div class="float-front ms-3 pt-1">
+      <p class="fw-bold  pd-3 d-inline fs-6 ">Event Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
+    </div>
+
+    <div class="ms-3">
+      <div class="float-front pt-1">
+      <p class="fw-bold pb-3 d-inline fs-6 ">Service Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
       </div>
     </div>
-    <p>*Volunteering since {{ startDate }}</p>
-    <div class="float-end">
-      <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
-      <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
+    
+    <div class="float-front ms-3 pt-1">
+      
+      <p class="fw-bold pb-3 d-inline fs-6">Total Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
     </div>
     {% else %}
       <h5>No Volunteer Record</h5>
     {% endif %}
   <div class="d-print-none pt-5">
-    <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
+    <br><p class="text-center">If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
   </div>
 </div>
 {% endblock %}
