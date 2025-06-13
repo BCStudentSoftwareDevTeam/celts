@@ -551,43 +551,42 @@ $(document).ready(function() {
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
 
   // This converts the time to 24 hour format in case it is in 12 hour format (like in Firefox)
-   function handleTimeFormatting(timeArray){    
-    let time  = timeArray[0]
-    let timeSuffix = timeArray[1]         // looks for AM or PM in time 
-    let [hours , min] = time. split(':')
+function handleTimeFormatting(timeArray){    
+  let time  = timeArray[0]
+  let timeSuffix = timeArray[1]         // looks for AM or PM in time 
+  let [hours , min] = time. split(':')
 
-    if (timeArray.length === 2) {
-        hours  = parseInt(hours, 10)
-          if (timeSuffix === 'PM' && hours !== 12) {
-          hours += 12;
-          } else if (timeSuffix === 'AM' && hours === 12) {
-          hours = 0;
-          }
+  if (timeArray.length === 2) {
+      hours  = parseInt(hours, 10)
+      if (timeSuffix === 'PM' && hours !== 12) {
+      hours += 12;
+      } else if (timeSuffix === 'AM' && hours === 12) {
+      hours = 0;
+      }
+    const hoursStr = hours.toString().padStart(2, '0');
+      return [hoursStr, min]
+    }
+  return [hours, min]
+}
 
-      const hoursStr = hours.toString().padStart(2, '0');
-        return [hoursStr, min]
-      }
-    return [hours, min]
-  }
-
-    function checkIfDateInPast() {
-      const [month, day, year] = $("#startDatePicker-main").val().split('/')
-      const startTimeArray =  $("#startTime-main").val().split(' ') 
-      const [startHour, startMin] = handleTimeFormatting(startTimeArray)
-      const endTimeArray = $('#endTime-main').val().split(' ')
-      const [endHour, endMin] = handleTimeFormatting (endTimeArray)
-      let startDateSelected =new Date(+year, +month - 1, +day, +startHour, +startMin);  
-      let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
-      let now = new Date()
-      
-      if (startDateSelected < now && endDateSelected > now) {
-        $("#pastDateWarningText").text("This event is currently happening!")
-      }
-      else if (startDateSelected < now && endDateSelected < now) {
-        $("#pastDateWarningText").text("This event ended in the past!")
-      }
-      else 
-        $("#pastDateWarningText").text("")
+  function checkIfDateInPast() {
+    const [month, day, year] = $("#startDatePicker-main").val().split('/')
+    const startTimeArray =  $("#startTime-main").val().split(' ') 
+    const [startHour, startMin] = handleTimeFormatting(startTimeArray)
+    const endTimeArray = $('#endTime-main').val().split(' ')
+    const [endHour, endMin] = handleTimeFormatting (endTimeArray)
+    let startDateSelected =new Date(+year, +month - 1, +day, +startHour, +startMin);  
+    let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
+    let now = new Date()
+    
+    if (startDateSelected < now && endDateSelected > now) {
+      $("#pastDateWarningText").text("This event is currently happening!")
+    }
+    else if (startDateSelected < now && endDateSelected < now) {
+      $("#pastDateWarningText").text("This event ended in the past!")
+    }
+    else 
+      $("#pastDateWarningText").text("")
   }
 
   $("#startDatePicker-main").on("change", function() {    
