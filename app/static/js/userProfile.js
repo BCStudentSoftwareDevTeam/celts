@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = $(this).is(':checked');
+    let isAdding = $(this).data('choice')
     
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
