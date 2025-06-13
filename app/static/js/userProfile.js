@@ -312,7 +312,7 @@ $(document).ready(function(){
 
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
-  $(".saveDiet").on('click', function() {
+  $("#diet").on('change', function() {
     let data = {
       dietInfo: $("#diet").val(),
       user: $(this).data("user")
@@ -322,7 +322,7 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s){
-        reloadWithAccordion("dietaryInformation");
+        reloadWithAccordion("dietaryInformation");  //fixme
       },
     })
   });

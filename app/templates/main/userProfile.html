@@ -615,11 +615,11 @@
           <div class="container">
             <div class="form-group">
               <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+              <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
           <br>
           <div class="d-grid gap-2">
-            <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save Dietary Restrictions</button>
+            <button type="button" id="saveDiet" class="btn btn-primary" data-user="{{volunteer.username}}">Save Dietary Restrictions</button>
           </div>
         </div>
         </form>
