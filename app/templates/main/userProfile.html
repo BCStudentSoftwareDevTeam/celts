@@ -13,20 +13,7 @@
 {% endblock %}
 
 {% block app_content %}
-{% if volunteer.isStudent and not totalSustainedEngagements%}
-  <div class="float-end rounded d-none d-lg-block minorInfoBox">
-    <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-      for more information.
-    </p>
-    {% if g.current_user.isAdmin %}
-      <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
-    {% else %}
-      <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-    {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
-  </div>
-{% endif %}
+
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
@@ -50,9 +37,55 @@
     </div>
     {%endif%}
   </div>
-</div>&nbsp;
-
+      
+  <div class="row pb-2 pe-0">
+    
+    <div class="col"></div>
+    <div class="col-auto pe-0 ">
+      <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
+        <option value="" selected disabled hidden>Choose an Action</option>
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+            <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
+            <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
+        {% endif %}
+        {% if g.current_user.isAdmin %}
+          <option value="Manage CCE Minor"> Manage CCE Minor </option>
+        {% endif %}
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+            <option value="Print Travel Form"> Print Travel Form </option>
+        {% endif %}
+        <option value="View Service Transcript"> View Service Transcript </option>
+      </select>
+    </div>
+  </div>
+</div>
 <div class="accordion" id="userProfile">
+
+<!-- ################# Community & Civic Engagement Minor ################ -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingZero">
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
+      data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
+    </h3>
+      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="row table-responsive">
+            
+         <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
+         <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
+          <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
+           <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+             for more information.
+           </p>
+            
+
+
+          </div>
+        </div>
+     </div>
+  </div>
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -149,13 +182,14 @@
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              </tr>
+              </tr>              
               {% endfor %}
               {% else %}
               <h5>You have not participated in any events.</h5>
             {% endif %}
-          </table>
+          </table>    
         </div>
+        <button class="btn btn-primary" id="serviceTranscript" data-username="{{volunteer.username}}"> View Service Transcript </button>
       </div>
     </div>
   </div>
