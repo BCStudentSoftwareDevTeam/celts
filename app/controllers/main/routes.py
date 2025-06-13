@@ -1,6 +1,6 @@
 import json
 import datetime
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
@@ -334,6 +334,52 @@ def travelForm(username):
                             userData = userData
                             )
 
+@main_bp.route('/event/<eventID>/travelForm', methods=['GET', 'POST'])
+def eventTravelForm(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
+
+    if not (g.current_user.isCeltsAdmin):
+        abort(403)
+    
+    
+    # if not list(user):
+    #     abort(404)
+    # userData = list(user.dicts())[0]
+    # userData = {key: value if value else '' for (key, value) in userData.items()}
+    
+    # eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
+    #                               .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
+    #                               .where(EventRsvp.event==event))
+    # eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant)
+    #                                             .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user))
+    #                                             .where(EventParticipant.event==event))
+    
+    # waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
+    # rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
+
+    # eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
+    #                               .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
+    #                               .where(EventRsvp.event==event))
+    # eventParticipantData = list(EventParticipant.select(event))
+
+    # user = (User.select(User, EmergencyContact, InsuranceInfo)
+    #             .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+    #             .join(InsuranceInfo, JOIN.LEFT_OUTER))
+    
+    
+    # userData = list(user.dicts())[1]
+    # userData = {key: value if value else '' for (key, value) in userData.items()}
+    return render_template('/main/eventTravelForm.html',
+                        #   userData = userData,
+                        #   eventRsvpData = eventRsvpData,
+                        #   eventParticipantData = eventParticipantData,
+                        #   event = event                   
+                        
+                           )
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
