@@ -54,9 +54,9 @@
         <div class="col-md-2">
           {% if g.current_user.isAdmin %}
             <a href="{{volunteer.username}}/cceMinor"><button class="btn btn-warning btn-sm">Manage CCE Minor</button></a>
+            <hr>
           {% endif %}
         </div>
-        <hr>
         <div class="row table-responsive">
           <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
           <div style="display: flex;">
