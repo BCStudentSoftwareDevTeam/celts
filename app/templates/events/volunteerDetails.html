@@ -15,7 +15,6 @@
 {{super()}}
 <script type="module" src="/static/js/volunteerDetails.js"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
-
 {% endblock %}
 
 {########################### Display macros ###########################}
@@ -23,14 +22,9 @@
   
     <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
       <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b>
-      {% if participant.insuranceinfo %}
-          
-        {% if participant.insuranceinfo.healthIssues %}
-          
-        <i class="bi bi-star-fill fs-6"></i>
-          {% endif %}
-          {% endif %}  
-      
+        {% if participant.insuranceinfo and participant.insuranceinfo.healthIssues %}
+          <i class="bi bi-star-fill fs-6"></i>
+        {% endif %}
       </h4>
       <ul>
         <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
@@ -41,16 +35,7 @@
         <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
-          
-          {% if participant.insuranceinfo %}
-          <div class="insuranceSelect" nowrap>Insurance Info: 
-          {{participant.insuranceinfo.insuranceCompany}}
-          
-      
-      </div>
-          {% endif %}        
-          
-        
+        <div class="insuranceSelect" nowrap>Insurance Info: {{participant.insuranceinfo.insuranceCompany if participant.insuranceinfo}}</div>
       </ul>
     </div>
 {% endmacro %}
@@ -65,11 +50,8 @@
       
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
-      {% if participant.insuranceinfo %}
-        <td class="insuranceSelect" nowrap> {{ participant.insuranceinfo.policyNumber}}</td>
-
-        {% endif %}
-      </tr>
+      <td class="insuranceSelect" nowrap>{{ participant.insuranceinfo.policyNumber if participant.insuranceinfo}}</td>
+    </tr>
 {% endmacro %}
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
@@ -132,10 +114,8 @@
           <label for="statusSelect">Volunteer Status</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
           <label for="emailSelect">Email</label><br>
-
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="insuranceSelect" checked>
-          <label for="insuranceSelect">Insurance Information</label><br>
-
+          <label for="InsuranceInformationSelect">Insurance Information</label><br>
           <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
           <label class="bNumberSelect" for="barcodeSelect">B-Number Barcode</label><br>
         </div>
@@ -149,14 +129,10 @@
             </div>
           </div>
         </div>
-
+      </div>
       <div><i class="bi bi-star-fill fs-6"></i> Star indicates this profile needs to be checked</div>
-      
-        </div>
     </div>
-
     <hr>
-
     <div class="d-print-block" id="volunteerInformationCardToPrint">
       <div class="row sort-here">
         {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
