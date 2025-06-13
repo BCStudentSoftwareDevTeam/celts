@@ -67,25 +67,31 @@
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
       data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
     </h3>
-      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
-        <div class="accordion-body">
-          <div class="row table-responsive">
-            
-         <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
-         <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
-          <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-           <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-             for more information.
-           </p>
-            
-
-
+    <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="col-md-2">
+          {% if g.current_user.isAdmin %}
+            <a href="{{volunteer.username}}/cceMinor"><button class="btn btn-warning btn-sm">Manage CCE Minor</button></a>
+          {% endif %}
+        </div>
+        <hr>
+        <div class="row table-responsive">
+          <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
+          <div style="display: flex;">
+            <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
+            <input style="margin-left: 5px;" name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
+          </div>
+          <div>
+            <p style="font-style: italic;" for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+              for more information.
+            </p>
           </div>
         </div>
-     </div>
+      </div>
+    </div>
   </div>
-
+<!-- ################# Community & Civic Engagement Minor ################ -->
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -162,11 +168,6 @@
           <div class="col-md-2">
             <a href="{{volunteer.username}}/serviceTranscript" style="margin-top: 20px;"><button class="btn btn-secondary btn-sm">View Service Transcript</button></a>
           </div>
-          <div class="col-md-2">
-            {% if g.current_user.isAdmin %}
-            <a href="{{volunteer.username}}/cceMinor"><button class="btn btn-warning btn-sm">Manage CCE Minor</button></a>
-            {% endif %}
-          </div>
         </div>
         <div class="table-responsive">
           <table class="table table-striped banTable">
@@ -189,7 +190,6 @@
             {% endif %}
           </table>    
         </div>
-        <button class="btn btn-primary" id="serviceTranscript" data-username="{{volunteer.username}}"> View Service Transcript </button>
       </div>
     </div>
   </div>
