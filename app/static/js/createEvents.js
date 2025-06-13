@@ -115,7 +115,6 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
   if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
   if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (isDuplicate) {clonedOffering.addClass('border-red')}
 
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
@@ -168,9 +167,6 @@ $('#saveSeries').on('click', function() {
   eventNameInputs.each((index, eventNameInput) => {
     if (eventNameInput.value.trim() === '') {
       isEmpty = true;
-      $(eventNameInput).addClass('border-red');
-    } else{
-      $(eventNameInput).removeClass('border-red');
     }
   });
 
@@ -178,9 +174,6 @@ $('#saveSeries').on('click', function() {
   datePickerInputs.each((index, datePickerInput) => {
     if (datePickerInput.value.trim() === '') {
         isEmpty = true;
-        $(datePickerInput).addClass('border-red');
-    } else {
-      $(datePickerInput).removeClass('border-red');
     }
   });  
 
@@ -195,12 +188,7 @@ $('#saveSeries').on('click', function() {
       endTime = format12to24HourTime(endTime)
     }
 
-    if(startTime < endTime){
-      $(startTimeInputs[i]).removeClass('border-red');
-      $(endTimeInputs[i]).removeClass('border-red');
-    } else {
-      $(startTimeInputs[i]).addClass('border-red');
-      $(endTimeInputs[i]).addClass('border-red');
+    if(startTime > endTime){
       hasValidTimes = false;
     }
   }
@@ -219,10 +207,7 @@ $('#saveSeries').on('click', function() {
 
     if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
       hasDuplicateListings = true
-      $(eventOfferings[i]).addClass('border-red');
-      $(eventOfferings[eventListings[eventListing]]).addClass('border-red')
     } else { // If we haven't seen this event before
-      $(eventOfferings[i]).removeClass('border-red');
       eventListings[eventListing] = i
     }
   }
@@ -367,7 +352,7 @@ function updateOfferingsTable() {
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
-    offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
+    offeringsTable.append(`<tr>` +
                                     "<td>" + offering.eventName + "</td>" +
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
