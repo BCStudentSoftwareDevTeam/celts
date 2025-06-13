@@ -14,20 +14,7 @@
 {% endblock %}
 
 {% block app_content %}
-{% if volunteer.isStudent and not totalSustainedEngagements%}
-  <div class="float-end rounded d-none d-lg-block minorInfoBox">
-    <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-      for more information.
-    </p>
-    {% if g.current_user.isAdmin %}
-      <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
-    {% else %}
-      <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-    {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
-  </div>
-{% endif %}
+
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
@@ -77,6 +64,32 @@
   </div>
 </div>
 <div class="accordion" id="userProfile">
+
+<!-- ################# Community & Civic Engagement Minor ################ -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingZero">
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
+      data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
+    </h3>
+      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="row table-responsive">
+            
+         <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
+         <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
+          <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
+           <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+             for more information.
+           </p>
+            
+
+
+          </div>
+        </div>
+     </div>
+  </div>
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
