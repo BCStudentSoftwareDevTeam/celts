@@ -610,7 +610,7 @@
         </div>
         {% endif %}
         <hr>
-        <form style="margin-bottom: 10px;">
+        <form style="margin-bottom: 10px;" id="diet-form">
           <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
           <div class="container">
             <div class="form-group">
@@ -618,9 +618,6 @@
               <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
           <br>
-          <div class="d-grid gap-2">
-            <button type="button" id="saveDiet" class="btn btn-primary" data-user="{{volunteer.username}}">Save Dietary Restrictions</button>
-          </div>
         </div>
         </form>
       </div>
