@@ -90,7 +90,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                 courseAbbreviation = course,
                                 courseCredit = "1",
                                 term = currentCourseTerm,
-                                status = CourseStatus.IN_PROGRESS,
+                                status = CourseStatus.DRAFT,
                                 createdBy = g.current_user,
                                 serviceLearningDesignatedSections = "",
                                 previouslyApprovedDescription = "")
@@ -109,7 +109,7 @@ def saveCourseParticipantsToDatabase(cpPreview: Dict[str, Dict[str, Dict[str, Li
                                     sectionDesignation = previousMatchedCourse.sectionDesignation,
                                     courseCredit = previousMatchedCourse.courseCredit,
                                     term = currentCourseTerm,
-                                    status = CourseStatus.IN_PROGRESS,
+                                    status = CourseStatus.DRAFT,
                                     createdBy = g.current_user, 
                                     serviceLearningDesignatedSections = previousMatchedCourse.serviceLearningDesignatedSections,
                                     previouslyApprovedDescription = previousMatchedCourse.previouslyApprovedDescription)
@@ -149,7 +149,7 @@ def unapprovedCourses(termId: int) -> List[Course]:#
                                                  .join(CourseStatus).switch(Course)
                                                  .join(Term)
                                                  .where(Term.id == termId,
-                                                        Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.IN_PROGRESS]))
+                                                        Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.DRAFT]))
                                                  .group_by(Course, Term, CourseStatus)
                                                  .order_by(Course.status))
 
@@ -212,7 +212,7 @@ def renewProposal(courseID, term) -> Course:
     newCourse: Course = Course.get_by_id(courseID)
     newCourse.id = None
     newCourse.term = Term.get_by_id(term)
-    newCourse.status = CourseStatus.IN_PROGRESS
+    newCourse.status = CourseStatus.DRAFT
     newCourse.isPreviouslyApproved = True
     newCourse.save()
     questions: List[CourseQuestion] = list(CourseQuestion.select().where(CourseQuestion.course==oldCourse))
@@ -266,7 +266,7 @@ def createCourse(creator: str="No user provided") -> Course:
     """
     Creates and returns an empty, Draft course.
     """
-    course: Course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
+    course: Course = Course.create(status=CourseStatus.DRAFT, createdBy=creator)
     for number in range(1, 7):
         CourseQuestion.create(course=course, questionNumber=number)
 
