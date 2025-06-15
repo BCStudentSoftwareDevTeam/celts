@@ -79,16 +79,21 @@ def updateCertRequirements(certId, newRequirements):
         A list of CertificationRequirement objects corresponding to the given `newRequirements` list.
     """
     # check for missing ids to remove
-    saveIds = [requirementData['id'] for requirementData in newRequirements]
-    CertificationRequirement.delete().where(CertificationRequirement.certification_id == certId, CertificationRequirement.id.not_in(saveIds)).execute()
+    # saveIds = [int(requirementData['id']) for requirementData in newRequirements]
+    # CertificationRequirement.delete().where(CertificationRequirement.certification_id == certId, CertificationRequirement.id.not_in(saveIds)).execute()
 
     # update existing and add new requirements
     requirements = []
+    int_requirementData= int(requirementData['id'])
     for order, requirementData in enumerate(newRequirements):
+        
+        
         try:
-            newRequirement = CertificationRequirement.get_by_id(requirementData['id'])
+            newRequirement = CertificationRequirement.get_by_id(int_requirementData)
         except DoesNotExist:
             newRequirement = CertificationRequirement()
+        print("Stupid code")    
+        print(requirementData)
 
         newRequirement.certification = certId
         newRequirement.isRequired = bool(requirementData['required'])

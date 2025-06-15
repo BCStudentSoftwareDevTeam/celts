@@ -9,7 +9,7 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
-  <script type="module" src="{{url_for('static', filename = 'js/sortable.min.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="module" src="{{url_for('static', filename = 'js/Sortable.min.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -137,7 +137,7 @@
                     {% set requirements = [{'id':'X','name':"",'isRequired':false,'frequency':''}] %}
                 {% endif %}
                 {% for req in requirements %}
-                    <tr data-id="{{req.id}}">
+                    <tr id="requirement_{{req.id}}" data-id="{{req.id}}">
                         <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
                         <td><input class="form-control" value="{{req.name}}" ></td>
                         <td><select class="form-select required-select">
@@ -145,6 +145,7 @@
                                 <option {{ "selected" if not req.isRequired else "" }}>Optional</option>
                             </select>
                         </td>
+                        
                         <td>
                             <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
                                 <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option>
@@ -153,7 +154,8 @@
                                 <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
                             </select>
                         </td>
-                        <td><button type="button" class="btn btn-danger">Remove</button></td>
+                        <td><button type="button" class="btn btn-danger removebtn" >Remove</button><button type="button"  data-reqid="{{req.id}}" class="btn btn-danger savebtn">Save</button></td>
+                        
                     </tr>
                 {% endfor %}
                 </tbody>

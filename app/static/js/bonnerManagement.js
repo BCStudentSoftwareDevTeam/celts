@@ -44,7 +44,42 @@ function updateExportText(){
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
+    $(".savebtn").on('click', function () {
     
+    let rowid=parseInt($(this).data("reqid"));
+    let row_el = $("#requirement_" + rowid);
+    var row_data = {[rowid]:
+                    {
+
+                        'id': row_el.data("id"),
+                        'name': row_el.find("input").val(),
+                        'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+                        'frequency': row_el.find("select.frequency-select").val()
+                    }}
+    console.log(JSON.stringify(row_data));
+    $.ajax({
+        method: 'POST',
+        url: '/saveRequirements/1', // Bonner certification id hard-coded here
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify([row_data]), 
+
+        success: function(ids) {
+            // update our rows with any new ids
+            let rows = $('#requirements tbody tr').get()
+            ids.forEach(function(id, index) {
+                let row = $(rows[index])
+                if(id != row.data('id')) {
+                    row.data('id', id);
+                }
+            });
+            msgToast("Bonner", "Updated Bonner Requirements");
+        },
+        error: function(e) {
+            msgToast("Error", "Error Saving Requirements");
+        }
+    });
+ })
     $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
     $(".removeBonner").on("click", function(){
         let year = $(this).data('year');
@@ -160,6 +195,7 @@ function addCohort(){
 /* Get the data for the whole requirement set and save them */
 function saveRequirements() {
     var data = $("#requirements tbody tr").map((i,row) => (
+        
                     {
                         'id': $(row).data("id"),
                         'name': $(row).find("input").val(),
@@ -167,6 +203,9 @@ function saveRequirements() {
                         'frequency': $(row).find("select.frequency-select").val()
                     }
                 )).get()
+        console.log(data);
+
+
 
     $.ajax({
         method: 'POST',
@@ -243,7 +282,7 @@ function addRequirementsRowHandlers() {
     });
 
     // enable the remove button
-    $("#requirements button").click(function(e) {
+    $(".removebtn").click(function(e) { //Fixme: to only use on remove button
         enableSave();
 
         // Only remove if it isn't the last row
