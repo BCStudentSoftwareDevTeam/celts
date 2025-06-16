@@ -270,31 +270,8 @@
             </div>
             {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
-            <div class="col-md-6">
-              {% if g.current_user.isCeltsAdmin %}
-                <h5>Choose programs to manage:</h5>
-              {% else %}
-                <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
-              {% endif %}
-              <ul class="list-unstyled">
-                {% for program in programs %}
-                  {% set action = "add" %}
-                  {% set checked = "" %}
-                  {% if program.id in permissionPrograms %}
-                    {% set action = "remove" %}
-                    {% set checked = "checked" %}
-                    {% if not g.current_user.isCeltsAdmin%}
-                      <li>{{program.programName}}</li>
-                    {% endif %}
-                  {% endif %}
-                  {% if g.current_user.isCeltsAdmin%}
-                    <li>
-                      <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                      <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
+            <div>
+              <a href="/admin"><button class="btn btn-primary btn-sm">User Management</button></a>
             </div>
             {% endif %}
           </div>
