@@ -8,7 +8,7 @@
             <h2 class="text-center">Shortcuts</h2>
             <div class="list-group">
                 {% for template in templates %}
-                <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+                    <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
                 {% endfor %}
             </div>
         </div>
@@ -20,7 +20,7 @@
             <h2 class="text-center">Programs</h2>
             <div class="list-group">
                 {% for program in programs %}
-                <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
+                    <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
                 {% endfor %}
             </div>
         </div>
