@@ -92,9 +92,7 @@ def updateCertRequirements(certId, newRequirements):
             newRequirement = CertificationRequirement.get_by_id(int_requirementData)
         except DoesNotExist:
             newRequirement = CertificationRequirement()
-        print("Stupid code")    
-        print(requirementData)
-
+            
         newRequirement.certification = certId
         newRequirement.isRequired = bool(requirementData['required'])
         newRequirement.frequency = requirementData['frequency']
