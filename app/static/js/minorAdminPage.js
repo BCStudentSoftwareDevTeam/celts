@@ -85,15 +85,38 @@ function emailAll(){
 }
 
 
+// function getInterestedStudents() {
+//   // get all the checkboxes and return a list of users who's
+//   // checkboxes are selected
+//   let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]:checked")
+//   let interestedStudentsList = []
+//   checkboxesDisplayedInModal.each(function(index, checkbox){
+//     interestedStudentsList.push(checkbox["value"])
+//   })
+//   return interestedStudentsList
+// }
+
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
   // checkboxes are selected
-  let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]:checked")
-  let interestedStudentsList = []
-  checkboxesDisplayedInModal.each(function(index, checkbox){
-    interestedStudentsList.push(checkbox["value"])
+  // if (#ExpressInterest and "click"){
+  //   let interestedStudentsList = []
+  // ButtonDisplayedInModal.each(function(index, button){
+  //   interestedStudentsList.push(button["click"])
+  // })
+  // return interestedStudentsList
+  // } else if ($("#ExpressInterest") and "click"){
+  //   return false
+  // }
+$("#ExpressInterest").on("click", function(event) {
+  // let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=button]:event.target")
+  
+  let interestedStudentsList = [];
+  checkboxesDisplayedInModal.each(function(button){
+    interestedStudentsList.push("#ExpressInterest")
   })
-  return interestedStudentsList
+  return interestedStudentsList 
+},
 }
 
 function updateInterestedStudents(){
