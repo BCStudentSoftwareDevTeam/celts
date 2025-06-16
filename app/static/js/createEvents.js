@@ -241,8 +241,10 @@ $('#saveSeries').on('click', function() {
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalSeries').modal('hide');
-    $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
-
+    if ($("#repeatingEventsNamePicker").val())
+      $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
+    else if ($('#eventName'))
+      $('#inputEventName').prop('placeholder','[Multiple]')
   }
 });
 
