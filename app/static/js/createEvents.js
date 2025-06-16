@@ -241,6 +241,8 @@ $('#saveSeries').on('click', function() {
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalSeries').modal('hide');
+    $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
+
   }
 });
 
@@ -457,7 +459,6 @@ $(document).ready(function() {
 
       // Disable single event name field
       $('#inputEventName').prop('readonly', true)
-      $('#inputEventName').prop('placeholder', '')
       $('#inputEventName').val('')
 
     } else {
