@@ -487,6 +487,7 @@ $(document).ready(function() {
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
+      checkIfDateInPast();
     }
   });
 
