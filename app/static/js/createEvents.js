@@ -68,6 +68,7 @@ function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#eventTime, #eventDate').addClass('d-none');
+  $("#pastDateWarningText").text("")
 }
 
 function displayNotification(message) {
@@ -238,6 +239,7 @@ $('#saveSeries').on('click', function() {
     $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
+    $("#pastDateWarningText").text("")
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalSeries').modal('hide');
@@ -579,6 +581,7 @@ function handleTimeFormatting(timeArray){
     let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
     let now = new Date()
     
+
     if (startDateSelected < now && endDateSelected > now) {
       $("#pastDateWarningText").text("This event is currently happening!")
     }
@@ -622,7 +625,7 @@ function handleTimeFormatting(timeArray){
     $(".datePicker").datepicker("option", "disabled", true);
   }
 
-  $(".readonly").on('keydown paste', function (e) {
+  $(".readonly").on('keydown paste', function(e) {
     if (e.keyCode != 9) // ignore tab
       e.preventDefault();
   });
