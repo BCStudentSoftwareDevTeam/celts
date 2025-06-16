@@ -436,7 +436,7 @@
     <h3 class="accordion-header" id="headingSeven">
     {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
     <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
-      Dietary Restrictions
+      Dietary Restriction(s)
     </button>
     </h3>
     {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
@@ -445,7 +445,7 @@
         <div class="container">
           <form>
             <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
+              <label for="usr">Please enter any dietary restriction(s) you have:</label>
               <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
             <br>
