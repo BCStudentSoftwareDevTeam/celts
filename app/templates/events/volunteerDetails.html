@@ -41,7 +41,7 @@
       <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
       <td class="statusSelect" nowrap>{{ volunteerType|title if volunteerType != 'rsvp' else volunteerType|upper}}</td>
-      <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
+      <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else 'None specified'}}</td>
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
     </tr>
@@ -98,7 +98,7 @@
         <div class="col">
           <label><b>Included Information:</b></label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
-          <label for="dietRestrictionSelect">Dietary Restriction</label><br>
+          <label for="dietRestrictionSelect">Dietary Restriction(s)</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencyContactSelect" checked>
           <label for="emergencyContactSelect">Emergency Contact</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
@@ -138,7 +138,7 @@
           <th class="phoneSelect">Phone Number</th>
           <th class="emailSelect">Email</th>
           <th class="statusSelect">Volunteer Status</th>
-          <th class="dietRestrictionSelect">Dietary Restriction</th>
+          <th class="dietRestrictionSelect">Dietary Restriction(s)</th>
           <th class="emergencyContactSelect">Emergency Contact</th>
         </tr>
       </thead>
