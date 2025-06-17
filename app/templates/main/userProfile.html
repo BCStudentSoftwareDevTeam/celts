@@ -449,10 +449,10 @@
                 <label class="custom-control-label" for="checkDietRestriction"><strong> No dietary restrictions</strong></label>
                 <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if volunteer.dietRestriction}} />
               </div>
-              {% if volunteer.dietRestriction %}
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
-              {% endif %}
+                  <div id="dietContainer" style="display: none;">
+                          <label for="usr">Please enter any dietary restrictions you have:</label>
+                          <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+                  </div>  
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
