@@ -1,4 +1,16 @@
 $(document).ready(function () {
+
+	var userdata = $('.volunteerInfoEntries');
+
+    var users = userdata.map(function(index, row) {
+      return $(row).data('user');
+    }).get();
+
+    users = new Set(users);
+	users = [... users]
+
+    console.log("Unique users:", Array.from(users)); // Check consol jQuery
+	
 	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint_wrapper").toggle()
@@ -101,4 +113,19 @@ $(document).ready(function () {
 		stripeVolunteerInfoTable()
 	});
 	stripeVolunteerInfoTable()
+
+
+	// create hidden input fields for the form 
+
+	// $('#volunteerUsernames').append('input')
+	for(let i = 0; i < users.length; i++){
+		console.log($('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`))
+	}
+	
+	$('#printTravelInfo').click(function(){
+		$('#volunteerUsernames').submit()
+		
+		
+	})
+	
 });

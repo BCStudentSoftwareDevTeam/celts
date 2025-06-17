@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-<!-- this is a jinja comment please remove the {# #} part  -->
-<!-- {# <div>{{eventParticipantData}}</div> #} -->
-    
+{% extends "base.html" %}
+{% block app_content %}
+    <h1>{{usernameList}}</h1> 
 
-</body>
-</html>
+    {% endblock%}
+  

@@ -345,40 +345,19 @@ def eventTravelForm(eventID):
     if not (g.current_user.isCeltsAdmin):
         abort(403)
     
+    eventParticipantData = list(EventParticipant.select(EventParticipant).limit(1))
     
-    # if not list(user):
-    #     abort(404)
-    # userData = list(user.dicts())[0]
-    # userData = {key: value if value else '' for (key, value) in userData.items()}
-    
-    # eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
-    #                               .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
-    #                               .where(EventRsvp.event==event))
-    # eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant)
-    #                                             .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user))
-    #                                             .where(EventParticipant.event==event))
-    
-    # waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
-    # rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
-
-    # eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
-    #                               .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
-    #                               .where(EventRsvp.event==event))
-    # eventParticipantData = list(EventParticipant.select(event))
-
-    # user = (User.select(User, EmergencyContact, InsuranceInfo)
-    #             .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
-    #             .join(InsuranceInfo, JOIN.LEFT_OUTER))
-    
-    
-    # userData = list(user.dicts())[1]
-    # userData = {key: value if value else '' for (key, value) in userData.items()}
-    return render_template('/main/eventTravelForm.html',
-                        #   userData = userData,
-                        #   eventRsvpData = eventRsvpData,
-                        #   eventParticipantData = eventParticipantData,
-                        #   event = event                   
-                        
+    if request.method == "POST" or request.form.getlist("username") != (None or []):
+        usernameList = request.form.getlist("username")
+        usernameList = usernameList.copy()
+        
+    else:
+        return redirect(f"/event/{eventID}/volunteer_details")
+            
+     
+    return render_template ('/main/eventTravelForm.html',
+                           eventParticipantData = eventParticipantData,
+                           usernameList = usernameList,
                            )
 
 @main_bp.route('/profile/addNote', methods=['POST'])
