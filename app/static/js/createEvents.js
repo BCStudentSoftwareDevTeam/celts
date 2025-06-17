@@ -251,19 +251,15 @@ $('#saveSeries').on('click', function() {
 function updateEventNameField() {
   let offerings = JSON.parse($("#seriesData").val())
   let isSeries = $("#checkIsRepeating").is(":checked")
+
+  // Check if the event is weekly
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
     let names = new Set()
     offerings.forEach(offering => {
       names.add(offering.eventName)
-      console.log(offering.eventName);
     });
-    // Check if the event is weekly
-    let offeringsText = ""
-    names.forEach(offering => {
-    offeringsText += offering + ", "
-    })
-    offeringsText = offeringsText.slice(0, -2)
+    let offeringsText = Array.from(names).join(", ")
     $('#inputEventName').prop('placeholder', offeringsText)
   }
   else {
