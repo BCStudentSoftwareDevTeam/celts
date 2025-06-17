@@ -264,7 +264,7 @@ function updateEventNameField() {
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
-    let offeringText = offerings[0].eventName.split(" ").slice(0, -2).join(" ").trimEnd()
+    let offeringText = $("#repeatingEventsNamePicker").val()
     $('#inputEventName').prop('placeholder', offeringText)
   } 
 }
