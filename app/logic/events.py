@@ -470,14 +470,15 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'isLaborOnly']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
-
+    
+    print("Hello", eventData[checkBox])
     ## Process dates
     eventDates = ['startDate', 'endDate']
     for eventDate in eventDates:
