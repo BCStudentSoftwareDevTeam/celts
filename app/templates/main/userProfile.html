@@ -74,20 +74,21 @@
       <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="row table-responsive">
-             <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <label for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-             for more information.
-           </p>
-            <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-             <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
+             for more information. 
+             </label>
+        
+            <p for="expressInterest">Are you interested in pursuing the CCE Minor?</p>
+
+            <p for="expressInterest"><b>{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</b></p>
          
-             <div class= "btn-holder pull-left col-lg-6">
-              <button  id="expressInterest" class="btn" data-choice="True"
+             <div class= "btn-holder col-lg-6 pull-left">
+              <button  id="expressInterest" class="btn" data-choice="True" data-username ="{{volunteer.username}}"
              type="button">YES
               </button> 
-             </div>
-              <div class= "btn-holder pull-left col-lg-6">
-              <button  id="expressNoInterest" class="btn" data-choice="False" type="button">NO
+        
+              <button  id="expressNoInterest" class="btn" data-choice="False" data-username ="{{volunteer.username}}" type="button">NO
               </button>
              </div>
      
