@@ -102,7 +102,6 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-  // console.log($.browser);
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
@@ -110,7 +109,7 @@ $(document).ready(function(){
       changeMonth: true,
       minDate:+1,
       dateFormat: "mm-dd-yy",
-    }) 
+    }).attr('readonly','readonly');
   });
 
     /*
@@ -150,10 +149,6 @@ $(document).ready(function(){
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
-
-$("#banEndDatepicker").on('change', function () {
-  console.log("Datepicker changed:", $(this).val());
-});
 
   $("#banButton").click(function (){
      $("#banButton").prop("disabled", true)
