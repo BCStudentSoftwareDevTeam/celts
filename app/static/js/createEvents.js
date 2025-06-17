@@ -62,12 +62,16 @@ function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
   $('#eventTime, #eventDate').removeClass('d-none');
+  $('#checkIsSeriesToggleContainer').removeClass('form-group col-md-6')
+  $('#checkIsSeriesToggleContainer').addClass('form-group col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#eventTime, #eventDate').addClass('d-none');
+  $('#checkIsSeriesToggleContainer').removeClass('form-group col-md-6')
+  $('#checkIsSeriesToggleContainer').addClass('form-group col-md-12')
   $("#pastDateWarningText").text("")
 }
 
