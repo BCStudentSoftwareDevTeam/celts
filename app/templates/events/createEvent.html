@@ -57,6 +57,7 @@
           <h1 id="pageTitle">{{page_title}}</h1>
         </div>
       {% endif %}
+
     {% endblock %}
 
     {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
@@ -65,9 +66,10 @@
   <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
     value="{{eventData.location}}" required>
 </div>
+
 <!-- Non-Series Start Datepicker -->
-<div class="row col-md-12" id="eventDate">
-  <div class="form-group col-md-6">
+<div class="row col-md-12">
+  <div class="form-group col-md-6" id="eventDate">
     <label class="required form-label me-2" for="startDatePicker-{{pageLocation}}"><strong>Start Date</strong></label>
     <div class='input-group date startDate' id="startDate-{{pageLocation}}" data-page-location="{{pageLocation}}">
       <input autocomplete="off" type='text' class="form-control datePicker startDatePicker readonly"
@@ -80,8 +82,22 @@
       </div>
     </div>
   </div>
+  <div class="form-group col-md-6">
+    <div style="margin-top: 2.3em;" >
+      <div class="form-check form-switch pb-1">
+        <fieldset>
+          <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
+          <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
+            {{"checked" if eventData.isSeries}} />
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
 </div>
+
 <br>
+
 <!-- Non-Series Start Time -->
 <div class="mb-4" id="eventTime">
   <div class="row col-md-12">
@@ -119,6 +135,8 @@
   </div>
 </div>
 
+<p class="text-danger fw-bold" id="pastDateWarningText"> </p>  <!-- This is the text for the Event to show if it ended. The text will be filled out using JS function. -->
+
 {% endmacro %}
 
 <form enctype="multipart/form-data" id="saveEvent" data-toggle="validator" role="form" action="{{request.path}}"
@@ -141,27 +159,6 @@
           {% endfor %}
         </select>
       </div>
-
-      {% if isNewEvent %}
-      <div class="row col-md-12">
-        <div class="form-group col-md-6">
-          <div class="form-check form-switch pb-1">
-            <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the
-                past.</strong></label>
-            <input class="form-check-input" type="checkbox" id="allowPastStart" />
-          </div>
-        </div>
-        <div class="form-group col-md-6">
-          <div class="form-check form-switch pb-1">
-            <fieldset>
-              <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
-                {{"checked" if eventData.isSeries}} />
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      {% endif %}
 
       {% if isNewEvent %}
         {% set hideMultipleOffering = "" %}
@@ -465,15 +462,16 @@
             </div>
 
             <!-- Repeating Event Start Date Picker -->
-            <div class="form-group col-md-3">
-              <label class="required form-label me-2 mb-0" for="repeatingEventsStartDate"><strong>Start Date</strong></label>
-              <div class='input-group date'>
-                <input autocomplete="off" type='date'
-                  class="form-control repeatingEventsField readonly"
-                  name="repeatingEventsStartDate" placeholder="Pick a start date"
-                  id='repeatingEventsStartDate' />
-              </div>
+          <div class="form-group col-md-3">
+            <label class="required form-label me-2 mb-0" for="repeatingEventsStartDate"><strong>Start Date</strong></label>
+            <div class='input-group date'>
+              <input autocomplete="off" type='date'
+                class="form-control repeatingEventsField readonly"
+                name="repeatingEventsStartDate" placeholder="Pick a start date"
+                id='repeatingEventsStartDate' />
             </div>
+          </div>
+            
              <!-- Repeating Event End Date Picker -->
              <div class="form-group col-md-3">
               <label class="required form-label me-2 mb-0" for="repeatingEventsEndDate"><strong>Last Event Date</strong></label>
@@ -484,7 +482,8 @@
                   id='repeatingEventsEndDate' />
               </div>
             </div>
-            
+
+
             <!-- Repeating Event Start Time -->
             <div class="form-group col-md-3">
               <label class="form-label me-2 mb-0" for="repeatingEventsStartTime"><strong>Start Time</strong></label>
@@ -554,6 +553,7 @@
                 id='multipleOfferingDatePicker-{{pageLocation}}' data-page-location="{{pageLocation}}" />
             </div>
           </div>
+          
 
           <!--series Start Time-->
           <div class="form-group col-md-3">
@@ -616,5 +616,6 @@
       </div> 
   </div>
 </div>
+
 
 {% endblock %}

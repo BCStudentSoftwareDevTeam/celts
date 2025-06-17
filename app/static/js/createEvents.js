@@ -68,6 +68,7 @@ function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#eventTime, #eventDate').addClass('d-none');
+  $("#pastDateWarningText").text("")
 }
 
 function displayNotification(message) {
@@ -238,6 +239,7 @@ $('#saveSeries').on('click', function() {
     $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
+    $("#pastDateWarningText").text("")
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     updateEventNameField()
@@ -508,6 +510,7 @@ $(document).ready(function() {
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
+      checkIfDateInPast();
     }
   });
 
@@ -570,9 +573,59 @@ $(document).ready(function() {
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(createOfferingModalRow)
 
-  $("#allowPastStart").click(function() {
-    var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
+    var minDate = new Date('10/25/1999') 
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+
+  // This converts the time to 24 hour format in case it is in 12 hour format (like in Firefox)
+function handleTimeFormatting(timeArray){    
+  let time  = timeArray[0]
+  let timeSuffix = timeArray[1]         // looks for AM or PM in time 
+  let [hours , min] = time. split(':')
+
+  if (timeArray.length === 2) {
+      hours  = parseInt(hours, 10)
+      if (timeSuffix === 'PM' && hours !== 12) {
+      hours += 12;
+      } else if (timeSuffix === 'AM' && hours === 12) {
+      hours = 0;
+      }
+    const hoursStr = hours.toString().padStart(2, '0');
+      return [hoursStr, min]
+    }
+  return [hours, min]
+}
+
+  function checkIfDateInPast() {
+    const [month, day, year] = $("#startDatePicker-main").val().split('/')
+    const startTimeArray =  $("#startTime-main").val().split(' ') 
+    const [startHour, startMin] = handleTimeFormatting(startTimeArray)
+    const endTimeArray = $('#endTime-main').val().split(' ')
+    const [endHour, endMin] = handleTimeFormatting (endTimeArray)
+    let startDateSelected =new Date(+year, +month - 1, +day, +startHour, +startMin);  
+    let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
+    let now = new Date()
+    
+
+    if (startDateSelected < now && endDateSelected > now) {
+      $("#pastDateWarningText").text("This event is currently happening!")
+    }
+    else if (startDateSelected < now && endDateSelected < now) {
+      $("#pastDateWarningText").text("This event ended in the past!")
+    }
+    else 
+      $("#pastDateWarningText").text("")
+  }
+
+  $("#startDatePicker-main").on("change", function() {    
+    checkIfDateInPast()
+  })
+
+  $("#startTime-main").on("change", function() {    
+    checkIfDateInPast()
+  })
+  
+  $("#endTime-main").on("change", function() {    
+    checkIfDateInPast()
   })
 
   // everything except Chrome
@@ -596,7 +649,7 @@ $(document).ready(function() {
     $(".datePicker").datepicker("option", "disabled", true);
   }
 
-  $(".readonly").on('keydown paste', function (e) {
+  $(".readonly").on('keydown paste', function(e) {
     if (e.keyCode != 9) // ignore tab
       e.preventDefault();
   });
@@ -646,3 +699,7 @@ $(document).ready(function() {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
+
+
+
+
