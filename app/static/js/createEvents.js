@@ -241,8 +241,12 @@ $('#saveSeries').on('click', function() {
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
     $('#modalSeries').modal('hide');
-    if ($("#repeatingEventsNamePicker").val())
-      $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
+    
+    console.log($("#repeatingEventsNamePicker").val());
+    console.log($("#eventName").val());
+    if ($("#repeatingEventsNamePicker").val()){
+        $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
+    }
     else if ($('#eventName'))
       $('#inputEventName').prop('placeholder','[Multiple]')
   }
@@ -462,7 +466,6 @@ $(document).ready(function() {
       // Disable single event name field
       $('#inputEventName').prop('readonly', true)
       $('#inputEventName').val('')
-
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -470,7 +473,6 @@ $(document).ready(function() {
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
     }
-    
   });
 
   //untoggles the button when the modal cancel or close button is clicked
