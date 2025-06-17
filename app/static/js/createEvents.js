@@ -697,7 +697,7 @@ function handleTimeFormatting(timeArray){
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
-$(function () {
+
   const $fixedEl = $('.saveBtn');
   const $footer = $('.footer');
 
@@ -717,4 +717,4 @@ $(function () {
   }
 
   $(window).on('scroll resize load', updatePosition);
-});
+
