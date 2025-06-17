@@ -40,46 +40,60 @@ function updateExportText(){
     const newText = `(${startingYear - 5} - ${startingYear})`;
     document.getElementById("last5").textContent = newText;
 }
-
+function saveNew() {    
+    console.log($(e).data("id")+"LLLLLLLLLL:");
+    if ($(e).data("id")=="new") {
+        console.log("New row, not saving");
+    }
+}
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
-    $(".savebtn").on('click', function () {
     
-    let rowid=parseInt($(this).data("reqid"));
-    let row_el = $("#requirement_" + rowid);
-    var row_data = {[rowid]:
-                    {
 
-                        'id': row_el.data("id"),
-                        'name': row_el.find("input").val(),
-                        'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
-                        'frequency': row_el.find("select.frequency-select").val()
-                    }}
-    console.log(JSON.stringify(row_data));
-    $.ajax({
-        method: 'POST',
-        url: '/saveRequirements/1', // Bonner certification id hard-coded here
-        contentType: 'application/json',
-        dataType: 'json',
-        data: JSON.stringify([row_data]), 
 
-        success: function(ids) {
-            // update our rows with any new ids
-            let rows = $('#requirements tbody tr').get()
-            ids.forEach(function(id, index) {
-                let row = $(rows[index])
-                if(id != row.data('id')) {
-                    row.data('id', id);
-                }
-            });
-            msgToast("Bonner", "Updated Bonner Requirements");
-        },
-        error: function(e) {
-            msgToast("Error", "Error Saving Requirements");
-        }
-    });
- })
+        //   let rowid=parseInt($(this).data("reqid"));
+
+
+
+
+
+
+
+
+
+        // let row_el = $("#requirement_" + rowid);
+        // var row_data = {[rowid]:
+        //                 {
+        //                     'id': row_el.data("id"),
+        //                     'name': row_el.find("input").val(),
+        //                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+        //                     'frequency': row_el.find("select.frequency-select").val()
+        //                 }}
+        // console.log(JSON.stringify(row_data));
+        // $.ajax({
+        //     method: 'POST',
+        //     url: '/saveRequirements/1', // Bonner certification id hard-coded here
+        //     contentType: 'application/json',
+        //     dataType: 'json',
+        //     data: JSON.stringify([row_data]), 
+
+        //     success: function(ids) {
+        //         // update our rows with any new ids
+        //         let rows = $('#requirements tbody tr').get()
+        //         ids.forEach(function(id, index) {
+        //             let row = $(rows[index])
+        //             if(id != row.data('id')) {
+        //                 row.data('id', id);
+        //             }
+        //         });
+        //         msgToast("Bonner", "Updated Bonner Requirements");
+        //     },
+        //     error: function(e) {
+        //         msgToast("Error", "Error Saving Requirements");
+        //     }
+        // });
+    
     $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
     $(".removeBonner").on("click", function(){
         let year = $(this).data('year');
@@ -134,8 +148,10 @@ $(document).ready(function(){
 
     // Add Requirement handler
     $("#reqAdd").click(function() {
+        console.log("Adding req")
         addRequirement();
-        disableSave();
+        console.log("Add ed req")
+        // disableSave();
     });
 
     // Save Requirements handler
@@ -152,15 +168,19 @@ document.addEventListener("DOMContentLoaded", updateExportText);
 /* Add a new requirements row and focus it */
 function addRequirement() {
     var table = $("#requirements");
-    var newRow = table.find("tbody tr:last-child").clone()
-    newRow.data("id", "X");
+    var newRow = table.find("tbody tr:last-child").clone();
+    // newRow.data("id", "X");
+    newRow.attr('data-id', 'new');
+    console.log(newRow.data("id"));
     newRow.find("input").val("");
 
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
+    newRow.find(".saveBtn").attr('data-id','new');
     newRow.find("select.required-select option:last-child").attr('selected', true);
 
     table.append(newRow)
-    addRequirementsRowHandlers()
+   
+    // addRequirementsRowHandlers()
     newRow.find("input").focus()
 }
 
@@ -193,42 +213,43 @@ function addCohort(){
 }
 
 /* Get the data for the whole requirement set and save them */
-function saveRequirements() {
-    var data = $("#requirements tbody tr").map((i,row) => (
+// function saveRequirements() {
+//     $("#reqSave").attr("disabled", true);
+//     var data = $("#requirements tbody tr").map((i,row) => (
         
-                    {
-                        'id': $(row).data("id"),
-                        'name': $(row).find("input").val(),
-                        'required': $(row).find("select.required-select").val() == 'Required' ? true : false,
-                        'frequency': $(row).find("select.frequency-select").val()
-                    }
-                )).get()
-        console.log(data);
+//                     {
+//                         'id': $(row).data("id"),
+//                         'name': $(row).find("input").val(),
+//                         'required': $(row).find("select.required-select").val() == 'Required' ? true : false,
+//                         'frequency': $(row).find("select.frequency-select").val()
+//                     }
+//                 )).get()
+//         console.log(data);
 
 
 
-    $.ajax({
-        method: 'POST',
-        url: '/saveRequirements/1', // Bonner certification id hard-coded here
-        contentType: 'application/json',
-        dataType: 'json',
-        data: JSON.stringify(data),
-        success: function(ids) {
-            // update our rows with any new ids
-            let rows = $('#requirements tbody tr').get()
-            ids.forEach(function(id, index) {
-                let row = $(rows[index])
-                if(id != row.data('id')) {
-                    row.data('id', id);
-                }
-            });
-            msgToast("Bonner", "Updated Bonner Requirements");
-        },
-        error: function(e) {
-            msgToast("Error", "Error Saving Requirements");
-        }
-    });
-}
+//     $.ajax({
+//         method: 'POST',
+//         url: '/saveRequirements/1', // Bonner certification id hard-coded here
+//         contentType: 'application/json',
+//         dataType: 'json',
+//         data: JSON.stringify(data),
+//         success: function(ids) {
+//             // update our rows with any new ids
+//             let rows = $('#requirements tbody tr').get()
+//             ids.forEach(function(id, index) {
+//                 let row = $(rows[index])
+//                 if(id != row.data('id')) {
+//                     row.data('id', id);
+//                 }
+//             });
+//             msgToast("Bonner", "Updated Bonner Requirements");
+//         },
+//         error: function(e) {
+//             msgToast("Error", "Error Saving Requirements");
+//         }
+//     });
+// }
 
 function enableSave() {
     $("#reqSave").attr("disabled", false);
@@ -283,7 +304,28 @@ function addRequirementsRowHandlers() {
 
     // enable the remove button
     $(".removebtn").click(function(e) { //Fixme: to only use on remove button
-        enableSave();
+        // enableSave();
+        //     $.ajax({
+//         method: 'POST',
+//         url: '/saveRequirements/1', // Bonner certification id hard-coded here
+//         contentType: 'application/json',
+//         dataType: 'json',
+//         data: JSON.stringify(data),
+//         success: function(ids) {
+//             // update our rows with any new ids
+//             let rows = $('#requirements tbody tr').get()
+//             ids.forEach(function(id, index) {
+//                 let row = $(rows[index])
+//                 if(id != row.data('id')) {
+//                     row.data('id', id);
+//                 }
+//             });
+//             msgToast("Bonner", "Updated Bonner Requirements");
+//         },
+//         error: function(e) {
+//             msgToast("Error", "Error Saving Requirements");
+//         }
+//     });
 
         // Only remove if it isn't the last row
         if($("#requirements tbody tr").length > 1) {

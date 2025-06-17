@@ -84,12 +84,10 @@ def updateCertRequirements(certId, newRequirements):
 
     # update existing and add new requirements
     requirements = []
-    int_requirementData= int(requirementData['id'])
     for order, requirementData in enumerate(newRequirements):
         
-        
         try:
-            newRequirement = CertificationRequirement.get_by_id(int_requirementData)
+            newRequirement = CertificationRequirement.get_by_id(requirementData['id'])
         except DoesNotExist:
             newRequirement = CertificationRequirement()
             
@@ -104,6 +102,15 @@ def updateCertRequirements(certId, newRequirements):
 
     return requirements 
 
+def saveRequirement(newRequirement):
+    newRequirement = CertificationRequirement()
+    newRequirement.isRequired = bool(requirementData['required'])
+    newRequirement.frequency = requirementData['frequency']
+    newRequirement.name = requirementData['name']
+    newRequirement.order = order
+    newRequirement.save()
+    return newRequirement.get_id()
+    
 def updateCertRequirementForEvent(event, requirement):
     """
     Add a certification requirement to an event. 

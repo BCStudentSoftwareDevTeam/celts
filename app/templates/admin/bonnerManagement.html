@@ -148,13 +148,14 @@
                         
                         <td>
                             <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
-                                <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option>
+                                <!-- <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option> -->
                                 <option value="once" {{ "selected" if req.frequency == "once" else "" }}>Once</option>
                                 <option value="annual" {{ "selected" if req.frequency == "annual" else "" }}>Annual</option>
                                 <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
                             </select>
                         </td>
-                        <td><button type="button" class="btn btn-danger removebtn" >Remove</button><button type="button"  data-reqid="{{req.id}}" class="btn btn-danger savebtn">Save</button></td>
+                        <td><button type="button" class="btn btn-danger removebtn" data-id="{{req.id}}" id="remove-{{req.id}}">Remove</button>
+                            <button type="button" class="btn btn-success saveBtn" data-id="{{req.id}}" id="save-{{req.id}}" onclick = "saveNew()">Save</button></td>
                         
                     </tr>
                 {% endfor %}
@@ -162,7 +163,7 @@
             </table>
             <!-------------------- End Requirements --------------------->
             <button id="reqAdd" class="bi-plus-lg float-start btn btn-success"> Add Requirement</button>
-            <button id="reqSave" class="float-end btn btn-primary" disabled>Save Changes</button>
+            <!-- <button id="reqSave" class="float-end btn btn-primary" disabled>Save Changes</button> -->
         </div>
     </div>
   </div>
