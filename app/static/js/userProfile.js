@@ -110,8 +110,8 @@ $(document).ready(function(){
       changeYear: true,   
       changeMonth: true,
       minDate:+1,
-      dateFormat: "yy-mm-dd",
-    }).attr('readonly','readonly');
+      dateFormat: "mm-dd-yy",
+    })
   });
 
     /*

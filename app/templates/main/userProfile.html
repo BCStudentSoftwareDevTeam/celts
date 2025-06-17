@@ -604,7 +604,7 @@
           </div>
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp
-              <input id="banEndDatepicker" type="text" {readonly="readonly" if isChrome else ""}>
+              <input id="banEndDatepicker" readonly='readonly'  type= {% if isChrome == True %} "date"{% else %} "text" placeholder="mm/dd/yyyy" {% endif %}>
             </h6>
           </div>
           
