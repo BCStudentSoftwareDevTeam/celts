@@ -240,18 +240,35 @@ $('#saveSeries').on('click', function() {
     pendingmultipleEvents = [];
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
+    updateEventNameField()
     $('#modalSeries').modal('hide');
-    
-    console.log($("#repeatingEventsNamePicker").val());
-    console.log($("#eventName").val());
-    if ($("#repeatingEventsNamePicker").val()){
-        $('#inputEventName').prop('placeholder', $("#repeatingEventsNamePicker").val())
-    }
-    else if ($('#eventName'))
-      $('#inputEventName').prop('placeholder','[Multiple]')
   }
 });
 
+// Populate the Event Name field in the main page with the entered repeating events
+function updateEventNameField() {
+  let offerings = JSON.parse($("#seriesData").val())
+  let isSeries = $("#checkIsRepeating").is(":checked")
+  if (!isSeries) {
+    // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
+    let names = new Set()
+    offerings.forEach(offering => {
+      names.add(offering.eventName)
+      console.log(offering.eventName);
+    });
+    // Check if the event is weekly
+    let offeringsText = ""
+    names.forEach(offering => {
+    offeringsText += offering + ", "
+    })
+    $('#inputEventName').prop('placeholder', offeringsText)
+  }
+  else {
+    // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
+    let offeringText = offerings[0].eventName.split(" ").slice(0, -2).join(" ").trimEnd()
+    $('#inputEventName').prop('placeholder', offeringText)
+  } 
+}
 
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
