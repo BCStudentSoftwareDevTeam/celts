@@ -91,7 +91,7 @@ def updateCertRequirements(certId, newRequirements):
         # int_requirementData = int(requirementData)
     
         try:
-            newRequirement = CertificationRequirement.get_by_id(requirementData['id'])
+            newRequirement = CertificationRequirement.get_by_id(requirementData)
         except DoesNotExist:
             newRequirement = CertificationRequirement()
 
