@@ -111,7 +111,7 @@ $(document).ready(function(){
       changeMonth: true,
       minDate:+1,
       dateFormat: "mm-dd-yy",
-    })
+    }) 
   });
 
     /*
