@@ -261,6 +261,7 @@ function updateEventNameField() {
     names.forEach(offering => {
     offeringsText += offering + ", "
     })
+    offeringsText = offeringsText.slice(0, -2)
     $('#inputEventName').prop('placeholder', offeringsText)
   }
   else {
