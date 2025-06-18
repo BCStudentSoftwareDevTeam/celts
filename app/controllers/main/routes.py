@@ -344,20 +344,30 @@ def eventTravelForm(eventID):
 
     if not (g.current_user.isCeltsAdmin):
         abort(403)
-    
-    eventParticipantData = list(EventParticipant.select(EventParticipant).limit(1))
-    
+
     if request.method == "POST" or request.form.getlist("username") != (None or []):
         usernameList = request.form.getlist("username")
         usernameList = usernameList.copy()
+        userList = []
+        for username in usernameList:
+            user = (User.select(User, EmergencyContact, InsuranceInfo)
+                        .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                        .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                        .where(User.username == username).limit(1))
+            if not list(username):
+                abort(404)
+            userData = list(user.dicts())[0]
+            userData = {key: value if value else '' for (key, value) in userData.items()}
+            userList.append(userData)
+            
         
     else:
         return redirect(f"/event/{eventID}/volunteer_details")
             
      
     return render_template ('/main/eventTravelForm.html',
-                           eventParticipantData = eventParticipantData,
                            usernameList = usernameList,
+                           userList = userList,
                            )
 
 @main_bp.route('/profile/addNote', methods=['POST'])
