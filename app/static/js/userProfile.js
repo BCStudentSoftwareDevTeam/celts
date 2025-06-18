@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $(".interest-button").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = $(this).data('choice') === true || $(this).data('choice') === "true";
+    let isAdding = $(this).data('choice') === true;
     
     
     $.ajax({
