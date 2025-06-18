@@ -105,10 +105,10 @@ $(document).ready(function(){
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
-      changeYear: true,   
+      changeYear: true,
       changeMonth: true,
       minDate:+1,
-      dateFormat: "mm/dd/yy",
+      dateFormat: "yy-mm-dd",
     }).attr('readonly','readonly');
   });
 
@@ -145,7 +145,7 @@ $(document).ready(function(){
     
   });
 
- $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
