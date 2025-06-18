@@ -40,16 +40,72 @@ function updateExportText(){
     const newText = `(${startingYear - 5} - ${startingYear})`;
     document.getElementById("last5").textContent = newText;
 }
-function saveNew() {    
-    console.log($(e).data("id")+"LLLLLLLLLL:");
+
+function saveRequirement(e) {
+    console.log("Saving requirement");
+    console.log( $(e)); //$(e).data("id")+
     if ($(e).data("id")=="new") {
         console.log("New row, not saving");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
+
     
+    
+    $(".saveBtn").on("click", saveRequirement);
+    let rowid=parseInt($(this).data("reqid"));
+    let row_el = $("#requirements" + rowid);
+            var row_data = {[rowid]:
+                            {
+                                'id': row_el.data("id"),
+                                'name': row_el.find("input").val(),
+                                'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+                                'frequency': row_el.find("select.frequency-select").val()
+                            }}
+            console.log(JSON.stringify(row_data));
+
+
+
+     console.log("Hello World");
+      $.ajax({
+        method: 'POST',
+        url: '/newReq', // Bonner certification id hard-coded here
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(row_data),
+        success: function(ids) {
+            console.log("Success");
+            // update our rows with any new ids
+            let rows = $('#requirements').get()
+            ids.forEach(function(id, index) {
+                let row = $(rows[index])
+                if(id != row.data('id')) {
+                    row.data('id', id);
+                }
+            });
+            msgToast("Bonner", "Updated Bonner Requirements");
+        },
+        error: function(e) {
+            msgToast("Error", "Error Saving Requirements");
+        }
+    });
 
 
         //   let rowid=parseInt($(this).data("reqid"));
@@ -99,6 +155,7 @@ $(document).ready(function(){
         let year = $(this).data('year');
         cohortRequest(year, "remove", $(this).data("username"));
     });
+    
 
     // Add requirements sorting
     // https://github.com/SortableJS/Sortable
@@ -175,8 +232,11 @@ function addRequirement() {
     newRow.find("input").val("");
 
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
-    newRow.find(".saveBtn").attr('data-id','new');
     newRow.find("select.required-select option:last-child").attr('selected', true);
+    newRow.find(".saveBtn").attr('data-id','new');
+    let newSaveBtn = newRow.find(".saveBtn")[0];
+    console.log(newSaveBtn)
+    newSaveBtn.addEventListener("click", saveRequirement);
 
     table.append(newRow)
    
@@ -302,34 +362,36 @@ function addRequirementsRowHandlers() {
         }
     });
 
-    // enable the remove button
-    $(".removebtn").click(function(e) { //Fixme: to only use on remove button
-        // enableSave();
-        //     $.ajax({
-//         method: 'POST',
-//         url: '/saveRequirements/1', // Bonner certification id hard-coded here
-//         contentType: 'application/json',
-//         dataType: 'json',
-//         data: JSON.stringify(data),
-//         success: function(ids) {
-//             // update our rows with any new ids
-//             let rows = $('#requirements tbody tr').get()
-//             ids.forEach(function(id, index) {
-//                 let row = $(rows[index])
-//                 if(id != row.data('id')) {
-//                     row.data('id', id);
-//                 }
-//             });
-//             msgToast("Bonner", "Updated Bonner Requirements");
-//         },
-//         error: function(e) {
-//             msgToast("Error", "Error Saving Requirements");
+
+
+//     // enable the remove button
+//     $(".removebtn").click(function(e) { //Fixme: to only use on remove button
+//         // enableSave();
+//         //     $.ajax({
+// //         method: 'POST',
+// //         url: '/saveRequirements/1', // Bonner certification id hard-coded here
+// //         contentType: 'application/json',
+// //         dataType: 'json',
+// //         data: JSON.stringify(data),
+// //         success: function(ids) {
+// //             // update our rows with any new ids
+// //             let rows = $('#requirements tbody tr').get()
+// //             ids.forEach(function(id, index) {
+// //                 let row = $(rows[index])
+// //                 if(id != row.data('id')) {
+// //                     row.data('id', id);
+// //                 }
+// //             });
+// //             msgToast("Bonner", "Updated Bonner Requirements");
+// //         },
+// //         error: function(e) {
+// //             msgToast("Error", "Error Saving Requirements");
+// //         }
+// //     });
+
+//         // Only remove if it isn't the last row
+//         if($("#requirements tbody tr").length > 1) {
+//             $(e.target.closest('tr')).fadeOut(function() { this.remove() });
 //         }
 //     });
-
-        // Only remove if it isn't the last row
-        if($("#requirements tbody tr").length > 1) {
-            $(e.target.closest('tr')).fadeOut(function() { this.remove() });
-        }
-    });
 }

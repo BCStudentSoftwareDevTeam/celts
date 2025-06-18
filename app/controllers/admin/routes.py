@@ -678,12 +678,13 @@ def saveRequirements(certid):
 
     return jsonify([requirement.id for requirement in newRequirements])
 
-@admin_bp.route("/newReq/", methods=["POST"])
+@admin_bp.route("/newReq", methods=["POST"])
 def newReq():
     if not g.current_user.isCeltsAdmin:
         abort(403)
-    newRequirements= newReq(request.get_json()) #Fixme: Make updates work
+    newRequirements= newReq(id,request.get_json()) #Fixme: Make updates 
     print("New requirements:", newRequirements)
+
 
 
 
