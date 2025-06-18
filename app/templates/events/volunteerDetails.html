@@ -27,7 +27,7 @@
         <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
         <div class="emailSelect" nowrap>{{ participant.user.email }}</div>
         <div class="statusSelect" nowrap>Volunteer Status: {{ volunteerType|title }}</div>
-        <div class="dietRestrictionSelect">Dietary Restriction(s): {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
+        <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
         <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
@@ -98,7 +98,7 @@
         <div class="col">
           <label><b>Included Information:</b></label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
-          <label for="dietRestrictionSelect">Dietary Restriction(s)</label><br>
+          <label for="dietRestrictionSelect">Dietary Restrictions</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencyContactSelect" checked>
           <label for="emergencyContactSelect">Emergency Contact</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
@@ -138,7 +138,7 @@
           <th class="phoneSelect">Phone Number</th>
           <th class="emailSelect">Email</th>
           <th class="statusSelect">Volunteer Status</th>
-          <th class="dietRestrictionSelect">Dietary Restriction(s)</th>
+          <th class="dietRestrictionSelect">Dietary Restrictions</th>
           <th class="emergencyContactSelect">Emergency Contact</th>
         </tr>
       </thead>

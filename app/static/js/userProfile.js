@@ -1,10 +1,10 @@
 $(document).ready(function(){
-dietRestriction = "None"
-  $("#checkDietRestriction").on("change",  function() {
+  $("#checkDietRestriction, #diet").on("change",  function() {
     let norestrict = $(this).is(':checked');
-    console.log(norestrict)
     if (norestrict) {
         dietContainer.style.display = "none";
+        $("#diet").val("No dietary restrictions");
+
     }
     else {
         dietContainer.style.display = "block";
