@@ -545,15 +545,15 @@ function handleTimeFormatting(timeArray){
   let [hours , min] = time. split(':')
 
   if (timeArray.length === 2) {
-      hours  = parseInt(hours, 10)
-      if (timeSuffix === 'PM' && hours !== 12) {
+    hours  = parseInt(hours, 10)
+    if (timeSuffix === 'PM' && hours !== 12) {
       hours += 12;
-      } else if (timeSuffix === 'AM' && hours === 12) {
+    } else if (timeSuffix === 'AM' && hours === 12) {
       hours = 0;
-      }
-    const hoursStr = hours.toString().padStart(2, '0');
-      return [hoursStr, min]
     }
+    const hoursStr = hours.toString().padStart(2, '0');
+    return [hoursStr, min]
+  }
   return [hours, min]
 }
 
@@ -569,10 +569,10 @@ function handleTimeFormatting(timeArray){
     
 
     if (startDateSelected < now && endDateSelected > now) {
-      $("#pastDateWarningText").text("This event is currently happening!")
+      $("#pastDateWarningText").text("This event is currently in progress!")
     }
     else if (startDateSelected < now && endDateSelected < now) {
-      $("#pastDateWarningText").text("This event ended in the past!")
+      $("#pastDateWarningText").text("This event is in the past!")
     }
     else 
       $("#pastDateWarningText").text("")
