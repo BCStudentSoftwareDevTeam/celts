@@ -102,7 +102,7 @@ function initializeFlatpickr(obj) {
   });
 }
 
-function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
+function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null}={}){
 
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
 
@@ -111,7 +111,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
   if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
   if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-
+  
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
 
