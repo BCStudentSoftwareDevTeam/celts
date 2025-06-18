@@ -21,7 +21,7 @@
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    <a style="margin-top: 3px;" class="btn btn-primary btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
+    <a style="margin-top: 3px;" class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
   </div>
   <div class="col-md-6 col-lg-3">
     {% if volunteer.major -%}
@@ -87,7 +87,7 @@
         <div class="row table-responsive">
           <table class="table table-striped">
             {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-              <a href="{{volunteer.username}}/travelForm" style="margin-top: 3px; margin-bottom: 10px;"><button class="btn btn-secondary btn-sm">Print Travel Form</button></a>
+              <a href="{{volunteer.username}}/travelForm" style="margin-top: 3px; margin-bottom: 10px;"><button class="btn btn-warning btn-sm">Print Travel Form</button></a>
               <hr>
             {% endif %}
             {% if upcomingEvents|length > 0 %}
@@ -148,7 +148,7 @@
       <div class="accordion-body">
         <div class="row mb-3" style="margin-bottom: 0px !important;">
           <div class="col-md-2">
-            <a href="{{volunteer.username}}/serviceTranscript" style="margin-top: 20px;"><button class="btn btn-secondary btn-sm">View Service Transcript</button></a>
+            <a href="{{volunteer.username}}/serviceTranscript" style="margin-top: 20px;"><button class="btn btn-warning btn-sm">View Service Transcript</button></a>
           </div>
         </div>
         <div class="table-responsive">
@@ -611,17 +611,17 @@
           <div class="col-md-12">
             <div style="display: flex; margin-top: 3px;">
               <input type="text" style="border: none; margin-right: 7px;" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
-              <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button"><span class="visually-hidden">Edit</span><i class="bi bi-pen"></i></a>
+              <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
             </div>
           </div>
         </div>
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
         <div class="row mb-3">
           <div class="col-md-6">
-            <a class="btn btn-secondary btn-sm w-100" href="{{volunteer.username}}/emergencyContact" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact</a>
+            <a class="btn btn-warning btn-sm w-100" href="{{volunteer.username}}/emergencyContact" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact</a>
           </div>
           <div class="col-md-6">
-            <a class="btn btn-secondary btn-sm w-100" href="{{volunteer.username}}/insuranceInfo" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information</a>
+            <a class="btn btn-warning btn-sm w-100" href="{{volunteer.username}}/insuranceInfo" role="button">{{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information</a>
           </div>
         </div>
         {% endif %}

@@ -330,14 +330,11 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s){
-        const para = document.createElement('i');
-        para.className = 'bi bi-check';
-        para.id = 'check_icon';
-        const node = document.createTextNode('Saved!');
-        para.appendChild(node);
-
-        const element = document.getElementById("diet-form");
-        element.appendChild(para);
+        $('<i>', {
+          class: 'bi bi-check',
+          id: 'check-icon',
+          text: 'Saved!'
+        }).appendTo('#diet-form');
         setTimeout(function() {
           $(".bi.bi-check").fadeOut(500, function() {
             $(this).remove();
