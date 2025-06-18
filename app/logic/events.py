@@ -195,6 +195,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "timeEnd": newEventData['timeEnd'],
                 "location": newEventData['location'],
                 "isFoodProvided" : newEventData['isFoodProvided'],
+                "isLaborOnly" : newEventData['isLaborOnly'],
                 "isTraining": newEventData['isTraining'],
                 "isEngagement": newEventData['isEngagement'],
                 "isRsvpRequired": newEventData['isRsvpRequired'],
@@ -202,9 +203,9 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "startDate": newEventData['startDate'],
                 "rsvpLimit": newEventData['rsvpLimit'],
                 "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName']
+                "contactName": newEventData['contactName'],
             }
-
+        
         # The three fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
         if isNewEvent:
@@ -478,7 +479,6 @@ def preprocessEventData(eventData):
         else:
             eventData[checkBox] = bool(eventData[checkBox])
     
-    print("Hello", eventData[checkBox])
     ## Process dates
     eventDates = ['startDate', 'endDate']
     for eventDate in eventDates:

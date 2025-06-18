@@ -269,7 +269,7 @@ def eventDisplay(eventId):
         event = Event.get_by_id(eventId)
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event == event
-        ))
+        )) 
         invitedYears = [str(cohort.year) for cohort in invitedCohorts]
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
@@ -280,6 +280,8 @@ def eventDisplay(eventId):
         abort(403)
 
     eventData = model_to_dict(event, recurse=False)
+    print(eventData)
+    print("Debug Here")
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
