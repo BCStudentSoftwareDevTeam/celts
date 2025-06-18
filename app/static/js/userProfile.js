@@ -102,7 +102,7 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-    $(function(){
+  $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
       changeYear: true,
