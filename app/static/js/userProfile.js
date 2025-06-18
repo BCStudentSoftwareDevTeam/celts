@@ -108,7 +108,7 @@ $(document).ready(function(){
       changeYear: true,   
       changeMonth: true,
       minDate:+1,
-      dateFormat: "mm-dd-yy",
+      dateFormat: "mm/dd/yy",
     }).attr('readonly','readonly');
   });
 
