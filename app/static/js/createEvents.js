@@ -62,8 +62,8 @@ function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
   $('#eventTime, #eventDate').removeClass('d-none');
-  $('#checkIsSeriesToggleContainer').removeClass('form-group col-md-6')
-  $('#checkIsSeriesToggleContainer').addClass('form-group col-md-12')
+  $('#checkIsSeriesToggleContainer').addClass('form-group col-md-6')
+  $('#checkIsSeriesToggleContainer').removeClass('form-group col-md-12')
 }
 
 function setViewForSeries(){
