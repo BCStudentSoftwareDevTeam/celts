@@ -270,8 +270,24 @@
             </div>
             {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
+            <div class="col-md-6">
+                <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
+                <ul class="list-unstyled">
+                {% for program in programs %}
+                  {% if program.id in permissionPrograms %}
+                    <li>
+                      {% if g.current_user.isCeltsAdmin %}
+                        <label for="mgr-{{ program.id }}">{{program.programName}}</label>
+                      {% else %}
+                        {{program.programName}}
+                      {% endif %}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
             <div>
-              <a href="/admin"><button class="btn btn-primary btn-sm">User Management</button></a>
+              <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
             </div>
             {% endif %}
           </div>
