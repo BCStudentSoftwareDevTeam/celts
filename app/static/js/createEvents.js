@@ -163,6 +163,9 @@ $('#saveSeries').on('click', function() {
   eventNameInputs.each((index, eventNameInput) => {
     if (eventNameInput.value.trim() === '') {
       isEmpty = true;
+      $(eventNameInput).addClass('border-red');
+    } else {
+      $(eventNameInput).removeClass('border-red');
     }
   });
 
@@ -170,6 +173,9 @@ $('#saveSeries').on('click', function() {
   datePickerInputs.each((index, datePickerInput) => {
     if (datePickerInput.value.trim() === '') {
         isEmpty = true;
+        $(datePickerInput).addClass('border-red');
+    } else {
+        $(datePickerInput).removeClass('border-red');
     }
   });  
 
@@ -186,6 +192,11 @@ $('#saveSeries').on('click', function() {
 
     if(startTime > endTime){
       hasValidTimes = false;
+      $(startTimeInputs[i]).removeClass('border-red');
+      $(endTimeInputs[i]).removeClass('border-red');
+    } else {
+      $(startTimeInputs[i]).addClass('border-red');
+      $(endTimeInputs[i]).addClass('border-red');
     }
   }
 
@@ -326,7 +337,7 @@ function updateOfferingsTable() {
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
-    offeringsTable.append(`<tr>` +
+    offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
                                     "<td>" + offering.eventName + "</td>" +
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
