@@ -23,7 +23,7 @@
     <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
       <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b>
         {% if participant.insuranceinfo and participant.insuranceinfo.healthIssues %}
-          <i class="bi bi-star-fill fs-6"></i>
+          <i class="bi bi-star-fill fs-6" style="position: relative; top: -2px;"></i>
         {% endif %}
       </h4>
       <ul>
@@ -42,7 +42,10 @@
 
 {% macro createTable(participant, volunteerType) %}
     <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.user.username}}">
-      <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
+      <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b>
+      {% if participant.insuranceinfo and participant.insuranceinfo.healthIssues %}
+          <i class="bi bi-star-fill fs-6"></i>
+        {% endif %}</td>
       <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
       <td class="statusSelect" nowrap>{{ volunteerType|title if volunteerType != 'rsvp' else volunteerType|upper}}</td>
@@ -130,7 +133,7 @@
           </div>
         </div>
       </div>
-      <div><i class="bi bi-star-fill fs-6"></i> Star indicates this profile needs to be checked</div>
+      <div><i class="bi bi-star-fill fs-6"></i> Check this user's profile for important health related information</div>
     </div>
     <hr>
     <div class="d-print-block" id="volunteerInformationCardToPrint">
