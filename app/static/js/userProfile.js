@@ -320,30 +320,42 @@ $(document).ready(function(){
 
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
-  $("#diet").on('change', function() {
+  var typingTimer;
+  var doneTypingInterval = 750;
+  var $dietInput = $('#diet');
+
+$dietInput.on('input', function() {
+  clearTimeout(typingTimer);
+  $('#check-icon').remove();
+  
+  typingTimer = setTimeout(function() {
     let data = {
-      dietInfo: $("#diet").val(),
-      user: $(this).data("user")
-    }
+      dietInfo: $dietInput.val(),
+      user: $dietInput.data("user")
+    };
+    
     $.ajax({
       type: "POST",
       url: "/updateDietInformation",
       data: data,
-      success: function(s){
+      success: function(s) {
+        $('#check-icon').remove();
         $('<i>', {
           class: 'bi bi-check',
           id: 'check-icon',
           text: 'Saved!'
         }).appendTo('#diet-form');
+        
         setTimeout(function() {
-          $(".bi.bi-check").fadeOut(500, function() {
+          $('#check-icon').fadeOut('slow', function() {
             $(this).remove();
           });
-        }, 1000);
-      },
-    })
-  });
-
+        }, 2000);
+      }
+    });
+  }, doneTypingInterval);
+});
+  
 });
 
 function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
