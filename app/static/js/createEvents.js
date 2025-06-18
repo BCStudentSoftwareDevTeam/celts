@@ -359,6 +359,140 @@ function formatDate(originalDate) {
   var year = dateObj.getUTCFullYear();
   return month + " " + day + ", " + year;
 }
+
+function checkValidation(seriesEvent){
+  let trainingStatus = $("#checkIsTraining").is(":checked")
+  let serviceHourStatus = $("#checkServiceHours").is(":checked")
+  let engagementStatus = $("#checkEngagement").is(":checked")
+  let bonnersStatus = $("#checkBonners").is(":checked")
+  let allFieldFilled = true; //if there is text = true]
+  let seriesWeeklyId = $("#checkIsRepeating").is(":checked")
+  let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
+
+  
+  //let seriesSuffix = ""; 
+
+   $(".all").each(function(){
+    if ($(this).val() === ""){
+      this.setCustomValidity("Please fill out the required field"); // do these actions
+      this.reportValidity();
+      allFieldFilled = false;
+    } else {
+       this.setCustomValidity(""); 
+       } 
+   console.log("|||"+ $(this).val()+"|||" + $(this).prop("id")) //TESTING PURPOSE
+   });
+  
+   console.log($("#checkEngagement").is(":checked"));
+  if (seriesEvent) {
+    //   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)){
+    //   // If none are checked, show an error message on the engagement checkbox
+    //   const engagementElement = document.getElementById("checkEngagement");
+    //   document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
+    //   engagementElement.focus(); 
+    //   document.getElementById("checkEngagement").reportValidity();
+    //   allFieldFilled = false;
+    //   console.log("No event type selected");
+    // } else {
+    //   // Clear any existing validation message
+    //   document.getElementById("checkEngagement").setCustomValidity("");
+    // }
+      
+    //let seriesSuffix = "-modal";    
+      $(".series").each(function(){
+            // Skip event type checkboxes from regular validation
+      let elementId = $(this).prop("id");
+      if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
+          elementId === "checkEngagement" || elementId === "checkBonners") {
+        return; // Skip these, they'll be validated separately
+      }
+
+      console.log("|||"+ $(this).val()+"|||" + $(this).prop("id")) 
+      if ($(this).val() === ""){
+        this.setCustomValidity("Please fill out the required field"); // do these actions
+        this.reportValidity();
+        allFieldFilled = false;
+      } else {
+        this.setCustomValidity(""); 
+        }
+    });
+  
+        if (seriesWeeklyId) {
+            $(".seriesWeekly").each(function(){
+
+           
+            if ($(this).val() === ""){
+              this.setCustomValidity("Please fill out the required field"); // do these actions
+              this.reportValidity();
+              allFieldFilled = false;
+            } else {
+              this.setCustomValidity(""); 
+              }
+            
+            });
+        }   
+        if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
+              document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
+              document.getElementById("checkEngagement").reportValidity();
+              allFieldFilled = false;
+              console.log("No event type selected");
+            } else {
+              document.getElementById("checkEngagement").setCustomValidity("");
+          }
+      } 
+      else if (isAllVolunteer) {
+      $(".allV").each(function(){
+            if ($(this).val() === ""){
+              this.setCustomValidity("Please fill out the required field"); // do these actions
+              this.reportValidity();
+              allFieldFilled = false;
+            } else {
+              this.setCustomValidity(""); 
+              }
+              });
+
+  
+  } else {
+    //let seriesSuffix = "-mainOnly"
+
+    $(".main").each(function(){
+    let elementId = $(this).prop("id");
+    if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
+          elementId === "checkEngagement" || elementId === "checkBonners") {
+        return; // Skip these, they'll be validated separately
+  //   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
+  //   // If none are checked, show an error message on the engagement checkbox
+  //   document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
+  //   document.getElementById("checkEngagement").reportValidity();
+  // } else {
+  //   // Clear any existing validation message
+  //   document.getElementById("checkEngagement").setCustomValidity("");
+  }
+    if ($(this).val() === ""){
+      this.setCustomValidity("Please fill out the required field"); // do these actions
+      this.reportValidity();
+      allFieldFilled = false;
+    } else {
+       this.setCustomValidity(""); 
+       }
+  });
+
+  if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
+      document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
+      document.getElementById("checkEngagement").reportValidity();
+      allFieldFilled = false;
+    } else {
+      document.getElementById("checkEngagement").setCustomValidity("");
+    }
+  }
+
+  if (allFieldFilled) {
+     console.log("All validation passed - submitting form");//TESTING PURPOSE
+      $("#saveEvent").submit();     
+    }
+  }
+
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -416,34 +550,16 @@ $(document).ready(function() {
   });
 
   $("#saveButton").on('click', function (event) {
-    event.preventDefault();
-    let trainingStatus = $("#checkIsTraining").is(":checked")
-    let serviceHourStatus = $("#checkServiceHours").is(":checked")
-    let engagementStatus = $("#checkEngagement").is(":checked")
-    let bonnersStatus = $("#checkBonners").is(":checked")
-console.log(trainingStatus, serviceHourStatus, engagementStatus, bonnersStatus)
-    document.getElementById("checkEngagement").setCustomValidity(""); // Clear custom validity
-    document.getElementById("checkEngagement").reportValidity();
+    event.preventDefault(); //prevents from submitting
+  
+  //check if Series of events is checked or no and calls the function checkValidation()
+  let seriesEvents = $("#checkIsSeries").is(":checked");
+  console.log(seriesEvents);
+  
+  checkValidation(seriesEvents);
 
-
-    //check if user has selected a toggle, cancel form submission if not
-    let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
-    if(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus || isAllVolunteer) {
-      
-      // Disable button when we are ready to submit
-      //$(this).find("input[type=submit]").prop("disabled", true);
-      $("#saveEvent").submit();
-    }
-    else {
-      
-      // jquery does was not supporting Java 
-      document.getElementById("checkEngagement").setCustomValidity("Please select one of the three events")
-      document.getElementById("checkEngagement").reportValidity();
-     
-    } 
-
-  });
-
+});
+  
   updateOfferingsTable();
   
   if ($("#checkIsSeries").is(":checked")){
@@ -456,7 +572,7 @@ console.log(trainingStatus, serviceHourStatus, engagementStatus, bonnersStatus)
 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
-      $('#eventName').val($('#inputEventName').val());
+      $('#eventName').val($('#inputEventName').val());// the input value from of page copied
     }
     let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
@@ -539,6 +655,7 @@ console.log(trainingStatus, serviceHourStatus, engagementStatus, bonnersStatus)
         $("#generatedEvents").addClass('d-none');
         return;
       }
+      
 
       calculateRepeatingEventFrequency();
     }
@@ -633,4 +750,5 @@ console.log(trainingStatus, serviceHourStatus, engagementStatus, bonnersStatus)
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+  
 });
