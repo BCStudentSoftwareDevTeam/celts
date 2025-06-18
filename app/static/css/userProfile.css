@@ -33,9 +33,6 @@ dd {
   padding: 8px 23px;
   font-size: 12px;
   font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #expressNoInterest {
@@ -45,13 +42,7 @@ dd {
   padding: 8px 23px;
   font-size: 12px;
   font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
-
-
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 

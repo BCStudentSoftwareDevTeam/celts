@@ -1,7 +1,7 @@
 $(document).ready(function(){
-  $("#expressInterest").on("click", function() {
+  $(".interest-button").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = true
+    let isAdding = $(this).data('choice') === true || $(this).data('choice') === "true";
     
     
     $.ajax({
@@ -9,7 +9,7 @@ $(document).ready(function(){
         type: "POST",
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
-        success: function(s) {
+        success: function(response) {
           msgToast("Changes saved successfully!", "Your interest has been updated.")
         },
         error: function(request, status, error) {
@@ -19,26 +19,6 @@ $(document).ready(function(){
     });
   })
   
-  $("#expressNoInterest").on("click", function() {
-    let username = $(this).data('username')
-    let isAdding = false
-    
-    $.ajax({
-        url: "/profile/"+username+"/indicateInterest",
-        type: "POST",
-        data: JSON.stringify({ "isAdding": isAdding }),
-        contentType: "application/json",
-        success: function(s) {
-          msgToast("Changes saved successfully!", "Your interest has been updated.")
-        },
-        error: function(request, status, error) {
-          console.log(status, error)
-          msgToast("Error!", "Failed to save changes!")
-        }
-    });
-  });
-
-
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
         printDocument(`/profile/${username}/travelForm`)
