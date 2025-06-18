@@ -31,7 +31,6 @@ $(document).ready(function(){
     });
     
   })
-  
 
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -110,7 +109,7 @@ $(document).ready(function(){
     }
     $(this).val('')
   }
-  
+
   function viewTranscript(e){
     let username = $(this).data('username')
     window.location.href = `/profile/${username}/serviceTranscript`

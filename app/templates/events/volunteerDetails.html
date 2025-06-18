@@ -21,7 +21,11 @@
 {% macro createCard(participant, volunteerType) %}
   
     <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
-      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></h4>
+      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b>
+        {% if participant.insuranceinfo and participant.insuranceinfo.healthIssues %}
+          <i class="bi bi-star-fill fs-6"></i>
+        {% endif %}
+      </h4>
       <ul>
         <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
         <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
@@ -31,6 +35,7 @@
         <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
+        <div class="insuranceSelect" nowrap>Insurance Info: {{participant.insuranceinfo.insuranceCompany if participant.insuranceinfo}}</div>
       </ul>
     </div>
 {% endmacro %}
@@ -44,6 +49,7 @@
       <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else 'None specified'}}</td>
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
+      <td class="insuranceSelect" nowrap>{{ participant.insuranceinfo.policyNumber if participant.insuranceinfo}}</td>
     </tr>
 {% endmacro %}
 
@@ -107,6 +113,8 @@
           <label for="statusSelect">Volunteer Status</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
           <label for="emailSelect">Email</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="insuranceSelect" checked>
+          <label for="InsuranceSelect">Insurance Information</label><br>
           <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
           <label class="bNumberSelect" for="barcodeSelect">B-Number Barcode</label><br>
         </div>
@@ -121,10 +129,9 @@
           </div>
         </div>
       </div>
+      <div><i class="bi bi-star-fill fs-6"></i> Star indicates this profile needs to be checked</div>
     </div>
-
     <hr>
-
     <div class="d-print-block" id="volunteerInformationCardToPrint">
       <div class="row sort-here">
         {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
@@ -140,6 +147,7 @@
           <th class="statusSelect">Volunteer Status</th>
           <th class="dietRestrictionSelect">Dietary Restrictions</th>
           <th class="emergencyContactSelect">Emergency Contact</th>
+          <th class="insuranceSelect">Insurance Information</th>
         </tr>
       </thead>
       <tbody>
