@@ -116,8 +116,6 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         savedEvents = None
         eventData.update(request.form.copy())
-        print("Hello World")
-        print(eventData)
         eventData = preprocessEventData(eventData)
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
@@ -280,8 +278,6 @@ def eventDisplay(eventId):
         abort(403)
 
     eventData = model_to_dict(event, recurse=False)
-    print(eventData)
-    print("Debug Here")
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
