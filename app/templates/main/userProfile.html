@@ -74,20 +74,39 @@
       <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="row table-responsive">
-             <label for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
              for more information. 
-             </label>
-
-            <p for="expressInterest"><b>{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</b></p>
-         
-             <div class= "btn-holder col-lg-6 pull-left">
+             </p>
+            <p id="initialMessage">Are you interested in the CCE Minor?</p>
+            <p id="expressInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated interest in the CCE Minor.</b></p>
+            <p id="expressNoInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated they are not interested in the CCE Minor.</b></p>
+            
+            <div class= "btn-holder col-lg-6 pull-left">
               <button  id="expressInterest" class="btn interest-button" data-choice="true" data-username ="{{volunteer.username}}"
              type="button" style="background-color: #4CAF50; color: white; border: none; padding: 8px 23px; font-size: 12px; font-weight: bold;">YES
               </button> 
-        
               <button  id="expressNoInterest" class="btn interest-button" data-choice="false" data-username ="{{volunteer.username}}" type="button"  style="background-color: #e82222; color: white; border: none; padding: 8px 23px; font-size: 12px; font-weight: bold;">NO
               </button>
+              <script>
+                const yesBtn = document.getElementById("expressInterest");
+                const noBtn = document.getElementById("expressNoInterest");
+                const initialMessage = document.getElementById("initialMessage");
+                const interestParagraph = document.getElementById("expressInterestp");
+                const noInterestParagraph = document.getElementById("expressNoInterestp");
+
+                yesBtn.onclick = function () {
+                  initialMessage.style.display = "none";
+                  noInterestParagraph.style.display = "none";
+                  interestParagraph.style.display = "block";
+                };
+
+                noBtn.onclick = function () {
+                 initialMessage.style.display = "none";
+                 interestParagraph.style.display = "none";
+                 noInterestParagraph.style.display = "block";
+                };
+              </script>
              </div>
           </div>
         </div>
