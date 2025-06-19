@@ -105,7 +105,7 @@ $(document).ready(function(){
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
-      changeYear: true,   
+      changeYear: true,
       changeMonth: true,
       minDate:+1,
       dateFormat: "yy-mm-dd",
@@ -131,7 +131,7 @@ $(document).ready(function(){
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-   $(".modal-title-ban").text(banValue + " Volunteer");
+    $(".modal-title-ban").text(banValue + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
@@ -145,7 +145,7 @@ $(document).ready(function(){
     
   });
 
- $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
