@@ -160,8 +160,6 @@ def viewUsersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
-    isChrome = True if "Chrom" in request.user_agent.string else False
-    
     try:
         volunteer = User.get(User.username == username)
     except Exception as e:
@@ -244,7 +242,6 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                isChrome = isChrome
                             )
     abort(403)
 

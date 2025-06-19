@@ -102,15 +102,14 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-  // console.log($.browser);
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
       changeYear: true,   
       changeMonth: true,
       minDate:+1,
-      dateFormat: "mm-dd-yy",
-    }) 
+      dateFormat: "yy-mm-dd",
+    }).attr('readonly','readonly');
   });
 
     /*
@@ -132,8 +131,8 @@ $(document).ready(function(){
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
-    $("#modalProgramName").text("Program: " + $(this).data("name"));
+   $(".modal-title-ban").text(banValue + " Volunteer");
+    $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
@@ -146,14 +145,10 @@ $(document).ready(function(){
     
   });
 
- $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+ $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
-
-$("#banEndDatepicker").on('change', function () {
-  console.log("Datepicker changed:", $(this).val());
-});
 
   $("#banButton").click(function (){
      $("#banButton").prop("disabled", true)

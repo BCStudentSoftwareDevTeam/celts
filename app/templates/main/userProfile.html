@@ -591,7 +591,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title-ban"></h5>
+          <h5 class="modal-title-ban">Ban Volunteer</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="align=center">
@@ -603,9 +603,7 @@
             <p align="left" id="banNote">Why the student was banned</p>
           </div>
           <div id="banEndDate">
-            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp
-              <input id="banEndDatepicker" readonly='readonly'  type= {% if isChrome == True %} "text" placeholder="mm/dd/yyyy" {% else %} "text" placeholder="mm/dd/yyyy" {% endif %}>
-            </h6>
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
           </div>
           
           <div class="input-group">
