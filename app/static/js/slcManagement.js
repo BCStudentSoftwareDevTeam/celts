@@ -139,8 +139,10 @@ function withdraw(){
     },
     error: function(request, status, error) {
         console.log(status,error);
+        $('#' + courseID).val('---');
     }
-  })
+  });
+  $('#' + courseID).val('---');
 };
 
 function changeTerm() {
