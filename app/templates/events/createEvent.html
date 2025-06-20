@@ -7,7 +7,13 @@
     {% set page_title = 'Create a ' + eventData["program"].programName %}
 
   {% elif template.tag == 'single-program' %}
-    {%set page_title = 'Create a ' + eventData["program"].programName %}
+    {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+      {%set page_title = 'Create a ' + eventData["program"].programName %}
+    {% elif eventData["program"].programName == 'Adopt-a-Grandparent' %}
+      {% set page_title = 'Create an ' + eventData["program"].programName + ' Event' %}
+    {% else %}
+      {%set page_title = 'Create a ' + eventData["program"].programName + ' Event' %}
+    {% endif %}
 
   {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
