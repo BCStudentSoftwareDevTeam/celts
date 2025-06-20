@@ -12,7 +12,7 @@ from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
 
-@events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
+@events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)
