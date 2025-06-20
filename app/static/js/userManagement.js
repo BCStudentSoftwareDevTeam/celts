@@ -77,10 +77,18 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
-  $('[data-bs-target="#adminProgramManagement"]').on('click', function() {
+  $('[data-bs-target="#adminProgramManagement"]').on('click', async function() {
     // Get the JSON data from the data-programinfo attribute
-    const programInfo = JSON.parse($(this).attr('data-programinfo'));
+    const programid = JSON.parse($(this).attr('data-programid'))
+    console.log(programid);
+    
     // Directly populate modal fields
+
+    const programInfo = await $.ajax({
+      method: 'GET',
+      url: "/admin/getProgramInfo/" + programid,      
+    })
+        
     $("#programName").val(programInfo.programName);
     $("#programDescription").val(programInfo.programDescription);
     $("#partner").val(programInfo.partner);

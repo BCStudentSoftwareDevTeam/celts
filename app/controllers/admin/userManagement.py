@@ -1,6 +1,8 @@
-from flask import render_template,request, flash, g, abort, redirect, url_for
+from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify
+from playhouse.shortcuts import model_to_dict
 from peewee import fn, JOIN
 import re
+
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
@@ -112,3 +114,14 @@ def changeTerm():
 def addNewTerm():
     addNextTerm()
     return ""
+
+@admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
+def getProgramInfo(programID):
+    print("ProgramID:", programID)
+    targetProgram = Program.get_by_id(programID)
+    programInfo = model_to_dict(targetProgram, recurse=False)
+    try:
+        return jsonify([programInfo])
+    except Exception as e:
+        print("An Error has Occured", e)
+        abort(500)
