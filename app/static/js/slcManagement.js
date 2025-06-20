@@ -138,11 +138,13 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-        console.log(status,error);
-        $('#' + courseID).val('---');
+        console.log(status,error);      
+        
+    },
+    done: function () {
+      $('#' + courseID).val('---');
     }
   });
-  $('#' + courseID).val('---');
 };
 
 function changeTerm() {
