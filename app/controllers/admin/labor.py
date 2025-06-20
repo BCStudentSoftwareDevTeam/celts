@@ -19,6 +19,5 @@ from app.logic.users import getBannedUsers, isBannedFromEvent
 
 @admin_bp.route('/event/<eventID>/manage_labor', methods=['GET', 'POST'])
 def getlabor(eventID):
-    '''Accepts user input and queries the database returning results that matches user search'''
     name = "hi world"
     return name
