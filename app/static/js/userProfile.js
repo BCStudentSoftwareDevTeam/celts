@@ -1,7 +1,19 @@
 $(document).ready(function(){
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+
+    } else {
+        $("#dietContainer").show();
+    }
+  });
+
+
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
-    let isAdding = true 
+    let isAdding = $(this).is(':checked');
     
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
@@ -9,12 +21,14 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(s) {
+          msgToast("Changes saved successfully!", "Your interest has been updated.")
         },
         error: function(request, status, error) {
           console.log(status, error)
           msgToast("Error!", "Failed to save changes!")
         }
     });
+    
   })
 
   $("#printButton").on("click", function() {
@@ -23,6 +37,7 @@ $(document).ready(function(){
       })
   $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
+  $("#serviceTranscript").click(viewTranscript); 
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -94,6 +109,11 @@ $(document).ready(function(){
     $(this).val('')
   }
 
+  function viewTranscript(e){
+    let username = $(this).data('username')
+    window.location.href = `/profile/${username}/serviceTranscript`
+  }
+
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -124,8 +144,8 @@ $(document).ready(function(){
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).data("name "));
+    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
+    $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
@@ -138,8 +158,7 @@ $(document).ready(function(){
     
   });
 
-
-  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
@@ -356,4 +375,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
+
+  
 }
+
+
