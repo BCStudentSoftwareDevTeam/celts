@@ -12,4 +12,4 @@ from app.controllers.admin import userManagement
 from app.controllers.admin import volunteers
 from app.controllers.admin import minor
 from app.controllers.admin import graduationManagement
-
+from app.controllers.admin import labor
