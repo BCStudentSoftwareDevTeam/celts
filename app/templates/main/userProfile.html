@@ -449,7 +449,7 @@
                 <label class="custom-control-label" for="checkDietRestriction"><strong> No dietary restrictions</strong></label>
                 <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
               </div>
-                  <div id="dietContainer" style="display: block;">
+                  <div id="dietContainer">
                           <label for="usr">Please enter any dietary restrictions you have:</label>
                           <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
                   </div>  
