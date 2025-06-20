@@ -22,6 +22,7 @@ def fixture_info():
 
         event1 = Event.create(id=501, name='Event1', term=term1, program=program1)
         event2 = Event.create(id=502, name='Event2', term=term1, program=program2)
+        event3 = Event.create(id=503, name='Event3', term=term1, program=program2)
 
         eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
         eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
@@ -37,6 +38,7 @@ def fixture_info():
             'program2': program2,
             'event1': event1,
             'event2': event2,
+            'event3': event3,
             'eventparticipant1': eventparticipant1,
             'eventparticipant2': eventparticipant2,
         }
@@ -273,8 +275,13 @@ def test_volunteerProgramHours(fixture_info):
 def test_totalVolunteerHours(fixture_info):
     #Returns the total amount of volunteer hours in the database
     assert list(totalVolunteerHours("2023-2024")) == [(8.0,)]
-    assert list(totalVolunteerHours("2024-2025")) == [(None,)]
+    assert list(totalVolunteerHours("2024-2025")) == [(0.0,)]
 
+    #hoursEarned is set to 0 (none)
+    EventParticipant.create(user = 'builderb',
+                            event = fixture_info['event3'],
+                            hoursEarned = 0)
+    
     # Adding 1 volunteer hour to one event
     EventParticipant.create(user = 'builderb',
                             event = fixture_info['event2'],
