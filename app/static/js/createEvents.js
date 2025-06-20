@@ -373,6 +373,9 @@ function checkValidation(seriesEvent){
   //let seriesSuffix = ""; 
 
    $(".all").each(function(){
+
+    if (!$(this).is(":visible") || $(this).is(":disabled")) return;
+    
     if ($(this).val() === ""){
       this.setCustomValidity("Please fill out the required field"); // do these actions
       this.reportValidity();
@@ -384,22 +387,10 @@ function checkValidation(seriesEvent){
    });
   
    console.log($("#checkEngagement").is(":checked"));
-  if (seriesEvent) {
-    //   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)){
-    //   // If none are checked, show an error message on the engagement checkbox
-    //   const engagementElement = document.getElementById("checkEngagement");
-    //   document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
-    //   engagementElement.focus(); 
-    //   document.getElementById("checkEngagement").reportValidity();
-    //   allFieldFilled = false;
-    //   console.log("No event type selected");
-    // } else {
-    //   // Clear any existing validation message
-    //   document.getElementById("checkEngagement").setCustomValidity("");
-    // }
-      
-    //let seriesSuffix = "-modal";    
+  if (seriesEvent) {   
       $(".series").each(function(){
+
+      if (!$(this).is(":visible") || $(this).is(":disabled")) return;
             // Skip event type checkboxes from regular validation
       let elementId = $(this).prop("id");
       if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
@@ -419,6 +410,7 @@ function checkValidation(seriesEvent){
   
         if (seriesWeeklyId) {
             $(".seriesWeekly").each(function(){
+              if (!$(this).is(":visible") || $(this).is(":disabled")) return;
 
            
             if ($(this).val() === ""){
@@ -442,6 +434,8 @@ function checkValidation(seriesEvent){
       } 
       else if (isAllVolunteer) {
       $(".allV").each(function(){
+
+        if (!$(this).is(":visible") || $(this).is(":disabled")) return;
             if ($(this).val() === ""){
               this.setCustomValidity("Please fill out the required field"); // do these actions
               this.reportValidity();
@@ -453,20 +447,13 @@ function checkValidation(seriesEvent){
 
   
   } else {
-    //let seriesSuffix = "-mainOnly"
 
     $(".main").each(function(){
+      if (!$(this).is(":visible") || $(this).is(":disabled")) return;
     let elementId = $(this).prop("id");
     if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
           elementId === "checkEngagement" || elementId === "checkBonners") {
         return; // Skip these, they'll be validated separately
-  //   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
-  //   // If none are checked, show an error message on the engagement checkbox
-  //   document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
-  //   document.getElementById("checkEngagement").reportValidity();
-  // } else {
-  //   // Clear any existing validation message
-  //   document.getElementById("checkEngagement").setCustomValidity("");
   }
     if ($(this).val() === ""){
       this.setCustomValidity("Please fill out the required field"); // do these actions
@@ -486,10 +473,28 @@ function checkValidation(seriesEvent){
     }
   }
 
+  console.log("Final allFieldFilled status:", allFieldFilled);
+  
   if (allFieldFilled) {
-     console.log("All validation passed - submitting form");//TESTING PURPOSE
-      $("#saveEvent").submit();     
+    //  console.log("All validation passed - submitting form");//TESTING PURPOSE
+    //   $("#saveEvent").submit();     
+    // }
+        // FIX 5: Removed problematic $(this) reference - was outside loop context
+    console.log("All validation passed - submitting form");
+    
+    // Try multiple submission methods
+    const form = document.getElementById("saveEvent");
+    if (form) {
+      console.log("Form found, attempting submission");
+      // Try triggering submit event instead of direct submission
+      $(form).trigger('submit');
+    } else {
+      console.log("Form not found, trying jQuery method");
+      $("#saveEvent").trigger('submit');
     }
+  } else {
+    console.log("Validation failed - form NOT submitted");
+  }
   }
 
 
