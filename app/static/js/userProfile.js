@@ -1,4 +1,16 @@
 $(document).ready(function(){
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+
+    } else {
+        $("#dietContainer").show();
+    }
+  });
+
+
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -16,6 +28,7 @@ $(document).ready(function(){
           msgToast("Error!", "Failed to save changes!")
         }
     });
+    
   })
 
   $("#printButton").on("click", function() {
@@ -106,8 +119,11 @@ $(document).ready(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
       changeYear: true,
+      changeYear: true,
       changeMonth: true,
       minDate:+1,
+      dateFormat: "yy-mm-dd",
+    }).attr('readonly','readonly');
       dateFormat: "yy-mm-dd",
     }).attr('readonly','readonly');
   });
@@ -148,6 +164,7 @@ $(document).ready(function(){
   $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
+  });
   });
 
   $("#banButton").click(function (){
@@ -362,4 +379,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
+
+  
 }
+
+
