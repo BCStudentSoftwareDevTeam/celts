@@ -150,7 +150,7 @@
       </tbody>
     </table>
 
-    <form target="_blank" action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames"></form>
+    <form action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames"></form>
 {% else %}
     <h3>No volunteer information available for this event.</h3>
 {% endif %}

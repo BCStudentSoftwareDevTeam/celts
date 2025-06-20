@@ -1,5 +1,5 @@
 @media print {
     .page, .page-break { 
-        break-after: page;
+        break-before: page;
     }
 }

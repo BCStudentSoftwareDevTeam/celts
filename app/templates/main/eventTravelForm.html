@@ -6,8 +6,9 @@
 {% endblock %}
 
 {% block app_content %}
+{% if userList %}
 {% for userData in userList %} 
-<div class= "w-100 d-print-block page">
+<div class= "w-100 d-print-block page page-break">
     <div>
         {% set width = 161 %}
         <img src="{{url_for('static', filename='images/logos/celts_vertical_b&w.png')}}" class="" width ="{{width}}" height="{{width * (199/192)}}">
@@ -146,13 +147,15 @@
     </a>
     <br>
     <div class='underlined d-print-block'>{{userData.healthIssues}}</div>
-    <div class="page-break"></div>
 </div>
 {% endfor %}
+{% endif %}
 
 {% block script%}
 <script>
 print()
+// Prevents the error of ERR_CACHE_MISS. occurs when alternating between pages forward and backward. Currently redirects to volunteer details page.
+if (window.history.replaceState)window.history.replaceState(null,null,window.location.href);
 </script>
 {% endblock %}
 {% endblock %}
