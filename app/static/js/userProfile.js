@@ -1,13 +1,12 @@
 $(document).ready(function(){
-  $("#checkDietRestriction, #diet").on("change",  function() {
+  $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
-        dietContainer.style.display = "none";
+        $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
 
-    }
-    else {
-        dietContainer.style.display = "block";
+    } else {
+        $("#dietContainer").show();
     }
   });
 
