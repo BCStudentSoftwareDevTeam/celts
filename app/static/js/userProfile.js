@@ -1,4 +1,16 @@
 $(document).ready(function(){
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+
+    } else {
+        $("#dietContainer").show();
+    }
+  });
+
+
   $("#expressInterest").on("click", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -16,6 +28,7 @@ $(document).ready(function(){
           msgToast("Error!", "Failed to save changes!")
         }
     });
+    
   })
 
   $("#printButton").on("click", function() {
@@ -362,4 +375,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
+
+  
 }
+
+
