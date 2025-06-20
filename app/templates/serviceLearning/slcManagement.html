@@ -39,17 +39,13 @@
           <td>
             <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
               <option value="---" disabled selected>Select Action</option>
-              {% if courseDict[course]['status'] != 'Approved' %}
               <option value="Renew">Renew</option>
               <option value="View">View</option>
               <option value="Withdraw">Withdraw</option>
-              <option value="Edit">Edit</option>
-              {% else %}
-              <option value="Renew">Renew</option>
-              <option value="View">View</option>
-              <option value="Withdraw">Withdraw</option>
-              {% endif %}
               <option value="Print">Print</option>
+              {% if courseDict[course]['status'] != 'Approved' %}
+              <option value="Edit">Edit</option>
+              {% endif %}
             </select>
             
           </td>
