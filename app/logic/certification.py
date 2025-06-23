@@ -84,13 +84,17 @@ def updateCertRequirements(certId, newRequirements):
 
     # update existing and add new requirements
     requirements = []
+
+  
     for order, requirementData in enumerate(newRequirements):
-        
+        print(requirementData)
+        # int_requirementData = int(requirementData)
+    
         try:
-            newRequirement = CertificationRequirement.get_by_id(requirementData['id'])
+            newRequirement = CertificationRequirement.get_by_id(requirementData)
         except DoesNotExist:
             newRequirement = CertificationRequirement()
-            
+
         newRequirement.certification = certId
         newRequirement.isRequired = bool(requirementData['required'])
         newRequirement.frequency = requirementData['frequency']
