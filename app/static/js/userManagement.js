@@ -78,64 +78,67 @@ $(document).ready(function(){
     submitTerm();
   });
 
-  $('[data-bs-target="#adminProgramManagement"]').on('click', async function() {
+  $('[data-bs-toggle="modal"]').on('click', function() {
     // Get the programid from the attribute data-programid
-    const programid = JSON.parse($(this).attr('data-programid'))  
+    const programid = $(this).attr('data-programid')
 
     // Get the program data using an AJAX request and the retrieve programid
-    let programInfoData;
-    try {
-      programInfoData = await $.ajax({
+    $.ajax({
         method: 'GET',
-        url: "/admin/getProgramInfo/" + programid,      
-      })
-    }
-    catch (error) {
-      console.error("Failed to retrieve program info", error);
-      alert("Could not retrieve program info. Please try again later.")
-    }
-    const programInfo = programInfoData[0]
-    
-    // Populate the form with the existing data that was retrieved from the AJAX request
-    $("#programName").val(programInfo.programName);
-    $("#programDescription").val(programInfo.programDescription);
-    $("#partner").val(programInfo.partner);
-    $("#contactEmail").val(programInfo.contactEmail);
-    $("#contactName").val(programInfo.contactName);
-    $("#location").val(programInfo.location);
-    $("#programid").val(programInfo.programid)
-    $("#instagramUrl").val(programInfo.instagramUrl);
-    $("#facebookUrl").val(programInfo.facebookUrl);
-    $("#bereaUrl").val(programInfo.bereaUrl);
-    $('#modalProgramImage').val('');
-    $('#modalProgramImageContainer').html('');
+        url: "/admin/getProgramInfo/" + programid,     
+        success: function(response) {
+          const programInfo = response[0]
+          
+          // Populate the form with the existing data that was retrieved from the AJAX request
+          $("#programName").val(programInfo.programName);
+          $("#programDescription").val(programInfo.programDescription);
+          $("#partner").val(programInfo.partner);
+          $("#contactEmail").val(programInfo.contactEmail);
+          $("#contactName").val(programInfo.contactName);
+          $("#location").val(programInfo.location);
+          $("#programid").val(programInfo.programid)
+          $("#instagramUrl").val(programInfo.instagramUrl);
+          $("#facebookUrl").val(programInfo.facebookUrl);
+          $("#bereaUrl").val(programInfo.bereaUrl);
+          $('#modalProgramImage').val('');
+          $('#modalProgramImageContainer').html('');
 
-    handleFileSelection('modalProgramImage', true);
-    // Update the form action URL dynamically
-    let updateForm = $('#updateProgramForm');
-    updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
+          handleFileSelection('modalProgramImage', true);
+          // Update the form action URL dynamically
+          let updateForm = $('#updateProgramForm');
+          updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
+          // Making sure the data loads before the modal opens, which avoids erros in case the frontend is disconnected from the back
+          // Scott Suggestion
+          let modal = new bootstrap.Modal(document.getElementById('adminProgramManagement'));
+          modal.show();
+        }, 
+        error: function () {          
+            console.error("Failed to retrieve program info", error);
+            msgToast("Could not retrieve program info.")
+        }
     });
+  });
 
-    $(".editProgramManagersButton").on('click', function(){
-      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
-      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
+  $(".editProgramManagersButton").on('click', function(){
+    $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
+    $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
-      $('#noManagersText').addClass("d-none")
-      const managers = $(this).attr('data-managers').split(',');
-      const managersTable = $('#programManagersTable');
-      managersTable.empty();
-      
-      if(managers[0].length == 0){
-        $('#noManagersText').removeClass("d-none")
-        return;
-      };
+    $('#noManagersText').addClass("d-none")
+    const managers = $(this).attr('data-managers').split(',');
+    const managersTable = $('#programManagersTable');
+    managersTable.empty();
+    
+    if(managers[0].length == 0){
+      $('#noManagersText').removeClass("d-none")
+      return;
+    };
 
-      managers.forEach(manager => {
-        let [managerName, managerUser] = manager.split('#');
-        managersTable.append(createProgramManagerRow(managerUser, managerName))
-      });
-    })
-});
+    managers.forEach(manager => {
+      let [managerName, managerUser] = manager.split('#');
+      managersTable.append(createProgramManagerRow(managerUser, managerName))
+    });
+  })
+  });
 
 function submitRequest(method, username){
   let data = {
