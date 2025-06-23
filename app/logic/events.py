@@ -394,7 +394,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['isLaborOnly']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
