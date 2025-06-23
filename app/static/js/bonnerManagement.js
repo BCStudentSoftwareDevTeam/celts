@@ -29,7 +29,7 @@ function addSearchCapabilities(inputElement){
     $(inputElement).on("input", function(){
         let year = $(this).data('year');
         searchUser(this.id, student => cohortRequest(year, "add", student.username), false, null, "student");
-    });
+    }); 
 }
 
 function updateExportText(){
@@ -41,38 +41,36 @@ function updateExportText(){
     document.getElementById("last5").textContent = newText;
 }
 
-
 function saveRequirement(e) {
     console.log("Saving requirement");
     console.log( $(e)); //$(e).data("id")+
-    if ($(e).data("id")=="save-new") {
+    if ($(e).data("id")== "reqid") {
         console.log("New row, not saving");
 
         // console.log(JSON.stringify(row_data));
-        $.ajax({
-            method: 'POST',
-            url: "/newReq", // Bonner certification id hard-coded here
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify(''),
-            
-
-            success: function(ids) {
-                // update our rows with any new ids
-                let rows = $('#requirements tbody tr').get()
-                ids.forEach(function(id, index) {
-                    let row = $(rows[index])
-                    if(id != row.data('id')) {
-                        row.data('id', id);
-                    }
-                });
-                msgToast("Bonner", "Updated Bonner Requirements");
-            },
-            error: function(e) {
-                msgToast("Error", "Error Saving Requirements");
-           }
-        });
-    }
+    $.ajax({
+        method: 'POST',
+        url: "/newReq", // Bonner certification id hard-coded here
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify('row_data'),
+        
+        success: function(ids) {
+            // update our rows with any new ids
+            let rows = $('#requirements tbody tr').get()
+            ids.forEach(function(id, index) {
+                let row = $(rows[index])
+                if(id != row.data('id')) {
+                    row.data('id', id);
+                }
+            });
+            msgToast("Bonner", "Updated Bonner Requirements");
+        },
+        error: function(e) {
+            msgToast("Error", "Error Saving Requirements");
+        }
+    });
+    
    
 }
 
@@ -263,7 +261,7 @@ function addRequirement() {
    
     // addRequirementsRowHandlers()
     newRow.find("input").focus()
-    $("#reqAdd").attr("disabled", "disabled");
+    $("#reqAdd").attr("disabled", "disabled")
 }
 
 function addCohort(){
