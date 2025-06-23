@@ -77,18 +77,26 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
-  $('[data-bs-target="#adminProgramManagement"]').on('click', async function() {
-    // Get the JSON data from the data-programinfo attribute
-    const programid = JSON.parse($(this).attr('data-programid'))
-    console.log(programid);
-    
-    // Directly populate modal fields
 
-    const programInfo = await $.ajax({
-      method: 'GET',
-      url: "/admin/getProgramInfo/" + programid,      
-    })
-        
+  $('[data-bs-target="#adminProgramManagement"]').on('click', async function() {
+    // Get the programid from the attribute data-programid
+    const programid = JSON.parse($(this).attr('data-programid'))  
+
+    // Get the program data using an AJAX request and the retrieve programid
+    let programInfoData;
+    try {
+      programInfoData = await $.ajax({
+        method: 'GET',
+        url: "/admin/getProgramInfo/" + programid,      
+      })
+    }
+    catch (error) {
+      console.error("Failed to retrieve program info", error);
+      alert("Could not retrieve program info. Please try again later.")
+    }
+    const programInfo = programInfoData[0]
+    
+    // Populate the form with the existing data that was retrieved from the AJAX request
     $("#programName").val(programInfo.programName);
     $("#programDescription").val(programInfo.programDescription);
     $("#partner").val(programInfo.partner);
@@ -105,7 +113,7 @@ $(document).ready(function(){
     handleFileSelection('modalProgramImage', true);
     // Update the form action URL dynamically
     let updateForm = $('#updateProgramForm');
-    updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
+    updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
     });
 
     $(".editProgramManagersButton").on('click', function(){

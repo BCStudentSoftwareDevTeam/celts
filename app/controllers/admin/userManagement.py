@@ -1,6 +1,6 @@
 from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify
 from playhouse.shortcuts import model_to_dict
-from peewee import fn, JOIN
+from peewee import fn, JOIN, DoesNotExist
 import re
 
 from app.controllers.admin import admin_bp
@@ -78,6 +78,24 @@ def updateProgramInfo(programID):
             abort(500,'Error while updating program.')
     abort(403)
 
+
+@admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
+def getProgramInfo(programID):
+    if g.current_user.isCeltsAdmin:
+        targetProgram = Program.get_by_id(programID)
+        programInfo = model_to_dict(targetProgram, recurse=False)
+        try:
+            return jsonify([programInfo])
+        except DoesNotExist:
+            flash('item not found')
+            abort(404)
+        except Exception as e:
+            flash('Failed to retrieve data','warning') 
+            print(e)
+            abort(500, 'Failed to retrieve data')
+    abort(403)
+
+
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
@@ -114,14 +132,3 @@ def changeTerm():
 def addNewTerm():
     addNextTerm()
     return ""
-
-@admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
-def getProgramInfo(programID):
-    print("ProgramID:", programID)
-    targetProgram = Program.get_by_id(programID)
-    programInfo = model_to_dict(targetProgram, recurse=False)
-    try:
-        return jsonify([programInfo])
-    except Exception as e:
-        print("An Error has Occured", e)
-        abort(500)
