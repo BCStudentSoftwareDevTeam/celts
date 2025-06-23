@@ -140,9 +140,13 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-        console.log(status,error);
+        console.log(status,error);      
+        
+    },
+    done: function () {
+      $('#' + courseID).val('---');
     }
-  })
+  });
 };
 
 function changeTerm() {
