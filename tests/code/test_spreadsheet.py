@@ -150,7 +150,7 @@ def test_repeatVolunteers(fixture_info):
                                 term=fixture_info["term1"],
                                 program=fixture_info['program1'])
     
-    EventParticipant.create(user = 'doej', event = testEvent2)
+    EventParticipant.create(user = 'doej', event = testEvent2, hoursEarned=0)
     
     # Check for separate events
     assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 3)]
@@ -318,7 +318,7 @@ def test_getVolunteerProgramEventByTerm(fixture_info):
     assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term2']))) == ([('Bob Builder', 'builderb', 'Program4', 'Event4')])
     
 
-    EventParticipant.create(user = 'builderb', event = fixture_info['event2'])
+    EventParticipant.create(user = 'builderb', event = fixture_info['event2'], hoursEarned=0)
     
     # Checks for additional volunteer participants
     assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1'])))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
@@ -332,9 +332,9 @@ def test_getVolunteerProgramEventByTerm(fixture_info):
                                 term = fixture_info['term1'],
                                 program=fixture_info['program2'])
     EventParticipant.create(user='doej',
-                            event=testEvent)
+                            event=testEvent, hoursEarned=0)
     EventParticipant.create(user='doej',
-                            event=testEvent2)
+                            event=testEvent2, hoursEarned=0)
     
     # Checks for repeated volunteers 
     assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
@@ -356,7 +356,7 @@ def test_getUniqueVolunteers(fixture_info):
                                                                 ('doej2', 'Jane Doe', 'B888828'),]
     assert list(getUniqueVolunteers("2024-2025")) == [('builderb', 'Bob Builder', 'B00700932')]
     
-    EventParticipant.create(user = 'builderb', event = fixture_info['event1'])
+    EventParticipant.create(user = 'builderb', event = fixture_info['event1'], hoursEarned=0)
     
     # Checks for new event participants
     assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('builderb', 'Bob Builder', 'B00700932'),
