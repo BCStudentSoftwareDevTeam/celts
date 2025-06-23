@@ -438,8 +438,14 @@
         <div class="container">
           <form>
             <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+              <div class=" form-check form-switch mb-2">
+                <label class="custom-control-label" for="checkDietRestriction"><strong> No dietary restrictions</strong></label>
+                <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
+              </div>
+                  <div id="dietContainer">
+                          <label for="usr">Please enter any dietary restrictions you have:</label>
+                          <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+                  </div>  
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
@@ -584,7 +590,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title-ban">Ban Volunteer</h5>
+          <h5 class="modal-title-ban"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="align=center">
@@ -596,7 +602,9 @@
             <p align="left" id="banNote">Why the student was banned</p>
           </div>
           <div id="banEndDate">
-            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp
+              <input id="banEndDatepicker" readonly='readonly' type="text" placeholder="yyyy-mm-dd">
+            </h6>
           </div>
           
           <div class="input-group">
@@ -613,5 +621,6 @@
     </div>
   </form>
 </div>
+
 <!-- ################# Ban or Unban Modal ################ -->
 {% endblock %}
