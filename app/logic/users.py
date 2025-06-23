@@ -14,7 +14,6 @@ from peewee import JOIN
 from dateutil import parser
 from flask import g
 
-
 def isEligibleForProgram(program, user):
     """
     Verifies if a given user is eligible for a program by checking if they are
@@ -88,7 +87,7 @@ def banUser(program_id, username, note, banEndDate, creator):
                       user = username,
                       endDate = banEndDate,
                       banNote = noteForDb)
-
+    
 def unbanUser(program_id, username, note, creator):
     """
     This function creates an entry in the note table and programBan table in order
