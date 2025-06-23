@@ -1,7 +1,8 @@
 $(document).ready(function(){
-  $(".interest-button").on("click", function() {
+  $(".form-check-input").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).data('choice') === true;
+    console.log("!!!!!!!!!!");
     
     
     $.ajax({

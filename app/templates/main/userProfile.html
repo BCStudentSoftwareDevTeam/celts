@@ -78,7 +78,16 @@
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
              for more information. 
              </p>
-            <p id="initialMessage">Are you interested in the CCE Minor?</p>
+              <div class="form-check form-switch">
+              <label class="custom-control-label" for="expressInterest"><strong><b>
+                {{volunteer.firstName}} {{volunteer.lastName}} has indicated interest in the CCE Minor.</b></strong>
+              </label>
+              <input class="form-check-input" data-choice="true" data-username ="{{volunteer.username}}" 
+              type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %}"checked" {% endif %} />
+             </div>
+            
+
+            <!-- <p id="initialMessage">Are you interested in the CCE Minor?</p>
             <p id="expressInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated interest in the CCE Minor.</b></p>
             <p id="expressNoInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated they are not interested in the CCE Minor.</b></p>
             
@@ -105,9 +114,9 @@
                  initialMessage.style.display = "none";
                  interestParagraph.style.display = "none";
                  noInterestParagraph.style.display = "block";
-                };
-              </script>
-             </div>
+                }; -->
+              <!-- </script> -->
+             <!-- </div> -->
           </div>
         </div>
      </div>
