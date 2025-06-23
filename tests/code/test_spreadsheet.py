@@ -285,7 +285,7 @@ def test_volunteerProgramHours(fixture_info):
 def test_totalVolunteerHours(fixture_info):
     #Returns the total amount of volunteer hours in the database
     assert list(totalVolunteerHours("2023-2024")) == [(8.0,)]
-    assert list(totalVolunteerHours("2024-2025")) == [(0.0,)] 
+    assert list(totalVolunteerHours("2024-2025")) == [(0.0,)]
 
     #hoursEarned is set to 0 (none)
     EventParticipant.create(user = 'builderb',
@@ -293,7 +293,7 @@ def test_totalVolunteerHours(fixture_info):
                             hoursEarned = 0)
     assert list(totalVolunteerHours("2023-2024")) == [(8.0,)] 
     assert list(totalVolunteerHours("2024-2025")) == [(0.0,)] #tests for hoursEarned to be 0 (should pass)
-    assert list(totalVolunteerHours("2024-2025")) == [(None,)] #tests for hoursEarned to be None (should fail)
+    #assert list(totalVolunteerHours("2024-2025")) == [(None,)] #tests for hoursEarned to be None (should fail)
 
         
     # Adding 1 volunteer hour to one event
