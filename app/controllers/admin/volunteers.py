@@ -8,6 +8,7 @@ from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
+from app.models.insuranceInfo import InsuranceInfo
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
@@ -100,12 +101,17 @@ def volunteerDetailsPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp)
+    eventRsvpData = list(EventRsvp.select(EmergencyContact, InsuranceInfo, EventRsvp)
                                   .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user))
+                                  .switch(EventRsvp)
+                                  .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventRsvp.user))
                                   .where(EventRsvp.event==event))
-    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant)
+    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant,InsuranceInfo)
                                                 .join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user))
+                                                .switch(EventParticipant)
+                                                .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventParticipant.user))
                                                 .where(EventParticipant.event==event))
+    
     
     waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
     rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
