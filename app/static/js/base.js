@@ -6,7 +6,7 @@ function flashMessageResponse(message) {
   return '';
 }
 
-function msgFlash(flashMessage, status, timeout=null){
+function msgFlash(flashMessage, status, timeout=2500){
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
@@ -114,7 +114,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             "phoneNumber":phoneInput.val()},
       success: function(s){
         $(phoneInputId).attr("data-value",phoneInput.val())
-        msgToast("Phone Number", "Successfully updated the phone number.")
+        msgFlash("Successfully updated the phone number.","success" )
       },
       error: function(request, status, error) {
         msgFlash("Phone number not updated.", "danger")

@@ -265,16 +265,20 @@ $(document).ready(function(){
 
         if (bgStatus == '') {
           bgStatusInput.focus()
-          bgStatusInput.addClass("invalid");
-          window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+           $('.form-select').each(function() {
+                bgStatusInput[0].setCustomValidity("Please enter a status");
+                bgStatusInput[0].reportValidity();
+          });
           $(this).prop("disabled", false);
           return false
         }
 
         if (bgDate == ''){
           bgDateInput.focus()
-          bgDateInput.addClass("invalid");
-          window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+          $('.form-control').each(function() {
+                bgDateInput[0].setCustomValidity("Please enter a date");
+                bgDateInput[0].reportValidity();
+          });
           $(this).prop("disabled", false);
           return false
         }
@@ -310,8 +314,8 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", `Successfully deleted background check. <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`)
-      },
+       msgFlash(`Successfully deleted background check, <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`, "success")
+      },        
       error: function(error, status){
         console.log(error,status)
       }
