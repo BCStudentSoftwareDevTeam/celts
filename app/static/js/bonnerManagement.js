@@ -41,10 +41,11 @@ function updateExportText(){
     document.getElementById("last5").textContent = newText;
 }
 
+
 function saveRequirement(e) {
     console.log("Saving requirement");
     console.log( $(e)); //$(e).data("id")+
-    if ($(e).data("id")=="new") {
+    if ($(e).data("id")=="save-new") {
         console.log("New row, not saving");
 
         // console.log(JSON.stringify(row_data));
@@ -72,7 +73,9 @@ function saveRequirement(e) {
            }
         });
     }
+   
 }
+
 
 
 
@@ -82,7 +85,7 @@ $(document).ready(function(){
 
     
     
-    $(".saveBtn").on("click", saveRequirement);
+    // $(".saveBtn").on("click", saveRequirement);
     // let rowid=parseInt($(this).data("reqid"));
     // let row_el = $("#requirements" + rowid);
     //         var row_data = {[rowid]:
@@ -119,7 +122,6 @@ $(document).ready(function(){
     //         msgToast("Error", "Error Saving Requirements");
     //     }
     // });
-
 
     //   let rowid=parseInt($(this).data("reqid"));
 
@@ -250,6 +252,7 @@ function addRequirement() {
 
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
     newRow.find("select.required-select option:last-child").attr('selected', true);
+
     newRow.find(".saveBtn").attr('id',"save-new");
     newRow.find(".saveBtn").data('id',"save-new");
     let newSaveBtn = newRow.find(".saveBtn")[0];
@@ -260,6 +263,7 @@ function addRequirement() {
    
     // addRequirementsRowHandlers()
     newRow.find("input").focus()
+    $("#reqAdd").attr("disabled", "disabled");
 }
 
 function addCohort(){
