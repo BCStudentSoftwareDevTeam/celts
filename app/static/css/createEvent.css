@@ -37,7 +37,7 @@
     text-align: center;
     position: fixed;
     z-index: 10;
-    animation: flash 6s forwards;
+    animation: flash 10s forwards;
 }
 
 @keyframes flash {
