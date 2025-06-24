@@ -62,12 +62,16 @@ function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
   $('#eventTime, #eventDate').removeClass('d-none');
+  $('#checkIsSeriesToggleContainer').addClass('col-md-6')
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#eventTime, #eventDate').addClass('d-none');
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
+  $('#checkIsSeriesToggleContainer').addClass('col-md-12')
   $("#pastDateWarningText").text("")
 }
 
@@ -242,10 +246,32 @@ $('#saveSeries').on('click', function() {
     $("#pastDateWarningText").text("")
     $("#checkIsSeries").prop('checked', true);
     // Remove the modal and overlay from the DOM
+    updateEventNameField()
     $('#modalSeries').modal('hide');
   }
 });
 
+// Populate the Event Name field in the main page with the entered repeating events
+function updateEventNameField() {
+  let offerings = JSON.parse($("#seriesData").val())
+  let isSeries = $("#checkIsRepeating").is(":checked")
+
+  // Check if the event is weekly
+  if (!isSeries) {
+    // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
+    let names = new Set()
+    offerings.forEach(offering => {
+      names.add(offering.eventName)
+    });
+    let offeringsText = Array.from(names).join(", ")
+    $('#inputEventName').prop('placeholder', offeringsText)
+  }
+  else {
+    // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
+    let offeringText = $("#repeatingEventsNamePicker").val()
+    $('#inputEventName').prop('placeholder', offeringText)
+  } 
+}
 
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
@@ -459,9 +485,7 @@ $(document).ready(function() {
 
       // Disable single event name field
       $('#inputEventName').prop('readonly', true)
-      $('#inputEventName').prop('placeholder', '')
       $('#inputEventName').val('')
-
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
@@ -469,7 +493,6 @@ $(document).ready(function() {
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
     }
-    
   });
 
   //untoggles the button when the modal cancel or close button is clicked
