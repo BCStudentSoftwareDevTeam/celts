@@ -159,7 +159,7 @@ def events(selectedTerm, activeTab, programID):
 def viewUsersProfile(username):   
     """
     This function displays the information of a volunteer to the user
-    """
+    """    
     try:
         volunteer = User.get(User.username == username)
     except Exception as e:

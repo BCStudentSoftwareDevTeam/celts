@@ -1,6 +1,5 @@
 from app.models import *
 
-
 class User(baseModel):
     username = CharField(primary_key=True)
     bnumber = CharField(unique=True)
@@ -80,4 +79,3 @@ class User(baseModel):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
 
-    
