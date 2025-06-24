@@ -117,7 +117,7 @@ def slcSaveContinue():
     if not course:
         flash("Error saving changes", "danger")
     else:
-        course.status = CourseStatus.IN_PROGRESS
+        course.status = CourseStatus.DRAFT
         course.save()
         flash(f"Proposal has been saved.", "success")
     if request.path == "/serviceLearning/saveExit":
