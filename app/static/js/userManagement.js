@@ -78,9 +78,18 @@ $(document).ready(function(){
     submitTerm();
   });
 
-  $('[data-bs-toggle="modal"]').on('click', function() {
+  $('.editDetails').on('click', function() {
     // Get the programid from the attribute data-programid
     const programid = $(this).attr('data-programid')
+    // Get button id so we can target it to disable it, since the spinner does not disable it automatically
+    const buttonId = $(this).attr('id')
+    // buttonTextId and loadingSpinnerId all end the same loop index variable, which can retrieve so we can target them
+    const buttonTextId = 'editDetailsButtonText' + $(this).attr('loop-index')
+    const loadingSpinnerId = 'editDetailsButtonSpinner' + $(this).attr('loop-index')
+    // Remove the regular text of the button and adding the spinner and the word "loading" and disable the button
+    $('#' + buttonTextId).addClass('d-none')
+    $('#' + loadingSpinnerId).removeClass('d-none')
+    $('#' + buttonId).prop( "disabled", true );
 
     // Get the program data using an AJAX request and the retrieve programid
     $.ajax({
@@ -88,7 +97,7 @@ $(document).ready(function(){
         url: "/admin/getProgramInfo/" + programid,     
         success: function(response) {
           const programInfo = response[0]
-          
+
           // Populate the form with the existing data that was retrieved from the AJAX request
           $("#programName").val(programInfo.programName);
           $("#programDescription").val(programInfo.programDescription);
@@ -109,8 +118,13 @@ $(document).ready(function(){
           updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
           // Making sure the data loads before the modal opens, which avoids erros in case the frontend is disconnected from the back
           // Scott Suggestion
-          let modal = new bootstrap.Modal(document.getElementById('adminProgramManagement'));
+          let modal = new bootstrap.Modal($('#adminProgramManagement'));
           modal.show();
+
+          // Remove the spinner and the word "loading" and adding back the regular text
+          $('#' + buttonTextId).removeClass('d-none')
+          $('#' + loadingSpinnerId).addClass('d-none')
+          $('#' + buttonId).prop( "disabled", false );
         }, 
         error: function () {          
             console.error("Failed to retrieve program info", error);

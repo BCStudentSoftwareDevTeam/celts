@@ -140,13 +140,18 @@
               <span class="form-label borderless">{{ program.programName }}</span>
             </div>
             <div>
-              <button class="btn btn-success  btn-sm test" 
+              <button class="btn btn-success  btn-sm d-inline editDetails" 
                       role="button" 
                       id="programManagementButton{{ loop.index }}"  
-                      data-bs-toggle="modal" 
+                      loop-index="{{ loop.index }}"
                       data-programid="{{program.id}}"
                       >
-                      Edit Details</button>
+                  <span  class="d-none" id="editDetailsButtonSpinner{{ loop.index }}">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Loading...</span>  
+                  </span>
+                  <span id="editDetailsButtonText{{ loop.index }}">Edit Details</span>
+                </button>
               <button class ="btn btn-success btn-sm editProgramManagersButton"
                       data-bs-toggle="modal" 
                       data-bs-target="#editProgramManagers"

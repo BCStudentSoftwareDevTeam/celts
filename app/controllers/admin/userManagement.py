@@ -86,8 +86,9 @@ def getProgramInfo(programID):
             targetProgram = Program.get_by_id(programID)
             programInfo = model_to_dict(targetProgram, recurse=False)
             return jsonify([programInfo])
-        except DoesNotExist:
+        except DoesNotExist as e:
             flash('Program not found')
+            print("Debug Here \n", e)
             abort(404)
         except Exception as e:
             flash('Failed to retrieve data','warning') 
