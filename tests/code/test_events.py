@@ -1058,13 +1058,13 @@ def test_getPreviousRecurringEventData():
 
         EventParticipant.create(user = User.get_by_id("neillz"),
                                                       event = testingEvent2.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
         EventParticipant.create(user = User.get_by_id("ramsayb2"),
                                                       event = testingEvent2.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
         EventParticipant.create(user = User.get_by_id("khatts"),
                                                       event = testingEvent2.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
 
         val = getPreviousSeriesEventData(testingEvent3.seriesId)
         assert val[0].username == "neillz"
@@ -1105,13 +1105,13 @@ def test_getPreviousMultipleOfferingEventData():
 
         EventParticipant.create(user = User.get_by_id("neillz"),
                                                       event = testingEvent1.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
         EventParticipant.create(user = User.get_by_id("ramsayb2"),
                                                       event = testingEvent1.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
         EventParticipant.create(user = User.get_by_id("khatts"),
                                                       event = testingEvent1.id,
-                                                      hoursEarned = None)
+                                                      hoursEarned = 0)
 
         val = getPreviousSeriesEventData(testingEvent2.seriesId)
         assert val[0].username == "neillz"
