@@ -44,10 +44,20 @@ function updateExportText(){
 function saveRequirement(e) {
     console.log("Saving requirement");
     console.log( $(e)); //$(e).data("id")+
-    if ($(e).data("id")== "reqid") {
-        console.log("New row, not saving");
+    // if ($(e).data("id")== "reqid") {
+    //     console.log("New row, not saving");
 
         // console.log(JSON.stringify(row_data));
+
+    let rowid=parseInt($(this).data("reqid"));
+    let row_el = $("#requirements" + rowid);
+            var row_data = {[rowid]:
+                            {
+                                'id': row_el.data("id"),
+                                'name': row_el.find("input").val(),
+                                'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+                                'frequency': row_el.find("select.frequency-select").val()
+                            }}
     $.ajax({
         method: 'POST',
         url: "/newReq", // Bonner certification id hard-coded here
