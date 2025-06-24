@@ -68,6 +68,7 @@
 <!-- ################# Community & Civic Engagement Minor ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingZero">
+       {% set focus = "open" if visibleAccordion == "MinorTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
       data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
     </h3>
@@ -80,43 +81,21 @@
              </p>
               <div class="form-check form-switch">
               <label class="custom-control-label" for="expressInterest"><strong><b>
-                {{volunteer.firstName}} {{volunteer.lastName}} has indicated interest in the CCE Minor.</b></strong>
+                {% if expressInterest is not none %}
+                  {{volunteer.firstName}} {{volunteer.lastName}} has indicated 
+                  {% if expressInterest is false %} 
+                    they are not interested 
+                  {% else %} 
+                    interest 
+                  {% endif %} 
+                    in the CCE Minor.                                
+                {% else %} 
+                  Are you interested in the CCE Minor?
+                {% endif %}</b></strong>
               </label>
-              <input class="form-check-input" data-choice="true" data-username ="{{volunteer.username}}" 
-              type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %}"checked" {% endif %} />
+              <input class="form-check-input" data-username ="{{volunteer.username}}" 
+              type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
              </div>
-            
-
-            <!-- <p id="initialMessage">Are you interested in the CCE Minor?</p>
-            <p id="expressInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated interest in the CCE Minor.</b></p>
-            <p id="expressNoInterestp" style="display: none;"><b>{{volunteer.firstName}} {{volunteer.lastName}} has indicated they are not interested in the CCE Minor.</b></p>
-            
-            <div class= "btn-holder col-lg-6 pull-left">
-              <button  id="expressInterest" class="btn interest-button" data-choice="true" data-username ="{{volunteer.username}}"
-             type="button" style="background-color: #4CAF50; color: white; border: none; padding: 8px 23px; font-size: 12px; font-weight: bold;">YES
-              </button> 
-              <button  id="expressNoInterest" class="btn interest-button" data-choice="false" data-username ="{{volunteer.username}}" type="button"  style="background-color: #e82222; color: white; border: none; padding: 8px 23px; font-size: 12px; font-weight: bold;">NO
-              </button>
-              <script>
-                const yesBtn = document.getElementById("expressInterest");
-                const noBtn = document.getElementById("expressNoInterest");
-                const initialMessage = document.getElementById("initialMessage");
-                const interestParagraph = document.getElementById("expressInterestp");
-                const noInterestParagraph = document.getElementById("expressNoInterestp");
-
-                yesBtn.onclick = function () {
-                  initialMessage.style.display = "none";
-                  noInterestParagraph.style.display = "none";
-                  interestParagraph.style.display = "block";
-                };
-
-                noBtn.onclick = function () {
-                 initialMessage.style.display = "none";
-                 interestParagraph.style.display = "none";
-                 noInterestParagraph.style.display = "block";
-                }; -->
-              <!-- </script> -->
-             <!-- </div> -->
           </div>
         </div>
      </div>
@@ -580,7 +559,7 @@
           <h5 class="modal-title">Add Notes</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <div class="input-group">
             <div class="form-group input-group-x form-outline">
               {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
@@ -638,7 +617,7 @@
           <h5 class="modal-title-ban">Ban Volunteer</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
           <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>

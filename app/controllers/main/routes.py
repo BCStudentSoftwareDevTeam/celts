@@ -584,7 +584,7 @@ def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
         data = request.get_json()
         isAdding = data.get("isAdding", False)
-        
+
         toggleMinorInterest(username, isAdding)
 
     else:

@@ -1,9 +1,7 @@
 $(document).ready(function(){
   $(".form-check-input").on("change", function() {
     let username = $(this).data('username')
-    let isAdding = $(this).data('choice') === true;
-    console.log("!!!!!!!!!!");
-    
+    let isAdding = $(this).is(':checked');
     
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
@@ -12,13 +10,37 @@ $(document).ready(function(){
         contentType: "application/json",
         success: function(response) {
           msgToast("Changes saved successfully!", "Your interest has been updated.")
+          reloadWithAccordion("MinorTable")
+          
         },
         error: function(request, status, error) {
           console.log(status, error)
           msgToast("Error!", "Failed to save changes!")
+          location.reload();
         }
     });
   })
+
+  $('.onTranscriptCheckbox').click(function() {
+    var onTranscript = $(this).is(':checked');
+    var username = $(this).data('username');
+    var programID = $(this).data("programid");
+    displayTranscriptStatus(programID);
+    
+    $.ajax({
+        type: "POST",
+        url: `/profile/${username}/updateTranscript/${programID}`,
+        contentType: "application/json",
+        data: JSON.stringify({ username: username, removeFromTranscript: !onTranscript, programID: programID }),
+        success: function(response) {
+
+        },
+        error: function(error) {
+            console.error("An error occurred:", error);
+        }
+    });
+
+  });
   
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
@@ -318,7 +340,7 @@ $(document).ready(function(){
           return $(this).attr('data-content');
       }
   });
-
+ 
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   $(".saveDiet").on('click', function() {
