@@ -251,20 +251,37 @@ $('#saveSeries').on('click', function() {
 function updateEventNameField() {
   let offerings = JSON.parse($("#seriesData").val())
   let isSeries = $("#checkIsRepeating").is(":checked")
+<<<<<<< HEAD
 
   // Check if the event is weekly
+=======
+>>>>>>> e9feb306 (Problem solved. Text from the repeated events will populate into the Event Name field as readonly in the main page)
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
     let names = new Set()
     offerings.forEach(offering => {
       names.add(offering.eventName)
+<<<<<<< HEAD
     });
     let offeringsText = Array.from(names).join(", ")
+=======
+      console.log(offering.eventName);
+    });
+    // Check if the event is weekly
+    let offeringsText = ""
+    names.forEach(offering => {
+    offeringsText += offering + ", "
+    })
+>>>>>>> e9feb306 (Problem solved. Text from the repeated events will populate into the Event Name field as readonly in the main page)
     $('#inputEventName').prop('placeholder', offeringsText)
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
+<<<<<<< HEAD
     let offeringText = $("#repeatingEventsNamePicker").val()
+=======
+    let offeringText = offerings[0].eventName.split(" ").slice(0, -2).join(" ").trimEnd()
+>>>>>>> e9feb306 (Problem solved. Text from the repeated events will populate into the Event Name field as readonly in the main page)
     $('#inputEventName').prop('placeholder', offeringText)
   } 
 }
