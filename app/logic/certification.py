@@ -64,7 +64,7 @@ def getCertRequirements(certification=None, username=None):
 
     return certs
 
-def updateCertRequirements(certId, newRequirements):
+def updateCertRequirements(newRequirements, certId=1):
     """
     Update the certification requirements in the database to match the provided list of requirement data.
 
@@ -85,17 +85,17 @@ def updateCertRequirements(certId, newRequirements):
     # update existing and add new requirements
     requirements = []
 
-  
+
     for order, requirementData in enumerate(newRequirements):
         print(requirementData)
         # int_requirementData = int(requirementData)
     
         try:
-            newRequirement = CertificationRequirement.get_by_id(requirementData)
+            newRequirement = CertificationRequirement(requirementData['id'])
         except DoesNotExist:
             newRequirement = CertificationRequirement()
 
-        newRequirement.certification = certId
+        # newRequirement.certification = certId
         newRequirement.isRequired = bool(requirementData['required'])
         newRequirement.frequency = requirementData['frequency']
         newRequirement.name = requirementData['name']
@@ -106,12 +106,12 @@ def updateCertRequirements(certId, newRequirements):
 
     return requirements 
 
-def saveRequirement(newRequirement):
+def saveRequirement(requirementData):
     newRequirement = CertificationRequirement()
     newRequirement.isRequired = bool(requirementData['required'])
     newRequirement.frequency = requirementData['frequency']
     newRequirement.name = requirementData['name']
-    newRequirement.order = order
+    newRequirement.order = 0  #???
     newRequirement.save()
     return newRequirement.get_id()
     
