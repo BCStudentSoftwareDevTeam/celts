@@ -194,11 +194,12 @@ $('#saveSeries').on('click', function() {
       endTime = format12to24HourTime(endTime)
     }
 
-    if(startTime > endTime){
-      hasValidTimes = false;
+    if(startTime < endTime){
+      hasValidTimes = true;
       $(startTimeInputs[i]).removeClass('border-red');
       $(endTimeInputs[i]).removeClass('border-red');
     } else {
+      hasValidTimes = false;
       $(startTimeInputs[i]).addClass('border-red');
       $(endTimeInputs[i]).addClass('border-red');
     }
