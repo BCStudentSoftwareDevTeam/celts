@@ -117,7 +117,7 @@ def createEvent(templateid, programid):
         savedEvents = None
         eventData.update(request.form.copy())
         eventData = preprocessEventData(eventData)
-        print("Debug here", eventData)
+
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
