@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{url_for('static', filename = 'css/eventTravelForm.css')  }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
-{% block content %}
+{% block print_content %}
 {% if userList %}
 {% for userData in userList %} 
 <div class= "w-100 d-print-block page">
@@ -153,9 +153,9 @@
 
 {% block script%}
 <script>
-print()
-// Prevents the error of ERR_CACHE_MISS. occurs when alternating between pages forward and backward. Currently redirects to volunteer details page.
-if (window.history.replaceState)window.history.replaceState(null,null,window.location.href);
+    print()
+    // Prevents the error of ERR_CACHE_MISS. occurs when alternating between pages forward and backward. Currently redirects to volunteer details page.
+    if (window.history.replaceState)window.history.replaceState(null,null,window.location.href);
 </script>
 {% endblock %}
 {% endblock %}

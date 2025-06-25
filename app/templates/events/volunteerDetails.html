@@ -119,7 +119,9 @@
               <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
             </div>
             <div class="col-auto align-items-end">
-              <button id="printTravelInfo" class="btn-primary btn">Print Travel Info</button>
+            <form target="_blank" action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames">
+              <button type="submit" id="printTravelInfo" class="btn-primary btn">Print Travel Info</button>
+              </form>
             </div>
           </div>
         </div>
@@ -149,8 +151,6 @@
         {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
       </tbody>
     </table>
-
-    <form action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames"></form>
 {% else %}
     <h3>No volunteer information available for this event.</h3>
 {% endif %}

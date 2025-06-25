@@ -111,7 +111,4 @@ $(document).ready(function () {
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}
-	$('#printTravelInfo').click(function(){
-		$('#volunteerUsernames').submit()
-		})
 });
