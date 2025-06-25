@@ -81,7 +81,7 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
 def getProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if g.current_user.isAdmin:
         try:
             targetProgram = Program.get_by_id(programID)
             programInfo = model_to_dict(targetProgram, recurse=False)
