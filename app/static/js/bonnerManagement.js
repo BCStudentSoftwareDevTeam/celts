@@ -183,10 +183,10 @@ function saveRequirements() {
                     row.data('id', id);
                 }
             });
-            msgToast("Bonner", "Updated Bonner Requirements");
+            msgFlash("Updated Bonner Requirements","success");
         },
         error: function(e) {
-            msgToast("Error", "Error Saving Requirements");
+            msgFlash("Error Saving Requirements","danger");
         }
     });
 }
@@ -249,6 +249,7 @@ function addRequirementsRowHandlers() {
         // Only remove if it isn't the last row
         if($("#requirements tbody tr").length > 1) {
             $(e.target.closest('tr')).fadeOut(function() { this.remove() });
+            msgFlash("Succsessful deletion of Bonner Requierment", "success")
         }
     });
 }
