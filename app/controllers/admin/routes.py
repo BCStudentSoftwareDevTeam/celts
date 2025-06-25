@@ -674,7 +674,7 @@ def saveRequirements(certid):
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    newRequirements = updateCertRequirements(certid, request.get_json())
+    newRequirements = updateCertRequirements(request.get_json(),certid)
 
     return jsonify([requirement.id for requirement in newRequirements])
 
@@ -685,7 +685,7 @@ def newReq():
         abort(403)  
     print("###################", request.get_json())                         #Fixme: Make update
     
-    newRequirements= updateCertRequirements(request.get_json())
+    newRequirements= updateCertRequirements (dict(request.get_json()))
     # print("New requirements:", newRequirements)
     return jsonify([requirement.id for requirement in newRequirements])
 

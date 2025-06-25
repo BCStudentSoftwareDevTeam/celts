@@ -1,3 +1,4 @@
+from flask import abort
 from peewee import JOIN, DoesNotExist, Case
 
 from app.models.certification import Certification
@@ -64,7 +65,7 @@ def getCertRequirements(certification=None, username=None):
 
     return certs
 
-def updateCertRequirements(newRequirements, certId=1):
+def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     """
     Update the certification requirements in the database to match the provided list of requirement data.
 
@@ -84,38 +85,41 @@ def updateCertRequirements(newRequirements, certId=1):
 
     # update existing and add new requirements
     requirements = []
+    print(newRequirements)
 
 
-
-    for order, requirementData in enumerate(newRequirements):
-        print(requirementData)
-        # requirementData = int(requirementData)
-        if requirementData == "save-new":
-            newRequirement = CertificationRequirement()
-
+       # requirementData = int(requirementData)
+    if newRequirements.get("save-new",None) is not None :
+        newRequirement = CertificationRequirement()
+        actualRequirements = newRequirements['save-new']
+        print("check if ", actualRequirements)
+    else:
+        print("check else")
         try:
-            newRequirement = CertificationRequirement(requirementData)
+            newRequirement = CertificationRequirement(newRequirement)
         except DoesNotExist:
-            newRequirement = CertificationRequirement()
+            abort(403)
+     
 
-        newRequirement.certification = certId
-        newRequirement.name = requirementData['name']
-        newRequirement.isRequired = bool(requirementData['required'])
-        newRequirement.frequency = requirementData['frequency']
-      
-        newRequirement.order = order
-        newRequirement.save()
+    newRequirement.certification = certId
+    newRequirement.isRequired = bool(actualRequirements.get('required', False))
+    newRequirement.frequency = actualRequirements['frequency']
+    newRequirement.name =actualRequirements['name']
+    # newRequirement.order = order
+    newRequirement.save()
 
-        requirements.append(newRequirement)
+    requirements.append(newRequirement)
 
     return requirements 
 
+
+
 def saveRequirement(requirementData):
     newRequirement = CertificationRequirement()
-    newRequirement.isRequired = bool(requirementData['required'])
+    newRequirement.isRequired = bool(requirementData('required'))
     newRequirement.frequency = requirementData['frequency']
     newRequirement.name = requirementData['name']
-    newRequirement.order = 0  #???
+    # newRequirement.order = 0  #???
     newRequirement.save()
     return newRequirement.get_id()
     
