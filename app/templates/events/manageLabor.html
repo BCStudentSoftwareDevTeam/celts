@@ -7,7 +7,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/manageLabors.js"></script>
+  <script type="module" src="/static/js/manageLabor.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
 {% endblock %}
 
@@ -49,7 +49,7 @@
     {% if event.isPastStart %}
       <h3 class="fs-4 mb-3">Labor</h3>
     {% endif %}
-    <table class="table" id="trackLaborstable" data-entry-count="{{ eventLaborData|length }}">
+    <table class="table" id="trackLabortable" data-entry-count="{{ eventLaborData|length }}">
       <thead>
         <tr>
           <th>Name</th>
@@ -192,8 +192,8 @@
         </div>
         <ul class="list-unstyled mx-3 mt-2" id= "addLaborList">
           {% if event.isRepeating and not event.isFirstRepeatingEvent%}
-            {% if repeatingingLabors %}
-              {%for participant in repeatingLabors%}
+            {% if repeatingingLabor %}
+              {%for participant in repeatingLabor%}
                 <li>
                   <input class="repeatingLabor" type="checkbox" id ="repeatingingLaborCheckbox_{{loop.index}}" name="labor[]" value= {{participant}} />
                   <label class="form-check-label" for="repeatingingLaborCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
@@ -206,10 +206,10 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        {% if event.isRepeating and repeatingLabors and not event.isFirstRepeatingEvent  %}
-        <button type="button" id = "selectAllLabors" class="btn btn-primary" >Select All</button>
+        {% if event.isRepeating and repeatingLabor and not event.isFirstRepeatingEvent  %}
+        <button type="button" id = "selectAllLabor" class="btn btn-primary" >Select All</button>
         {% endif %}
-        <button id="addLaborsButton" type="button" class="btn btn-success" disabled>Save</button>
+        <button id="addLaborButton" type="button" class="btn btn-success" disabled>Save</button>
       </div>
     </div>
   </div>

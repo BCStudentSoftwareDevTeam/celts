@@ -42,6 +42,22 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
 
+from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
+from peewee import DoesNotExist, JOIN
+from datetime import datetime
+from playhouse.shortcuts import model_to_dict
+from app.controllers.admin import admin_bp
+from app.models.event import Event
+from app.models.program import Program
+from app.models.user import User
+from app.logic.searchUsers import searchUsers
+from app.logic.manageLabor import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
+from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
+from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
+from app.models.backgroundCheck import BackgroundCheck
+from app.logic.users import getBannedUsers
+from database.app.models import event
+
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -713,29 +729,23 @@ def manageLaborPage(eventID):
             abort(403)
 
         # ------- Grab the different lists of participants -------
-        trainedParticipantsForProgramAndTerm = trainedParticipants(event.program, event.term)
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
  
         eventNonAttendedData, eventWaitlistData, eventLaborData, eventParticipants = sortParticipantsByStatus(event)
         print(len(eventLaborData))
        
-        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventLaborData)))
+        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventLaborData)))
         # ----------- Get miscellaneous data -----------
-        participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
         repeatingLabors = getPreviousSeriesEventData(event.seriesId)
-        currentRsvpAmount = getEventRsvpCount(event.id)
 
     return render_template("/events/manageLabor.html",
         eventLaborData = eventLaborData,
         eventNonAttendedData = eventNonAttendedData,
-        eventWaitlistData = eventWaitlistData,
         eventLength = eventLengthInHours,
         event = event,
         repeatingLabors = repeatingLabors,
-        bannedUsersForProgram = bannedUsersForProgram,
-        trainedParticipantsForProgramAndTerm = trainedParticipantsForProgramAndTerm,
-        participationStatusForTrainings = participationStatusForTrainings)
+        bannedUsersForProgram = bannedUsersForProgram,)
 
 
