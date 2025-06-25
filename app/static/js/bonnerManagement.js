@@ -65,7 +65,7 @@ function saveRequirement(e) {
         
         $.ajax({
             method: 'POST',
-            url: "/saveReq", // Bonner certification id hard-coded here
+            url: "/newReq", // Bonner certification id hard-coded here
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify(row_data),

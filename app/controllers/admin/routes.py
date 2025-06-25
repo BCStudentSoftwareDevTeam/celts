@@ -686,12 +686,10 @@ def newReq():
     print("###################", request.get_json())                         #Fixme: Make update
     
     newRequirements= updateCertRequirements(request.get_json())
-    print("New requirements:", newRequirements)
-    return jsonify({"Hello":"Scott"})
+    # print("New requirements:", newRequirements)
+    return jsonify([requirement.id for requirement in newRequirements])
+
     
-
-
-
 
 
 @admin_bp.route("/displayEventFile", methods=["POST"])

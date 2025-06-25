@@ -86,19 +86,23 @@ def updateCertRequirements(newRequirements, certId=1):
     requirements = []
 
 
+
     for order, requirementData in enumerate(newRequirements):
         print(requirementData)
-        # int_requirementData = int(requirementData)
-    
+        # requirementData = int(requirementData)
+        if requirementData == "save-new":
+            newRequirement = CertificationRequirement()
+
         try:
-            newRequirement = CertificationRequirement(requirementData['id'])
+            newRequirement = CertificationRequirement(requirementData)
         except DoesNotExist:
             newRequirement = CertificationRequirement()
 
-        # newRequirement.certification = certId
+        newRequirement.certification = certId
+        newRequirement.name = requirementData['name']
         newRequirement.isRequired = bool(requirementData['required'])
         newRequirement.frequency = requirementData['frequency']
-        newRequirement.name = requirementData['name']
+      
         newRequirement.order = order
         newRequirement.save()
 
