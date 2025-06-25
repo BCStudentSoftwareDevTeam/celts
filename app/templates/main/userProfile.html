@@ -17,7 +17,7 @@
 {% if volunteer.isStudent and not totalSustainedEngagements%}
   <div class="float-end rounded d-none d-lg-block minorInfoBox">
     <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
       for more information.
     </p>
     {% if g.current_user.isAdmin %}
@@ -25,7 +25,7 @@
     {% else %}
       <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
     {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest}} data-username="{{volunteer.username}}" type="checkbox"/>
+      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
   </div>
 {% endif %}
 <div class="row">
@@ -112,7 +112,7 @@
               <tr class="{{ eventStatus }}">
                   <td>{{event.program.programName if event.program else '--'}}</td>
                   <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-                  <td nowrap>{{ '<i>In Progress</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
+                  <td nowrap>{{ '<i>Draft</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
                   <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
                   <td nowrap>{{event.timeEnd.strftime('%-I:%M %p')}}</td>
                   <td>{{event.location}}</td>
@@ -159,12 +159,12 @@
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              </tr>              
+              </tr>
               {% endfor %}
             {% else %}
               <h5>You have not participated in any events.</h5>
             {% endif %}
-          </table>    
+          </table>
         </div>
         <a class="btn btn-primary btn-sm" href="{{volunteer.username}}/serviceTranscript" > View Service Transcript</a>
       </div>
@@ -445,8 +445,14 @@
         <div class="container">
           <form>
             <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+              <div class=" form-check form-switch mb-2">
+                <label class="custom-control-label" for="checkDietRestriction"><strong> No dietary restrictions</strong></label>
+                <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
+              </div>
+                  <div id="dietContainer">
+                          <label for="usr">Please enter any dietary restrictions you have:</label>
+                          <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+                  </div>  
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
@@ -591,7 +597,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title-ban">Ban Volunteer</h5>
+          <h5 class="modal-title-ban"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="align=center">
@@ -603,7 +609,9 @@
             <p align="left" id="banNote">Why the student was banned</p>
           </div>
           <div id="banEndDate">
-            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp
+              <input id="banEndDatepicker" readonly='readonly' type="text" placeholder="yyyy-mm-dd">
+            </h6>
           </div>
           
           <div class="input-group">
@@ -620,5 +628,6 @@
     </div>
   </form>
 </div>
+
 <!-- ################# Ban or Unban Modal ################ -->
 {% endblock %}

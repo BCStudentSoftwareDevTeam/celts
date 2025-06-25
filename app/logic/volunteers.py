@@ -62,7 +62,7 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     today = date.today()
     user = User.get_by_id(user)
     if bgStatus == '' and dateCompleted == '':
-        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
+        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'Draft'.")
     else:
         if not dateCompleted:
             dateCompleted = None
