@@ -27,6 +27,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
+from app.models.eventLabor import EventLabor
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
@@ -51,13 +52,11 @@ from app.models.event import Event
 from app.models.program import Program
 from app.models.user import User
 from app.logic.searchUsers import searchUsers
-from app.logic.manageLabor import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
+from app.logic.manageLabor import updateEventLabor, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck, getLaborStudents, sortLabor
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.users import getBannedUsers
-from database.app.models import event
-
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -714,9 +713,9 @@ def manageLaborPage(eventID):
         abort(404)
 
     if request.method == "POST":
-        laborUpdated = updateEventParticipants(request.form)
+        laborUpdated = updateEventLabor(request.form)
 
-        # error handling depending on the boolean returned from updateEventParticipants
+        # error handling depending on the boolean returned from updateEventLabor
         if laborUpdated:
             flash("Labor table succesfully updated", "success")
         else:
@@ -732,20 +731,68 @@ def manageLaborPage(eventID):
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
  
-        eventNonAttendedData, eventWaitlistData, eventLaborData, eventParticipants = sortParticipantsByStatus(event)
+        eventLaborData, eventLabor = sortLabor(event)
         print(len(eventLaborData))
-       
-        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventLaborData)))
+
+        allRelevantUsers = list(set(participant.user for participant in (eventLabor + eventLaborData)))
         # ----------- Get miscellaneous data -----------
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
         repeatingLabors = getPreviousSeriesEventData(event.seriesId)
 
     return render_template("/events/manageLabor.html",
         eventLaborData = eventLaborData,
-        eventNonAttendedData = eventNonAttendedData,
+        eventLabor = eventLabor,
         eventLength = eventLengthInHours,
         event = event,
         repeatingLabors = repeatingLabors,
         bannedUsersForProgram = bannedUsersForProgram,)
 
 
+@admin_bp.route('/removeLaborFromEvent', methods = ['POST'])
+def removeLaborFromEvent():
+    user = request.form.get('username')
+    eventID = request.form.get('eventId')
+    if g.current_user.isAdmin:
+        userInLaborTable = EventLabor.select(EventLabor, User).join(User).where(EventLabor.user == user, EventLabor.event==eventID).execute()
+        (EventLabor.delete().where(EventLabor.user==user, EventLabor.event==eventID)).execute()
+        flash("Student successfully removed", "success")
+    return ""
+
+@admin_bp.route('/addLaborToEvent/<eventId>', methods = ['POST'])
+def addLaborToEvent(eventId):
+    event = Event.get_by_id(eventId)
+    successfullyAddedLabor = False
+    usernameList = request.form.getlist("selectedLabor[]")
+    successfullyAddedLabor = False
+    alreadyAddedList = []
+    addedSuccessfullyList = []
+    errorList = []
+    
+    for user in usernameList:
+        userObj = User.get_by_id(user)
+        successfullyAddedLabor = addPersonToEvent(userObj, event)
+        if successfullyAddedLabor == "already in":
+            alreadyAddedList.append(userObj.fullName)
+        else:
+            if successfullyAddedLabor:
+                addedSuccessfullyList.append(userObj.fullName)
+            else:
+                errorList.append(userObj.fullName)
+
+    studentLabor = ""
+    if alreadyAddedList:
+        studentLabor = ", ".join(vol for vol in alreadyAddedList)
+        flash(f"{studentLabor} was already added to this event.", "warning")
+
+    if addedSuccessfullyList:
+        studentLabor = ", ".join(vol for vol in addedSuccessfullyList)
+        flash(f"{studentLabor} added successfully.", "success")
+
+    if errorList:
+        studentLabor = ", ".join(vol for vol in errorList)
+        flash(f"Error when adding {studentLabor} to event.", "danger")
+
+    if 'ajax' in request.form and request.form['ajax']:
+        return ''
+
+    return redirect(url_for('admin.manageLaborPage', eventID = eventId))

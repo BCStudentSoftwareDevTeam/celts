@@ -7,6 +7,7 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.createLogs import createActivityLog
+from app.models.eventLabor import EventLabor
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -21,9 +22,9 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     return eventLengthInHours
 
 
-def updateEventParticipants(participantData):
+def updateEventLabor(participantData):
     """
-    Create new entry in event participant table if user does not exist. Otherwise, updates the record.
+    Create new entry in event labor table if user does not exist. Otherwise, updates the record.
 
     param: participantData- an ImmutableMultiDict that contains data from every row of the page along with the associated username.
     """
@@ -35,20 +36,20 @@ def updateEventParticipants(participantData):
 
     for username in participantData.getlist("username"):
         userObject = User.get_or_none(User.username==username)
-        eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
+        eventLabor = EventLabor.get_or_none(user=userObject, event=participantData['event'])
         if userObject:
             if participantData.get(f'checkbox_{username}'): #if the user is marked as present
                 inputHours = participantData.get(f'inputHours_{username}')
-                hoursEarned = float(inputHours) if inputHours else 0
-                if eventParticipant:
-                    ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned})
-                                      .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
+                hoursWorked = float(inputHours) if inputHours else 0
+                if eventLabor:
+                    ((EventLabor.update({EventLabor.hoursWorked: hoursWorked})
+                                      .where(EventLabor.event==event.id, EventLabor.user==userObject.username))
                                       .execute())
                 else:
-                    EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
+                    EventLabor.create(user=userObject, event=event, hoursWorked=hoursWorked)
             else:
-                ((EventParticipant.delete()
-                                  .where(EventParticipant.user==userObject.username, EventParticipant.event==event.id))
+                ((EventLabor.delete()
+                                  .where(EventLabor.user==userObject.username, EventLabor.event==event.id))
                                   .execute())
         else:
             return False
@@ -99,3 +100,21 @@ def setProgramManager(username, program_id, action):
         programManager.addProgramManager(program_id)
     elif action == "remove":
         programManager.removeProgramManager(program_id)
+
+
+def getLaborStudents(event):
+    eventLabor = (EventLabor.select(EventLabor, User)
+                                         .join(User)
+                                         .where(EventLabor.event == event))
+
+    return [p for p in eventLabor]
+
+
+
+def sortLabor(event):
+
+    eventLabor = getLaborStudents(event)
+
+    eventLaborData = eventLabor
+
+    return eventLaborData, eventLabor

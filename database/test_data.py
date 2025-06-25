@@ -1338,7 +1338,7 @@ eventLabor = [
     {
         "user": "ayisie",
         "event": 1,
-        "hoursWorked": None,
+        "hoursWorked": 0,
         "didWork": False
     },
     {
