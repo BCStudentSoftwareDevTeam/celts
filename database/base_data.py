@@ -85,7 +85,7 @@ BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
 coursestatus = [
     {
         "id": 1,
-        "status": "In Progress"
+        "status": "Draft"
     },
     {
         "id": 2,
