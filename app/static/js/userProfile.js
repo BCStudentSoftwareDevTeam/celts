@@ -9,22 +9,19 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(response) {
-          msgFlash("Changes saved successfully! Your interest has been updated.", 'success')
-          setTimeout(() => {
-          msgFlash.style.display = "none";
-          }, 3000);
-          setTimeout(function() {
-            reloadWithAccordion("MinorTable");
-          }, 4000);
-          
+          if (isAdding) {
+              msgToast("Interest Indicated", "You have shown interest in this minor.");
+              $("#interestIndicatedText").text("You're interested in this minor.");
+             } else {
+              msgToast("Interest Removed", "You are no longer interested in this minor.");
+              $("#interestIndicatedText").text("You're not interested in this minor.");
+             }
         },
         error: function(request, status, error) {
           console.log(status, error)
-          msgFlash("Error! Failed to save changes!")
-          location.reload();
+          msgToast("Error! Failed to save changes!")
         }
     });
-    
   })
 
   $("#printButton").on("click", function() {

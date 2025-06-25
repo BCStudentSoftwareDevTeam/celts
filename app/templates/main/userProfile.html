@@ -81,7 +81,7 @@
              for more information. 
              </p>
               <div class="form-check form-switch"class=".form-check.form-switch">
-              <label class="custom-control-label" for="expressInterest"><strong><b>
+              <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
                 {% if expressInterest is none %}
                   Are you interested in the CCE Minor?
                 {% else %} 
@@ -92,8 +92,8 @@
                     interest 
                   {% endif %} 
                   in the CCE Minor.                                
-                {% endif %}</b></strong>
-              </label>
+                {% endif %}
+              </label></strong>
               <input class="form-check-input" data-username ="{{volunteer.username}}" 
               type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
              </div>
