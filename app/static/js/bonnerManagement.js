@@ -76,6 +76,9 @@ $(document).ready(function(){
         } else {
             fileName = `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`;
         }
+        // const fileName = noOfYears === "all" 
+        //     ? "Bonner Spreadsheet, All Cohorts" 
+        //     : `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears) + 1} - ${Number(startingYear) + 1}`
         $.ajax({
             url: url,
             method: "GET",
@@ -183,10 +186,10 @@ function saveRequirements() {
                     row.data('id', id);
                 }
             });
-            msgFlash("Updated Bonner Requirements","success");
+            msgToast("Bonner", "Updated Bonner Requirements");
         },
         error: function(e) {
-            msgFlash("Error Saving Requirements","danger");
+            msgToast("Error", "Error Saving Requirements");
         }
     });
 }
@@ -249,7 +252,6 @@ function addRequirementsRowHandlers() {
         // Only remove if it isn't the last row
         if($("#requirements tbody tr").length > 1) {
             $(e.target.closest('tr')).fadeOut(function() { this.remove() });
-            msgFlash("Succsessful deletion of Bonner Requierment", "success")
         }
     });
 }
