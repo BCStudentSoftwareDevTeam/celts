@@ -297,42 +297,48 @@ function saveCourseData(url, successCallback) {
 
 function validateForm() {
   // This function ensures our form fields are valid
-  // Returns true if we are just viewing a form
-  // TODO: Generalize form validation to include textareas and selects
-
+ 
   if (readOnly())
-      return true;
+    return true;
 
   let valid = true;
 
   let allTabs = $(".tab");
   let allInputs = $(allTabs[currentTab]).find("input");
-  for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].required) {
-      if (!allInputs[i].value){
-        $(allInputs[i]).addClass("invalid");
-        valid = false;
-      } else {
-        $(allInputs[i]).addClass("form-control");
-      }
-    }
-  }
-  var instructors = getCourseInstructors()
-  if (!instructors.length && currentTab == 1) {
-    valid = false;
-    $("#instructorTable .emptyTableMessage").addClass("table-danger");
-    $("#instructorTable .emptyTableMessage label").removeClass("text-secondary");
-  } else {
-    $("#instructorTable .emptyTableMessage").removeClass("table-danger");
-    $("#instructorTable .emptyTableMessage label").addClass("text-secondary");
-  }
 
-  if (valid) {
-    $($(".step")[currentTab]).addClass("finish");
+//Validating the instructor dropdown
+if (currentTab === 1) {
+  let courseInstructor = document.getElementById("courseInstructor");
+  
+  // Check if there are any instructor rows in the table
+  let instructorRows = document.querySelectorAll("tr[data-username]");
+  
+  if (instructorRows.length === 1) {
+    courseInstructor.setCustomValidity("Please select an instructor");
+    courseInstructor.reportValidity();
+    courseInstructor.focus();
+    valid = false;
+  } else {
+    courseInstructor.setCustomValidity("");
   }
+}
+
+  if  (currentTab === 1) {
+    let courseName = document.getElementById("courseNameId");
+    if (courseName.value === "") {
+      console.log("empty")
+      courseName.setCustomValidity("Please enter a course");
+      courseName.reportValidity();
+      courseName.focus();
+      valid = false;
+  } else {
+    courseName.setCustomValidity(""); 
+  }
+}
 
   return valid;
 };
+
 
 function disableSyllabusUploadFile() {
   $("#fileUpload").prop("disabled", true);

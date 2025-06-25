@@ -8,14 +8,15 @@
 <div class="container-fluid">
   <div class="row">
     <div class="p-2 col-md-6">
-      <label for="courseInstructor">Course Instructor(s)</label>
+       <label class= "required" for="courseInstructor">Course Instructor(s)</label>
       <input
         id="courseInstructor"
-        class="form-control"
+        class=" form-control"
         type="search"
         placeholder="Search instructor"
         data-tooltip="Click on an instructor to add them"
-        value="" />
+        value="" 
+        />
       <table
         class="table mb-1"
         id="instructorTable"
@@ -57,9 +58,10 @@
         <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
         {% endfor %}
       </div>
-      <label for="courseName" class="pt-3">Course Name</label>
+      <label class= "required" for="courseName" class="pt-3">Course Name</label>
       <input
         class="form-control"
+        id="courseNameId" 
         name="courseName"
         type="text"
         value="{{course.courseName}}"
