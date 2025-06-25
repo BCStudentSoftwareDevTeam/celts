@@ -29,4 +29,12 @@ dd {
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dd:nth-of-type(odd) { background-color:#FFF; } 
-.bonnerNotes dt:nth-of-type(odd) { background-color:#FFF; } 
+.bonnerNotes dt:nth-of-type(odd) { background-color:#FFF; }
+
+.form-check.form-switch {
+    position: relative; left: 12px; width: 95%;
+}
+
+.success {
+    color:green
+}

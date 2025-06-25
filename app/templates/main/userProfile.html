@@ -66,6 +66,7 @@
 <div class="accordion" id="userProfile">
 
 <!-- ################# Community & Civic Engagement Minor ################ -->
+{% if g.current_user.isCeltsStudentStaff or g.current_user.isStudent %}
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingZero">
        {% set focus = "open" if visibleAccordion == "MinorTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
@@ -79,7 +80,7 @@
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
              for more information. 
              </p>
-              <div class="form-check form-switch">
+              <div class="form-check form-switch"class=".form-check.form-switch">
               <label class="custom-control-label" for="expressInterest"><strong><b>
                 {% if expressInterest is none %}
                   Are you interested in the CCE Minor?
@@ -94,12 +95,14 @@
                 {% endif %}</b></strong>
               </label>
               <input class="form-check-input" data-username ="{{volunteer.username}}" 
-              type="checkbox" id="checkIsInterest" style="margin-right: 3px;" name="isInterested" {%if expressInterest %} checked {% endif %} />
+              type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
              </div>
           </div>
         </div>
      </div>
   </div>
+  {% else %}
+  {% endif %}
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">

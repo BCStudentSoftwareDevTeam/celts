@@ -9,13 +9,18 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(response) {
-          msgToast("Changes saved successfully!", "Your interest has been updated.")
-          reloadWithAccordion("MinorTable")
+          msgFlash("Changes saved successfully! Your interest has been updated.", 'success')
+          setTimeout(() => {
+          msgFlash.style.display = "none";
+          }, 3000);
+          setTimeout(function() {
+            reloadWithAccordion("MinorTable");
+          }, 4000);
           
         },
         error: function(request, status, error) {
           console.log(status, error)
-          msgToast("Error!", "Failed to save changes!")
+          msgFlash("Error! Failed to save changes!")
           location.reload();
         }
     });
