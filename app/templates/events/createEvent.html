@@ -3,11 +3,14 @@
 {% set isNewEvent = 'create' in request.path %}
 {% set showRecurringToggle = True %}
 {% if isNewEvent %}
-  {% if eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == '' %}
-    {% set page_title = 'Create a ' + eventData["program"].programName %}
-
-  {% elif template.tag == 'single-program' %}
-    {%set page_title = 'Create Event for ' + eventData["program"].programName %}
+  {% if template.tag == 'single-program' %}
+    {% set programName = eventData.program.programName %}
+    {% set prefix = "an" if programName[0] in 'aeiouAEIOU' else "a" %}
+    {% if eventData["program"].programName == 'CELTS-Sponsored Event' %}
+      {%set page_title = 'Create ' + prefix + ' ' + eventData["program"].programName %}
+    {% else %}
+      {%set page_title = 'Create ' + prefix + ' ' + eventData["program"].programName + ' Event' %}
+    {% endif %}
 
   {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
@@ -321,6 +324,7 @@
         {% if event and not (event.isCanceled or eventPast) %}
         <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal"
           data-bs-target="#cancelWarning">Cancel Event</button>
+
         {% elif event and (event.isCanceled) %}
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
