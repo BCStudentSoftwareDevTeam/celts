@@ -22,27 +22,6 @@ $(document).ready(function(){
     
   })
 
-  $('.onTranscriptCheckbox').click(function() {
-    var onTranscript = $(this).is(':checked');
-    var username = $(this).data('username');
-    var programID = $(this).data("programid");
-    displayTranscriptStatus(programID);
-    
-    $.ajax({
-        type: "POST",
-        url: `/profile/${username}/updateTranscript/${programID}`,
-        contentType: "application/json",
-        data: JSON.stringify({ username: username, removeFromTranscript: !onTranscript, programID: programID }),
-        success: function(response) {
-
-        },
-        error: function(error) {
-            console.error("An error occurred:", error);
-        }
-    });
-
-  });
-  
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
         printDocument(`/profile/${username}/travelForm`)
