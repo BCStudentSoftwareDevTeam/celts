@@ -61,7 +61,7 @@
     {% endblock %}
 
     {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
-<div class="form-group mb-4">
+<div class="form-group mb-4" id="eventLocation-{{pageLocation}}">
   <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
   <input class="form-control" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
     value="{{eventData.location}}" required>
@@ -89,7 +89,7 @@
           <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
             {{"checked" if eventData.isSeries}} />
-        </fieldset>
+        </fieldset> 
       </div>
     </div>
   </div>
@@ -176,6 +176,7 @@
               <th>Date</th>
               <th>Start Time</th>
               <th>End Time</th>
+              <th>Location</th>
             </tr>
           </thead>
 
