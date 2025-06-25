@@ -236,8 +236,12 @@ function showTab(currentTab) {
         $("#nextButton").text("Next");
         $("#nextButton").show();
         $("#saveContinue").hide();
-        $("#saveExit").hide()
         $("#exitButton").hide()
+        $("#saveExit").show();
+        if(readOnly()) {
+            $("#saveExit").hide();
+            $("#exitButton").show()
+        }
         break;
     case 1: // Second page
         $("#cancelButton").hide();
@@ -253,7 +257,7 @@ function showTab(currentTab) {
             $("#saveContinue").hide();
             $("#saveExit").hide()
             $(".removeAttachment").hide()
-            $("#exitButton").hide()
+            $("#exitButton").show()
         }
         break;
     case 2: // Third page
@@ -264,9 +268,11 @@ function showTab(currentTab) {
         $("#nextButton").show();
         $("#saveContinue").hide();
         $("#exitButton").hide()
+        $("#saveExit").show()
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();
+            $("#saveExit").hide();
             $("#submitAndApproveButton").hide();
             $("#exitButton").show()
           }

@@ -71,7 +71,7 @@
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
           title="status key" data-content="{{ course.status.status }}">
-          {% if course.status.status == 'In Progress' %}
+          {% if course.status.status == 'Draft' %}
             <i class="fa-solid fa-circle-half-stroke" style="margin-right: 3px;"></i>
           {% elif course.status.status == 'Submitted' %}
             <i class="fa-solid fa-circle" style="margin-right: 3px;"></i>

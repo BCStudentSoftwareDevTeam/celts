@@ -11,3 +11,4 @@ local-override.yml
 geckodriver.log
 .coverage
 cron.log
+.code-search
