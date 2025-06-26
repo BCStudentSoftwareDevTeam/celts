@@ -452,17 +452,24 @@
             <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" hidden name="isRepeating" />
           {% endif %}
         </div>
-        
         <div class="d-none mb-2" id="repeatingEventsDiv">
           <div class="row col-md-12 my-3">
-
-            <div class="form-group mb-3">
+            <div class="form-group mb-3 col-md-6">
               <label class="required form-label me-2 mb-0" for="repeatingEventsNamePicker"><strong>Event Name</strong></label>
               <div class='input-group date'>
                 <input autocomplete="off" type='text'
                   class="form-control repeatingEventsField"
                   name="repeatingEventsName" placeholder="Enter name"
                   id='repeatingEventsNamePicker' />
+              </div>
+            </div>
+            <div class="form-group mb-3 col-md-6">
+              <label class="required form-label me-2 mb-0" for="repeatingEventsNamePicker"><strong>Location</strong></label>
+              <div class='input-group date'>
+                <input autocomplete="off" type='text'
+                  class="form-control repeatingEventsField"
+                  name="repeatingEventsLocation" placeholder="Enter Location"
+                  id='repeatingEventsNameLocation' />
               </div>
             </div>
 
