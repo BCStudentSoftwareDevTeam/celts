@@ -8,7 +8,11 @@
     {% if not isNewEvent %}
         {% set programName = event.program.programName %}
         {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
-        <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
+        {% if event["program"].programName == 'CELTS-Sponsored Event'%}
+            <{{smallh}} class="text-muted">{{prefix}} {{ programName }} </{{smallh}}> 
+        {% else %}
+            <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event </{{smallh}}> 
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
