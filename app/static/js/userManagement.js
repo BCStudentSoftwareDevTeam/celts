@@ -12,7 +12,7 @@ function callbackStudentStaff(selected){
 function callbackProgramManager(selected, action = 'add') {
   let row = $(`#programManagersTable tr[data-username="${selected["username"]}"]`);
   let userDoesNotExist = row.length === 0;
-  let programId = $('#programPlaceholder').attr('data-programid');
+  let programId = $('#programPlaceholder').data('programid');
 
   if ((action === 'remove') || (userDoesNotExist && action === 'add')){
     editProgramManager(
@@ -79,7 +79,7 @@ $(document).ready(function(){
   });
 
   $('.editDetails').on('click', function() {
-    const programid = $(this).attr('data-programid')
+    const programid = $(this).data('programid')
     const buttonId = $(this).attr('id')
     const buttonTextId = 'editDetailsButtonText' + $(this).attr('loop-index')
     const loadingSpinnerId = 'editDetailsButtonSpinner' + $(this).attr('loop-index')
@@ -95,7 +95,7 @@ $(document).ready(function(){
         success: function(response) {
           const programInfo = response[0]
 
-          // Populate the form with the existing data that was retrieved from the AJAX request
+           // Populate the form with the existing data that was retrieved from the AJAX request
           $("#programName").val(programInfo.programName);
           $("#programDescription").val(programInfo.programDescription);
           $("#partner").val(programInfo.partner);
@@ -126,13 +126,13 @@ $(document).ready(function(){
         }, 
         error: function () {          
             console.error("Failed to retrieve program info", error);
-            msgToast("Could not retrieve program info.")
+            msgToast("Could not retrieve program info. Please contact <a href='mailto:support@bereacollege.onmicrosoft.com'>Systems Support </a>")
         }
     });
   });
 
   $(".editProgramManagersButton").on('click', function(){
-    $('#programPlaceholder').data('programid', $(this).data('programid')) ;
+    $('#programPlaceholder').attr('data-programid', $(this).data('programid'))
     $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
     $('#noManagersText').addClass("d-none")
