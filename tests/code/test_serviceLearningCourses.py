@@ -40,7 +40,7 @@ def test_getServiceLearningCoursesData():
     assert 4 in courseDict
     assert 'Scott Heggen' not in courseDict[4]['faculty']
     assert ['Brian Ramsay', 'Ala Qasem'] == courseDict[4]['faculty']
-    assert "In Progress" == courseDict[4]['status']
+    assert "Draft" == courseDict[4]['status']
     assert 'Spring 2021' in courseDict[4]['term'].description
     assert "Scott Heggen"  == courseDict[4]['creator']
     assert "Testing" == courseDict[4]['courseDisplayName']
