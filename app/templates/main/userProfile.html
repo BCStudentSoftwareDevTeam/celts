@@ -80,14 +80,14 @@
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
              for more information. 
              </p>
-              <div class="form-check form-switch"class=".form-check.form-switch">
+              <div class="form-check form-switch" id="togglebuttonuser">
               <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
                 {% if expressInterest is none %}
                   Are you interested in the CCE Minor?
                 {% else %} 
-                  {{volunteer.firstName}} {{volunteer.lastName}} has indicated 
+                  You have indicated 
                   {% if expressInterest is false %} 
-                    they are not interested 
+                    you are not interested 
                   {% else %} 
                     interest 
                   {% endif %} 

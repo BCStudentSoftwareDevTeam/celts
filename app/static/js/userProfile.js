@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  $(".form-check-input").on("change", function() {
+  $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
     
@@ -10,10 +10,10 @@ $(document).ready(function(){
         contentType: "application/json",
         success: function(response) {
           if (isAdding) {
-              msgToast("Interest Indicated", "You have shown interest in this minor.");
+              msgToast("Thanks for expressing interest in the Community and Civic Engagement minor!");
               $("#interestIndicatedText").text("You're interested in this minor.");
              } else {
-              msgToast("Interest Removed", "You are no longer interested in this minor.");
+              msgToast("You have been removed from communication about the CCE minor.");
               $("#interestIndicatedText").text("You're not interested in this minor.");
              }
         },
