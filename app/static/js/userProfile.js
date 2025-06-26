@@ -232,6 +232,7 @@ $(document).ready(function(){
       success: function(response) {
         target = isBonner ? "bonner" : "notes"
         reloadWithAccordion(target)
+        msgToast("Successfully added a note")
       }
     });
 });
@@ -245,6 +246,7 @@ $(document).ready(function(){
       data: {"id": noteid},
       success: function(response) {
         reloadWithAccordion("notes")
+        // msgFlash("Successfully deleted a note", "success")
       }
     });
   });
