@@ -79,19 +79,16 @@ $(document).ready(function(){
   });
 
   $('.editDetails').on('click', function() {
-    // Get the programid from the attribute data-programid
     const programid = $(this).attr('data-programid')
-    // Get button id so we can target it to disable it, since the spinner does not disable it automatically
     const buttonId = $(this).attr('id')
-    // buttonTextId and loadingSpinnerId all end the same loop index variable, which can retrieve so we can target them
     const buttonTextId = 'editDetailsButtonText' + $(this).attr('loop-index')
     const loadingSpinnerId = 'editDetailsButtonSpinner' + $(this).attr('loop-index')
-    // Remove the regular text of the button and adding the spinner and the word "loading" and disable the button
-    $('#' + buttonTextId).addClass('d-none')
-    $('#' + loadingSpinnerId).removeClass('d-none')
+
+    // Disable button and make it spin
+    $('#' + buttonTextId).hide()
+    $('#' + loadingSpinnerId).show()
     $('#' + buttonId).prop( "disabled", true );
 
-    // Get the program data using an AJAX request and the retrieve programid
     $.ajax({
         method: 'GET',
         url: "/admin/getProgramInfo/" + programid,     
@@ -113,17 +110,18 @@ $(document).ready(function(){
           $('#modalProgramImageContainer').html('');
 
           handleFileSelection('modalProgramImage', true);
+
           // Update the form action URL dynamically
           let updateForm = $('#updateProgramForm');
           updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
-          // Making sure the data loads before the modal opens, which avoids erros in case the frontend is disconnected from the back
-          // Scott Suggestion
+
+          // Openning the modal after the data was received
           let modal = new bootstrap.Modal($('#adminProgramManagement'));
           modal.show();
 
-          // Remove the spinner and the word "loading" and adding back the regular text
-          $('#' + buttonTextId).removeClass('d-none')
-          $('#' + loadingSpinnerId).addClass('d-none')
+          // Remove the loading spinner after the modal is open
+          $('#' + buttonTextId).show()
+          $('#' + loadingSpinnerId).hide()
           $('#' + buttonId).prop( "disabled", false );
         }, 
         error: function () {          
@@ -134,7 +132,7 @@ $(document).ready(function(){
   });
 
   $(".editProgramManagersButton").on('click', function(){
-    $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
+    $('#programPlaceholder').data('programid', $(this).data('programid')) ;
     $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
     $('#noManagersText').addClass("d-none")
