@@ -61,6 +61,8 @@ function calculateRepeatingEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
+  $("#eventLocation-main").removeClass('d-none');
+  $("#inputEventLocation-main").prop('required', true);
   $('#eventTime, #eventDate').removeClass('d-none');
   $('#checkIsSeriesToggleContainer').addClass('col-md-6')
   $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
@@ -69,6 +71,8 @@ function setViewForSingleOffering(){
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
+  $("#eventLocation-main").addClass('d-none');
+  $("#inputEventLocation-main").prop('required', false); 
   $('#eventTime, #eventDate').addClass('d-none');
   $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
@@ -256,12 +260,7 @@ function updateEventNameField() {
 
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
-    let names = new Set()
-    offerings.forEach(offering => {
-      names.add(offering.eventName)
-    });
-    let offeringsText = Array.from(names).join(", ")
-    $('#inputEventName').prop('placeholder', offeringsText)
+    $('#inputEventName').prop('placeholder', '')
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
@@ -290,16 +289,17 @@ function saveOfferingsFromModal() {
     else {
       rowData = $.map($(element).find("input"), (el) => $(el).val());
     }
-
-    let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[2]
-    let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[3]
+    console.log(rowData);
+    let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[3]
+    let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[4]
     if (navigator.userAgent.indexOf("Chrome") == -1) {
         startTime = format12to24HourTime(startTime)
         endTime = format12to24HourTime(endTime)
     }
     offerings.push({
         eventName: rowData[0],
-        eventDate: rowData[1],
+        eventLocation: rowData[1],
+        eventDate: rowData[2],
         startTime: startTime,
         endTime: endTime,
     })
@@ -369,7 +369,7 @@ function updateOfferingsTable() {
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
                                     "<td>" + endTime + "</td>" +
-                                    "<td>"+ offering.location +"</td>" +
+                                    "<td>" + offering.eventLocation + "</td>" +
                                   "</tr>"
                                 );
   });
@@ -464,6 +464,7 @@ $(document).ready(function() {
   if ($("#checkIsSeries").is(":checked")){
     setViewForSeries();
   }
+
   
   let modalOpenedByEditButton = false;
   //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page]
