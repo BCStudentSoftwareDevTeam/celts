@@ -674,20 +674,20 @@ def saveRequirements(certid):
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
+    print("Saving requirements for certification:", request.get_json()) #test
     newRequirements = updateCertRequirements(request.get_json(),certid)
 
-    return jsonify([requirement.id for requirement in newRequirements])
+    return jsonify(newRequirements)
 
 
 @admin_bp.route("/newReq", methods=["POST"])
 def newReq():
     if not g.current_user.isCeltsAdmin:
         abort(403)  
-    print("###################", request.get_json())                         #Fixme: Make update
     
     newRequirements= updateCertRequirements (dict(request.get_json()))
     # print("New requirements:", newRequirements)
-    return jsonify([requirement.id for requirement in newRequirements])
+    return jsonify(newRequirements)
 
     
 

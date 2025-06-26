@@ -42,17 +42,13 @@ function updateExportText(){
 }
 
 function saveRequirement(e) {
-    let el=$($(e)[0].target)
-    console.log("Saving requirement");
-    console.log($(e)[0].target); //$(e).data("id")+
+    
+    let el=$(e.target)
+    console.log(el);
+
     if (el.data("id")== "save-new") {
-        console.log("New row, not saving");
-
-        // console.log(JSON.stringify(row_data));
-
-        console.log("#requirement_" + el.data("id"))
+        console.log("New row, saving");
         let row_el = $("#requirement_" + el.data("id"));
-        console.log(row_el);
                 var row_data = {[el.data("id")]:
                                 {
                                     'id': row_el.data("id"),
@@ -60,8 +56,6 @@ function saveRequirement(e) {
                                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                                     'frequency': row_el.find("select.frequency-select").val()
                                 }}
-
-        console.log(JSON.stringify(row_data));
         
         $.ajax({
             method: 'POST',
@@ -70,6 +64,35 @@ function saveRequirement(e) {
             dataType: 'json',
             data: JSON.stringify(row_data),
             
+            success: function(id) {
+                // update our rows with any new ids
+                row_data.attr("id", id);
+                msgToast("Bonner", "Updated Bonner Requirements");
+            },
+        error: function(e) {
+                msgToast("Error", "Error Saving Requirements");
+            }
+        });
+    }
+    else{   
+        console.log("Existing row, saving");
+        let rowid=parseInt(el.data("id"));
+        let row_el = $("#requirement_" + rowid);
+        var row_data = {[rowid]:
+                        {
+                            'id': row_el.data("id"),
+                            'name': row_el.find("input").val(),
+                            'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+                            'frequency': row_el.find("select.frequency-select").val()
+                        }}
+        console.log(JSON.stringify(row_data));
+        $.ajax({
+            method: 'POST',
+            url: '/saveRequirements/1', // Bonner certification id hard-coded here
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(row_data), 
+
             success: function(ids) {
                 // update our rows with any new ids
                 let rows = $('#requirements tbody tr').get()
@@ -81,7 +104,7 @@ function saveRequirement(e) {
                 });
                 msgToast("Bonner", "Updated Bonner Requirements");
             },
-        error: function(e) {
+            error: function(e) {
                 msgToast("Error", "Error Saving Requirements");
             }
         });
@@ -95,88 +118,6 @@ function saveRequirement(e) {
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
-
-    
-    
-    // $(".saveBtn").on("click", saveRequirement);
-    // let rowid=parseInt($(this).data("reqid"));
-    // let row_el = $("#requirements" + rowid);
-    //         var row_data = {[rowid]:
-    //                         {
-    //                             'id': row_el.data("id"),
-    //                             'name': row_el.find("input").val(),
-    //                             'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
-    //                             'frequency': row_el.find("select.frequency-select").val()
-    //                         }}
-    //         console.log(JSON.stringify(row_data));
-
-
-
-    // console.log("Hello World");
-    //   $.ajax({
-    //     method: 'POST',
-    //     url: '/newReq', // Bonner certification id hard-coded here
-    //     contentType: 'application/json',
-    //     dataType: 'json',
-    //     data: JSON.stringify(row_data),
-    //     success: function(ids) {
-    //         console.log("Success");
-    //         // update our rows with any new ids
-    //         let rows = $('#requirements').get()
-    //         ids.forEach(function(id, index) {
-    //             let row = $(rows[index])
-    //             if(id != row.data('id')) {
-    //                 row.data('id', id);
-    //             }
-    //         });
-    //         msgToast("Bonner", "Updated Bonner Requirements");
-    //     },
-    //     error: function(e) {
-    //         msgToast("Error", "Error Saving Requirements");
-    //     }
-    // });
-
-    //   let rowid=parseInt($(this).data("reqid"));
-
-
-
-
-
-
-
-
-
-    // let row_el = $("#requirement_" + rowid);
-    // var row_data = {[rowid]:
-    //                 {
-    //                     'id': row_el.data("id"),
-    //                     'name': row_el.find("input").val(),
-    //                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
-    //                     'frequency': row_el.find("select.frequency-select").val()
-    //                 }}
-    // console.log(JSON.stringify(row_data));
-    // $.ajax({
-    //     method: 'POST',
-    //     url: '/saveRequirements/1', // Bonner certification id hard-coded here
-    //     contentType: 'application/json',
-    //     dataType: 'json',
-    //     data: JSON.stringify([row_data]), 
-
-    //     success: function(ids) {
-    //         // update our rows with any new ids
-    //         let rows = $('#requirements tbody tr').get()
-    //         ids.forEach(function(id, index) {
-    //             let row = $(rows[index])
-    //             if(id != row.data('id')) {
-    //                 row.data('id', id);
-    //             }
-    //         });
-    //         msgToast("Bonner", "Updated Bonner Requirements");
-    //     },
-    //     error: function(e) {
-    //         msgToast("Error", "Error Saving Requirements");
-    // //     }
-    // });
     
     $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
     $(".removeBonner").on("click", function(){
@@ -240,11 +181,8 @@ $(document).ready(function(){
         // disableSave();
     });
 
-    // // Save Requirements handler
-    // // $("#reqSave").click(function() {
-    //     disableSave();
-    //     saveRequirements()
-    // });
+    //Save Requirements handler
+    $(".saveBtn").click(saveRequirement);
 
 });
 
@@ -279,6 +217,7 @@ function addRequirement() {
     $("#reqAdd").attr("disabled", "disabled")
 }
 
+
 function addCohort(){
     // Grab all the cohort years currently displayed
     let years = $('#v-pills-tab .nav-link').map((i, element) => {return Number($(element).data('year'))}).get();
@@ -306,12 +245,12 @@ function addCohort(){
     addSearchCapabilities($(`#search-${newCohortYear}`).get());
 }
 
-function enableSave() {
-    $("#reqSave").attr("disabled", false);
-}
-function disableSave() {
-    $("#reqSave").attr("disabled", true);
-}
+// function enableSave() {
+//     $("#save-{{req.id}}").attr("disabled", false);
+// }
+// function disableSave() {
+//     $("#reqSave").attr("disabled", true);
+// }
 
 function addRequirementsRowHandlers() {
     /* Add all of the event handlers to elements in the requirements row.

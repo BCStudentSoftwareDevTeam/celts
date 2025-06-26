@@ -84,33 +84,43 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     # CertificationRequirement.delete().where(CertificationRequirement.certification_id == certId, CertificationRequirement.id.not_in(saveIds)).execute()
 
     # update existing and add new requirements
-    requirements = []
+    
     print(newRequirements)
 
 
-       # requirementData = int(requirementData)
-    if newRequirements.get("save-new",None) is not None :
+
+    if newRequirements.get("save-new",None) is not None:
         newRequirement = CertificationRequirement()
         actualRequirements = newRequirements['save-new']
         print("check if ", actualRequirements)
+        newRequirement.certification = certId
+        newRequirement.isRequired = bool(actualRequirements.get('required', False))
+        newRequirement.frequency = actualRequirements['frequency']
+        newRequirement.name =actualRequirements['name']
+        # newRequirement.order = order
+        newRequirement.save()
+        return newRequirement.get_id()
     else:
         print("check else")
+        certKey = list(newRequirements.keys())[0]
         try:
-            newRequirement = CertificationRequirement(newRequirement)
+            certRequirement = CertificationRequirement.get(CertificationRequirement.id == certKey)
+            print("check certRequirement", certRequirement)
         except DoesNotExist:
             abort(403)
-     
 
-    newRequirement.certification = certId
-    newRequirement.isRequired = bool(actualRequirements.get('required', False))
-    newRequirement.frequency = actualRequirements['frequency']
-    newRequirement.name =actualRequirements['name']
-    # newRequirement.order = order
-    newRequirement.save()
+        
+        print(certKey)
+        requirement_info = newRequirements[certKey]
+        print("check requirement_info", requirement_info)
+        certRequirement.certification = certId
+        certRequirement.isRequired = bool(requirement_info.get('required', False))
+        certRequirement.frequency = requirement_info['frequency']
+        certRequirement.name =requirement_info['name']
+        # newRequirement.order = order
+        certRequirement.save()
 
-    requirements.append(newRequirement)
-
-    return requirements 
+        return certRequirement.get_id() 
 
 
 
