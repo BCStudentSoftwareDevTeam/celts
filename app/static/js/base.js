@@ -42,6 +42,10 @@ function msgToast(head, body){
   $("#toast-header").html(head)
   $("#toast-body").html(body)
   toastList[0].show()
+
+  setTimeout(() => {
+    toastList[0].hide();
+  }, 3000);
 }
 
 function setupPhoneNumber(editButtonId, phoneInput){
