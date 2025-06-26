@@ -394,38 +394,31 @@ function checkValidation(seriesEvent){
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked")
   let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
 
-  
-  //let seriesSuffix = ""; 
-
+  // .all is a class that groups the required filled present in all tempplate (event location and description)
    $(".all").each(function(){
-
-    if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-    
-    if ($(this).val() === ""){
+    if (!$(this).is(":visible") || $(this).is(":disabled")) return; //check for hidden fields and skip them
+    if ($(this).val() === ""){ 
       this.setCustomValidity("Please fill out the required field"); // do these actions
       this.reportValidity();
       allFieldFilled = false;
     } else {
        this.setCustomValidity(""); 
        } 
-   console.log("|||"+ $(this).val()+"|||" + $(this).prop("id")) //TESTING PURPOSE
    });
   
-   console.log($("#checkEngagement").is(":checked"));
   if (seriesEvent) {   
+    // .series is a class that groups the required filled present when the  series event toggle is toggled (event start date, end date and name)
       $(".series").each(function(){
-
       if (!$(this).is(":visible") || $(this).is(":disabled")) return;
             // Skip event type checkboxes from regular validation
       let elementId = $(this).prop("id");
-      if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
+      if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || //checking if any of the toggles are toggled
           elementId === "checkEngagement" || elementId === "checkBonners") {
         return; // Skip these, they'll be validated separately
       }
 
-      console.log("|||"+ $(this).val()+"|||" + $(this).prop("id")) 
       if ($(this).val() === ""){
-        this.setCustomValidity("Please fill out the required field"); // do these actions
+        this.setCustomValidity("Please fill out the required field"); 
         this.reportValidity();
         allFieldFilled = false;
       } else {
@@ -435,9 +428,7 @@ function checkValidation(seriesEvent){
   
         if (seriesWeeklyId) {
             $(".seriesWeekly").each(function(){
-              if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-
-           
+            if (!$(this).is(":visible") || $(this).is(":disabled")) return;
             if ($(this).val() === ""){
               this.setCustomValidity("Please fill out the required field"); // do these actions
               this.reportValidity();
@@ -445,21 +436,18 @@ function checkValidation(seriesEvent){
             } else {
               this.setCustomValidity(""); 
               }
-            
             });
         }   
         if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
               document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
               document.getElementById("checkEngagement").reportValidity();
               allFieldFilled = false;
-              console.log("No event type selected");
             } else {
               document.getElementById("checkEngagement").setCustomValidity("");
           }
       } 
       else if (isAllVolunteer) {
       $(".allV").each(function(){
-
         if (!$(this).is(":visible") || $(this).is(":disabled")) return;
             if ($(this).val() === ""){
               this.setCustomValidity("Please fill out the required field"); // do these actions
@@ -468,20 +456,19 @@ function checkValidation(seriesEvent){
             } else {
               this.setCustomValidity(""); 
               }
-              });
-
-  
-  } else {
-
+              }); 
+  } 
+  else {
+    // .main is a class that groups the required filled present in similar template
     $(".main").each(function(){
-      if (!$(this).is(":visible") || $(this).is(":disabled")) return;
+  if (!$(this).is(":visible") || $(this).is(":disabled")) return;
     let elementId = $(this).prop("id");
     if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
           elementId === "checkEngagement" || elementId === "checkBonners") {
         return; // Skip these, they'll be validated separately
   }
     if ($(this).val() === ""){
-      this.setCustomValidity("Please fill out the required field"); // do these actions
+      this.setCustomValidity("Please fill out the required field"); 
       this.reportValidity();
       allFieldFilled = false;
     } else {
@@ -497,29 +484,17 @@ function checkValidation(seriesEvent){
       document.getElementById("checkEngagement").setCustomValidity("");
     }
   }
-
-  console.log("Final allFieldFilled status:", allFieldFilled);
   
   if (allFieldFilled) {
-    //  console.log("All validation passed - submitting form");//TESTING PURPOSE
-    //   $("#saveEvent").submit();     
-    // }
-        // FIX 5: Removed problematic $(this) reference - was outside loop context
-    console.log("All validation passed - submitting form");
-    
     // Try multiple submission methods
     const form = document.getElementById("saveEvent");
     if (form) {
-      console.log("Form found, attempting submission");
       // Try triggering submit event instead of direct submission
       $(form).trigger('submit');
     } else {
-      console.log("Form not found, trying jQuery method");
       $("#saveEvent").trigger('submit');
     }
-  } else {
-    console.log("Validation failed - form NOT submitted");
-  }
+  } 
   }
 
 
@@ -579,15 +554,13 @@ $(document).ready(function() {
     typeBoxes.not($(event.target)).prop('checked', false);
   });
 
+
+  // When Save buttton is clicked, check if required are filled and then submit
   $("#saveButton").on('click', function (event) {
     event.preventDefault(); //prevents from submitting
-  
   //check if Series of events is checked or no and calls the function checkValidation()
   let seriesEvents = $("#checkIsSeries").is(":checked");
-  console.log(seriesEvents);
-  
   checkValidation(seriesEvents);
-
 });
   
   updateOfferingsTable();
