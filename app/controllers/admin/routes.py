@@ -52,7 +52,7 @@ from app.models.event import Event
 from app.models.program import Program
 from app.models.user import User
 from app.logic.searchUsers import searchUsers
-from app.logic.manageLabor import updateEventLabor, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck, getLaborStudents, sortLabor
+from app.logic.manageLabor import updateEventLabor, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck, getLaborStudents, sortLabor, addStudentLaborToEvent
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.backgroundCheck import BackgroundCheck
@@ -770,7 +770,7 @@ def addLaborToEvent(eventId):
     
     for user in usernameList:
         userObj = User.get_by_id(user)
-        successfullyAddedLabor = addPersonToEvent(userObj, event)
+        successfullyAddedLabor = addStudentLaborToEvent(userObj, event)
         if successfullyAddedLabor == "already in":
             alreadyAddedList.append(userObj.fullName)
         else:
@@ -778,6 +778,7 @@ def addLaborToEvent(eventId):
                 addedSuccessfullyList.append(userObj.fullName)
             else:
                 errorList.append(userObj.fullName)
+
 
     studentLabor = ""
     if alreadyAddedList:

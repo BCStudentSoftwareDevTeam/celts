@@ -118,3 +118,44 @@ def sortLabor(event):
     eventLaborData = eventLabor
 
     return eventLaborData, eventLabor
+
+def checkUserLabor(user,  event):
+    return EventLabor.select().where(EventLabor.user == user, EventLabor.event == event).exists()
+
+
+def addStudentLaborToEvent(user, event):
+    """
+        Add a user to an event.
+        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+        If the event is in the future, rsvp for the user (EventRsvp)
+
+        Returns True if the operation was successful, false otherwise
+    """
+    try:
+        LaborExists = checkUserLabor(user, event)
+        if not LaborExists:
+            EventLabor.create(user=user, event=event, hoursWorked=0, didWork=False)
+        if LaborExists:
+            return "already in"
+    except Exception as e:
+        print(e)
+        return False
+
+    return True
+
+def unattendedRequiredEvents(program, user):
+
+    # Check for events that are prerequisite for program
+    requiredEvents = (Event.select(Event)
+                           .where(Event.isTraining == True, Event.program == program))
+
+    if requiredEvents:
+        attendedRequiredEventsList = []
+        for event in requiredEvents:
+            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
+            if not attendedRequirement:
+                attendedRequiredEventsList.append(event.name)
+        if attendedRequiredEventsList is not None:
+            return attendedRequiredEventsList
+    else:
+        return []
