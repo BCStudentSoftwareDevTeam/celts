@@ -66,10 +66,10 @@
 <div class="accordion" id="userProfile">
 
 <!-- ################# Community & Civic Engagement Minor ################ -->
-{% if g.current_user.isCeltsStudentStaff or g.current_user.isStudent %}
+{% if g.current_user.isStudent %}
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingZero">
-       {% set focus = "open" if visibleAccordion == "MinorTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
+       {% set focus = "open" if visibleAccordion == "MinorTable" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
       data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
     </h3>
