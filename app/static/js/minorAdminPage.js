@@ -19,6 +19,7 @@ $(document).ready(function() {
           contentType: "application/json",
           success: function(response) {
             location.reload()
+            msgFlash("Candidate minor succsessfully removed", "success")
           },
           error: function(error) {
            console.log("error")
