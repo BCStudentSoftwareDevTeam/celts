@@ -106,8 +106,8 @@ function initializeFlatpickr(obj) {
   });
 }
 
+let eventSessionNum = 2
 function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null}={}){
-
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
 
   // insert values for the newly created row
@@ -115,7 +115,8 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
   if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
   if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-  
+  $('#eventName').val($('#inputEventName').val() + ': session ' + eventSessionNum);
+  eventSessionNum++;
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
 
@@ -253,7 +254,6 @@ function updateEventNameField() {
   let offerings = JSON.parse($("#seriesData").val())
   let isSeries = $("#checkIsRepeating").is(":checked")
 
-  // Check if the event is weekly
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
     let names = new Set()
@@ -369,6 +369,7 @@ function updateOfferingsTable() {
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
                                     "<td>" + endTime + "</td>" +
+                                    "<td>"+ offering.location +"</td>" +
                                   "</tr>"
                                 );
   });
@@ -465,24 +466,29 @@ $(document).ready(function() {
   }
   
   let modalOpenedByEditButton = false;
-  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
-  $("#checkIsSeries, #edit_modal").click(function(event) {
+  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page]
 
-    if(!($('#inputEventName').val().trim() == '')){
-      //keeps main page event name for multiple event modal
-      $('#eventName').val($('#inputEventName').val());
-    }
+
+  $("#checkIsSeries, #edit_modal").click(function(event) {
+    eventSessionNum = 2
+    $('#eventName').val($('#inputEventName').val() + ': session 1')
+
     let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
     if (isSeries) {
+     if(($('#inputEventName').val().trim() == '')){
+      //keeps main page event name for multiple event modal
+      $('#checkIsSeries').prop('checked', false)
+      msgFlash("Please type the event name first")
+      return
+    }
       setViewForSeries();
       loadOfferingsToModal();
       $('#modalSeries').modal('show');
 
       // Disable single event name field
       $('#inputEventName').prop('readonly', true)
-      $('#inputEventName').val('')
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
