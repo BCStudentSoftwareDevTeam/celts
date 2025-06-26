@@ -151,12 +151,13 @@ def test_preprocessEventData_checkboxes():
     
 
     
-    eventData = {'isRsvpRequired':'', 'isRepeating': 'on', 'isService':True}
+    eventData = {'isRsvpRequired':'', 'isRepeating': 'on', 'isService':True, 'isLaborOnly':True,}
     newData = preprocessEventData(eventData)
     assert newData['isTraining'] == False
     assert newData['isEngagement'] == False
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
+    assert newData['isRepeating'] == True
     assert newData['isRepeating'] == True
 
 @pytest.mark.integration
@@ -232,7 +233,7 @@ def test_preprocessEventData_requirement():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isEngagement': False,'isRepeating': False,'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isEngagement': False,'isRepeating': False, 'isLaborOnly': True, 'startDate': parser.parse('1999-12-12'),
                   'programId': 1,'location': "a big room",
                   'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
@@ -244,7 +245,7 @@ def test_correctValidateNewEventData():
 
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
-    eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
+    eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isLaborOnly': True,
                   'isTraining':True,'isEngagement': False, 'isRepeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
@@ -319,7 +320,7 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventInfo =  { 'isTraining':'on', 'isRepeating':False, 'seriesId':None,
+    eventInfo =  { 'isTraining':'on', 'isRepeating':False, 'seriesId':None, 'isLaborOnly': True,
                    'startDate': '2021-12-12',
                    'rsvpLimit': None,
                    'location':"a big room",
@@ -424,7 +425,7 @@ def test_attemptSaveMultipleOfferings():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
                   'isTraining':True, 'isEngagement': False,'isRepeating': False,'isAllVolunteerTraining': True, 
                   'seriesId':None, 'startDate': parser.parse('2021-12-12'), 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -459,21 +460,21 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_repeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None,  'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
@@ -507,21 +508,21 @@ def test_saveEventToDb_repeating():
 def test_saveEventToDb_nonRepeatingSeries():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False,'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'),'location':"this is only a test",
@@ -577,6 +578,7 @@ def test_saveEventToDb_update():
                         'isTraining': True,
                         'isEngagement': False,
                         'isRsvpRequired': True,
+                        'isLaborOnly': True,
                         'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
@@ -670,20 +672,20 @@ def test_deleteEvent():
         transaction.rollback()
 
         # create repeating events
-        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
                     'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
                     'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
                     'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
                     'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
                     'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
@@ -1028,6 +1030,7 @@ def test_getPreviousRecurringEventData():
                                      isRsvpRequired = 0,
                                      isTraining = 0,
                                      isService = 0,
+                                     isLaborOnly = 1,
                                      startDate = "2021-12-5",
                                      seriesId = 3,
                                      program = 9)
@@ -1038,6 +1041,7 @@ def test_getPreviousRecurringEventData():
                                      timeEnd = "9:00 pm",
                                      location = "No Where",
                                      isRsvpRequired = 0,
+                                     isLaborOnly = 1,
                                      isTraining = 0,
                                      isService = 0,
                                      startDate = "2022-12-12",
@@ -1051,6 +1055,7 @@ def test_getPreviousRecurringEventData():
                                      location = "No Where",
                                      isRsvpRequired = 0,
                                      isTraining = 0,
+                                     isLaborOnly = 1,
                                      isService = 0,
                                      startDate = "2022-12-19",
                                      seriesId = 3,
@@ -1163,6 +1168,7 @@ def test_getEventRsvpCount():
                                      timeEnd = "9:00 pm",
                                      location = "The Moon",
                                      isRsvpRequired = 1,
+                                     isLaborOnly = 1,
                                      startDate = "2022-12-19",
                                      program = 9)
         user_list = []

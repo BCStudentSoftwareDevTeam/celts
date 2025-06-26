@@ -92,7 +92,7 @@ def test_courseManagement():
 
         incompleteCourse = Course.create(courseName = "Testing Incomplete",
                                         term = 3,
-                                        status = CourseStatus.IN_PROGRESS,
+                                        status = CourseStatus.DRAFT,
                                         courseCredit = "12",
                                         createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,
