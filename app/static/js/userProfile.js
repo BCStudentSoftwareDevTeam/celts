@@ -2,7 +2,9 @@ $(document).ready(function(){
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
-    
+    let accept = "Thanks for expressing interest in the Community and Civic Engagement minor!";
+    let decline = "You have been removed from communication about the CCE minor.";
+
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",
@@ -10,12 +12,12 @@ $(document).ready(function(){
         contentType: "application/json",
         success: function(response) {
           if (isAdding) {
-              msgToast("Thanks for expressing interest in the Community and Civic Engagement minor!");
-              $("#interestIndicatedText").text("You're interested in this minor.");
-             } else {
-              msgToast("You have been removed from communication about the CCE minor.");
-              $("#interestIndicatedText").text("You're not interested in this minor.");
-             }
+              msgToast(accept);
+              $("#interestIndicatedText").text(accept);
+          } else {
+              msgToast(decline);
+              $("#interestIndicatedText").text(decline);
+          }
         },
         error: function(request, status, error) {
           console.log(status, error)
