@@ -1,3 +1,7 @@
+:root{
+    --save-btn-width: 3.5rem;
+    --save-btn-height: 2.25rem;
+}
 .toggleHeader{
     padding-bottom: 10px;
     font-weight: bold;  
@@ -55,3 +59,10 @@
     background-color: #fff
   }
 
+@media (max-width: 767px){
+    .saveBtn{
+    position: fixed;
+    top: calc(95vh - var(--save-btn-height));
+    left: calc(90vw - var(--save-btn-width));
+    }
+}
