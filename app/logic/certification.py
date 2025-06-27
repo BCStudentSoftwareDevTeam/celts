@@ -65,6 +65,11 @@ def getCertRequirements(certification=None, username=None):
 
     return certs
 
+def deleteRequirement(rowId):
+    print("Certification is priting")
+    CertificationRequirement.delete().where(CertificationRequirement.certification_id == rowId).execute()
+
+
 def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     """
     Update the certification requirements in the database to match the provided list of requirement data.
@@ -81,7 +86,7 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     """
     # check for missing ids to remove
     # saveIds = [int(requirementData['id']) for requirementData in newRequirements]
-    # CertificationRequirement.delete().where(CertificationRequirement.certification_id == certId, CertificationRequirement.id.not_in(saveIds)).execute()
+
 
     # update existing and add new requirements
     
@@ -132,7 +137,9 @@ def saveRequirement(requirementData):
     # newRequirement.order = 0  #???
     newRequirement.save()
     return newRequirement.get_id()
-    
+
+
+
 def updateCertRequirementForEvent(event, requirement):
     """
     Add a certification requirement to an event. 

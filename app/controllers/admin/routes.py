@@ -30,7 +30,7 @@ from app.models.courseStatus import CourseStatus
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
-from app.logic.certification import getCertRequirements, updateCertRequirements
+from app.logic.certification import getCertRequirements, updateCertRequirements, deleteRequirement
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId, inviteCohortsToEvent, updateEventCohorts
 from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
@@ -688,6 +688,23 @@ def newReq():
     newRequirements= updateCertRequirements (dict(request.get_json()))
     # print("New requirements:", newRequirements)
     return jsonify(newRequirements)
+
+@admin_bp.route("/deleteReq", methods =["POST"] )
+def deleteReq():
+    print("It did call")
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    print("Check if statement")
+    print(request.get_json)
+    deleteReq = deleteRequirement(request.get_json())
+    print("It works")
+    return "success"
+
+    
+
+
+
 
     
 

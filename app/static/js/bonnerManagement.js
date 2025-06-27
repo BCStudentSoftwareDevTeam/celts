@@ -113,8 +113,6 @@ function saveRequirement(e) {
 }
 
 
-
-
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
@@ -183,6 +181,37 @@ $(document).ready(function(){
 
     //Save Requirements handler
     $(".saveBtn").click(saveRequirement);
+    $(".removebtn").click (function(e) {
+        let el = $(e.target)
+        let id=parseInt(el.data("id"));
+        let row_id = $("#requirement_" + id);
+        console.log(row_id)
+        // var row_data = {[rowid]:
+        //                 {
+        //                     'id': row_el.data("id"),
+        //                     'name': row_el.find("input").val(),
+        //                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+        //                     'frequency': row_el.find("select.frequency-select").val()
+        //                 }} 
+        $.ajax({
+            method : "POST",
+            url: "/deleteReq",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(row_id), 
+            success: function() {
+                // Removing a row
+                msgToast("Bonner", "Removing Bonner Requirement");
+            },
+            error: function(e) {
+                msgToast("Error", "Error Removing Requirement");
+            }
+
+
+
+        })   
+    })
+
 
 });
 
