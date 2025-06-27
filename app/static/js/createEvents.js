@@ -167,9 +167,14 @@ $('#saveSeries').on('click', function() {
   eventNameInputs.each((index, eventNameInput) => {
     if (eventNameInput.value.trim() === '') {
       isEmpty = true;
-      $(eventNameInput).addClass('border-red');
+      //$(eventNameInput).addClass('border-red');
+      $(eventNameInput)[0].setCustomValidity("Please enter a event name");
+      $(eventNameInput)[0].reportValidity();
+          allFieldFilled = false;
+
     } else {
-      $(eventNameInput).removeClass('border-red');
+      $(eventNameInput)[0].setCustomValidity("");
+      //.removeClass('border-red');
     }
   });
 
@@ -177,9 +182,12 @@ $('#saveSeries').on('click', function() {
   datePickerInputs.each((index, datePickerInput) => {
     if (datePickerInput.value.trim() === '') {
         isEmpty = true;
-        $(datePickerInput).addClass('border-red');
+        //$(datePickerInput).addClass('border-red');
+        $(datePickerInput)[0].setCustomValidity("Please enter a event name");
+        $(datePickerInput)[0].reportValidity();
     } else {
-        $(datePickerInput).removeClass('border-red');
+        $(datePickerInput)[0].setCustomValidity("");
+        //$(datePickerInput).removeClass('border-red');
     }
   });  
 
@@ -225,10 +233,13 @@ $('#saveSeries').on('click', function() {
   }
 
   if (isEmpty){
-    let emptyFieldMessage = "Event name or date field is empty";
-    displayNotification(emptyFieldMessage);
+   return;
+
+    // let emptyFieldMessage = "Event name or date field is empty";
+    // msgToast(emptyFieldMessage);
   }
-  else if (!hasValidTimes) {
+  else 
+  if (!hasValidTimes) {
     let invalidTimeMessage = "Event end time must be after start time";
     displayNotification(invalidTimeMessage);
   }
@@ -439,11 +450,11 @@ function checkValidation(seriesEvent){
             });
         }   
         if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
-              document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
-              document.getElementById("checkEngagement").reportValidity();
+              $("#checkEngagement")[0].setCustomValidity("Please select at least one of the event options.");
+              $("#checkEngagement")[0].reportValidity();
               allFieldFilled = false;
             } else {
-              document.getElementById("checkEngagement").setCustomValidity("");
+              $("#checkEngagement")[0].setCustomValidity("");
           }
       } 
       else if (isAllVolunteer) {
@@ -477,13 +488,13 @@ function checkValidation(seriesEvent){
   });
 
   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
-      document.getElementById("checkEngagement").setCustomValidity("Please select at least one of the event options.");
-      document.getElementById("checkEngagement").reportValidity();
+      $("#checkEngagement")[0].setCustomValidity("Please select at least one of the event options.");
+      $("#checkEngagement")[0].reportValidity();
       allFieldFilled = false;
     } else {
-      document.getElementById("checkEngagement").setCustomValidity("");
-    }
-  }
+        $("#checkEngagement")[0].setCustomValidity("");
+          }
+      } 
   
   if (allFieldFilled) {
     // Try multiple submission methods
