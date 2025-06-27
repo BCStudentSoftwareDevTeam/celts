@@ -19,25 +19,6 @@ $(document).ready(function () {
 		}
 		hideDuplicateVolunteers()
 	})
-	$('#printVolunteerInfo').on('click', function () {
-		let contentToPrint;
-		let tableContent = $("#volunteerInformationTableToPrint_wrapper");
-		let cardContent = $("#volunteerInformationCardToPrint");
-		if ($('#tableCardToggle').text() == 'Card View') {
-			contentToPrint = tableContent;
-		} else {
-			contentToPrint = cardContent;
-		}
-		contentToPrint.siblings().addClass('d-print-none');
-		contentToPrint.removeClass('d-print-none');
-		$(".always-print").removeClass('d-print-none');
-		let getTableLength = volunteerInfoTable.page.len();
-		let getTablePage = volunteerInfoTable.page();
-		volunteerInfoTable.page.len(-1).draw();
-		window.print();
-		volunteerInfoTable.page.len(getTableLength).draw();
-		volunteerInfoTable.page(getTablePage).draw('page');
-	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
 	})
@@ -111,4 +92,31 @@ $(document).ready(function () {
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}
+	$('#printSelect').on("change", function (){
+		
+		if (this.value == "Print Volunteer List"){
+			let contentToPrint;
+			let tableContent = $("#volunteerInformationTableToPrint_wrapper");
+			let cardContent = $("#volunteerInformationCardToPrint");
+			if ($('#tableCardToggle').text() == 'Card View') {
+				contentToPrint = tableContent;
+			} else {
+				contentToPrint = cardContent;
+			}
+			contentToPrint.siblings().addClass('d-print-none');
+			contentToPrint.removeClass('d-print-none');
+			$(".always-print").removeClass('d-print-none');
+			let getTableLength = volunteerInfoTable.page.len();
+			let getTablePage = volunteerInfoTable.page();
+			volunteerInfoTable.page.len(-1).draw();
+			window.print();
+			volunteerInfoTable.page.len(getTableLength).draw();
+			volunteerInfoTable.page(getTablePage).draw('page');
+		}
+		else if (this.value == "Print Travel Form") {
+			$("#volunteerUsernames").submit()
+		} 
+    	$(this).val('Print')
+
+	})
 });

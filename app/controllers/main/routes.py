@@ -327,11 +327,11 @@ def travelForm(username):
                 .where(User.username == username).limit(1))
     if not list(user):
         abort(404)
-    userData = list(user.dicts())[0]
-    userData = {key: value if value else '' for (key, value) in userData.items()}
+    userList = list(user.dicts())[0]
+    userList = [{key: value if value else '' for (key, value) in userList.items()}]
 
     return render_template ('/main/travelForm.html',
-                            userData = userData
+                            userList = userList
                             )
 
 @main_bp.route('/event/<eventID>/travelForm', methods=['GET', 'POST'])
@@ -365,7 +365,7 @@ def eventTravelForm(eventID):
         return redirect(f"/event/{eventID}/volunteer_details")
             
      
-    return render_template ('/main/eventTravelForm.html',
+    return render_template ('/main/travelForm.html',
                            usernameList = usernameList,
                            userList = userList,
                            )
