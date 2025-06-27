@@ -22,6 +22,7 @@
     <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
   </div>
 {% endmacro %}
+{% if g.current_user.isCeltsAdmin %}
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
   <div class="accordion-item">
@@ -119,6 +120,8 @@
       </div>
     </div>
   </div>
+{% endif %}
+  {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager %}
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
       {% set focus = "open" if visibleAccordion == "program" else "collapsed" %}
@@ -166,7 +169,7 @@
       </div>
     </div>
   </div>
-  
+  {% endif %}
   <!-- Modal -->
   <div class="modal fade" id="adminProgramManagement">
     <div class="modal-dialog modal-lg" role="document">

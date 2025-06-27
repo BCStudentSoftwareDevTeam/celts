@@ -113,7 +113,7 @@ def userManagement():
 
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager():
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(currentPrograms),
