@@ -12,7 +12,7 @@ function callbackStudentStaff(selected){
 function callbackProgramManager(selected, action = 'add') {
   let row = $(`#programManagersTable tr[data-username="${selected["username"]}"]`);
   let userDoesNotExist = row.length === 0;
-  let programId = $('#programPlaceholder').attr('data-programid');
+  let programId = $('#programPlaceholder').data('programid');
 
   if ((action === 'remove') || (userDoesNotExist && action === 'add')){
     editProgramManager(
@@ -77,49 +77,80 @@ $(document).ready(function(){
   $(".term-btn").on("click", function(){
     submitTerm();
   });
-  $('[data-bs-target="#adminProgramManagement"]').on('click', function() {
-    // Get the JSON data from the data-programinfo attribute
-    const programInfo = JSON.parse($(this).attr('data-programinfo'));
-    // Directly populate modal fields
-    $("#programName").val(programInfo.programName);
-    $("#programDescription").val(programInfo.programDescription);
-    $("#partner").val(programInfo.partner);
-    $("#contactEmail").val(programInfo.contactEmail);
-    $("#contactName").val(programInfo.contactName);
-    $("#location").val(programInfo.location);
-    $("#programid").val(programInfo.programid)
-    $("#instagramUrl").val(programInfo.instagramUrl);
-    $("#facebookUrl").val(programInfo.facebookUrl);
-    $("#bereaUrl").val(programInfo.bereaUrl);
-    $('#modalProgramImage').val('');
-    $('#modalProgramImageContainer').html('');
 
-    handleFileSelection('modalProgramImage', true);
-    // Update the form action URL dynamically
-    let updateForm = $('#updateProgramForm');
-    updateForm.attr('action', "/admin/updateProgramInfo/" + programInfo.programid);
+  $('.editDetails').on('click', function() {
+    const programid = $(this).data('programid')
+    const buttonId = $(this).attr('id')
+    const buttonTextId = 'editDetailsButtonText' + $(this).attr('loop-index')
+    const loadingSpinnerId = 'editDetailsButtonSpinner' + $(this).attr('loop-index')
+
+    // Disable button and make it spin
+    $('#' + buttonTextId).hide()
+    $('#' + loadingSpinnerId).show()
+    $('#' + buttonId).prop( "disabled", true );
+
+    $.ajax({
+        method: 'GET',
+        url: "/admin/getProgramInfo/" + programid,     
+        success: function(response) {
+          const programInfo = response[0]
+
+           // Populate the form with the existing data that was retrieved from the AJAX request
+          $("#programName").val(programInfo.programName);
+          $("#programDescription").val(programInfo.programDescription);
+          $("#partner").val(programInfo.partner);
+          $("#contactEmail").val(programInfo.contactEmail);
+          $("#contactName").val(programInfo.contactName);
+          $("#location").val(programInfo.location);
+          $("#programid").val(programInfo.programid)
+          $("#instagramUrl").val(programInfo.instagramUrl);
+          $("#facebookUrl").val(programInfo.facebookUrl);
+          $("#bereaUrl").val(programInfo.bereaUrl);
+          $('#modalProgramImage').val('');
+          $('#modalProgramImageContainer').html('');
+
+          handleFileSelection('modalProgramImage', true);
+
+          // Update the form action URL dynamically
+          let updateForm = $('#updateProgramForm');
+          updateForm.attr('action', "/admin/updateProgramInfo/" + programid);
+
+          // Openning the modal after the data was received
+          let modal = new bootstrap.Modal($('#adminProgramManagement'));
+          modal.show();
+
+          // Remove the loading spinner after the modal is open
+          $('#' + buttonTextId).show()
+          $('#' + loadingSpinnerId).hide()
+          $('#' + buttonId).prop( "disabled", false );
+        }, 
+        error: function () {          
+            console.error("Failed to retrieve program info", error);
+            msgToast("Could not retrieve program info. Please contact <a href='mailto:support@bereacollege.onmicrosoft.com'>Systems Support </a>")
+        }
     });
+  });
 
-    $(".editProgramManagersButton").on('click', function(){
-      $('#programPlaceholder').attr('data-programid', $(this).attr('data-programid'));
-      $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
+  $(".editProgramManagersButton").on('click', function(){
+    $('#programPlaceholder').attr('data-programid', $(this).data('programid'))
+    $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
-      $('#noManagersText').addClass("d-none")
-      const managers = $(this).attr('data-managers').split(',');
-      const managersTable = $('#programManagersTable');
-      managersTable.empty();
-      
-      if(managers[0].length == 0){
-        $('#noManagersText').removeClass("d-none")
-        return;
-      };
+    $('#noManagersText').addClass("d-none")
+    const managers = $(this).attr('data-managers').split(',');
+    const managersTable = $('#programManagersTable');
+    managersTable.empty();
+    
+    if(managers[0].length == 0){
+      $('#noManagersText').removeClass("d-none")
+      return;
+    };
 
-      managers.forEach(manager => {
-        let [managerName, managerUser] = manager.split('#');
-        managersTable.append(createProgramManagerRow(managerUser, managerName))
-      });
-    })
-});
+    managers.forEach(manager => {
+      let [managerName, managerUser] = manager.split('#');
+      managersTable.append(createProgramManagerRow(managerUser, managerName))
+    });
+  })
+  });
 
 function submitRequest(method, username){
   let data = {
