@@ -88,7 +88,7 @@
               <td style="text-align:center">
                 <input type="checkbox" class='attendanceCheck'
                   name="checkbox_{{participant.user.username}}"
-                  {% if event.isPastStart and participant.hoursWorked > 0 %} checked {% endif %} />
+                  {% if event.isPastStart %} checked {% endif %} />
               </td>
               <td style="text-align:center">
                 <button type="button" class="removeLabor btn btn-danger btn-sm"
@@ -116,7 +116,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{modalTitle}}</h5>
+        <h5 class="modal-title">Add Student</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
