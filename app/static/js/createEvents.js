@@ -37,7 +37,10 @@ function calculateRepeatingEventFrequency(){
   var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
                             isRepeating: true,
                             startDate:$("#repeatingEventsStartDate").val(),
-                            endDate:$("#repeatingEventsEndDate").val()}
+                            endDate:$("#repeatingEventsEndDate").val(),
+                            location:$("#repeatingEventsLocationPicker").val()
+                          }
+  console.log(eventDatesAndName);
   $.ajax({
     type:"POST",
     url: "/makeRepeatingEvents",
@@ -157,6 +160,7 @@ $('#saveSeries').on('click', function() {
   //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
+  let eventLocationInput = $('')
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
@@ -187,7 +191,6 @@ $('#saveSeries').on('click', function() {
         $(datePickerInput).removeClass('border-red');
     }
   });  
-
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
@@ -220,7 +223,7 @@ $('#saveSeries').on('click', function() {
     let eventName = eventNameInputs[i].value
     let date = datePickerInputs[i].value.trim()
     let startTime = startTimeInputs[i].value
-    let eventListing = JSON.stringify([eventName, date, startTime])
+    let eventListing = JSON.stringify([eventName, date, startTime, location])
 
     if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
       hasDuplicateListings = true
@@ -289,7 +292,7 @@ function saveOfferingsFromModal() {
     else {
       rowData = $.map($(element).find("input"), (el) => $(el).val());
     }
-    console.log(rowData);
+    
     let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[3]
     let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[4]
     if (navigator.userAgent.indexOf("Chrome") == -1) {
@@ -298,8 +301,8 @@ function saveOfferingsFromModal() {
     }
     offerings.push({
         eventName: rowData[0],
-        eventLocation: rowData[1],
-        eventDate: rowData[2],
+        eventLocation: isRepeatingStatus ?  rowData[2] : rowData[1],
+        eventDate: isRepeatingStatus ?  rowData[1] : rowData[2],
         startTime: startTime,
         endTime: endTime,
     })
@@ -345,10 +348,13 @@ function loadOfferingsToModal(){
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
   var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
+  console.log(offering);
+  
   seriesTable.append(
     "<tr class='eventOffering'>" +
     "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
     "<td id='offeringDate'>" + eventDate + "</td>" +
+    "<td id='offeringLocation'>" + offering.location + "</td>" + 
     "<td><div class='deleteGeneratedEvent'><span class='bi bi-trash btn btn-danger'></span></div></td>" +
     "</tr>"
   );

@@ -130,7 +130,8 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
                 'seriesId': seriesId,
-                'isRepeating': bool(isRepeating)
+                'isRepeating': bool(isRepeating),
+                'location': event['eventLocation'],
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
@@ -453,9 +454,9 @@ def getRepeatingEventsData(eventData):
 
         Return a list of events to create from the event data.
     """
-    
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
+              'location': eventData['location'],
               "week": counter+1}
             for counter in range(0, ((eventData['endDate']-eventData['startDate']).days//7)+1)]
 
@@ -499,7 +500,7 @@ def preprocessEventData(eventData):
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
-    
+
     # Process requirement
     if 'certRequirement' in eventData:
         try:
@@ -516,7 +517,6 @@ def preprocessEventData(eventData):
 
     if 'timeEnd' in eventData:
         eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
-
     return eventData
 
 def getTomorrowsEvents():
