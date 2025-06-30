@@ -1,12 +1,13 @@
+from flask import g, session
+from playhouse.shortcuts import model_to_dict
+
 from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
 from app.models.program import Program
 from app.models.eventTemplate import EventTemplate
 from app.models.attachmentUpload import AttachmentUpload
-from flask import g, session
 from app.logic.createLogs import createActivityLog
-from playhouse.shortcuts import model_to_dict
 from app.logic.fileHandler import FileHandler
 
 def addCeltsAdmin(user):
@@ -103,4 +104,4 @@ def getAllowedTemplates(currentUser):
     if currentUser.isCeltsAdmin:
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
-        return []
+        return []  
