@@ -28,31 +28,38 @@ def updateEventLabor(participantData):
 
     param: participantData- an ImmutableMultiDict that contains data from every row of the page along with the associated username.
     """
-    event = Event.get_or_none(Event.id==participantData['event'])
+    event = Event.get_or_none(Event.id == participantData['event'])
     if not event:
-        raise Exception("Event does not exist.") # ???
         return False
 
-
     for username in participantData.getlist("username"):
-        userObject = User.get_or_none(User.username==username)
-        eventLabor = EventLabor.get_or_none(user=userObject, event=participantData['event'])
-        if userObject:
-            if participantData.get(f'checkbox_{username}'): #if the user is marked as present
-                inputHours = participantData.get(f'inputHours_{username}')
-                hoursWorked = float(inputHours) if inputHours else 0
-                if eventLabor:
-                    ((EventLabor.update({EventLabor.hoursWorked: hoursWorked})
-                                      .where(EventLabor.event==event.id, EventLabor.user==userObject.username))
-                                      .execute())
-                else:
-                    EventLabor.create(user=userObject, event=event, hoursWorked=hoursWorked)
-            else:
-                ((EventLabor.delete()
-                                  .where(EventLabor.user==userObject.username, EventLabor.event==event.id))
-                                  .execute())
+        userObject = User.get_or_none(User.username == username)
+        if not userObject:
+            continue
+
+        eventLabor = EventLabor.get_or_none(user=userObject, event=event)
+        checkbox_value = participantData.get(f'checkbox_{username}', 'off')
+        didWork = checkbox_value == "on"
+
+        # Hours logic
+        inputHours = participantData.get(f'inputHours_{username}')
+        hoursWorked = float(inputHours) if inputHours else 0
+
+        if eventLabor:
+            (EventLabor.update({
+                EventLabor.hoursWorked: hoursWorked,
+                EventLabor.didWork: didWork
+            })
+            .where(EventLabor.event == event.id, EventLabor.user == userObject.username)
+            .execute())
         else:
-            return False
+            EventLabor.create(
+                user=userObject,
+                event=event,
+                hoursWorked=hoursWorked,
+                didWork=didWork
+            )
+
     return True
 
 def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
@@ -144,8 +151,6 @@ def addStudentLaborToEvent(user, event):
     return True
 
 def unattendedRequiredEvents(program, user):
-
-    # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
                            .where(Event.isTraining == True, Event.program == program))
 

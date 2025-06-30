@@ -1,6 +1,8 @@
 import searchUser from './searchUser.js'
+const previousHours = {};
 
 $(document).ready(function() {
+
   $('[data-toggle="tooltip"]').tooltip();
   var iconShowing = false
 
@@ -11,6 +13,7 @@ $(document).ready(function() {
     html: true,
     content: "Previous Labor"
   });
+
 
   
   function initializeTable(){
@@ -148,31 +151,20 @@ $(document).ready(function() {
     });
   }
 
-  $("#addRsvpFromWaitlistBtn").on("click",function(){
-    let username = $('#addRsvpFromWaitlistBtn').val()
-    let eventId = $('#eventID').val()
-    $.ajax({
-      url: `/rsvpFromWaitlist/${username}/${eventId}`,
-      type: "POST",
-      success: function(s) {
-         location.reload();
-      }
-    });
-  });
-
-
-  $(".attendanceCheck").on("change", function() {
+$(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
+    let $inputHours = $(`#${inputFieldID}`);
 
     if (this.checked) {
-      $(`#${inputFieldID}`).prop('disabled', false);
-      let eventLength = $("#eventLength").text();
-      $(`#${inputFieldID}`).val(eventLength);
+      let hoursWorked = previousHours[username] ?? 0;
+      $inputHours.prop('disabled', false);
+      $inputHours.val(hoursWorked);
 
     } else {
-      $(`#${inputFieldID}`).prop('disabled', true);
-      $(`#${inputFieldID}`).val(null);
+      previousHours[username] = $inputHours.val();
+      $inputHours.prop('disabled', false);
+      $inputHours.val(null)
     }
   });
 
@@ -212,3 +204,4 @@ $(document).ready(function() {
     })
   }
 });
+
