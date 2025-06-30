@@ -49,11 +49,6 @@
         {% endif %}
       </li>
       <li>
-        {% if g.current_user.isProgramManager() and not g.current_user.isCeltsAdmin %}
-                  <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
-              Settings
-            </a>
-        {% endif %}
         {% if g.current_user.isCeltsAdmin %}
         <nav class="navbar navbar-dark bg-dark">
           <div class="container-fluid">
@@ -94,6 +89,11 @@
       </li>
 
       {% endif %}
+      {% if g.current_user.isProgramManager() %}
+          <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
+            Settings
+          </a>
+      {% endif %}
     </ul>
     <hr>
     {% if env != 'production' %}
@@ -109,5 +109,6 @@
         </form>
     {% endif %}
     <a type="button" href='/logout' class="btn btn-secondary btn-secondary">Log out</a>
+    
   </div>
 </div>
