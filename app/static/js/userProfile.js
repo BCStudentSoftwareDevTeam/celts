@@ -3,7 +3,7 @@ $(document).ready(function(){
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
     let accept = "You have indicated interest in CCE Minor.";
-    let decline = "You have removed your interest from CCE minor.";
+    let decline = "You have indicated you are not interested in the CCE Minor.";
 
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
