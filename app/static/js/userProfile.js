@@ -2,8 +2,8 @@ $(document).ready(function(){
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
-    let accept = "Thanks for expressing interest in the Community and Civic Engagement minor!";
-    let decline = "You have been removed from communication about the CCE minor.";
+    let accept = "You have indicated interest in CCE Minor.";
+    let decline = "You have removed your interest from CCE minor.";
 
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",

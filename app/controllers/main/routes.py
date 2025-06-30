@@ -226,6 +226,7 @@ def viewUsersProfile(username):
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         return render_template ("/main/userProfile.html",
+                                username=username,
                                 programs = programs,
                                 programsInterested = programsInterested,
                                 upcomingEvents = upcomingEvents,

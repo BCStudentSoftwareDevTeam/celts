@@ -68,6 +68,7 @@
 <!-- ################# Community & Civic Engagement Minor ################ -->
 {% if g.current_user.isStudent %}
   <div class="accordion-item">
+    {% if not g.current_user.isCeltsStudentStaff or g.current_user.username == username %}
     <h3 class="accordion-header" id="headingZero">
        {% set focus = "open" if visibleAccordion == "MinorTable" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
@@ -94,14 +95,15 @@
                   in the CCE Minor.                                
                 {% endif %}
               </label></strong>
-              <input class="form-check-input" data-username ="{{volunteer.username}}" 
-              type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
+                <input class="form-check-input" data-username ="{{volunteer.username}}" 
+                type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
              </div>
           </div>
         </div>
      </div>
   </div>
   {% else %}
+  {% endif %}
   {% endif %}
 
 <!-- ################# Upcoming Events ################ -->
