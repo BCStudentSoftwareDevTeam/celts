@@ -61,7 +61,7 @@
         </tr>
       </thead>
       <tbody class="align-middle" id="laborTable">
-        {% if eventLaborData %}
+        <!-- {% if eventLaborData %} -->
           {% for participant in eventLaborData %}
             <tr>
               <td>
@@ -86,9 +86,14 @@
                   {% endif %} />
               </td>
               <td style="text-align:center">
+
+                <input type="hidden" name="checkbox_{{participant.user.username}}" value="off">
+                
                 <input type="checkbox" class='attendanceCheck'
                   name="checkbox_{{participant.user.username}}"
-                  {% if event.isPastStart %} checked {% endif %} />
+                  {% if participant.didWork %} 
+                  checked 
+                  {% endif %} />
               </td>
               <td style="text-align:center">
                 <button type="button" class="removeLabor btn btn-danger btn-sm"
@@ -98,7 +103,7 @@
               </td>
             </tr>
           {% endfor %}
-        {% endif %}
+        <!-- {% endif %} -->
       </tbody>
     </table>
     {% if event.isPastStart %}
