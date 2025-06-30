@@ -42,12 +42,9 @@ function updateExportText(){
 }
 
 function saveRequirement(e) {
-    
+    $(".saveBtn").attr("disabled", "disabled")
     let el=$(e.target)
-    console.log(el);
-
     if (el.data("id")== "save-new") {
-        console.log("New row, saving");
         let row_el = $("#requirement_" + el.data("id"));
                 var row_data = {[el.data("id")]:
                                 {
@@ -56,26 +53,8 @@ function saveRequirement(e) {
                                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                                     'frequency': row_el.find("select.frequency-select").val()
                                 }}
-        
-        $.ajax({
-            method: 'POST',
-            url: "/newReq", // Bonner certification id hard-coded here
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify(row_data),
-            
-            success: function(id) {
-                // update our rows with any new ids
-                row_data.attr("id", id);
-                msgToast("Bonner", "Updated Bonner Requirements");
-            },
-        error: function(e) {
-                msgToast("Error", "Error Saving Requirements");
-            }
-        });
     }
     else{   
-        console.log("Existing row, saving");
         let rowid=parseInt(el.data("id"));
         let row_el = $("#requirement_" + rowid);
         var row_data = {[rowid]:
@@ -85,33 +64,24 @@ function saveRequirement(e) {
                             'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                             'frequency': row_el.find("select.frequency-select").val()
                         }}
-        console.log(JSON.stringify(row_data));
-        $.ajax({
-            method: 'POST',
-            url: '/saveRequirements/1', // Bonner certification id hard-coded here
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify(row_data), 
-
-            success: function(ids) {
-                // update our rows with any new ids
-                let rows = $('#requirements tbody tr').get()
-                ids.forEach(function(id, index) {
-                    let row = $(rows[index])
-                    if(id != row.data('id')) {
-                        row.data('id', id);
                     }
-                });
-                msgToast("Bonner", "Updated Bonner Requirements");
-            },
-            error: function(e) {
-                msgToast("Error", "Error Saving Requirements");
-            }
-        });
-    }
-   
-}
+    $.ajax({
+        method: 'POST',
+        url: '/saveRequirements/1', // Bonner certification id hard-coded here
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(row_data), 
 
+        success: function(ids) {
+            msgToast("Bonner", "Updated Bonner Requirements");
+            location.reload();
+        },
+        error: function(e) {
+            msgToast("Error", "Error Saving Requirements");
+        }
+    });
+    
+}
 
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
@@ -173,44 +143,33 @@ $(document).ready(function(){
 
     // Add Requirement handler
     $("#reqAdd").click(function() {
-        console.log("Adding req")
         addRequirement();
-        console.log("Add ed req")
-        // disableSave();
     });
 
     //Save Requirements handler
     $(".saveBtn").click(saveRequirement);
     $(".removebtn").click (function(e) {
         let el = $(e.target)
-        let id=parseInt(el.data("id"));
-        let row_id = $("#requirement_" + id);
-        console.log(row_id)
-        // var row_data = {[rowid]:
-        //                 {
-        //                     'id': row_el.data("id"),
-        //                     'name': row_el.find("input").val(),
-        //                     'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
-        //                     'frequency': row_el.find("select.frequency-select").val()
-        //                 }} 
+        let rowid=parseInt(el.data("id"));
         $.ajax({
             method : "POST",
             url: "/deleteReq",
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify(row_id), 
-            success: function() {
+            data: JSON.stringify(rowid), 
+            success: function(response) {
                 // Removing a row
                 msgToast("Bonner", "Removing Bonner Requirement");
+                location.reload();
             },
             error: function(e) {
                 msgToast("Error", "Error Removing Requirement");
+                location.reload();
             }
-
-
 
         })   
     })
+    
 
 
 });
@@ -225,20 +184,15 @@ function addRequirement() {
     var newRow = table.find("tbody tr:last-child").clone();
     // newRow.data("id", "X");
     newRow.attr('id','requirement_save-new');
-
     $(newRow).attr("data-id", "save-new");
-
     newRow.find("input").val("");
-
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
     newRow.find("select.required-select option:last-child").attr('selected', true);
-
     newRow.find(".saveBtn").attr('id',"save-new");
     newRow.find(".saveBtn").data('id',"save-new");
     let newSaveBtn = newRow.find(".saveBtn")[0];
     newRow.find("select.frequency-select").attr("name", "frequency-new");
     newSaveBtn.addEventListener("click", saveRequirement);
-
     table.append(newRow)
    
     // addRequirementsRowHandlers()
@@ -273,13 +227,6 @@ function addCohort(){
     // Add functionality to the search box on the newly added tab
     addSearchCapabilities($(`#search-${newCohortYear}`).get());
 }
-
-// function enableSave() {
-//     $("#save-{{req.id}}").attr("disabled", false);
-// }
-// function disableSave() {
-//     $("#reqSave").attr("disabled", true);
-// }
 
 function addRequirementsRowHandlers() {
     /* Add all of the event handlers to elements in the requirements row.

@@ -65,10 +65,13 @@ def getCertRequirements(certification=None, username=None):
 
     return certs
 
-def deleteRequirement(rowId):
-    print("Certification is priting")
-    CertificationRequirement.delete().where(CertificationRequirement.certification_id == rowId).execute()
-
+def deleteRequirement(rowID):
+    try:
+        req_id = CertificationRequirement.get_by_id(rowID)
+        req_id.delete_instance()
+        return True
+    except DoesNotExist:
+        return False
 
 def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     """
@@ -90,55 +93,39 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
 
     # update existing and add new requirements
     
-    print(newRequirements)
-
-
-
     if newRequirements.get("save-new",None) is not None:
         newRequirement = CertificationRequirement()
         actualRequirements = newRequirements['save-new']
-        print("check if ", actualRequirements)
         newRequirement.certification = certId
         newRequirement.isRequired = bool(actualRequirements.get('required', False))
         newRequirement.frequency = actualRequirements['frequency']
         newRequirement.name =actualRequirements['name']
-        # newRequirement.order = order
         newRequirement.save()
-        return newRequirement.get_id()
+        return newRequirement.get_id(), True
+    
     else:
-        print("check else")
         certKey = list(newRequirements.keys())[0]
         try:
             certRequirement = CertificationRequirement.get(CertificationRequirement.id == certKey)
-            print("check certRequirement", certRequirement)
         except DoesNotExist:
             abort(403)
 
-        
-        print(certKey)
         requirement_info = newRequirements[certKey]
-        print("check requirement_info", requirement_info)
         certRequirement.certification = certId
         certRequirement.isRequired = bool(requirement_info.get('required', False))
         certRequirement.frequency = requirement_info['frequency']
         certRequirement.name =requirement_info['name']
-        # newRequirement.order = order
         certRequirement.save()
 
-        return certRequirement.get_id() 
-
-
+        return certRequirement.get_id(), True
 
 def saveRequirement(requirementData):
     newRequirement = CertificationRequirement()
     newRequirement.isRequired = bool(requirementData('required'))
     newRequirement.frequency = requirementData['frequency']
     newRequirement.name = requirementData['name']
-    # newRequirement.order = 0  #???
     newRequirement.save()
     return newRequirement.get_id()
-
-
 
 def updateCertRequirementForEvent(event, requirement):
     """

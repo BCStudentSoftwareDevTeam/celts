@@ -674,32 +674,21 @@ def saveRequirements(certid):
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    print("Saving requirements for certification:", request.get_json()) #test
     newRequirements = updateCertRequirements(request.get_json(),certid)
 
-    return jsonify(newRequirements)
-
-
-@admin_bp.route("/newReq", methods=["POST"])
-def newReq():
-    if not g.current_user.isCeltsAdmin:
-        abort(403)  
-    
-    newRequirements= updateCertRequirements (dict(request.get_json()))
-    # print("New requirements:", newRequirements)
-    return jsonify(newRequirements)
+    return jsonify(newRequirements, {"success": True})
 
 @admin_bp.route("/deleteReq", methods =["POST"] )
 def deleteReq():
-    print("It did call")
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    print("Check if statement")
-    print(request.get_json)
     deleteReq = deleteRequirement(request.get_json())
-    print("It works")
-    return "success"
+    if deleteReq == True:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Failed to delete requirement."})
+    
 
     
 

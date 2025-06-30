@@ -148,7 +148,6 @@
                         
                         <td>
                             <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
-                                <!-- <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option> -->
                                 <option value="once" {{ "selected" if req.frequency == "once" else "" }}>Once</option>
                                 <option value="annual" {{ "selected" if req.frequency == "annual" else "" }}>Annual</option>
                                 <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
@@ -163,7 +162,6 @@
             </table>
             <!-------------------- End Requirements --------------------->
             <button id="reqAdd" class="bi-plus-lg float-start btn btn-success"> Add Requirement</button>
-            <!-- <button id="reqSave" class="float-end btn btn-primary" disabled>Save Changes</button> -->
         </div>
     </div>
   </div>
