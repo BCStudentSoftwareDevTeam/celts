@@ -50,7 +50,9 @@
       </li>
       <li>
         {% if g.current_user.isProgramManager() and not g.current_user.isCeltsAdmin %}
-          <a href="/admin?accordion=program" class="nav-link text-white">Settings</a>
+                  <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
+              Settings
+            </a>
         {% endif %}
         {% if g.current_user.isCeltsAdmin %}
         <nav class="navbar navbar-dark bg-dark">

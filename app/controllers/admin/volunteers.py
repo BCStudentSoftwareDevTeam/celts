@@ -217,7 +217,7 @@ def deleteBackgroundCheck():
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager():
+    if g.current_user.isCeltsAdmin:
         data =request.form
         username = User.get(User.username == data["username"])
         program = Program.get_by_id(data['programId'])
