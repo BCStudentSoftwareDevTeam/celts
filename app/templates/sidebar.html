@@ -49,8 +49,8 @@
         {% endif %}
       </li>
       <li>
-        {% if g.current_user.isProgramManager and not g.current_user.isCeltsAdmin %}
-          <a href="/admin?accordion=program" class="nav-link text-white">Manage Programs</a>
+        {% if g.current_user.isProgramManager() and not g.current_user.isCeltsAdmin %}
+          <a href="/admin?accordion=program" class="nav-link text-white">Settings</a>
         {% endif %}
         {% if g.current_user.isCeltsAdmin %}
         <nav class="navbar navbar-dark bg-dark">
