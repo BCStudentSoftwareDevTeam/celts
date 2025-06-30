@@ -1,6 +1,8 @@
-from flask import render_template,request, flash, g, abort, redirect, url_for
-from peewee import fn, JOIN
+from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify
+from playhouse.shortcuts import model_to_dict
+from peewee import fn, JOIN, DoesNotExist
 import re
+
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
@@ -75,6 +77,25 @@ def updateProgramInfo(programID):
             flash('Error while updating program info.','warning') 
             abort(500,'Error while updating program.')
     abort(403)
+
+
+@admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
+def getProgramInfo(programID):
+    if g.current_user.isCeltsAdmin:
+        try:
+            targetProgram = Program.get_by_id(programID)
+            programInfo = model_to_dict(targetProgram, recurse=False)
+            return jsonify([programInfo])
+        except DoesNotExist as e:
+            flash('Program not found')
+            print("Debug Here \n", e)
+            abort(404)
+        except Exception as e:
+            flash('Failed to retrieve data','warning') 
+            print(e)
+            abort(500, 'Failed to retrieve data')
+    abort(403)
+
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
