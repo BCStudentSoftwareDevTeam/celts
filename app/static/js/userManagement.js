@@ -101,7 +101,7 @@ $(document).ready(function(){
           $("#partner").val(programInfo.partner);
           $("#contactEmail").val(programInfo.contactEmail);
           $("#contactName").val(programInfo.contactName);
-          $("#location").val(programInfo.location);
+          $("#location").val(programInfo.defaultLocation);
           $("#programid").val(programInfo.programid)
           $("#instagramUrl").val(programInfo.instagramUrl);
           $("#facebookUrl").val(programInfo.facebookUrl);
