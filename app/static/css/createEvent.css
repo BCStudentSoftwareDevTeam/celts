@@ -66,3 +66,23 @@
     left: calc(90vw - var(--save-btn-width));
     }
 }
+
+  @media screen and (max-width:767px){
+    .saveBtn {
+        position: fixed;
+        bottom: calc(5vw + 2vh);
+        right: 5vw;
+        
+    }
+
+}
+@media screen and (min-height: 400px) {
+
+     .saveBtn {
+        position: fixed;
+        bottom: 3vh;
+        right: 5vw;
+        
+    }
+    
+}
