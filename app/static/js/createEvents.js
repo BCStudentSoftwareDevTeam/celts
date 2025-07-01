@@ -148,114 +148,143 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   return clonedOffering
 }
 
-$('#saveSeries').on('click', function() {
-  //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
+function verifyRepeatingFields(){
+  // verifies all fields in the repeating table are not empty.
+  let repeatingFields = $(".repeatingEventsField");
+  let isEmpty = false;
+ enableLiveCustomValidityClearing();
+
+  repeatingFields.each(function() {
+    let value = $(this).val();
+    if (value === "" || value == null){
+      this.setCustomValidity("Please fill out the required field"); // do these actions
+      this.reportValidity();
+      isEmpty = true;
+    } else {
+      this.setCustomValidity("");
+    }
+  });
+  return isEmpty
+}
+
+$('#saveSeries').on('click', function(e) {
+  e.preventDefault(); // Prevent default form submission at the start
+  enableLiveCustomValidityClearing()
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
-  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
-  let isEmpty = false;
-  let hasValidTimes = true;
-  let hasDuplicateListings = false;
-  let hasInvalidDates = false;
-
-
-  // Check if the input field is empty
-  eventNameInputs.each((index, eventNameInput) => {
-    if (eventNameInput.value.trim() === '') {
-      isEmpty = true;
-      //$(eventNameInput).addClass('border-red');
-      $(eventNameInput)[0].setCustomValidity("Please enter a event name");
-      $(eventNameInput)[0].reportValidity();
-          allFieldFilled = false;
-
-    } else {
-      $(eventNameInput)[0].setCustomValidity("");
-      //.removeClass('border-red');
+  let startDateInput = $("#repeatingEventsStartDate");
+  let endDateInput = $("#repeatingEventsEndDate");
+  
+  let hasErrors = false; // Single flag to track all validation errors
+  
+  // Validate repeating events fields first if it's a repeating event
+  if (isRepeatingStatus) {
+    if (verifyRepeatingFields()) {
+      hasErrors = true;
     }
-  });
-
-  // Check if the date input field is empty
-  datePickerInputs.each((index, datePickerInput) => {
-    if (datePickerInput.value.trim() === '') {
-        isEmpty = true;
-        //$(datePickerInput).addClass('border-red');
-        $(datePickerInput)[0].setCustomValidity("Please enter a event name");
-        $(datePickerInput)[0].reportValidity();
-    } else {
-        $(datePickerInput)[0].setCustomValidity("");
-        //$(datePickerInput).removeClass('border-red');
-    }
-  });  
-
-
-  // Check if the start time is after the end time
-  for(let i = 0; i < startTimeInputs.length; i++){
-    let startTime = startTimeInputs[i].value
-    let endTime = endTimeInputs[i].value
     
-    if (navigator.userAgent.indexOf("Chrome") == -1) {
-      startTime = format12to24HourTime(startTime)
-      endTime = format12to24HourTime(endTime)
-    }
-
-    if(startTime < endTime){
-      hasValidTimes = true;
-      $(startTimeInputs[i]).removeClass('border-red');
-      $(endTimeInputs[i]).removeClass('border-red');
+    // Check if start date is before end date for repeating events
+    let startDate = new Date(startDateInput.val());
+    let endDate = new Date(endDateInput.val());
+    
+    if (endDate <= startDate) {
+      hasErrors = true;
+      $(startDateInput).addClass('border-red');
+      $(endDateInput).addClass('border-red');
+      displayNotification("The end date must be after the start date.");
     } else {
-      hasValidTimes = false;
-      $(startTimeInputs[i]).addClass('border-red');
-      $(endTimeInputs[i]).addClass('border-red');
+      $(startDateInput).removeClass('border-red');
+      $(endDateInput).removeClass('border-red');
     }
-  }
-
-  if ($(dataTable).children().length < 1){
-    displayNotification("Please create events.")
-  }
-
-  // Check if there are duplicate event offerings
-  let eventListings = {};
-  for(let i = 0; i < eventOfferings.length; i++){
-    let eventName = eventNameInputs[i].value
-    let date = datePickerInputs[i].value.trim()
-    let startTime = startTimeInputs[i].value
-    let eventListing = JSON.stringify([eventName, date, startTime])
-
-    if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
-      hasDuplicateListings = true
-    } else { // If we haven't seen this event before
-      eventListings[eventListing] = i
-    }
-  }
-
-  if (isEmpty){
-   return;
-
-    // let emptyFieldMessage = "Event name or date field is empty";
-    // msgToast(emptyFieldMessage);
-  }
-  else 
-  if (!hasValidTimes) {
-    let invalidTimeMessage = "Event end time must be after start time";
-    displayNotification(invalidTimeMessage);
-  }
-  else if (hasDuplicateListings) {
-    let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
-    displayNotification(eventConflictMessage);
+    
   } else {
+    // Validate individual event offerings for non-repeating events
+    
+    // Check event name fields
+    eventNameInputs.each((index, eventNameInput) => {
+      if (eventNameInput.value.trim() === '') {
+        hasErrors = true;
+        $(eventNameInput)[0].setCustomValidity("Please enter an event name");
+        $(eventNameInput)[0].reportValidity();
+      } else {
+        $(eventNameInput)[0].setCustomValidity("");
+      }
+    });
+
+    // Check date picker fields
+    datePickerInputs.each((index, datePickerInput) => {
+      if (datePickerInput.value.trim() === '') {
+        hasErrors = true;
+        $(datePickerInput)[0].setCustomValidity("Please enter an event date");
+        $(datePickerInput)[0].reportValidity();
+      } else {
+        $(datePickerInput)[0].setCustomValidity("");
+      }
+    });
+
+    
+    let hasTimeErrors = false;
+    // Check if start time is before end time for each event
+    for(let i = 0; i < startTimeInputs.length; i++){
+      let startTime = startTimeInputs[i].value;
+      let endTime = endTimeInputs[i].value;
+      
+      
+      if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime);
+        endTime = format12to24HourTime(endTime);
+      }
+
+      if(startTime >= endTime){
+        hasTimeErrors = true;
+        startTimeInputs[i].classList.add('border-red');
+        endTimeInputs[i].classList.add('border-red');
+      } else {
+        startTimeInputs[i].classList.remove('border-red');
+        endTimeInputs[i].classList.remove('border-red');
+      }
+     }
+     if (hasTimeErrors) {
+      hasErrors = true;
+      displayNotification("Event end time must be after start time");
+    }
+
+      
+
+    // Check for duplicate event offerings
+    let eventListings = {};
+    for(let i = 0; i < eventOfferings.length; i++){
+      let eventName = eventNameInputs[i].value;
+      let date = datePickerInputs[i].value.trim();
+      let startTime = startTimeInputs[i].value;
+      let eventListing = JSON.stringify([eventName, date, startTime]);
+
+      if (eventListing in eventListings){
+        hasErrors = true;
+        displayNotification("Event listings cannot have the same event name, date, and start time");
+        break; // Exit loop on first duplicate found
+      } else {
+        eventListings[eventListing] = i;
+      }
+    }
+  }
+
+
+  // Only proceed if there are no validation errors
+  if (!hasErrors) {
     saveOfferingsFromModal();
     $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
-    $("#pastDateWarningText").text("")
+    $("#pastDateWarningText").text("");
     $("#checkIsSeries").prop('checked', true);
-    // Remove the modal and overlay from the DOM
-    updateEventNameField()
+    updateEventNameField();
     $('#modalSeries').modal('hide');
+    msgFlash("You have successfully updated a series of events", "success");
   }
 });
 
@@ -322,19 +351,6 @@ function saveOfferingsFromModal() {
   $("#seriesData").val(offeringsJson);
 }
 
-function verifyRepeatingFields(){
-  // verifies all fields in the repeating table are not empty.
-  let repeatingFields = $(".repeatingEventsField");
-  let allFieldsFilled = true;
-  repeatingFields.each(function() {
-    let value = $(this).val();
-    if (value === "" || value == null){
-      allFieldsFilled = false;
-      return false;
-    }
-  })
-  return allFieldsFilled
-}
 
 
 
@@ -395,7 +411,21 @@ function formatDate(originalDate) {
   var year = dateObj.getUTCFullYear();
   return month + " " + day + ", " + year;
 }
-
+function enableLiveCustomValidityClearing() {
+  const allSelectors = [".all", ".series", ".seriesWeekly", ".main", ".allV", ".repeatingEventsField", ".multipleOfferingNameField"];
+//Created the 
+  allSelectors.forEach(selector => {
+    $(selector).each(function () {
+      // Avoid rebinding listeners on already-bound elements
+      if (!$(this).data("has-clearing-listener")) {
+        $(this).on("input", function () {
+          this.setCustomValidity("");
+        });
+        $(this).data("has-clearing-listener", true); // flag it
+      }
+    });
+  });
+}
 function checkValidation(seriesEvent){
   let trainingStatus = $("#checkIsTraining").is(":checked")
   let serviceHourStatus = $("#checkServiceHours").is(":checked")
@@ -404,6 +434,8 @@ function checkValidation(seriesEvent){
   let allFieldFilled = true; //if there is text = true]
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked")
   let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
+  
+  enableLiveCustomValidityClearing();
 
   // .all is a class that groups the required filled present in all tempplate (event location and description)
    $(".all").each(function(){
@@ -497,9 +529,7 @@ function checkValidation(seriesEvent){
       } 
   
   if (allFieldFilled) {
-    // Try multiple submission methods
-   // const form = document.getElementById("saveEvent");
-    const form = $("#SaveEvent")
+    const form = $("#saveEvent")
     if (form) {
       // Try triggering submit event instead of direct submission
       $(form).trigger('submit');
@@ -605,7 +635,7 @@ $(document).ready(function() {
       $('#multipleOfferingTableDiv').addClass('d-none');
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
-      $('#inputEventName').prop('placeholder', 'Enter event name')
+      $('#inputEventName').prop('placeholder', 'Enter event name')  
     }
   });
 
@@ -642,16 +672,16 @@ $(document).ready(function() {
   });
   
   $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
-
+// this handels start date, end date, last event date, start time, and end time 
   function handleRepeatingEventsChange() {
-    if (verifyRepeatingFields()) {
+    if (!verifyRepeatingFields()) {
       let table = $("#generatedEventsList").children();
       let startDate = new Date($("#repeatingEventsStartDate").val());
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
       let endTime = $("#repeatingEventsEndTime").val();
-
-      if (navigator.userAgent.indexOf("Chrome") == -1) {
+      
+      if (navigator.userAgent.indexOf("Chrome") == -1) { //CHANGES 12 HOUR TO 24 HOUR
         startTime = format12to24HourTime(startTime)
         endTime = format12to24HourTime(endTime)
       }
@@ -681,6 +711,7 @@ $(document).ready(function() {
     }, 500, function() {
         // After the animation completes, remove the row
         attachedRow.remove();
+        msgToast("Deletion info", "You have successfully deleted a serie of event")
     });
   });
   
