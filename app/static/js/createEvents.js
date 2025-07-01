@@ -179,7 +179,7 @@ $('#saveSeries').on('click', function(e) {
   let startDateInput = $("#repeatingEventsStartDate");
   let endDateInput = $("#repeatingEventsEndDate");
   
-  let hasErrors = false; // Single flag to track all validation errors
+  let hasErrors = false; 
   
   // Validate repeating events fields first if it's a repeating event
   if (isRepeatingStatus) {
@@ -203,7 +203,6 @@ $('#saveSeries').on('click', function(e) {
     
   } else {
     // Validate individual event offerings for non-repeating events
-    
     // Check event name fields
     eventNameInputs.each((index, eventNameInput) => {
       if (eventNameInput.value.trim() === '') {
@@ -253,8 +252,6 @@ $('#saveSeries').on('click', function(e) {
       displayNotification("Event end time must be after start time");
     }
 
-      
-
     // Check for duplicate event offerings
     let eventListings = {};
     for(let i = 0; i < eventOfferings.length; i++){
@@ -272,7 +269,6 @@ $('#saveSeries').on('click', function(e) {
       }
     }
   }
-
 
   // Only proceed if there are no validation errors
   if (!hasErrors) {
@@ -351,9 +347,6 @@ function saveOfferingsFromModal() {
   $("#seriesData").val(offeringsJson);
 }
 
-
-
-
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#seriesData").val())
   if (offerings.length < 1) {return;}
@@ -368,6 +361,7 @@ function loadOfferingsToModal(){
       newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
     }})
 }
+
 
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
@@ -426,6 +420,8 @@ function enableLiveCustomValidityClearing() {
     });
   });
 }
+
+
 function checkValidation(seriesEvent){
   let trainingStatus = $("#checkIsTraining").is(":checked")
   let serviceHourStatus = $("#checkServiceHours").is(":checked")
@@ -538,7 +534,6 @@ function checkValidation(seriesEvent){
     }
   } 
   }
-
 
 /*
  * Run when the webpage is ready for javascript
