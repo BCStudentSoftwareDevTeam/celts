@@ -697,6 +697,24 @@ function handleTimeFormatting(timeArray){
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
 
+$(function () {
+  const $fixedEl = $('.saveBtn');
+  const $footer = $('.footer');
 
+  function updatePosition() {
+    const footerTop = $footer.offset().top;
+    const windowHeight = $(window).height();
+    const scrollY = $(window).scrollTop();
+    const fixedBottomY = scrollY + windowHeight - 20;
 
+    if (fixedBottomY >= footerTop && $fixedEl.css('position') === 'fixed') {
+      $fixedEl.addClass('stopped');
+      $fixedEl.css('bottom', '6rem');
+    } else {
+      $fixedEl.removeClass('stopped');
+      $fixedEl.css('bottom', '20px');
+    }
+  }
 
+  $(window).on('scroll resize load', updatePosition);
+});
