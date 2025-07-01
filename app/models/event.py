@@ -11,6 +11,7 @@ class Event(baseModel):
     timeEnd = TimeField()
     location = CharField()
     isFoodProvided = BooleanField(default=False)
+    isLaborOnly = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)

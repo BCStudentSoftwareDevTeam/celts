@@ -140,24 +140,18 @@
               <span class="form-label borderless">{{ program.programName }}</span>
             </div>
             <div>
-              <button class="btn btn-success  btn-sm test" 
+              <button class="btn btn-success  btn-sm d-inline editDetails" 
                       role="button" 
-                      id="programManagementButton{{ loop.index }}" 
-                      data-bs-toggle="modal" 
-                      data-bs-target="#adminProgramManagement" 
-                      data-programinfo= '{
-                        "programName": "{{ program.programName }}",
-                        "programDescription": "{{ program.programDescription }}",
-                        "partner": "{{ program.partner if program.partner else "" }}",
-                        "contactEmail": "{{ program.contactEmail if program.contactEmail else "" }}",
-                        "contactName": "{{ program.contactName if program.contactName else "" }}",
-                        "location": "{{ program.defaultLocation if program.defaultLocation else "" }}",
-                        "programid": "{{ program.id }}",
-                        "instagramUrl": "{{ program.instagramUrl if program.instagramUrl else "" }}",
-                        "facebookUrl": "{{ program.facebookUrl if program.facebookUrl else "" }}",
-                        "bereaUrl": "{{ program.bereaUrl if program.bereaUrl else "" }}"
-                    }'>
-                      Edit Details</button>
+                      id="programManagementButton{{ loop.index }}"  
+                      loop-index="{{ loop.index }}"
+                      data-programid="{{program.id}}"
+                      >
+                  <span  style="display: none;" id="editDetailsButtonSpinner{{ loop.index }}">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Loading...</span>  
+                  </span>
+                  <span id="editDetailsButtonText{{ loop.index }}">Edit Details</span>
+                </button>
               <button class ="btn btn-success btn-sm editProgramManagersButton"
                       data-bs-toggle="modal" 
                       data-bs-target="#editProgramManagers"
