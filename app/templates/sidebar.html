@@ -90,9 +90,11 @@
 
       {% endif %}
       {% if g.current_user.isProgramManager() %}
-          <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
-            Settings
-          </a>
+        <a href="/admin"
+           class="nav-link text-white {{'active' if request.path == '/admin'}}"
+           {% if request.path == '/admin' %}aria-current="page"{% endif %}>
+          Settings
+        </a>
       {% endif %}
     </ul>
     <hr>
