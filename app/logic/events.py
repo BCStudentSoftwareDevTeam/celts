@@ -129,9 +129,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
+                'location': eventData['location'],
                 'seriesId': seriesId,
                 'isRepeating': bool(isRepeating), 
-                'location': event['eventLocation']
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
