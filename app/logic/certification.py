@@ -131,7 +131,7 @@ def saveRequirement(requirementData):
     return newRequirement.get_id()
 
 
-
+ 
 def updateCertRequirementForEvent(event, requirement):
     """
     Add a certification requirement to an event. 
