@@ -46,9 +46,6 @@
 <form method="post">
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
   <div>
-    {% if event.isPastStart %}
-      <h3 class="fs-4 mb-3">Labor</h3>
-    {% endif %}
     <table class="table" id="trackLabortable" data-entry-count="{{ eventLaborData|length }}">
       <thead>
         <tr>
