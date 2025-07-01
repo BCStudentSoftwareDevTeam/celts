@@ -255,7 +255,24 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
+
+
+function enableLiveCustomValidityClearing() {
+  const allSelectors = [".passedBackgroundCheck"];
+  allSelectors.forEach(selector => {
+    $(selector).each(function () {
+      // Avoid rebinding listeners on already-bound elements
+      if (!$(this).data("has-clearing-listener")) {
+        $(this).on("input", function () {
+          this.setCustomValidity("");
+        });
+        $(this).data("has-clearing-listener", true); // flag it
+      }
+    });
+  });
+}
     $(".savebtn").click(function () {
+      enableLiveCustomValidityClearing()
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
