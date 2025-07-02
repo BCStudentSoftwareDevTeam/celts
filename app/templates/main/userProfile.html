@@ -281,7 +281,9 @@
                 </ul>
             </div>
             <div>
-              <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% if g.current_user.isCeltsAdmin %}
+                <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% endif %}
             </div>
             {% endif %}
           </div>
