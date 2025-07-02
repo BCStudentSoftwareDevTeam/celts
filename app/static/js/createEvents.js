@@ -706,7 +706,7 @@ $(document).ready(function() {
     }, 500, function() {
         // After the animation completes, remove the row
         attachedRow.remove();
-        msgToast("Deletion info", "You have successfully deleted a serie of event")
+        msgToast("Deletion info", "You have successfully deleted a series of events")
     });
   });
   
