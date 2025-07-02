@@ -224,9 +224,13 @@ $(document).ready(function(){
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
+        msgToast("Successfully added a note", "", 2000)
         target = isBonner ? "bonner" : "notes"
-        reloadWithAccordion(target)
-        msgToast("Successfully added a note")
+        // Delay reload to let user see the message
+            setTimeout(function() {
+                reloadWithAccordion(target)
+                location.reload()
+            }, 2500) 
       }
     });
 });

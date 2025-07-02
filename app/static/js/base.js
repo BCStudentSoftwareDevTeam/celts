@@ -34,7 +34,7 @@ $(document).ready(function() {
 
 });
 
-function msgToast(head, body){
+function msgToast(head, body, duration=3000){
   if ($("#liveToast").is(":visible") == true){
     $('#liveToast').removeClass("show")
     $('#liveToast').addClass("hide")
@@ -45,7 +45,7 @@ function msgToast(head, body){
 
   setTimeout(() => {
     toastList[0].hide();
-  }, 3000);
+  }, duration);
 }
 
 function setupPhoneNumber(editButtonId, phoneInput){
