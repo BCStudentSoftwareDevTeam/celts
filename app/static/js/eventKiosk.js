@@ -161,7 +161,7 @@ function submitData() {
             $("#submitScannerData").val("").focus();
         },
         error: function(request, status, error) {
-            console.log(status, error);
+            console.error(status, error);
             msgFlash("See Attendant; Unable to sign in.", "danger");
             $("#submitScannerData").val("").focus();
         }

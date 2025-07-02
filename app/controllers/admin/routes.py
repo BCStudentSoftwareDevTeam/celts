@@ -733,7 +733,6 @@ def manageLaborPage(eventID):
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
  
         eventLaborData, eventLabor = sortLabor(event)
-        print(len(eventLaborData))
 
         allRelevantUsers = list(set(participant.user for participant in (eventLabor + eventLaborData)))
         # ----------- Get miscellaneous data -----------
