@@ -113,16 +113,21 @@ function initializeFlatpickr(obj) {
   });
 }
 
-let eventSessionNum = 2
-function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null}={}){
+let eventSessionNum = 0;
+function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, eventLocation = null}={}){
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
+  const baseName = $('#inputEventName').val();
+  const fullName = baseName + ': session ' + (eventSessionNum + 1);
+  clonedOffering.find('.multipleOfferingNameField').val(fullName);
+
 
   // insert values for the newly created row
   if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
   if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
   if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-  $('#eventName').val($('#inputEventName').val() + ': session ' + eventSessionNum);
+  if (eventLocation) {clonedOffering.find('.multipleOfferingLocationField').val(eventLocation)}  
+
   eventSessionNum++;
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
@@ -164,6 +169,7 @@ $('#saveSeries').on('click', function() {
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
+  let locationInputs = $('#multipleOfferingSlots .multipleOfferingLocationField');
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
   let isEmpty = false;
@@ -190,7 +196,16 @@ $('#saveSeries').on('click', function() {
     } else {
         $(datePickerInput).removeClass('border-red');
     }
-  });  
+  }); 
+  
+  locationInputs.each((index, locationInput) => {
+    if (locationInput.value.trim() === '') {
+      isEmpty = true;
+      $(locationInput).addClass('border-red');
+    } else {
+      $(locationInput).removeClass('border-red');
+    }
+  });
 
   // Check if the start time is after the end time
   for(let i = 0; i < startTimeInputs.length; i++){
@@ -233,7 +248,7 @@ $('#saveSeries').on('click', function() {
   }
 
   if (isEmpty){
-    let emptyFieldMessage = "Event name or date field is empty";
+    let emptyFieldMessage = "Event name, date or location field is empty";
     displayNotification(emptyFieldMessage);
   }
   else if (!hasValidTimes) {
@@ -334,15 +349,19 @@ function loadOfferingsToModal(){
   let offerings = JSON.parse($("#seriesData").val())
   if (offerings.length < 1) {return;}
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
+  let mainLocation = $('#inputEventLocation-main').val();
   if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
   offerings.forEach((offering, i) =>{
     if (isRepeatingStatus){
       loadRepeatingOfferingToModal(offering);
     } else {
-      let newOfferingModalRow = createOfferingModalRow(offering);
+      let newOfferingModalRow = createOfferingModalRow({
+        ...offering,
+        eventLocation: offering.eventLocation || mainLocation
+      });
       //stripes odd event sections in event modal
       newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
-    }})
+    }});
 }
 
 function loadRepeatingOfferingToModal(offering){
@@ -472,38 +491,45 @@ $(document).ready(function() {
   }
 
   
-  let modalOpenedByEditButton = false;
-  //#checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page]
+let modalOpenedByEditButton = false;
+// #checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
 
+$("#checkIsSeries, #edit_modal").click(function(event) {
+  eventSessionNum = 0;
+  // Set all modal location fields to the main location value (if needed)
+  $('.multipleOfferingLocationField').val($('#inputEventLocation-main').val());
 
-  $("#checkIsSeries, #edit_modal").click(function(event) {
-    eventSessionNum = 2
-    $('#eventName').val($('#inputEventName').val() + ': session 1')
+  let isSeries = $("#checkIsSeries").is(":checked")
+  modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
 
-    let isSeries = $("#checkIsSeries").is(":checked")
-    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
-
-    if (isSeries) {
-     if(($('#inputEventName').val().trim() == '')){
-      //keeps main page event name for multiple event modal
+  if (isSeries) {
+    if ($('#inputEventName').val().trim() == '') {
       $('#checkIsSeries').prop('checked', false)
       msgFlash("Please type the event name first")
       return
     }
-      setViewForSeries();
-      loadOfferingsToModal();
-      $('#modalSeries').modal('show');
-
-      // Disable single event name field
-      $('#inputEventName').prop('readonly', true)
-    } else {
-      setViewForSingleOffering()
-      $('#multipleOfferingTableDiv').addClass('d-none');
-      // Enable single event name field
-      $('#inputEventName').prop('readonly', false)
-      $('#inputEventName').prop('placeholder', 'Enter event name')
+    if ($('#inputEventLocation-main').val().trim() == '') {
+      $('#checkIsSeries').prop('checked', false)
+      msgFlash("Please type the event location first")
+      return
     }
-  });
+    setViewForSeries();
+    loadOfferingsToModal();
+    $('#modalSeries').modal('show');
+
+    // Disable single event name and location fields
+    $('#inputEventName').prop('readonly', true)
+    $('#inputEventLocation-main').prop('readonly', true)
+  } else {
+    setViewForSingleOffering()
+    $('#multipleOfferingTableDiv').addClass('d-none');
+    // Enable single event name and location fields
+    $('#inputEventName').prop('readonly', false)
+    $('#inputEventName').prop('placeholder', 'Enter event name')
+    $('#inputEventLocation-main').prop('readonly', false)
+    $('#inputEventLocation-main').prop('placeholder', 'Enter event location')
+  }
+});
 
   //untoggles the button when the modal cancel or close button is clicked
   $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
@@ -521,6 +547,8 @@ $(document).ready(function() {
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
       checkIfDateInPast();
+      $('#inputEventLocation-main').prop('readonly', false)
+      $('#inputEventLocation-main').prop('placeholder', 'Enter event location')
     }
   });
 
@@ -581,7 +609,11 @@ $(document).ready(function() {
   
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
-  $(".addMultipleOfferingEvent").click(createOfferingModalRow)
+  $(".addMultipleOfferingEvent").click(function() {
+  // Get the current value from the main location input
+  let mainLocation = $("#inputEventLocation-main").val();
+  createOfferingModalRow({eventLocation: mainLocation});
+});
 
     var minDate = new Date('10/25/1999') 
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
