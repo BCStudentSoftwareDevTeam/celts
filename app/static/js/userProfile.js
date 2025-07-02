@@ -325,7 +325,7 @@ $(document).ready(function(){
 
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
-  $(".saveDiet").on('click', function() {
+  $("#diet").on('change', function() {
     let data = {
       dietInfo: $("#diet").val(),
       user: $(this).data("user")
@@ -335,7 +335,19 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s){
-        reloadWithAccordion("dietaryInformation");
+        const para = document.createElement('i');
+        para.className = 'bi bi-check';
+        para.id = 'check_icon';
+        const node = document.createTextNode('Saved!');
+        para.appendChild(node);
+
+        const element = document.getElementById("diet-form");
+        element.appendChild(para);
+        setTimeout(function() {
+          $(".bi.bi-check").fadeOut(500, function() {
+            $(this).remove();
+          });
+        }, 1000);
       },
     })
   });

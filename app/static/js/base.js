@@ -47,7 +47,7 @@ function msgToast(head, body){
 function setupPhoneNumber(editButtonId, phoneInput){
   $(editButtonId).on('click', function() {
     var username = $(this).data("username")
-    if ($(editButtonId).html() === 'Edit'){
+    if ($(editButtonId).html() === '<span class="visually-hidden">Edit</span><i class="bi bi-pen"></i>'){
       $(phoneInput).focus();
     }
     else{
@@ -70,7 +70,7 @@ function setupPhoneNumber(editButtonId, phoneInput){
 
 function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   if (action == "edit" ) {
-    $(editButtonId).html("Save");
+    $(editButtonId).html('<span class="visually-hidden">Save</span><i class="bi bi-floppy"></i>');
   }
   else if (action == "save" ) {
     validatePhoneNumber(editButtonId, phoneInputId, username)
@@ -78,7 +78,7 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   else if (action == "restore"){
     var phoneInput = $(phoneInputId);
     $(phoneInputId).val(phoneInput.attr("data-value"))
-    $(editButtonId).html('Edit');
+    $(editButtonId).html('<span class="visually-hidden">Edit</span><i class="bi bi-pen"></i>');
   }
 }
 
@@ -121,7 +121,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
       },
 
     })
-    $(editButtonId).html('Edit');
+    $(editButtonId).html('<span class="visually-hidden">Edit</span><i class="bi bi-pen"></i>');
 }
 
 function reloadWithAccordion(accordionName) {
