@@ -274,13 +274,7 @@
                 <ul class="list-unstyled">
                 {% for program in programs %}
                   {% if program.id in permissionPrograms %}
-                    <li>
-                      {% if g.current_user.isCeltsAdmin %}
-                        <label for="mgr-{{ program.id }}">{{program.programName}}</label>
-                      {% else %}
-                        {{program.programName}}
-                      {% endif %}
-                    </li>
+                    <li>{{program.programName}}</li>
                   {% endif %}
                 {% endfor %}
                 </ul>
