@@ -1308,55 +1308,46 @@ eventLabor = [
     {
         "user": "neillz",
         "event": 1,
-        "hoursWorked": 3,
         "didWork": True
     },
     {
         "user": "khatts",
         "event": 1,
-        "hoursWorked": 2,
         "didWork": True
     },
     {
         "user": "neillz",
         "event": 2,
-        "hoursWorked": 2,
         "didWork": False
     },
     {
         "user": "bryanta",
         "event": 5,
-        "hoursWorked": 0,
         "didWork": False
     },
     {
         "user": "khatts",
         "event": 3,
-        "hoursWorked": 3,
         "didWork": True
     },
     {
         "user": "ayisie",
         "event": 1,
-        "hoursWorked": 0,
         "didWork": False
     },
     {
         "user": "partont",
         "event": 2,
-        "hoursWorked": 5,
         "didWork": True
     },
     {
         "user": "khatts",
         "event": 6,
-        "hoursWorked": 3,
         "didWork": True
     },
     {
         "user": "khatts",
         "event": 10,
-        "hoursWorked": 3,
         "didWork": False
     }
 ]

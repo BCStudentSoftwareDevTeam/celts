@@ -41,13 +41,8 @@ def updateEventLabor(participantData):
         checkbox_value = participantData.get(f'checkbox_{username}', 'off')
         didWork = checkbox_value == "on"
 
-        # Hours logic
-        inputHours = participantData.get(f'inputHours_{username}')
-        hoursWorked = float(inputHours) if inputHours else 0
-
         if eventLabor:
             (EventLabor.update({
-                EventLabor.hoursWorked: hoursWorked,
                 EventLabor.didWork: didWork
             })
             .where(EventLabor.event == event.id, EventLabor.user == userObject.username)
@@ -56,7 +51,6 @@ def updateEventLabor(participantData):
             EventLabor.create(
                 user=userObject,
                 event=event,
-                hoursWorked=hoursWorked,
                 didWork=didWork
             )
 
@@ -133,7 +127,7 @@ def checkUserLabor(user,  event):
 def addStudentLaborToEvent(user, event):
     """
         Add a user to an event.
-        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+        If the event is in the past, add the user as a volunteer (EventParticipant)
         If the event is in the future, rsvp for the user (EventRsvp)
 
         Returns True if the operation was successful, false otherwise
@@ -141,7 +135,7 @@ def addStudentLaborToEvent(user, event):
     try:
         LaborExists = checkUserLabor(user, event)
         if not LaborExists:
-            EventLabor.create(user=user, event=event, hoursWorked=0, didWork=False)
+            EventLabor.create(user=user, event=event, didWork=False)
         if LaborExists:
             return "already in"
     except Exception as e:

@@ -52,7 +52,6 @@
           <th>Name</th>
           <th>Email</th>
           <th>Phone Number</th>
-          <th class="noSort">Total Labor Hours</th>
           <th class="noSort">Worked</th>
           <th class="noSort">Remove Student</th>
         </tr>
@@ -72,29 +71,11 @@
               </td>
               <td>{{participant.user.email}}</td>
               <td>{{participant.user.phoneNumber}}</td>
-              <td>
-                <input class="form-control number-only form-control input-sm"
-                  id="inputHours_{{participant.user.username}}"
-                  name="inputHours_{{participant.user.username}}"
-                  style="max-width: 90px;"
-                  type="number" min="0" step="0.01"
-                  {% if participant.hoursWorked == 0 %} value=""
-                  {% else %} 
-                  value="{{participant.hoursWorked}}"
-                  {% endif %} 
-                />
-                <input type="hidden"
-                id="storedHours_{{participant.user.username}}"
-                value="{{ participant.hoursWorked or 0 }}" 
-                />
-              </td>
               <td style="text-align:center">
-                
-                <input type="hidden" name="checkbox_{{participant.user.username}}" value="off">
                 
                 <input type="checkbox" id = "workedCheckbox_{{participant.user.username}}" class='attendanceCheck'
                   name="checkbox_{{participant.user.username}}"
-                  {% if participant.didWork or participant.hoursWorked > 0 %} 
+                  {% if participant.didWork %} 
                   checked
                   {% endif %} />
 

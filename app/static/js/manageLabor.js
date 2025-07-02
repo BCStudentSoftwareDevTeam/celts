@@ -151,23 +151,6 @@ $(document).ready(function() {
     });
   }
 
-$(".attendanceCheck").on("change", function() {
-    let username =  this.name.substring(9) //get everything after the 9th character;
-    let inputFieldID = `inputHours_${username}`
-    let $inputHours = $(`#${inputFieldID}`);
-
-    if (this.checked) {
-      let hoursWorked = previousHours[username] ?? 0;
-      $inputHours.prop('disabled', false);
-      $inputHours.val(hoursWorked);
-
-    } else {
-      previousHours[username] = $inputHours.val();
-      $inputHours.prop('disabled', false);
-      $inputHours.val(null)
-    }
-  });
-
   $("#selectAllLabor").click(function(){
       $("#addLaborModal input[type=checkbox]").prop('checked', true);
       updateSelectLabor();
