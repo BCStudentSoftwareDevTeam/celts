@@ -118,7 +118,6 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
         certRequirement.name =requirement_info['name']
         # newRequirement.order = order
         certRequirement.save()
-
         return True
 
 def saveRequirement(requirementData):
