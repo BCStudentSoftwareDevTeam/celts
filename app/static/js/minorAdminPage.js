@@ -18,8 +18,11 @@ $(document).ready(function() {
           data: JSON.stringify({ "isAdding": isAdding }),
           contentType: "application/json",
           success: function(response) {
-            location.reload()
-            msgFlash("Candidate minor succsessfully removed", "success")
+            msgFlash("Candidate minor succsessfully removed", "success", 1300)
+            // Delay reload to let user see the message
+            setTimeout(function() {
+                location.reload()
+            }, 1500) 
           },
           error: function(error) {
            console.log("error")
