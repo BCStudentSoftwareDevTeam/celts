@@ -81,7 +81,7 @@ def switchUser():
     print(f"Switching user from {g.current_user} to",request.form['newuser'])
     session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
 
-    return redirect(request.referrer)
+    return redirect(request.referrer) 
 
 
 @admin_bp.route('/eventTemplates')

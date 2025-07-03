@@ -50,7 +50,7 @@ users = [
         "dietRestriction": "Diary",
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 0,
+        "minorInterest": None,
 
     },
     {
@@ -97,7 +97,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Computer and Information Science",
         "rawClassLevel": "Junior",
-        "minorInterest": 0,
+        "minorInterest": None,
     },
     {
         "username" : "ayisie",
@@ -112,7 +112,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Chemistry",
         "rawClassLevel": "Junior",
-        "minorInterest": 1,
+        "minorInterest": None,
 
     },
     {
@@ -128,7 +128,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 1,
+        "minorInterest": None,
     },
     {
         "username": "bryanta",
@@ -140,7 +140,7 @@ users = [
         "isStudent": True,
         "major": "Biology",
         "rawClassLevel": "Senior",
-        "minorInterest": 1,
+        "minorInterest": None,
 
     },
     {
@@ -153,7 +153,7 @@ users = [
         "phoneNumber": "(859)433-1559",
         "major": "Computer Science",
         "rawClassLevel": "Senior",
-        "minorInterest": 1,
+        "minorInterest": None,
 
     },
     {
@@ -167,7 +167,7 @@ users = [
         "isCeltsStudentStaff": True,
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 1,
+        "minorInterest": None,
 
     },
     {
@@ -183,7 +183,7 @@ users = [
         "isStaff": True,
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 0,
+        "minorInterest": None,
     },
      {
         "username": "qasema",
@@ -198,7 +198,7 @@ users = [
         "isStaff": True,
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 0,
+        "minorInterest": None,
     },
     {
         "username": "stettnera2",
@@ -214,7 +214,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "rawClassLevel": None,
-        "minorInterest": 0,
+        "minorInterest": None,
     },
     {
         "username": "bledsoef",
@@ -227,7 +227,7 @@ users = [
         "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
-        "minorInterest": 0,
+        "minorInterest": None,
     },
     {
         "username" : "makindeo",
@@ -242,7 +242,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
-        "minorInterest": 1,
+        "minorInterest": None,
     },
     {
         "username" : "michels",
@@ -257,7 +257,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
-        "minorInterest": 1,
+        "minorInterest": None,
     },
     {
         "username" : "hoerstl",
@@ -272,7 +272,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
-        "minorInterest": 1,
+        "minorInterest": None,
     },
 ]
 User.insert_many(users).on_conflict_replace().execute()
