@@ -2,8 +2,6 @@ $(document).ready(function(){
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
-    let accept = "You have indicated interest in CCE Minor.";
-    let decline = "You have indicated you are not interested in the CCE Minor.";
 
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
@@ -11,13 +9,12 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(response) {
-          if (isAdding) {
-              msgToast(accept);
-              $("#interestIndicatedText").text(accept);
-          } else {
-              msgToast(decline);
-              $("#interestIndicatedText").text(decline);
-          }
+        let accept = "You have indicated interest in CCE Minor.";
+        let decline = "You have indicated you are not interested in the CCE Minor.";
+        
+        let msg = isAdding ? accept : decline;
+        msgToast('Success', msg);
+        $("#interestIndicatedText").text(msg);
         },
         error: function(request, status, error) {
           console.log(status, error)
