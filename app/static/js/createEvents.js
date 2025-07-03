@@ -38,7 +38,7 @@ function calculateRepeatingEventFrequency(){
                             isRepeating: true,
                             startDate:$("#repeatingEventsStartDate").val(),
                             endDate:$("#repeatingEventsEndDate").val(),
-                            location:$("#repeatingEventsLocationPicker").val()
+                            location:$("#repeatingEventsLocationPicker").val() || ''
                           }
   console.log(eventDatesAndName);
   $.ajax({
@@ -373,7 +373,7 @@ function loadRepeatingOfferingToModal(offering){
     "<tr class='eventOffering'>" +
     "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
     "<td id='offeringDate'>" + eventDate + "</td>" +
-    "<td id='offeringLocation'>" + offering.location + "</td>" + 
+    "<td id='offeringLocation'>" + (offering.eventLocation || offering.location)+ "</td>" + 
     "<td><div class='deleteGeneratedEvent'><span class='bi bi-trash btn btn-danger'></span></div></td>" +
     "</tr>"
   );
@@ -394,7 +394,7 @@ function updateOfferingsTable() {
                                     "<td>" + formattedEventDate + "</td>" +
                                     "<td>" + startTime + "</td>" +
                                     "<td>" + endTime + "</td>" +
-                                    "<td>" + offering.eventLocation + "</td>" +
+                                    "<td>" + (offering.eventLocation || offering.location || "") + "</td>" +
                                   "</tr>"
                                 );
   });
@@ -574,6 +574,7 @@ $("#checkIsSeries, #edit_modal").click(function(event) {
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
       let endTime = $("#repeatingEventsEndTime").val();
+      let eventLocation = $("#repeatingEventsLocationPicker").val() || '';
 
       if (navigator.userAgent.indexOf("Chrome") == -1) {
         startTime = format12to24HourTime(startTime)
