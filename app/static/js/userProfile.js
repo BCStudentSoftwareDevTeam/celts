@@ -9,12 +9,12 @@ $(document).ready(function(){
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(response) {
-        let accept = "You have indicated interest in CCE Minor.";
-        let decline = "You have indicated you are not interested in the CCE Minor.";
+          let accept = "You have indicated interest in CCE Minor.";
+          let decline = "You have indicated you are not interested in the CCE Minor.";
         
-        let msg = isAdding ? accept : decline;
-        msgToast('Success', msg);
-        $("#interestIndicatedText").text(msg);
+          let msg = isAdding ? accept : decline;
+          msgToast('Success', msg);
+          $("#interestIndicatedText").text(msg);
         },
         error: function(request, status, error) {
           console.log(status, error)
