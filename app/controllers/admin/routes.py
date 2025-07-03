@@ -797,3 +797,16 @@ def addLaborToEvent(eventId):
         return ''
 
     return redirect(url_for('admin.manageLaborPage', eventID = eventId))
+
+@admin_bp.route("/event/<int:event_id>/scannerentry", methods=["GET", "POST"])
+def eventKioskStatus(event_id):
+    referer = request.referrer
+    is_labor = False
+
+    if referer and "manage_labor" in referer:
+        is_labor = True
+    elif referer and "manage_volunteers" in referer:
+        is_labor = False
+
+    event = Event.get_by_id(event_id)
+    return render_template("/events/eventKiosk.html", is_labor=is_labor, event=event)
