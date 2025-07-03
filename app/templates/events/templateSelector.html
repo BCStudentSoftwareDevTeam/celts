@@ -14,16 +14,22 @@
         </div>
     </div>
 </div>
+{% if programs %}
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-5 mx-3">
             <h2 class="text-center">Programs</h2>
-            <div class="list-group">
+            <div class="list-group">  
                 {% for program in programs %}
-                    <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
+                <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
                 {% endfor %}
             </div>
         </div>
     </div>  
 </div>  
-{% endblock %} 
+{% else %}
+<div class="alert alert-danger fade show" role="alert">
+  <strong>Oops!</strong> You haven't been added as a Program Manager. Please reach out to a Celts Admin.
+</div>
+{% endif %}
+{% endblock %}
