@@ -1,4 +1,3 @@
-from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
@@ -8,6 +7,7 @@ from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.createLogs import createActivityLog
 from app.models.eventLabor import EventLabor
+from app.logic.users import isEligibleForProgram
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -143,18 +143,25 @@ def addStudentLaborToEvent(user, event):
         return False
 
     return True
+    
+def addBnumberAsLabor(bnumber, eventId):
+    """Accepts scan input and signs in the user. If user exists or is already
+    signed in will return user and login status"""
+    try:
+        kioskUser = User.get(User.bnumber == bnumber)
+    except Exception as e:
+        print(e)
+        return None, "does not exist"
 
-def unattendedRequiredEvents(program, user):
-    requiredEvents = (Event.select(Event)
-                           .where(Event.isTraining == True, Event.program == program))
+    event = Event.get_by_id(eventId)
+    if not isEligibleForProgram(event.program, kioskUser):
+        userStatus = "banned"
 
-    if requiredEvents:
-        attendedRequiredEventsList = []
-        for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
-            if not attendedRequirement:
-                attendedRequiredEventsList.append(event.name)
-        if attendedRequiredEventsList is not None:
-            return attendedRequiredEventsList
+    elif checkUserLabor(kioskUser, event):
+        userStatus = "already signed in"
+
     else:
-        return []
+        userStatus = "success"
+        EventLabor.create(user=kioskUser, event=event, didWork=False)
+
+    return kioskUser, userStatus

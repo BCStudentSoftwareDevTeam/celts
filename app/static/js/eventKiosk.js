@@ -82,6 +82,11 @@ function closeFullscreen(toggleButton) {
 }
 
 $(document).ready(function(e) {
+
+    $("#changeInputType").on("change", function () {
+    $("#isitlabor").val(this.checked ? "1" : "0");
+    });
+
     $("#submitScannerData").focus();
 
     $("#submitScannerData").keydown(function(e) {
@@ -146,7 +151,8 @@ function submitData() {
         url: '/signintoEvent',
         data: {
             "eventid": $("#eventid").val(),
-            "bNumber": $("#submitScannerData").val()
+            "bNumber": $("#submitScannerData").val(),
+            "isitlabor": $("#isitlabor").val()
         },
         success: function(resultID) {
             if (resultID.status == "already signed in") {
