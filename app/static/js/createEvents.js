@@ -63,20 +63,20 @@ function calculateRepeatingEventFrequency(){
 
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
-  $("#multipleOfferingTableDiv").addClass('d-none');
-  $("#eventLocation-main").removeClass('d-none');
+  $("#multipleOfferingTableDiv").hide();
+  $("#eventLocation-main").show();
   $("#inputEventLocation-main").prop('required', true);
-  $('#eventTime, #eventDate').removeClass('d-none');
+  $('#eventTime, #eventDate').show();
   $('#checkIsSeriesToggleContainer').addClass('col-md-6')
   $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
-  $("#multipleOfferingTableDiv").removeClass('d-none');
-  $("#eventLocation-main").addClass('d-none');
+  $("#multipleOfferingTableDiv").show();
+  $("#eventLocation-main").hide();
   $("#inputEventLocation-main").prop('required', false); 
-  $('#eventTime, #eventDate').addClass('d-none');
+  $('#eventTime, #eventDate').hide();
   $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
   $("#pastDateWarningText").text("")
@@ -256,7 +256,7 @@ $('#saveSeries').on('click', function() {
     displayNotification(invalidTimeMessage);
   }
   else if (hasDuplicateListings) {
-    let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
+    let eventConflictMessage = "Event listings cannot have the same event name, date, location and start time";
     displayNotification(eventConflictMessage);
   } else {
     saveOfferingsFromModal();
