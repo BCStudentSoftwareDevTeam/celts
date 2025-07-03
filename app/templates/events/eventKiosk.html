@@ -37,7 +37,11 @@
       <div id="qr-reader" style="display:none"></div>
     </div>
     <div class="row px-5 mx-auto">
+      {% if is_labor %}
+      <a class="col-auto btn btn-primary kiosk-hide" href="/event/{{event.id}}/manage_labor" role="button">Back</a>
+      {% else %}
       <a class="col-auto btn btn-primary kiosk-hide" href="/event/{{event.id}}/manage_volunteers" role="button">Back</a>
+      {% endif %}
       <div class="col"> </div> 
       <div class="form-check form-switch col-auto">
         <button class="btn btn-warning" type="button" id="fullscreenCheck" onclick="openFullscreen()" checked> Open Full Screen</button>
