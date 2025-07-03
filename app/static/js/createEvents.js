@@ -405,6 +405,7 @@ function formatDate(originalDate) {
   var year = dateObj.getUTCFullYear();
   return month + " " + day + ", " + year;
 }
+
 function enableLiveCustomValidityClearing() {
   const allSelectors = [".all", ".series", ".seriesWeekly", ".main", ".allV", ".repeatingEventsField", ".multipleOfferingNameField"];
 //Created the 
@@ -507,119 +508,6 @@ function checkValidation() {
     }
   }
 }
-
-// function checkValidation(seriesEvent){
-//   let trainingStatus = $("#checkIsTraining").is(":checked")
-//   let serviceHourStatus = $("#checkServiceHours").is(":checked")
-//   let engagementStatus = $("#checkEngagement").is(":checked")
-//   let bonnersStatus = $("#checkBonners").is(":checked")
-//   let allFieldFilled = true; //if there is text = true]
-//   let seriesWeeklyId = $("#checkIsRepeating").is(":checked")
-//   let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
-  
-//   enableLiveCustomValidityClearing();
-
-//   // .all is a class that groups the required filled present in all tempplate (event location and description)
-//    $(".all").each(function(){
-//     if (!$(this).is(":visible") || $(this).is(":disabled")) return; //check for hidden fields and skip them
-//     if ($(this).val().trim () === ""){  //if empty excluding spaces
-//       this.setCustomValidity("Please fill out the required field"); // do these actions
-//       this.reportValidity();
-//       allFieldFilled = false;
-//     } else {
-//        this.setCustomValidity(""); //clears the custom validity 
-//        } 
-//    });
-  
-//   if (seriesEvent) {   
-//     // .series is a class that groups the required filled present when the  series event toggle is toggled (event start date, end date and name)
-//       $(".series").each(function(){
-//       if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-//             // Skip event type checkboxes from regular validation
-//       let elementId = $(this).prop("id");
-//       if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || //checking if any of the toggles are toggled
-//           elementId === "checkEngagement" || elementId === "checkBonners") {
-//         return; // Skip these, they'll be validated separately
-//       }
-
-//       if ($(this).val().trim() === ""){// if value is empty even if there are spaces 
-//         this.setCustomValidity("Please fill out the required field"); 
-//         this.reportValidity();
-//         allFieldFilled = false;
-//       } else {
-//         this.setCustomValidity(""); // clears validity
-//         }
-//       });
-  
-//         if (seriesWeeklyId) {
-//             $(".seriesWeekly").each(function(){
-//             if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-//             if ($(this).val() === ""){
-//               this.setCustomValidity("Please fill out the required field"); // do these actions
-//               this.reportValidity();
-//               allFieldFilled = false;
-//             } else {
-//               this.setCustomValidity(""); 
-//               }
-//             });
-//         }   
-//         if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
-//               $("#checkEngagement")[0].setCustomValidity("Please select at least one of the event options."); // on the check engagement element show the custom validity tag 
-//               $("#checkEngagement")[0].reportValidity();
-//               allFieldFilled = false;
-//             } else {
-//               $("#checkEngagement")[0].setCustomValidity("");
-//           }
-//       } 
-//       else if (isAllVolunteer) {// this checks if we are on the all volunteer page 
-//       $(".allV").each(function(){
-//         if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-//             if ($(this).val().trim() === ""){// checks if object is empty inludeing it can not handel spaces 
-//               this.setCustomValidity("Please fill out the required field"); // do these actions
-//               this.reportValidity();
-//               allFieldFilled = false;
-//             } else {
-//               this.setCustomValidity(""); 
-//               }
-//               }); 
-//   } 
-//   else {
-//     // .main is a class that groups the required filled present in similar template
-//     $(".main").each(function(){
-//   if (!$(this).is(":visible") || $(this).is(":disabled")) return;
-//     let elementId = $(this).prop("id");
-//     if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
-//           elementId === "checkEngagement" || elementId === "checkBonners") {
-//         return; // Skip these, they'll be validated separately
-//   }
-//     if ($(this).val().trim() === ""){// checks if object is empty inludeing it can not handel spaces 
-//       this.setCustomValidity("Please fill out the required field"); 
-//       this.reportValidity();
-//       allFieldFilled = false;
-//     } else {
-//        this.setCustomValidity(""); 
-//        }
-//   });
-
-//   if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
-//       $("#checkEngagement")[0].setCustomValidity("Please select at least one of the event options.");
-//       $("#checkEngagement")[0].reportValidity();
-//       allFieldFilled = false;
-//     } else {
-//         $("#checkEngagement")[0].setCustomValidity("");
-//           }
-//       } 
-  
-//   if (allFieldFilled) {
-//     const form = $("#saveEvent")
-//     if (form) {
-//       // Try triggering submit event instead of direct submission
-//       $(form).trigger('submit');
-//     } else {
-//       $("#saveEvent").trigger('submit');
-//     }
-//   } 
-//   }
 
 /*
  * Run when the webpage is ready for javascript
