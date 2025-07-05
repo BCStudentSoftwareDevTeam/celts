@@ -509,6 +509,8 @@ function checkValidation() {
   }
 }
 
+
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -565,6 +567,28 @@ $(document).ready(function() {
     typeBoxes.not($(event.target)).prop('checked', false);
   });
 
+  //to show the msgFlash message when the event is canceled
+$("#cancelEvent").on('click', function (event) {
+    event.preventDefault(); // Prevent normal form submission
+    
+    // Get the form action URL
+    let formAction = $(this).closest('form').attr('action');
+    
+    // Submit via AJAX
+    $.ajax({
+        url: formAction,
+        method: 'POST',
+        success: function(response) {
+            msgFlash("You have successfully canceled the event", "success", 5000);
+            $('#cancelWarning').modal('hide');
+            // Optionally refresh the page or update the UI
+            location.reload(); // or update specific elements
+        },
+        error: function() {
+            msgFlash("Failed to cancel the event", "error");
+        }
+    });
+});
 
   // When Save buttton is clicked, check if required are filled and then submit
   $("#saveButton").on('click', function (event) {
