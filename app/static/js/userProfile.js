@@ -1,34 +1,26 @@
 $(document).ready(function(){
-  $("#checkDietRestriction").on("change",  function() {
-    let norestrict = $(this).is(':checked');
-    if (norestrict) {
-        $("#dietContainer").hide();
-        $("#diet").val("No dietary restrictions");
-
-    } else {
-        $("#dietContainer").show();
-    }
-  });
-
-
-  $("#expressInterest").on("click", function() {
+  $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
-    
+
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
-        success: function(s) {
-          msgToast("Changes saved successfully!", "Your interest has been updated.")
+        success: function(response) {
+          let accept = "You have indicated interest in CCE Minor.";
+          let decline = "You have indicated you are not interested in the CCE Minor.";
+        
+          let msg = isAdding ? accept : decline;
+          msgToast('Success', msg);
+          $("#interestIndicatedText").text(msg);
         },
         error: function(request, status, error) {
           console.log(status, error)
-          msgToast("Error!", "Failed to save changes!")
+          msgToast("Error!","Failed to save changes!")
         }
     });
-    
   })
 
   $("#printButton").on("click", function() {
@@ -228,7 +220,7 @@ $(document).ready(function(){
         reloadWithAccordion(target)
       }
     });
-});
+  });
 
   $(".deleteNoteButton").click(function() {
     let username = $(this).data('username')
@@ -243,55 +235,55 @@ $(document).ready(function(){
     });
   });
 
-    /*
-     * Background Check Functionality
-     */
-    // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () {
-        $(this).prop("disabled", true);
-        let bgCheckType = $(this).data("id")
+  /*
+    * Background Check Functionality
+    */
+  // Updates the Background check of a volunteer in the database
+  $(".savebtn").click(function () {
+      $(this).prop("disabled", true);
+      let bgCheckType = $(this).data("id")
 
-        var bgStatusInput = $("#" + bgCheckType)
-        var bgDateInput = $("#" + bgCheckType + "_date")
+      var bgStatusInput = $("#" + bgCheckType)
+      var bgDateInput = $("#" + bgCheckType + "_date")
 
-        let bgDate =  bgDateInput.val()
-        let bgStatus = $("[data-id=" + bgCheckType + "]").val()
+      let bgDate =  bgDateInput.val()
+      let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
-        if (bgStatus == '') {
-          bgStatusInput.focus()
-          bgStatusInput.addClass("invalid");
-          window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-          $(this).prop("disabled", false);
-          return false
+      if (bgStatus == '') {
+        bgStatusInput.focus()
+        bgStatusInput.addClass("invalid");
+        window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+        $(this).prop("disabled", false);
+        return false
+      }
+
+      if (bgDate == ''){
+        bgDateInput.focus()
+        bgDateInput.addClass("invalid");
+        window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+        $(this).prop("disabled", false);
+        return false
+      }
+
+      let data = {
+          bgStatus: bgStatus,      // Expected to be one of the three background check statuses
+          user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+          bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+          bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
+      }
+      $.ajax({
+        url: "/addBackgroundCheck",
+        type: "POST",
+        data: data,
+        success: function(s){
+          var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+          reloadWithAccordion("background")
+        },
+        error: function(error, status){
+            console.log(error, status)
         }
-
-        if (bgDate == ''){
-          bgDateInput.focus()
-          bgDateInput.addClass("invalid");
-          window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
-          $(this).prop("disabled", false);
-          return false
-        }
-
-        let data = {
-            bgStatus: bgStatus,      // Expected to be one of the three background check statuses
-            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-            bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
-        }
-        $.ajax({
-          url: "/addBackgroundCheck",
-          type: "POST",
-          data: data,
-          success: function(s){
-            var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-            reloadWithAccordion("background")
-          },
-          error: function(error, status){
-              console.log(error, status)
-          }
-        })
-    });
+      })
+  });
 
   $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
     let data = {
@@ -313,18 +305,27 @@ $(document).ready(function(){
   });
 
   // Popover functionality
-    var requiredTraining = $(".trainingPopover");
-    requiredTraining.popover({
-       trigger: "hover",
-       sanitize: false,
-       html: true,
-       content: function() {
-            return $(this).attr('data-content');
-        }
-    });
-
+  var requiredTraining = $(".trainingPopover");
+  requiredTraining.popover({
+      trigger: "hover",
+      sanitize: false,
+      html: true,
+      content: function() {
+          return $(this).attr('data-content');
+      }
+  });
+ 
   setupPhoneNumber("#updatePhone", "#phoneInput")
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
 
+    } else {
+        $("#dietContainer").show();
+    }
+  });
   $(".saveDiet").on('click', function() {
     let data = {
       dietInfo: $("#diet").val(),
