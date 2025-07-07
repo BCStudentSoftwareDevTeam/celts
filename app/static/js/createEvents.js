@@ -530,27 +530,6 @@ $(document).ready(function() {
       minDate = null;
   }
 
-  // // Initialize datepicker with proper options
-  // $.datepicker.setDefaults({
-  //   dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-  //   minDate: minDate
-  // });
-
-  // $(".datePicker").datepicker({
-  //   dateFormat: 'mm/dd/yy',
-  //   minDate: minDate
-  // });
-
-  // $(".datePicker").each(function(idx, el) {
-  //   var dateStr = $(el).val();
-  //   if (dateStr) {
-  //     var dateObj = new Date(dateStr);
-  //     if (!isNaN(dateObj.getTime())) {
-  //       $(el).datepicker("setDate", dateObj);
-  //     }
-  //   }
-  // });
-
   handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
