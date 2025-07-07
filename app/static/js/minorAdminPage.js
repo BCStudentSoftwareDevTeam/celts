@@ -2,33 +2,43 @@ import searchUser from './searchUser.js'
 
 
 $(document).ready(function() {
+      // Check for stored flash message after page load
+    const storedMessage = sessionStorage.getItem('flashMessage');
+    if (storedMessage) {
+        const messageData = JSON.parse(storedMessage);
+        msgFlash(messageData.message, messageData.type, 1300);
+        sessionStorage.removeItem('flashMessage'); // Clean up
+    }
   $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     let activeTab = $(e.target).attr('id').replace('-tab', '');
     let newUrl = window.location.pathname + '?tab=' + activeTab;
     history.pushState(null, '', newUrl);
   });
 
-  $('.remove_minor_candidate').on('click', function() {
-      let username = $(this).attr('id'); 
-      let isAdding = false
-      
-      $.ajax({
-          type: 'POST',
-          url: '/profile/' + username + '/indicateInterest',
-          data: JSON.stringify({ "isAdding": isAdding }),
-          contentType: "application/json",
-          success: function(response) {
-            msgFlash("Candidate minor succsessfully removed", "success", 1300)
-            // Delay reload to let user see the message
-            setTimeout(function() {
-                location.reload()
-            }, 1500) 
-          },
-          error: function(error) {
-           console.log("error")
-          }
-      });
-  });
+$('.remove_minor_candidate').on('click', function() {
+    let username = $(this).attr('id'); 
+    let isAdding = false
+    
+    $.ajax({
+        type: 'POST',
+        url: '/profile/' + username + '/indicateInterest',
+        data: JSON.stringify({ "isAdding": isAdding }),
+        contentType: "application/json",
+        success: function(response) {
+            // Store message in sessionStorage to survive page reload
+            sessionStorage.setItem('flashMessage', JSON.stringify({
+                message: "Candidate minor successfully removed",
+                type: "success"
+            }));
+            
+            // Reload immediately
+            location.reload();
+        },
+        error: function(error) {
+            console.log("error")
+        }
+    });
+});
 
 
   $('#engagedStudentsTable').DataTable();
