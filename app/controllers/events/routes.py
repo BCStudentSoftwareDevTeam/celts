@@ -24,7 +24,7 @@ def loadKiosk(eventid):
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def kioskSignin():
-    is_labor2 = request.form.get("isitlabor") == "1"
+    isLabor = request.form.get("isitlabor") == "1"
 
     """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
@@ -43,7 +43,7 @@ def kioskSignin():
         elif bnumber[0].upper() != "B":
             return "", 500
     try:
-        if is_labor2:
+        if isLabor:
             kioskUser, userStatus = addBnumberAsLabor(bnumber, eventid)
         else:
             kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid)
