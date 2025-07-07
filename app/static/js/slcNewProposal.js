@@ -308,39 +308,39 @@ function validateForm() {
     return true;
 
   let valid = true;
-
   let allTabs = $(".tab");
-  let allInputs = $(allTabs[currentTab]).find("input");
 
-//Validating the instructor dropdown
-if (currentTab === 1) {
-  let courseInstructor = document.getElementById("courseInstructor");
-  
-  // Check if there are any instructor rows in the table
-  let instructorRows = document.querySelectorAll("tr[data-username]");
-  
+    // Clear all previous validations
+  $("input, select, textarea").each(function() {
+    this.setCustomValidity("");
+  });
+
+  //Validating the instructor dropdown
+  if (currentTab === 1) {
+      let $courseInstructor = $("#courseInstructor");
+      let instructorRows = $("tr[data-username]");
+      
   if (instructorRows.length === 1) {
-    courseInstructor.setCustomValidity("Please select an instructor");
-    courseInstructor.reportValidity();
-    courseInstructor.focus();
-    valid = false;
-  } else {
-    courseInstructor.setCustomValidity("");
-  }
+      $courseInstructor[0].setCustomValidity("Please select an instructor");
+      // Focus and show validation immediately
+      $courseInstructor.focus();
+      $courseInstructor[0].reportValidity();
+      valid = false;
+      return valid; // Exit early to prevent other validations from interfering
+    }
 }
 
-  if  (currentTab === 1) {
-    let courseName = document.getElementById("courseNameId");
-    if (courseName.value === "") {
-      console.log("empty")
-      courseName.setCustomValidity("Please enter a course");
-      courseName.reportValidity();
-      courseName.focus();
+  // Course name validation
+  if (currentTab === 1) {
+    let $courseName = $("#courseNameId");
+    if ($courseName.val() === "") {
+      $courseName[0].setCustomValidity("Please enter a course");
+      $courseName.focus();
+      $courseName[0].reportValidity();
       valid = false;
-  } else {
-    courseName.setCustomValidity(""); 
+      return valid; // Exit early
+    }
   }
-}
 
   return valid;
 };
