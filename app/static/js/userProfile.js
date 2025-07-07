@@ -312,7 +312,10 @@ function enableLiveCustomValidityClearing() {
           data: data,
           success: function(s){
             var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+            msgFlash(`Successfully added background check`, "success", 1300)
+            setTimeout(function() {
             reloadWithAccordion("background")
+            }, 1500)
           },
           error: function(error, status){
               console.log(error, status)
