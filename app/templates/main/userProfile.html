@@ -75,6 +75,47 @@
   </div>
 <!-- ################# Community & Civic Engagement Minor ################ -->
 
+<!-- ################# Community & Civic Engagement Minor ################ -->
+{% if g.current_user.isStudent %}
+  <div class="accordion-item">
+    {% if not g.current_user.isCeltsStudentStaff or g.current_user.username == username %}
+    <h3 class="accordion-header" id="headingZero">
+       {% set focus = "open" if visibleAccordion == "MinorTable" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
+      data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
+    </h3>
+      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="row table-responsive">
+             <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+             for more information. 
+             </p>
+              <div class="form-check form-switch" id="togglebuttonuser">
+              <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
+                {% if expressInterest is none %}
+                  Are you interested in the CCE Minor?
+                {% else %} 
+                  You have indicated 
+                  {% if expressInterest is false %} 
+                    you are not interested 
+                  {% else %} 
+                    interest 
+                  {% endif %} 
+                  in the CCE Minor.                                
+                {% endif %}
+              </label></strong>
+                <input class="form-check-input" data-username ="{{volunteer.username}}" 
+                type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
+             </div>
+          </div>
+        </div>
+     </div>
+  </div>
+    {% endif %}
+{% endif %}
+</div>
+
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
@@ -172,6 +213,7 @@
             {% endif %}
           </table>
         </div>
+        <a class="btn btn-primary btn-sm" href="{{volunteer.username}}/serviceTranscript" > View Service Transcript</a>
       </div>
     </div>
   </div>
@@ -511,6 +553,7 @@
           <h5 class="modal-title">Add Notes</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body" style="align-content: center">
           <div class="input-group">
             <div class="form-group input-group-x form-outline">
@@ -569,6 +612,7 @@
           <h5 class="modal-title-ban"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body" style="align-content: center;">
           <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
@@ -578,9 +622,7 @@
             <p align="left" id="banNote">Why the student was banned</p>
           </div>
           <div id="banEndDate">
-            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp
-              <input id="banEndDatepicker" readonly='readonly' type="text" placeholder="yyyy-mm-dd">
-            </h6>
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
           </div>
           
           <div class="input-group">
