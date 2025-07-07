@@ -41,6 +41,20 @@ function updateExportText(){
     document.getElementById("last5").textContent = newText;
 }
 
+// function requiredName(e) {
+//     const usernameInput = document.getElementById('reqName');
+//     if (usernameInput.value === '') {
+//         usernameInput.setCustomValidity('Please enter a name.');
+//         usernameInput.reportValidity();
+//         e.preventDefault();
+//         return false;
+//     } else {
+//         usernameInput.setCustomValidity('');
+//         saveRequirement(e);
+//         return true;
+//     }
+// }
+
 function saveRequirement(e) {
     $(".saveBtn").attr("disabled", "disabled")
     let el=$(e.target)
@@ -84,9 +98,21 @@ function saveRequirement(e) {
 }
 
 /*** Run After Page Load *************************************/
-$(document).ready(function(){
+$(document).ready(function(e){
+    let isvalid = true;
     $("#addCohort").on('click', addCohort);
-    
+    $('#reqName').on('click', function(e){
+        let name = $(e.target);
+        let nameID = name.data('id');
+        if (nameID.value.trim() === '') {
+            nameID.setCustomValidity('Please enter a name.')
+            nameID.reportValidity() 
+            isvalid = false;
+    }
+        else{
+            nameID.setCustomValidity('')      
+    }
+})
     $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
     $(".removeBonner").on("click", function(){
         let year = $(this).data('year');
@@ -147,7 +173,9 @@ $(document).ready(function(){
     });
 
     //Save Requirements handler
-    $(".saveBtn").click(saveRequirement);
+    if (isvalid = true) {
+        $(".saveBtn").click(saveRequirement);
+    }
     $(".removebtn").click (function(e) {
         let el = $(e.target)
         let rowid=parseInt(el.data("id"));
