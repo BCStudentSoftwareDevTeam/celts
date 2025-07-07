@@ -14,20 +14,7 @@
 {% endblock %}
 
 {% block app_content %}
-{% if volunteer.isStudent and not totalSustainedEngagements%}
-  <div class="float-end rounded d-none d-lg-block minorInfoBox">
-    <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-      for more information.
-    </p>
-    {% if g.current_user.isAdmin %}
-      <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
-    {% else %}
-      <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-    {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
-  </div>
-{% endif %}
+
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
@@ -77,6 +64,47 @@
   </div>
 </div>
 <div class="accordion" id="userProfile">
+
+<!-- ################# Community & Civic Engagement Minor ################ -->
+{% if g.current_user.isStudent %}
+  <div class="accordion-item">
+    {% if not g.current_user.isCeltsStudentStaff or g.current_user.username == username %}
+    <h3 class="accordion-header" id="headingZero">
+       {% set focus = "open" if visibleAccordion == "MinorTable" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" 
+      data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
+    </h3>
+      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="row table-responsive">
+             <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
+             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+             for more information. 
+             </p>
+              <div class="form-check form-switch" id="togglebuttonuser">
+              <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
+                {% if expressInterest is none %}
+                  Are you interested in the CCE Minor?
+                {% else %} 
+                  You have indicated 
+                  {% if expressInterest is false %} 
+                    you are not interested 
+                  {% else %} 
+                    interest 
+                  {% endif %} 
+                  in the CCE Minor.                                
+                {% endif %}
+              </label></strong>
+                <input class="form-check-input" data-username ="{{volunteer.username}}" 
+                type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
+             </div>
+          </div>
+        </div>
+     </div>
+  </div>
+    {% endif %}
+{% endif %}
+</div>
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -531,7 +559,7 @@
           <h5 class="modal-title">Add Notes</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <div class="input-group">
             <div class="form-group input-group-x form-outline">
               {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
@@ -589,7 +617,7 @@
           <h5 class="modal-title-ban"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
           <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
