@@ -88,6 +88,7 @@ function emailAll(){
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
   // checkboxes are selected
+  
   let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]:checked")
   let interestedStudentsList = []
   checkboxesDisplayedInModal.each(function(index, checkbox){
