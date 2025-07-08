@@ -1,4 +1,15 @@
 $(document).ready(function(){
+   $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+
+    } else {
+        $("#dietContainer").show();
+    }
+  });
+  
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -321,8 +332,8 @@ $(document).ready(function(){
     if (norestrict) {
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
-
     }
+
   var typingTimer;
   var doneTypingInterval = 750;
   var $dietInput = $('#diet');
@@ -347,7 +358,7 @@ $dietInput.on('input', function() {
           class: 'bi bi-check',
           id: 'check-icon',
           text: 'Saved!'
-        }).appendTo('#diet-form');
+        }).appendTo('#dietContainer');
         
         setTimeout(function() {
           $('#check-icon').fadeOut('slow', function() {

@@ -626,11 +626,16 @@
         </div>
         {% endif %}
         <hr>
-        <form style="margin-bottom: 10px;" id="diet-form">
-          <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
+        <p style="font-size: 18px; margin-bottom: 5px; font-weight: 510">Dietary Restrictions</p>
+        <div class=" form-check form-switch mb-2">
+          <label class="custom-control-label" for="checkDietRestriction"> No dietary restrictions</label>
+          <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
+        </div>
+        <hr>
+        <form style="margin-bottom: auto;" id="dietContainer">
           <div class="container">
             <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
+              <label style="margin-bottom: 10px;" for="usr">Please enter any dietary restrictions you have:</label>
               <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
           <br>
