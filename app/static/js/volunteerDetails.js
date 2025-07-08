@@ -1,9 +1,8 @@
 $(document).ready(function () {
 	var userdata = $('.volunteerInfoEntries');
-	var users = userdata.map(function(index, row) {
-      return $(row).data('user');
+	var users = userdata.map((index,row) => {
+		return $(row).data('user');
     }).get();
-	
 	users = new Set(users);
 	users = [... users]
 	$("#tableCardToggle").on('click', function () {
@@ -92,10 +91,11 @@ $(document).ready(function () {
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}
-	$('#printSelect').on("change", function (){
-		
-		if (this.value == "Print Volunteer List"){
-			let contentToPrint;
+$("#travelFormItem").on("click", function(){
+			$("#volunteerUsernames").submit()
+})
+$("#volutneerListItem").on("click", function(){
+	let contentToPrint;
 			let tableContent = $("#volunteerInformationTableToPrint_wrapper");
 			let cardContent = $("#volunteerInformationCardToPrint");
 			if ($('#tableCardToggle').text() == 'Card View') {
@@ -112,11 +112,6 @@ $(document).ready(function () {
 			window.print();
 			volunteerInfoTable.page.len(getTableLength).draw();
 			volunteerInfoTable.page(getTablePage).draw('page');
-		}
-		else if (this.value == "Print Travel Form") {
-			$("#volunteerUsernames").submit()
-		} 
-    	$(this).val('Print')
+})
 
-	})
 });

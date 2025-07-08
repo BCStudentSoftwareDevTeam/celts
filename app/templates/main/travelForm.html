@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-{% if userList %}
 {% for userData in userList %}
 <div class= "w-100 d-print-block page">
     <div>
@@ -149,7 +148,6 @@
     <div class='underlined d-print-block'>{{userData.healthIssues}}</div>
 </div>
 {% endfor %}
-{% endif %}
 
 {% block script%}
 <script>

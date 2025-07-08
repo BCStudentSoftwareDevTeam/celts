@@ -127,11 +127,15 @@
               <button class="btn btn-primary" id="tableCardToggle" nowrap>Card View</button>
             </div>
             <div class="col-auto align-items-end">
-               <select class="form-select" id="printSelect" align="right">
-                <option value="Print" selected disabled hidden>Print</option>
-                <option value="Print Volunteer List">Print Volunteer List</option>
-                <option value="Print Travel Form">Print Travel Form</option>
-              </select>
+              <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Print
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" id="volutneerListItem" href="#">Print Volunteer List</a>
+                  <a class="dropdown-item" id="travelFormItem" href="#">Print Travel Form</a>
+                </div>
+              </div>
             </div>
             <div class="col-auto align-items-end">
               <form target="_blank" action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames"></form>
