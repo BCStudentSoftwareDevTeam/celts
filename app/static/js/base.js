@@ -17,6 +17,19 @@ function msgFlash(flashMessage, status, timeout=2500, afterReload=false) {
       return;
     }
 
+    if (!flashMessage || !status) {
+      const storedMessage = sessionStorage.getItem('flashMessage');
+      if (storedMessage) {
+        const messageData = JSON.parse(storedMessage);
+        flashMessage = messageData.message;
+        status = messageData.type;
+        timeout = messageData.timeout ?? 2500;
+        sessionStorage.removeItem('flashMessage');
+      } else {
+        return; // Nothing to show
+      }
+    }
+
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}

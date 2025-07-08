@@ -2,13 +2,8 @@ import searchUser from './searchUser.js'
 
 
 $(document).ready(function() {
-    // Load flash message from sessionStorage, if any
-    const storedMessage = sessionStorage.getItem('flashMessage');
-    if (storedMessage) {
-        const messageData = JSON.parse(storedMessage);
-        msgFlash(messageData.message, messageData.type);
-        sessionStorage.removeItem('flashMessage'); // Clean up
-    }
+  // Load flash message from sessionStorage, if any
+  msgFlash();
 
   $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     let activeTab = $(e.target).attr('id').replace('-tab', '');
