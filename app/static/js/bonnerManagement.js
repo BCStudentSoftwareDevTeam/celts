@@ -102,17 +102,19 @@ function saveRequirement(e) {
             inputElement.setCustomValidity('Please enter a name.');
             inputElement.reportValidity();
             valid = isValid(newSaveBtn);
-    }
-    else {
-        $(".saveBtn").attr("disabled", "disabled")
-        let row_el = $("#requirement_" + el.data("id"));
-        var row_data = {[el.data("id")]:
-                        {
-                            'id': row_el.data("id"),
-                            'name': row_el.find("input").val(),
-                            'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
-                            'frequency': row_el.find("select.frequency-select").val()
-                        }}
+        }
+    
+        else {
+            $(".saveBtn").attr("disabled", "disabled")
+            let row_el = $("#requirement_" + el.data("id"));
+            var row_data = {[el.data("id")]:
+                            {
+                                'id': row_el.data("id"),
+                                'name': row_el.find("input").val(),
+                                'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
+                                'frequency': row_el.find("select.frequency-select").val()
+                            }}
+        }
     }
     else{   
         let rowid=parseInt(el.data("id"));
