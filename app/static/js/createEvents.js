@@ -63,20 +63,21 @@ function calculateRepeatingEventFrequency(){
 
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
-  $("#multipleOfferingTableDiv").hide();
-  $("#eventLocation-main").show();
+  $("#multipleOfferingTableDiv").addClass('d-none');
+  $("#eventLocation-main").addClass('d-none');
+  $("#eventLocation-main").removeClass('d-none');
   $("#inputEventLocation-main").prop('required', true);
-  $('#eventTime, #eventDate').show();
+  $('#eventTime, #eventDate').removeClass('d-none');
   $('#checkIsSeriesToggleContainer').addClass('col-md-6')
   $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
-  $("#multipleOfferingTableDiv").show();
-  $("#eventLocation-main").hide();
+  $("#multipleOfferingTableDiv").removeClass('d-none');
+  $("#eventLocation-main").removeClass('d-none');
   $("#inputEventLocation-main").prop('required', false); 
-  $('#eventTime, #eventDate').hide();
+  $('#eventTime, #eventDate').addClass('d-none');
   $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
   $("#pastDateWarningText").text("")
