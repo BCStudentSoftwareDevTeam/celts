@@ -506,12 +506,10 @@ $("#checkIsSeries, #edit_modal").click(function(event) {
   if (isSeries) {
     if ($('#inputEventName').val().trim() == '') {
       $('#checkIsSeries').prop('checked', false)
-      msgFlash("Please type the event name first")
       return
     }
     if ($('#inputEventLocation-main').val().trim() == '') {
       $('#checkIsSeries').prop('checked', false)
-      msgFlash("Please type the event location first")
       return
     }
     setViewForSeries();
