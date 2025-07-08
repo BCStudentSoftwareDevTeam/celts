@@ -124,7 +124,6 @@ function updateInterestedStudents(){
     $("#addInterestedStudentsbtn").prop("disabled", true)
   } else {
     $("#addInterestedStudentsbtn").prop("disabled", false)
-   
     msgFlash("Succssesfully added student intrested in minor.", "success", 1300, true)
   }
 }
