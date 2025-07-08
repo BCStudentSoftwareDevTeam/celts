@@ -1,4 +1,7 @@
 $(document).ready(function(){
+  //Load flash message from sessionStorage, if any
+  msgFlash();
+
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -205,6 +208,7 @@ $(document).ready(function(){
     });
 
   $('#addNoteForm').submit(function(event) {
+
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
     let isBonner = $("#bonnerInput").is(":checked")
@@ -216,13 +220,12 @@ $(document).ready(function(){
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
-        msgToast("Successfully added a note", "", 2000)
-        target = isBonner ? "bonner" : "notes"
-        // Delay reload to let user see the message
-            setTimeout(function() {
-                reloadWithAccordion(target)
-                location.reload()
-            }, 2500) 
+          target = isBonner ? "bonner" : "notes"
+          msgFlash("Successfully added a note", "success", 1300, true);
+          location.reload()
+      },
+      error: function(error) {
+        console.log("error")
       }
     });
   });
@@ -236,7 +239,6 @@ $(document).ready(function(){
       data: {"id": noteid},
       success: function(response) {
         reloadWithAccordion("notes")
-        // msgFlash("Successfully deleted a note", "success")
       }
     });
   });
