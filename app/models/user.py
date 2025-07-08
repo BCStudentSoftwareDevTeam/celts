@@ -79,8 +79,13 @@ class User(baseModel):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
     
+    @property
     def isProgramManager(self):
         from app.models.programManager import ProgramManager
-        return ProgramManager.select().where(ProgramManager.user == self).exists()
+
+        if self._isProgramManagerCache is None:
+            self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
+            
+        return self._isProgramManagerCache
 
 

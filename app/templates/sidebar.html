@@ -89,11 +89,11 @@
       </li>
 
       {% endif %}
-      {% if g.current_user.isProgramManager() %}
+      {% if g.current_user.isProgramManager %}
         <a href="/admin"
            class="nav-link text-white {{'active' if request.path == '/admin'}}"
            {% if request.path == '/admin' %}aria-current="page"{% endif %}>
-          Settings
+          Program Details
         </a>
       {% endif %}
     </ul>
