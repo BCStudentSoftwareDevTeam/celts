@@ -241,62 +241,58 @@
       </div>
 -     {% if page_title != 'Create All Volunteer Training' %}
       <div class="pt-4 mb-4">
-        <div class="row">
-            <div class="form-group col-xl-8">
-            <label class="label required toggleHeader">(Must Select One)</label>
-                <div class="form-check form-switch">
-              <label class="custom-control-label" for="checkIsTraining"><strong>This event is a
-                  training.</strong></label>
-              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
-            </div>
-            <div class="form-check form-switch">
-              <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service
-                  hours.</strong></label>
-              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}} />
-            </div>
-            <div class="form-check form-switch">
-              <label class="custom-control-label" for='checkEngagement'><strong>This event is engagement or education.</strong></label>
-              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
-            </div>
-            {% if eventData['program'].isBonnerScholars %}
-            <div class="form-check form-switch">
-              <label class="custom-control-label" for='checkBonners'><strong>This is a Bonner Scholars
-                  event.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkBonners" name="isBonnersChecked" {{"checked" if
-                eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
-            </div>
-            {% endif %}
+  <div class="row">
+    <div class="form-group col-xl-6">
+      <label class="label required toggleHeader">(Must Select One)</label>
+      <div class="form-check form-switch">
+        <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
+      </div>
+      <div class="form-check form-switch">
+        <label class="custom-control-label" for="checkIsService"><strong>This event earns service hours.</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsService" name="isService" {{"checked" if eventData.isService}} />
+      </div>
+      <div class="form-check form-switch">
+        <label class="custom-control-label" for="checkIsEngagement"><strong>This event is engagement or education.</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
+      </div>
+      {% if eventData['program'].isBonnerScholars %}
+      <div class="form-check form-switch">
+        <label class="custom-control-label" for="checkIsBonner"><strong>This event is for labor only</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsBonner" name="isBonnerScholars" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
       </div>
       {% endif %}
-      <div class="col-xl-1 columnDivide d-none d-xl-block" style="margin-left: -66px;"></div>       
-      <div class="form-group col-xl-5">
-            <label class="label toggleHeader">(Optional)</label>
-           <div class="form-check form-switch mb-2">
-              <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" ... />
-              <label class="form-check-label" for="checkRSVP"><strong>This event requires RSVP.</strong></label>
-            </div>
-            <div class="form-group mb-3">
-              <div class="form-check form-switch">
-                {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-                <div class="form-group" id="limitGroup" style="{{hide}}">
-                  <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-                  <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit"
-                    value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
-                </div>
-                <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}} />
-                <label class="custom-control-label" for="checkLaborOnly"><strong>This event is for labor only</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkLaborOnly" name="isLaborOnly" {{"checked" if eventData.isLaborOnly}}/>
-              </div>
-             </div>
-            </div>
-           </div>
-          </div>
-      <div class="form-group mb-5">
-        <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
-        <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple
-          accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" />
+    </div>
+    
+    <div class="col-xl-1 columnDivide d-none d-xl-block"></div>
+    
+    <div class="form-group col-xl-5">
+      <label class="label toggleHeader">(Optional)</label>
+      <div class="form-check form-switch mb-2">
+        <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}} />
+        <label class="form-check-label" for="checkRSVP"><strong>This event requires RSVP.</strong></label>
       </div>
+      <div class="form-group mb-3">
+        <div class="form-check form-switch">
+          {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+          <div class="form-group" id="limitGroup" style="{{hide}}">
+            <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+            <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit"
+              value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+          </div>
+          <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}} />
+          <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<div class="form-group mb-5">
+  <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
+  <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple />
+</div>
+
       {% if filepaths %}
       <div class="form-group mb-5">
         {% from 'macros/displayFilesMacro.html' import displayFiles %}
