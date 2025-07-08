@@ -322,7 +322,7 @@ $(document).ready(function(){
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
 
-
+    }
   var typingTimer;
   var doneTypingInterval = 750;
   var $dietInput = $('#diet');
@@ -391,5 +391,4 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
 
   
 }
-
-
+});
