@@ -42,6 +42,7 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 
 from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
+from app.logic.users import isBannedFromEvent
 
 from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
 from peewee import DoesNotExist, JOIN
@@ -810,3 +811,7 @@ def eventKioskStatus(event_id):
 
     event = Event.get_by_id(event_id)
     return render_template("/events/eventKiosk.html", is_labor=is_labor, event=event)
+
+@admin_bp.route('/addLaborToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
+def isLaborBanned(username, eventId):
+    return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}

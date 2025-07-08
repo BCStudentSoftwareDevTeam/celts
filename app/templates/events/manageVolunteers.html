@@ -354,7 +354,7 @@
         {% if event.isRepeating and repeatingVolunteers and not event.isFirstRepeatingEvent  %}
         <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% endif %}
-        {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteer") %}
+        {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteers") %}
         <button id="addVolunteersButton" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
       </div>
     </div>
