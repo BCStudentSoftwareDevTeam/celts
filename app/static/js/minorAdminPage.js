@@ -2,13 +2,14 @@ import searchUser from './searchUser.js'
 
 
 $(document).ready(function() {
-      // Check for stored flash message after page load
+    // Load flash message from sessionStorage, if any
     const storedMessage = sessionStorage.getItem('flashMessage');
     if (storedMessage) {
         const messageData = JSON.parse(storedMessage);
-        msgFlash(messageData.message, messageData.type, 1300);
+        msgFlash(messageData.message, messageData.type);
         sessionStorage.removeItem('flashMessage'); // Clean up
     }
+
   $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     let activeTab = $(e.target).attr('id').replace('-tab', '');
     let newUrl = window.location.pathname + '?tab=' + activeTab;
@@ -25,13 +26,7 @@ $('.remove_minor_candidate').on('click', function() {
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
         success: function(response) {
-            // Store message in sessionStorage to survive page reload
-            sessionStorage.setItem('flashMessage', JSON.stringify({
-                message: "Candidate minor successfully removed",
-                type: "success"
-            }));
-            
-            // Reload immediately
+            msgFlash("Candidate minor successfully removed", "success", 1500, true);
             location.reload();
         },
         error: function(error) {

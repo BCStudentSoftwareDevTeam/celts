@@ -6,7 +6,17 @@ function flashMessageResponse(message) {
   return '';
 }
 
-function msgFlash(flashMessage, status, timeout=2500){
+function msgFlash(flashMessage, status, timeout=2500, afterReload=false) {
+    if (afterReload) {
+      // Save message to sessionStorage for next page load
+      sessionStorage.setItem('flashMessage', JSON.stringify({
+          message: flashMessage,
+          type: status,
+          timeout: timeout
+      }));
+      return;
+    }
+
     if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
     $("#flash_container").prepend(`
       <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
