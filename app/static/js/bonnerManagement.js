@@ -9,7 +9,6 @@ function cohortRequest(year, method, username){
         reloadWithAccordion("cohort-" + year)
     },
     error: function(error, status){
-        console.log(error, status)
     }
   })
 }
@@ -44,7 +43,6 @@ function updateExportText(){
 function saveRequirement(e) {
     let el=$(e.target)
     if (el.data("id")== "save-new") {
-        console.log("Input is valid");
         $(".saveBtn").removeAttr("disabled");
         let row_el = $("#requirement_" + el.data("id"));
         var row_data = {[el.data("id")]:
@@ -56,7 +54,6 @@ function saveRequirement(e) {
                             }}
     }
     else {
-        console.log("saveRequirement called");
         let rowid = parseInt(el.data("id"));
         let row_el = $("#requirement_" + rowid);
         var row_data = {[rowid]:
@@ -95,11 +92,6 @@ $(document).ready(function(e){
         let year = $(this).data('year');
         cohortRequest(year, "remove", $(this).data("username"));
     });
-
-
-    // Add requirements sorting
-    // https://github.com/SortableJS/Sortable
-    // https://sortablejs.github.io/Sortable/
     var requirementsObj = new Sortable($('#requirements tbody')[0], {
         animation: 150,
         forceFallback: false,
@@ -132,12 +124,10 @@ $(document).ready(function(e){
             },
             error: function (error, status) {
                 msgFlash("Download Failed", "danger");
-                console.log("Error response:", error.responseText, status);
             }
         })
     })
     
-
     $(".year").on('click', function() {
         updateExportText();
     });
@@ -146,9 +136,6 @@ $(document).ready(function(e){
     $("#reqAdd").click(function() {
         addRequirement();
     });
-
-    //Save Requirements handler
-    
 });
 
 /** End onready ****************************/
@@ -170,7 +157,6 @@ function addRequirement() {
     newRow.find("select.frequency-select").attr("name", "frequency-new");
     table.append(newRow)
     // newSaveBtn.addEventListener("click", enableSave());
-    
    
     addRequirementsRowHandlers()
     newRow.find("input").focus()
@@ -232,7 +218,6 @@ function addRequirementsRowHandlers() {
             dataType: 'json',
             data: JSON.stringify(rowid), 
             success: function(response) {
-                // Removing a row
                 msgToast("Bonner", "Removing Bonner Requirement");
                 location.reload();
             },

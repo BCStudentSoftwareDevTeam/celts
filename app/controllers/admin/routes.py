@@ -689,15 +689,6 @@ def deleteReq():
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Failed to delete requirement."})
-    
-
-    
-
-
-
-
-    
-
 
 @admin_bp.route("/displayEventFile", methods=["POST"])
 def displayEventFile():
