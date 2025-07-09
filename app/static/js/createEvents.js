@@ -64,20 +64,20 @@ function calculateRepeatingEventFrequency(){
 function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $("#eventLocation-main").addClass('d-none');
-  $("#eventLocation-main").removeClass('d-none');
+  $("#eventLocation-main").hide();
+  $("#eventLocation-main").show();
   $("#inputEventLocation-main").prop('required', true);
-  $('#eventTime, #eventDate').removeClass('d-none');
-  $('#checkIsSeriesToggleContainer').addClass('col-md-6')
-  $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
+  $('#eventTime, #eventDate').show();
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
+  $('#checkIsSeriesToggleContainer').addClass('col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
-  $("#eventLocation-main").removeClass('d-none');
+  $("#eventLocation-main").show();
   $("#inputEventLocation-main").prop('required', false); 
-  $('#eventTime, #eventDate').addClass('d-none');
+  $('#eventTime, #eventDate').hide();
   $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
   $("#pastDateWarningText").text("")
@@ -92,6 +92,7 @@ function displayNotification(message) {
     $('#textNotifierPadding').removeClass('pt-5')
   });
 }
+
 
 function isDateInPast(dateString, timeString) {
   const combineDateTime = `${dateString}T${timeString}:00`;
