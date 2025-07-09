@@ -21,9 +21,9 @@ function format12to24HourTime(timeStr) {
   let [hours, minutes] = timePart.split(":").map(Number);
 
   if (meridian === "PM" && hours !== 12) {
-      hours += 12;
+    hours += 12;
   } else if (meridian === "AM" && hours === 12) {
-      hours = 0; // midnight
+    hours = 0; // midnight
   }
 
   // format hours and minutes to always be 2 digits
@@ -33,35 +33,36 @@ function format12to24HourTime(timeStr) {
   return `${formattedHours}:${formattedMinutes}`;
 }
 
-function calculateRepeatingEventFrequency(){
-  var eventDatesAndName = {name:$("#repeatingEventsNamePicker").val(),
-                            isRepeating: true,
-                            startDate:$("#repeatingEventsStartDate").val(),
-                            endDate:$("#repeatingEventsEndDate").val(),
-                            location:$("#repeatingEventsLocationPicker").val() || ''
-                          }
+function calculateRepeatingEventFrequency() {
+  var eventDatesAndName = {
+    name: $("#repeatingEventsNamePicker").val(),
+    isRepeating: true,
+    startDate: $("#repeatingEventsStartDate").val(),
+    endDate: $("#repeatingEventsEndDate").val(),
+    location: $("#repeatingEventsLocationPicker").val() || ''
+  }
   console.log(eventDatesAndName);
   $.ajax({
-    type:"POST",
+    type: "POST",
     url: "/makeRepeatingEvents",
     //get the startDate, endDate and name as a dictionary
     data: eventDatesAndName,
-    success: function(jsonData){
+    success: function (jsonData) {
       var generatedEvents = JSON.parse(jsonData)
       $("#generatedEventsTable tbody tr").remove();
-      for(var event of generatedEvents){
+      for (var event of generatedEvents) {
         loadRepeatingOfferingToModal(event)
       }
       $("#generatedEvents").removeClass("d-none");
     },
-    error: function(error){
+    error: function (error) {
       console.log(error)
       displayNotification("Failed to generate events.");
     }
   });
 }
 
-function setViewForSingleOffering(){
+function setViewForSingleOffering() {
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
   $("#eventLocation-main").hide();
@@ -72,11 +73,11 @@ function setViewForSingleOffering(){
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
 }
 
-function setViewForSeries(){
+function setViewForSeries() {
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $("#eventLocation-main").show();
-  $("#inputEventLocation-main").prop('required', false); 
+  $("#inputEventLocation-main").prop('required', false);
   $('#eventTime, #eventDate').hide();
   $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
   $('#checkIsSeriesToggleContainer').addClass('col-md-12')
@@ -86,8 +87,8 @@ function setViewForSeries(){
 function displayNotification(message) {
   $('#textNotifierPadding').addClass('pt-5');
   $('.invalidFeedback').text(message);
-  $('.invalidFeedback').css('display', 'block');  
-  $('.invalidFeedback').on('animationend', function() {
+  $('.invalidFeedback').css('display', 'block');
+  $('.invalidFeedback').on('animationend', function () {
     $('.invalidFeedback').css('display', 'none');
     $('#textNotifierPadding').removeClass('pt-5')
   });
@@ -111,12 +112,12 @@ function initializeFlatpickr(obj) {
     minTime: "08:00",
     maxTime: "22:00",
     minuteIncrement: 15,
-    allowInput: true 
+    allowInput: true
   });
 }
 
 let eventSessionNum = 0;
-function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, eventLocation = null}={}){
+function createOfferingModalRow({ eventName = null, eventDate = null, startTime = null, endTime = null, eventLocation = null } = {}) {
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
   const baseName = $('#inputEventName').val();
   const fullName = baseName + ': session ' + (eventSessionNum + 1);
@@ -124,11 +125,11 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
 
 
   // insert values for the newly created row
-  if (eventName) {clonedOffering.find('.multipleOfferingNameField').val(eventName)}
-  if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
-  if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
-  if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (eventLocation) {clonedOffering.find('.multipleOfferingLocationField').val(eventLocation)}  
+  if (eventName) { clonedOffering.find('.multipleOfferingNameField').val(eventName) }
+  if (eventDate) { clonedOffering.find('.multipleOfferingDatePicker').val(eventDate) }
+  if (startTime) { clonedOffering.find('.multipleOfferingStartTime').val(startTime) }
+  if (endTime) { clonedOffering.find('.multipleOfferingEndTime').val(endTime) }
+  if (eventLocation) { clonedOffering.find('.multipleOfferingLocationField').val(eventLocation) }
 
   eventSessionNum++;
   $("#multipleOfferingSlots").append(clonedOffering);
@@ -163,7 +164,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   return clonedOffering
 }
 
-$('#saveSeries').on('click', function() {
+$('#saveSeries').on('click', function () {
   //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
@@ -193,13 +194,13 @@ $('#saveSeries').on('click', function() {
   // Check if the date input field is empty
   datePickerInputs.each((index, datePickerInput) => {
     if (datePickerInput.value.trim() === '') {
-        isEmpty = true;
-        $(datePickerInput).addClass('border-red');
+      isEmpty = true;
+      $(datePickerInput).addClass('border-red');
     } else {
-        $(datePickerInput).removeClass('border-red');
+      $(datePickerInput).removeClass('border-red');
     }
-  }); 
-  
+  });
+
   locationInputs.each((index, locationInput) => {
     if (locationInput.value.trim() === '') {
       isEmpty = true;
@@ -210,16 +211,16 @@ $('#saveSeries').on('click', function() {
   });
 
   // Check if the start time is after the end time
-  for(let i = 0; i < startTimeInputs.length; i++){
+  for (let i = 0; i < startTimeInputs.length; i++) {
     let startTime = startTimeInputs[i].value
     let endTime = endTimeInputs[i].value
-    
+
     if (navigator.userAgent.indexOf("Chrome") == -1) {
       startTime = format12to24HourTime(startTime)
       endTime = format12to24HourTime(endTime)
     }
 
-    if(startTime < endTime){
+    if (startTime < endTime) {
       hasValidTimes = true;
       $(startTimeInputs[i]).removeClass('border-red');
       $(endTimeInputs[i]).removeClass('border-red');
@@ -230,26 +231,26 @@ $('#saveSeries').on('click', function() {
     }
   }
 
-  if ($(dataTable).children().length < 1){
+  if ($(dataTable).children().length < 1) {
     displayNotification("Please create events.")
   }
 
   // Check if there are duplicate event offerings
   let eventListings = {};
-  for(let i = 0; i < eventOfferings.length; i++){
+  for (let i = 0; i < eventOfferings.length; i++) {
     let eventName = eventNameInputs[i].value
     let date = datePickerInputs[i].value.trim()
     let startTime = startTimeInputs[i].value
     let eventListing = JSON.stringify([eventName, date, startTime, location])
 
-    if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
+    if (eventListing in eventListings) { // If we've seen this event before mark this event and the previous as duplicates
       hasDuplicateListings = true
     } else { // If we haven't seen this event before
       eventListings[eventListing] = i
     }
   }
 
-  if (isEmpty){
+  if (isEmpty) {
     let emptyFieldMessage = "Event name, date or location field is empty";
     displayNotification(emptyFieldMessage);
   }
@@ -286,7 +287,7 @@ function updateEventNameField() {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
     let offeringText = $("#repeatingEventsNamePicker").val()
     $('#inputEventName').prop('placeholder', offeringText)
-  } 
+  }
 }
 
 // Save the offerings from the modal to the hidden input field
@@ -295,33 +296,34 @@ function saveOfferingsFromModal() {
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   $("#formIsRepeating").prop("checked", isRepeatingStatus);
   let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
-  $(dataTable).children().each(function(index, element) {
+  $(dataTable).children().each(function (index, element) {
     let rowData;
-    if (isRepeatingStatus){
-      rowData = $.map($(element).find("td"), function(td){
+    if (isRepeatingStatus) {
+      rowData = $.map($(element).find("td"), function (td) {
         let input = $(td).find("input");
-        if (input.length){
+        if (input.length) {
           return input.val();
         } else {
           return $(td).text().trim();
         }
-      })}
+      })
+    }
     else {
       rowData = $.map($(element).find("input"), (el) => $(el).val());
     }
-    
+
     let startTime = isRepeatingStatus ? $("#repeatingEventsStartTime").val() : rowData[3]
     let endTime = isRepeatingStatus ? $("#repeatingEventsEndTime").val() : rowData[4]
     if (navigator.userAgent.indexOf("Chrome") == -1) {
-        startTime = format12to24HourTime(startTime)
-        endTime = format12to24HourTime(endTime)
+      startTime = format12to24HourTime(startTime)
+      endTime = format12to24HourTime(endTime)
     }
     offerings.push({
-        eventName: rowData[0],
-        eventLocation: isRepeatingStatus ?  rowData[2] : rowData[1],
-        eventDate: isRepeatingStatus ?  rowData[1] : rowData[2],
-        startTime: startTime,
-        endTime: endTime,
+      eventName: rowData[0],
+      eventLocation: isRepeatingStatus ? rowData[2] : rowData[1],
+      eventDate: isRepeatingStatus ? rowData[1] : rowData[2],
+      startTime: startTime,
+      endTime: endTime,
     })
   });
 
@@ -331,13 +333,13 @@ function saveOfferingsFromModal() {
   $("#seriesData").val(offeringsJson);
 }
 
-function verifyRepeatingFields(){
+function verifyRepeatingFields() {
   // verifies all fields in the repeating table are not empty.
   let repeatingFields = $(".repeatingEventsField");
   let allFieldsFilled = true;
-  repeatingFields.each(function() {
+  repeatingFields.each(function () {
     let value = $(this).val();
-    if (value === "" || value == null){
+    if (value === "" || value == null) {
       allFieldsFilled = false;
       return false;
     }
@@ -347,14 +349,14 @@ function verifyRepeatingFields(){
 
 
 
-function loadOfferingsToModal(){
+function loadOfferingsToModal() {
   let offerings = JSON.parse($("#seriesData").val())
-  if (offerings.length < 1) {return;}
+  if (offerings.length < 1) { return; }
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   let mainLocation = $('#inputEventLocation-main').val();
-  if (isRepeatingStatus) {$("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove();};
-  offerings.forEach((offering, i) =>{
-    if (isRepeatingStatus){
+  if (isRepeatingStatus) { $("#generatedEvents").removeClass("d-none"); $("#generatedEventsTable tbody tr").remove(); };
+  offerings.forEach((offering, i) => {
+    if (isRepeatingStatus) {
       loadRepeatingOfferingToModal(offering);
     } else {
       let newOfferingModalRow = createOfferingModalRow({
@@ -362,20 +364,21 @@ function loadOfferingsToModal(){
         eventLocation: offering.eventLocation || mainLocation
       });
       //stripes odd event sections in event modal
-      newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
-    }});
+      newOfferingModalRow.css('background-color', i % 2 ? '#f2f2f2' : '#fff');
+    }
+  });
 }
 
-function loadRepeatingOfferingToModal(offering){
+function loadRepeatingOfferingToModal(offering) {
   var seriesTable = $("#generatedEventsTable");
   var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
   console.log(offering);
-  
+
   seriesTable.append(
     "<tr class='eventOffering'>" +
-    "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" + 
+    "<td id='offeringName'>" + (offering.name || offering.eventName) + "</td>" +
     "<td id='offeringDate'>" + eventDate + "</td>" +
-    "<td id='offeringLocation'>" + (offering.eventLocation || offering.location)+ "</td>" + 
+    "<td id='offeringLocation'>" + (offering.eventLocation || offering.location) + "</td>" +
     "<td><div class='deleteGeneratedEvent'><span class='bi bi-trash btn btn-danger'></span></div></td>" +
     "</tr>"
   );
@@ -386,19 +389,19 @@ function updateOfferingsTable() {
   let offerings = JSON.parse($("#seriesData").val())
   var offeringsTable = $("#offeringsTable");
   offeringsTable.find("tbody tr").remove(); // Clear existing rows
-  offerings.forEach(function(offering){
+  offerings.forEach(function (offering) {
     //format to 12hr time for display
     var formattedEventDate = formatDate(offering.eventDate);
     var startTime = format24to12HourTime(offering.startTime);
     var endTime = format24to12HourTime(offering.endTime);
     offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
-                                    "<td>" + offering.eventName + "</td>" +
-                                    "<td>" + formattedEventDate + "</td>" +
-                                    "<td>" + startTime + "</td>" +
-                                    "<td>" + endTime + "</td>" +
-                                    "<td>" + (offering.eventLocation || offering.location || "") + "</td>" +
-                                  "</tr>"
-                                );
+      "<td>" + offering.eventName + "</td>" +
+      "<td>" + formattedEventDate + "</td>" +
+      "<td>" + startTime + "</td>" +
+      "<td>" + endTime + "</td>" +
+      "<td>" + (offering.eventLocation || offering.location || "") + "</td>" +
+      "</tr>"
+    );
   });
 }
 
@@ -415,7 +418,7 @@ function formatDate(originalDate) {
 /*
  * Run when the webpage is ready for javascript
  */
-$(document).ready(function() {
+$(document).ready(function () {
   var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
 
   //makes sure bonners toggle will stay on between event pages
@@ -428,7 +431,7 @@ $(document).ready(function() {
   // don't use a minimum if we are editing an existing event
   var minDate = new Date()
   if (isEditPage) {
-      minDate = null;
+    minDate = null;
   }
 
   // Initialize datepicker with proper options
@@ -442,7 +445,7 @@ $(document).ready(function() {
     minDate: minDate
   });
 
-  $(".datePicker").each(function(idx, el) {
+  $(".datePicker").each(function (idx, el) {
     var dateStr = $(el).val();
     if (dateStr) {
       var dateObj = new Date(dateStr);
@@ -476,75 +479,75 @@ $(document).ready(function() {
 
     //check if user has selected a toggle, cancel form submission if not
     let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
-    if(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus || isAllVolunteer) {
+    if (trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus || isAllVolunteer) {
       // Disable button when we are ready to submit
       $(this).find("input[type=submit]").prop("disabled", true);
     }
     else {
       msgFlash("You must indicate whether the event is a training, is an engagement, earns service hours, or is a Bonners Scholars event!", "danger");
       event.preventDefault();
-    } 
+    }
   });
 
   updateOfferingsTable();
-  
-  if ($("#checkIsSeries").is(":checked")){
+
+  if ($("#checkIsSeries").is(":checked")) {
     setViewForSeries();
   }
 
-  
-let modalOpenedByEditButton = false;
-// #checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
 
-$("#checkIsSeries, #edit_modal").click(function(event) {
-  let eventSessionNum = 0;
-  // Set all modal location fields to the main location value (if needed)
-  $('.multipleOfferingLocationField').val($('#inputEventLocation-main').val());
+  let modalOpenedByEditButton = false;
+  // #checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
 
-  let isSeries = $("#checkIsSeries").is(":checked")
-  modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
+  $("#checkIsSeries, #edit_modal").click(function (event) {
+    let eventSessionNum = 0;
+    // Set all modal location fields to the main location value (if needed)
+    $('.multipleOfferingLocationField').val($('#inputEventLocation-main').val());
 
-  if (isSeries) {
-    if ($('#inputEventName').val().trim() == '') {
-      $('#checkIsSeries').prop('checked', false)
-      $('#inputEventName').focus(); 
-      return
+    let isSeries = $("#checkIsSeries").is(":checked");
+    modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
+
+    if (isSeries) {
+      if ($('#inputEventName').val().trim() == '') {
+        $('#checkIsSeries').prop('checked', false);
+        $('#inputEventName').focus();
+        return;
+      }
+      if ($('#inputEventLocation-main').val().trim() == '') {
+        $('#checkIsSeries').prop('checked', false);
+        $('#inputEventLocation-main').focus();
+        return;
+      }
+      setViewForSeries();
+      loadOfferingsToModal();
+      $('#modalSeries').modal('show');
+
+      // Disable single event name and location fields
+      $('#inputEventName').prop('readonly', true);
+      $('#inputEventLocation-main').prop('readonly', true);
+    } else {
+      setViewForSingleOffering();
+      $('#multipleOfferingTableDiv').addClass('d-none');
+      // Enable single event name and location fields
+      $('#inputEventName').prop('readonly', false);
+      $('#inputEventName').prop('placeholder', 'Enter event name');
+      $('#inputEventLocation-main').prop('readonly', false);
+      $('#inputEventLocation-main').prop('placeholder', 'Enter event location');
     }
-    if ($('#inputEventLocation-main').val().trim() == '') {
-      $('#checkIsSeries').prop('checked', false)
-      $('#inputEventLocation-main').focus(); 
-      return
-    }
-    setViewForSeries();
-    loadOfferingsToModal();
-    $('#modalSeries').modal('show');
-
-    // Disable single event name and location fields
-    $('#inputEventName').prop('readonly', true)
-    $('#inputEventLocation-main').prop('readonly', true)
-  } else {
-    setViewForSingleOffering()
-    $('#multipleOfferingTableDiv').addClass('d-none');
-    // Enable single event name and location fields
-    $('#inputEventName').prop('readonly', false)
-    $('#inputEventName').prop('placeholder', 'Enter event name')
-    $('#inputEventLocation-main').prop('readonly', false)
-    $('#inputEventLocation-main').prop('placeholder', 'Enter event location')
-  }
-});
+  });
 
   //untoggles the button when the modal cancel or close button is clicked
-  $("#cancelModalPreview, #multipleOfferingXbutton").click(function(){ 
+  $("#cancelModalPreview, #multipleOfferingXbutton").click(function () {
     if (modalOpenedByEditButton == false) {
       $('#modalSeries').modal('hide');
       $("#checkIsSeries").prop('checked', false);
-      setViewForSingleOffering()
+      setViewForSingleOffering();
     }
-    pendingmultipleEvents.forEach(function(element){
+    pendingmultipleEvents.forEach(function (element) {
       element.remove();
     });
     let isSeries = $("#checkIsSeries").is(":checked")
-    if (!isSeries){
+    if (!isSeries) {
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
@@ -554,19 +557,19 @@ $("#checkIsSeries, #edit_modal").click(function(event) {
     }
   });
 
-  $("#checkIsRepeating").change(function() {
+  $("#checkIsRepeating").change(function () {
     if ($(this).is(':checked')) {
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
       $("#multipleOfferingSlots").children().remove();
       $("#multipleOfferingSlots").addClass('d-none');
     } else {
-      $('.addMultipleOfferingEvent').show(); 
+      $('.addMultipleOfferingEvent').show();
       $("#repeatingEventsDiv").addClass('d-none');
       $("#multipleOfferingSlots").removeClass('d-none');
     }
   });
-  
+
   $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
 
   function handleRepeatingEventsChange() {
@@ -585,13 +588,13 @@ $("#checkIsSeries, #edit_modal").click(function(event) {
 
       if (endDate <= startDate) {
         displayNotification("The end date must be after the start date.");
-        table.each(function(){$(this).remove()})
+        table.each(function () { $(this).remove() })
         $("#generatedEvents").addClass('d-none');
         return;
       }
-      if (endTime <= startTime){
+      if (endTime <= startTime) {
         displayNotification("The end time must be after the start time.");
-        table.each(function(){$(this).remove()})
+        table.each(function () { $(this).remove() })
         $("#generatedEvents").addClass('d-none');
         return;
       }
@@ -600,56 +603,56 @@ $("#checkIsSeries, #edit_modal").click(function(event) {
     }
   }
 
-  $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function() {
+  $(document).on("click", ".deleteGeneratedEvent, .deleteMultipleOffering", function () {
     let attachedRow = $(this).closest(".eventOffering")
     attachedRow.animate({
       opacity: 0,
-    }, 500, function() {
-        // After the animation completes, remove the row
-        attachedRow.remove();
+    }, 500, function () {
+      // After the animation completes, remove the row
+      attachedRow.remove();
     });
   });
-  
+
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
-  $(".addMultipleOfferingEvent").click(function() {
-  // Get the current value from the main location input
-  let mainLocation = $("#inputEventLocation-main").val();
-  createOfferingModalRow({eventLocation: mainLocation});
-});
+  $(".addMultipleOfferingEvent").click(function () {
+    // Get the current value from the main location input
+    let mainLocation = $("#inputEventLocation-main").val();
+    createOfferingModalRow({ eventLocation: mainLocation });
+  });
 
-    var minDate = new Date('10/25/1999') 
-    $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+  var minDate = new Date('10/25/1999')
+  $("#startDatePicker-main").datepicker("option", "minDate", minDate)
 
   // This converts the time to 24 hour format in case it is in 12 hour format (like in Firefox)
-function handleTimeFormatting(timeArray){    
-  let time  = timeArray[0]
-  let timeSuffix = timeArray[1]         // looks for AM or PM in time 
-  let [hours , min] = time. split(':')
+  function handleTimeFormatting(timeArray) {
+    let time = timeArray[0]
+    let timeSuffix = timeArray[1]         // looks for AM or PM in time 
+    let [hours, min] = time.split(':')
 
-  if (timeArray.length === 2) {
-    hours  = parseInt(hours, 10)
-    if (timeSuffix === 'PM' && hours !== 12) {
-      hours += 12;
-    } else if (timeSuffix === 'AM' && hours === 12) {
-      hours = 0;
+    if (timeArray.length === 2) {
+      hours = parseInt(hours, 10)
+      if (timeSuffix === 'PM' && hours !== 12) {
+        hours += 12;
+      } else if (timeSuffix === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      const hoursStr = hours.toString().padStart(2, '0');
+      return [hoursStr, min]
     }
-    const hoursStr = hours.toString().padStart(2, '0');
-    return [hoursStr, min]
+    return [hours, min]
   }
-  return [hours, min]
-}
 
   function checkIfDateInPast() {
     const [month, day, year] = $("#startDatePicker-main").val().split('/')
-    const startTimeArray =  $("#startTime-main").val().split(' ') 
+    const startTimeArray = $("#startTime-main").val().split(' ')
     const [startHour, startMin] = handleTimeFormatting(startTimeArray)
     const endTimeArray = $('#endTime-main').val().split(' ')
-    const [endHour, endMin] = handleTimeFormatting (endTimeArray)
-    let startDateSelected =new Date(+year, +month - 1, +day, +startHour, +startMin);  
+    const [endHour, endMin] = handleTimeFormatting(endTimeArray)
+    let startDateSelected = new Date(+year, +month - 1, +day, +startHour, +startMin);
     let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
     let now = new Date()
-    
+
 
     if (startDateSelected < now && endDateSelected > now) {
       $("#pastDateWarningText").text("This event is currently in progress!")
@@ -657,26 +660,26 @@ function handleTimeFormatting(timeArray){
     else if (startDateSelected < now && endDateSelected < now) {
       $("#pastDateWarningText").text("This event is in the past!")
     }
-    else 
+    else
       $("#pastDateWarningText").text("")
   }
 
-  $("#startDatePicker-main").on("change", function() {    
+  $("#startDatePicker-main").on("change", function () {
     checkIfDateInPast()
   })
 
-  $("#startTime-main").on("change", function() {    
+  $("#startTime-main").on("change", function () {
     checkIfDateInPast()
   })
-  
-  $("#endTime-main").on("change", function() {    
+
+  $("#endTime-main").on("change", function () {
     checkIfDateInPast()
   })
 
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
     initializeFlatpickr(".flatpickr")
-    
+
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
 
@@ -694,7 +697,7 @@ function handleTimeFormatting(timeArray){
     $(".datePicker").datepicker("option", "disabled", true);
   }
 
-  $(".readonly").on('keydown paste', function(e) {
+  $(".readonly").on('keydown paste', function (e) {
     if (e.keyCode != 9) // ignore tab
       e.preventDefault();
   });
@@ -742,7 +745,7 @@ function handleTimeFormatting(timeArray){
     setCharacterLimit(this, "#remainingCharacters");
   });
 
-  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });
 
 
