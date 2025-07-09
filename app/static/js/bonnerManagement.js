@@ -331,10 +331,11 @@ function addRequirementsRowHandlers() {
             this.setCustomValidity('');
              $(".saveBtn").click(function(e) {
                 saveRequirement(e);
+                console.log("1st button clicked?");
              });
         }
     });
-    $("#requirement_save-new input").keyup(function(e) {
+    $("#requirement_save-new input").on("input blur", function(e) {
         if($(this).val() == "") {
             console.log("Input is empty");
             this.setCustomValidity('Please enter a name.');
