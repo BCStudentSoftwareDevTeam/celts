@@ -90,7 +90,6 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
-
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -127,7 +126,7 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-  $("#instructorTable").on("click", ".removeButton", function() {
+  $("#instructorTable").on("click", ".removeButton", function() {  
     let closestRow = $(this).closest("tr");
     let username = closestRow.data('username');
     
@@ -135,6 +134,7 @@ $(document).ready(function(e) {
     if (username) {
         $("#instructorTableNames input[value='" + username + "']").remove();
         closestRow.remove();
+         msgFlash(`Successfully removed instructor ${username}`, "success", 1300);
     }
     updateEmptyTableMessage();
   });
