@@ -59,21 +59,24 @@ function updateExportText(){
 //         saveRequirement(e);
 //     }
 // }
-function isValid(e) {
-    let row_id = e.data("id");
-    let inputElement = document.getElementById(row_id);
-    let inputValue = inputElement.value.trim();
-    console.log(inputElement,inputValue)
-    if (inputValue == '') {
-        console.log("Input is empty");
-        $(".saveBtn").attr("disabled", "disabled");
-        return false;
-    }
-    else{
-        console.log("Input is valid");
-        $(".saveBtn").removeAttr("disabled");
-        return true;
-    }
+// function isValid(e) {
+//     let el=$(e.target)
+//     let row_id = el.data("id");
+//     let inputElement = document.getElementById(row_id);
+//     let inputValue = inputElement.value.trim();
+//     console.log(inputElement,inputValue)
+//     if (inputValue == '') {
+//         console.log("Input is empty");
+//         $(".saveBtn").attr("disabled", "disabled");
+//         inputElement.setCustomValidity('Please enter a name.');
+//         inputElement.reportValidity();
+//         return;     return false;
+//     }
+//     else{
+//         console.log("Input is valid");
+//         $(".saveBtn").removeAttr("disabled");
+//         saveRequirement(e);
+//     }
     // $("#requirement_save-new input").keyup(function(e) {
     //     console.log("Keyup event triggered");
     //     if($(this).val() == "") {
@@ -91,33 +94,25 @@ function isValid(e) {
     //             console.log("Save button clicked?");
     //     })};
     // });
-}
+
 
 function saveRequirement(e) {
     let el=$(e.target)
     if (el.data("id")== "save-new") {
-        let valid = isValid(newSaveBtn);
-        if (!valid) {
-            inputElement = newRow.find("input")[0];
-            inputElement.setCustomValidity('Please enter a name.');
-            inputElement.reportValidity();
-            valid = isValid(newSaveBtn);
-        }
-    
-        else {
-            $(".saveBtn").attr("disabled", "disabled")
-            let row_el = $("#requirement_" + el.data("id"));
-            var row_data = {[el.data("id")]:
+        console.log("Input is valid");
+        $(".saveBtn").removeAttr("disabled");
+        let row_el = $("#requirement_" + el.data("id"));
+        var row_data = {[el.data("id")]:
                             {
                                 'id': row_el.data("id"),
                                 'name': row_el.find("input").val(),
                                 'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                                 'frequency': row_el.find("select.frequency-select").val()
                             }}
-        }
     }
-    else{   
-        let rowid=parseInt(el.data("id"));
+    else {
+        console.log("saveRequirement called");
+        let rowid = parseInt(el.data("id"));
         let row_el = $("#requirement_" + rowid);
         var row_data = {[rowid]:
                         {
@@ -126,7 +121,7 @@ function saveRequirement(e) {
                             'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                             'frequency': row_el.find("select.frequency-select").val()
                         }}
-                    }
+}
     $.ajax({
         method: 'POST',
         url: '/saveRequirements/1', // Bonner certification id hard-coded here
@@ -201,8 +196,6 @@ $(document).ready(function(e){
         updateExportText();
     });
 
-    addRequirementsRowHandlers();
-
     // Add Requirement handler
     $("#reqAdd").click(function() {
         addRequirement();
@@ -254,18 +247,14 @@ function addRequirement() {
     newRow.find(".saveBtn").data('id',"save-new");
     let newSaveBtn = newRow.find(".saveBtn")[0];
     newRow.find("select.frequency-select").attr("name", "frequency-new");
-    
-    newSaveBtn.addEventListener("click", saveRequirement);
-    
-    
-        
     table.append(newRow)
+    // newSaveBtn.addEventListener("click", enableSave());
+    
    
-    // addRequirementsRowHandlers()
+    addRequirementsRowHandlers()
     newRow.find("input").focus()
     $("#reqAdd").attr("disabled", "disabled")
 }
-
 
 function addCohort(){
     // Grab all the cohort years currently displayed
@@ -330,16 +319,6 @@ function addRequirementsRowHandlers() {
             $(this).removeClass("empty");
         }
     });
-    $(".frequency-select").change();
-    // add this one after we trigger the first change event
-    $(".frequency-select").change(function(e) {
-        enableSave();
-    });
-
-    // detect changes so we can enable saving
-    $(".required-select").change(function(e) {
-        enableSave();
-    });
 
     // handle invalid and valid entries
     $("#requirements input").keyup(function(e) {
@@ -355,7 +334,22 @@ function addRequirementsRowHandlers() {
              });
         }
     });
-    
+    $("#requirement_save-new input").keyup(function(e) {
+        if($(this).val() == "") {
+            console.log("Input is empty");
+            this.setCustomValidity('Please enter a name.');
+            console.log(this);
+            this.reportValidity();
+            $(".saveBtn").attr("disabled", "disabled");
+        } else {
+            $(".saveBtn").removeAttr("disabled");
+            this.setCustomValidity('');
+            $(".saveBtn").click(function(e) {
+                saveRequirement(e);
+                console.log("Save button clicked?");
+            });
+        }
+    });
     $("#requirements input").focusout(function(e) {
         if($(this).val() == "") {
             $(this).addClass('invalid');
