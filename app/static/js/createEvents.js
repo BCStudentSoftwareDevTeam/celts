@@ -497,7 +497,7 @@ let modalOpenedByEditButton = false;
 // #checkIsRepeating, #checkIsSeries are attributes for the toggle buttons on create event page
 
 $("#checkIsSeries, #edit_modal").click(function(event) {
-  eventSessionNum = 0;
+  let eventSessionNum = 0;
   // Set all modal location fields to the main location value (if needed)
   $('.multipleOfferingLocationField').val($('#inputEventLocation-main').val());
 
