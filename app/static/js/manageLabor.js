@@ -174,7 +174,7 @@ $(document).ready(function() {
       type: "GET",
       success: function(response){
         if (response.banned){
-          $("#addLaborElements"+index).append("<a href='#' data-toggle='tooltip' data-placement='top' title='User is banned from this program.'><span class='bi bi-x-circle-fill text-danger'></span></a>")
+          $("#addLaborElements"+index).append("<a href='#' data-toggle='tooltip' data-placement='top' title='User is banned from this program.'><span class='bi bi-x-circle-fill text-danger ms-1'></span></a>")
           if (!iconShowing){
             $("#banned-message").removeAttr("hidden")
             iconShowing = true

@@ -64,7 +64,7 @@
                 <input class="form-control" type='hidden' name="username" id="{{participant.user.username}}" value="{{participant.user}}" />
                 <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
                 {% if participant.user in bannedUsersForProgram %}
-                  <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                  <a href="#" data-bs-toggle="tooltip" data-placement="top" title="User is banned from this program.">
                     <span class="bi bi-x-circle-fill text-danger"></span>
                   </a>
                 {% endif %}
@@ -119,11 +119,11 @@
         </div>
         <ul class="list-unstyled mx-3 mt-2" id= "addLaborList">
           {% if event.isRepeating and not event.isFirstRepeatingEvent%}
-            {% if repeatingingLabor %}
+            {% if repeatingLabor %}
               {%for participant in repeatingLabor%}
                 <li>
-                  <input class="repeatingLabor" type="checkbox" id ="repeatingingLaborCheckbox_{{loop.index}}" name="labor[]" value= {{participant}} />
-                  <label class="form-check-label" for="repeatingingLaborCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                  <input class="repeatingLabor" type="checkbox" id ="repeatingLaborCheckbox_{{loop.index}}" name="labor[]" value= {{participant}} />
+                  <label class="form-check-label" for="repeatingLaborCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
                   <label class="text-dark" data-toggle="previousLaborHover">*</label>
                 </li>
               {% endfor %}

@@ -754,7 +754,6 @@ def removeLaborFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
     if g.current_user.isAdmin:
-        userInLaborTable = EventLabor.select(EventLabor, User).join(User).where(EventLabor.user == user, EventLabor.event==eventID).execute()
         (EventLabor.delete().where(EventLabor.user==user, EventLabor.event==eventID)).execute()
         flash("Student successfully removed", "success")
     return ""
@@ -764,7 +763,6 @@ def addLaborToEvent(eventId):
     event = Event.get_by_id(eventId)
     successfullyAddedLabor = False
     usernameList = request.form.getlist("selectedLabor[]")
-    successfullyAddedLabor = False
     alreadyAddedList = []
     addedSuccessfullyList = []
     errorList = []

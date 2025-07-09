@@ -337,11 +337,11 @@
         </div>
         <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
           {% if event.isRepeating and not event.isFirstRepeatingEvent%}
-            {% if repeatingingVolunteers %}
+            {% if repeatingVolunteers %}
               {%for participant in repeatingVolunteers%}
                 <li>
-                  <input class="repeatingVolunteer" type="checkbox" id ="repeatingingVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
-                  <label class="form-check-label" for="repeatingingVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                  <input class="repeatingVolunteer" type="checkbox" id ="repeatingVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                  <label class="form-check-label" for="repeatingVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
                   <label class="text-dark" data-toggle="previousVolunteerHover">*</label>
                 </li>
               {% endfor %}
