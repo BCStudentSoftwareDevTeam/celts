@@ -249,17 +249,17 @@
         <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
       </div>
       <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkIsService"><strong>This event earns service hours.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsService" name="isService" {{"checked" if eventData.isService}} />
+        <label class="custom-control-label" for="checkServiceHours"><strong>This event earns service hours.</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}} />
       </div>
       <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkIsEngagement"><strong>This event is engagement or education.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
+        <label class="custom-control-label" for="checkEngagement"><strong>This event is engagement or education.</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
       </div>
       {% if eventData['program'].isBonnerScholars %}
       <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkIsBonner"><strong>This event is for labor only</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsBonner" name="isBonnerScholars" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
+        <label class="custom-control-label" for="checkBonners"><strong>This event is for labor only</strong></label>
+        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkBonners" name="isBonnersChecked" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
       </div>
       {% endif %}
     </div>
@@ -290,7 +290,7 @@
 {% endif %}
 <div class="form-group mb-5">
   <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
-  <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple />
+  <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" />
 </div>
 
       {% if filepaths %}
