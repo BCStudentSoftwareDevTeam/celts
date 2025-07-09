@@ -321,7 +321,21 @@ function addRequirementsRowHandlers() {
     });
 
     // handle invalid and valid entries
-    $("#requirements input").keyup(function(e) {
+
+    // $("#requirements input").on("input blur",function(e) {
+    //     const inputValue = $(this).val().trim();
+    //     if (inputValue === "") {
+    //         this.setCustomValidity("Please enter a name.");
+    //         this.reportValidity();
+    //         $(".saveBtn").attr("disabled", "disabled");
+    //     } else {
+    //         this.setCustomValidity("");
+    //         this.reportValidity();
+    //         $(".saveBtn").removeAttr("disabled");
+    //     }
+    // });
+
+    $("#requirements input").on("input blur",function(e) {
         if($(this).val() == "") {
             this.setCustomValidity('Please enter a name.');
             this.reportValidity();
@@ -329,28 +343,30 @@ function addRequirementsRowHandlers() {
         } else {
             $(".saveBtn").removeAttr("disabled");
             this.setCustomValidity('');
-             $(".saveBtn").click(function(e) {
+            this.reportValidity();
+            $(document).off("click", ".saveBtn").on("click", ".saveBtn", function (e) {
                 saveRequirement(e);
                 console.log("1st button clicked?");
-             });
-        }
-    });
-    $("#requirement_save-new input").on("input blur", function(e) {
-        if($(this).val() == "") {
-            console.log("Input is empty");
-            this.setCustomValidity('Please enter a name.');
-            console.log(this);
-            this.reportValidity();
-            $(".saveBtn").attr("disabled", "disabled");
-        } else {
-            $(".saveBtn").removeAttr("disabled");
-            this.setCustomValidity('');
-            $(".saveBtn").click(function(e) {
-                saveRequirement(e);
-                console.log("Save button clicked?");
             });
         }
     });
+
+    // $("#requirement_save-new input").on("input blur", function(e) {
+    //     if($(this).val() == "") {
+    //         console.log("Input is empty");
+    //         this.setCustomValidity('Please enter a name.');
+    //         console.log(this);
+    //         this.reportValidity();
+    //         $(".saveBtn").attr("disabled", "disabled");
+    //     } else {
+    //         $(".saveBtn").removeAttr("disabled");
+    //         this.setCustomValidity('');
+    //         $(document).off("click", ".saveBtn").on("click", ".saveBtn", function (e) {
+    //             saveRequirement(e);
+    //             console.log("Save button clicked?");
+    //         });
+    //     }
+    // });
     $("#requirements input").focusout(function(e) {
         if($(this).val() == "") {
             $(this).addClass('invalid');
