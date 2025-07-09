@@ -149,27 +149,6 @@ $(document).ready(function(e){
 
     //Save Requirements handler
     
-   
-    $(".removebtn").click (function(e) {
-        let el = $(e.target)
-        let rowid=parseInt(el.data("id"));
-        $.ajax({
-            method : "POST",
-            url: "/deleteReq",
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify(rowid), 
-            success: function(response) {
-                // Removing a row
-                msgToast("Bonner", "Removing Bonner Requirement");
-                location.reload();
-            },
-            error: function(e) {
-                msgToast("Error", "Error Removing Requirement");
-                location.reload();
-            }
-        })   
-    })
 });
 
 /** End onready ****************************/
@@ -243,6 +222,27 @@ function addRequirementsRowHandlers() {
         }
     });
 
+    $(".removebtn").click (function(e) {
+        let el = $(e.target)
+        let rowid=parseInt(el.data("id"));
+        $.ajax({
+            method : "POST",
+            url: "/deleteReq",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(rowid), 
+            success: function(response) {
+                // Removing a row
+                msgToast("Bonner", "Removing Bonner Requirement");
+                location.reload();
+            },
+            error: function(e) {
+                msgToast("Error", "Error Removing Requirement");
+                location.reload();
+            }
+        })   
+    })
+
     // handle invalid and valid entries
     $(document).off("click", ".saveBtn").on("click", ".saveBtn", function (e) {
                 saveRequirement(e);
@@ -257,26 +257,9 @@ function addRequirementsRowHandlers() {
             $(".saveBtn").removeAttr("disabled");
             this.setCustomValidity('');
             this.reportValidity();
-                console.log("1st button clicked?");
         }
     });
 
-    // $("#requirement_save-new input").on("input blur", function(e) {
-    //     if($(this).val() == "") {
-    //         console.log("Input is empty");
-    //         this.setCustomValidity('Please enter a name.');
-    //         console.log(this);
-    //         this.reportValidity();
-    //         $(".saveBtn").attr("disabled", "disabled");
-    //     } else {
-    //         $(".saveBtn").removeAttr("disabled");
-    //         this.setCustomValidity('');
-    //         $(document).off("click", ".saveBtn").on("click", ".saveBtn", function (e) {
-    //             saveRequirement(e);
-    //             console.log("Save button clicked?");
-    //         });
-    //     }
-    // });
     $("#requirements input").focusout(function(e) {
         if($(this).val() == "") {
             $(this).addClass('invalid');
