@@ -559,6 +559,8 @@ $(document).ready(function () {
 
   $("#checkIsRepeating").change(function () {
     if ($(this).is(':checked')) {
+      $("#repeatingEventsNamePicker").val($("#inputEventName").val());
+      $("#repeatingEventsLocationPicker").val($("#inputEventLocation-main").val());
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
       $("#multipleOfferingSlots").children().remove();
