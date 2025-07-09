@@ -226,6 +226,7 @@ def viewUsersProfile(username):
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         return render_template ("/main/userProfile.html",
+                                username=username,
                                 programs = programs,
                                 programsInterested = programsInterested,
                                 upcomingEvents = upcomingEvents,
@@ -242,6 +243,7 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
+                                expressInterest = volunteer.minorInterest 
                             )
     abort(403)
 
@@ -583,7 +585,7 @@ def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
         data = request.get_json()
         isAdding = data.get("isAdding", False)
-        
+
         toggleMinorInterest(username, isAdding)
 
     else:
