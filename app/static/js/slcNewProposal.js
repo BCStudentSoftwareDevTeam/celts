@@ -301,24 +301,9 @@ function saveCourseData(url, successCallback) {
   });
 }
 
-function enableLiveCustomValidityClearing() {
-  const allSelectors = ["#courseInstructor", "#courseNameId"];
-  allSelectors.forEach(selector => {
-    $(selector).each(function () {
-      // Avoid rebinding listeners on already-bound elements
-      if (!$(this).data("has-clearing-listener")) {
-        $(this).on("input", function () {
-          this.setCustomValidity("");
-        });
-        $(this).data("has-clearing-listener", true); // flag it
-      }
-    });
-  });
-}
-
 function validateForm() {
   // This function ensures our form fields are valid
- enableLiveCustomValidityClearing();
+ enableLiveCustomValidityClearing(["#courseInstructor", "#courseNameId"]);
   if (readOnly())
     return true;
 

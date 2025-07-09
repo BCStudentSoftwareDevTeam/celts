@@ -152,7 +152,7 @@ function verifyRepeatingFields(){
   // verifies all fields in the repeating table are not empty.
   let repeatingFields = $(".repeatingEventsField");
   let isEmpty = false;
- enableLiveCustomValidityClearing();
+ enableLiveCustomValidityClearing([".repeatingEventsField"]);
 
   repeatingFields.each(function() {
     let value = $(this).val();
@@ -169,7 +169,7 @@ function verifyRepeatingFields(){
 
 $('#saveSeries').on('click', function(e) {
   e.preventDefault(); // Prevent default form submission at the start
-  enableLiveCustomValidityClearing()
+  enableLiveCustomValidityClearing([".multipleOfferingNameField"])
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
@@ -406,22 +406,6 @@ function formatDate(originalDate) {
   return month + " " + day + ", " + year;
 }
 
-function enableLiveCustomValidityClearing() {
-  const allSelectors = [".all", ".series", ".seriesWeekly", ".main", ".allV", ".repeatingEventsField", ".multipleOfferingNameField"];
-//Created the 
-  allSelectors.forEach(selector => {
-    $(selector).each(function () {
-      // Avoid rebinding listeners on already-bound elements
-      if (!$(this).data("has-clearing-listener")) {
-        $(this).on("input", function () {
-          this.setCustomValidity("");
-        });
-        $(this).data("has-clearing-listener", true); // flag it
-      }
-    });
-  });
-}
-
 function validateFieldGroup(selector, allFieldFilled, message="Please fill out the required field") {
   let isValid = allFieldFilled;
   
@@ -471,7 +455,7 @@ function checkValidation() {
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked");
   let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training';
   
-  enableLiveCustomValidityClearing();
+  enableLiveCustomValidityClearing([".all", ".series", ".seriesWeekly", ".main", ".allV"]);
 
   // Always validate common fields (.all class)
   allFieldFilled = validateFieldGroup(".all", allFieldFilled);

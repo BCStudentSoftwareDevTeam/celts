@@ -6,6 +6,20 @@ function flashMessageResponse(message) {
   return '';
 }
 
+function enableLiveCustomValidityClearing(selectors) {
+  selectors.forEach(selector => {
+    $(selector).each(function () {
+      // Avoid rebinding listeners on already-bound elements
+      if (!$(this).data("has-clearing-listener")) {
+        $(this).on("input", function () {
+          this.setCustomValidity("");
+        });
+        $(this).data("has-clearing-listener", true); // flag it
+      }
+    });
+  });
+}
+
 function msgFlash(flashMessage, status, timeout=2500, afterReload=false) {
     if (afterReload) {
       // Save message to sessionStorage for next page load
