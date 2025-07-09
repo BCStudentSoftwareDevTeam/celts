@@ -249,6 +249,7 @@ $(document).ready(function(){
   // Updates the Background check of a volunteer in the database
 
   $(".savebtn").click(function () {
+    msgFlash()
       enableLiveCustomValidityClearing([".passedBackgroundCheck"])
       $(this).prop("disabled", true);
       let bgCheckType = $(this).data("id")
@@ -291,10 +292,8 @@ $(document).ready(function(){
           data: data,
           success: function(s){
             var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-            msgFlash(`Successfully added background check`, "success", 1300)
-            setTimeout(function() {
+            msgFlash(`Successfully added background check`, "success", 1300,true)
             reloadWithAccordion("background")
-            }, 1500)
           },
           error: function(error, status){
               console.log(error, status)
