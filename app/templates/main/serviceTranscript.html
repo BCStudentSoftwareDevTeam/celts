@@ -22,7 +22,7 @@
       {% endif %}
       {% if programTitle != "Bonner Scholars" %}
         <div class="card-body">
-          <h5 class="card-title bg-light ps-2 pe-5 border-bottom">{{programTitle}}</h5>
+          <h5 class="card-title bg-light border-bottom">{{programTitle}}</h5>
           {% for item in allEventTranscript[program] %}
             {% if item[1] != None %}
               <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
@@ -39,8 +39,8 @@
   {% if totalHours["totalHours"] > 0%}
     
     {% if slCourses.exists() %}
-      <h2 class="m-3">Service-Learning Courses</h2>
-      <table class="table table-bordered table-striped m-3">
+      <h5 class="m-3 bg-light border-bottom">Service-Learning Courses</h5>
+      <table class="table table-bordered table-striped m-3" style="width: 97.5%;">
       <tr>
       <th>Course</th>
       <th>Term</th>
