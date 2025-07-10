@@ -20,6 +20,7 @@
       {% if not programTitle %}
         {% set programTitle = program %}
       {% endif %}
+      {% if programTitle != "Bonner Scholars" %}
         <div class="card-body">
           <h5 class="card-title bg-light ps-2 pe-5 border-bottom">{{programTitle}}</h5>
           {% for item in allEventTranscript[program] %}
@@ -32,6 +33,7 @@
             <a class="d-print-none" href="{{program.url}}" target="_blank" class="card-link">More Information</a>
           {% endif %}
         </div>
+      {% endif %}
     {% endfor %}
   {% endif %}
   {% if totalHours["totalHours"] > 0%}
