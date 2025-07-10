@@ -73,7 +73,7 @@ function saveRequirement(e) {
 
         success: function(ids) {
             msgToast("Bonner", "Updated Bonner Requirements");
-            location.reload();
+            // location.reload();
         },
         error: function(e) {
             msgToast("Error", "Error Saving Requirements");
