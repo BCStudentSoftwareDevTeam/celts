@@ -310,6 +310,7 @@
         {{ displayFiles(filepaths, 'Event Attachments', '/deleteEventFile', eventData.id)}}
       </div>
       {% endif %}
+        <input type="submit" class="btn btn-primary saveBtn" value="Save" style="width: 5rem;" />
     </div>
   </div>
   <div class="row justify-content-left mt-2">
@@ -328,11 +329,10 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="submit" class="btn btn-primary saveBtn" value="Save" />
       </div>
     </div>
   </div>
-  </div>
+</div>
 </form>
 <!-- Modal for Cancel Event -->
 <div class="modal fade" id="cancelWarning" tabindex="-1" aria-labelledby="cancelModel" aria-hidden="true">

@@ -694,27 +694,22 @@ function handleTimeFormatting(timeArray){
     setCharacterLimit(this, "#remainingCharacters");
   });
 
-  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
-});
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 
-
-  const $fixedEl = $('.saveBtn');
-  const $footer = $('.footer');
-
+  const fixedEl = $('.saveBtn');
+  const footer = $('.footer');
   function updatePosition() {
-    const footerTop = $footer.offset().top;
+    const footerTop = footer.offset().top;
     const windowHeight = $(window).height();
     const scrollY = $(window).scrollTop();
     const fixedBottomY = scrollY + windowHeight - 20;
-
-    if (fixedBottomY >= footerTop && $fixedEl.css('position') === 'fixed') {
-      $fixedEl.addClass('stopped');
-      $fixedEl.css('bottom', '6rem');
+    if (fixedBottomY >= footerTop && fixedEl.css('position') === 'fixed') {
+      fixedEl.addClass('stopped');
+      fixedEl.css('bottom', '6rem');
     } else {
-      $fixedEl.removeClass('stopped');
-      $fixedEl.css('bottom', '20px');
+      fixedEl.removeClass('stopped');
+      fixedEl.css('bottom', '20px');
     }
   }
-
   $(window).on('scroll resize load', updatePosition);
-
+});
