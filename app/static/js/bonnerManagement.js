@@ -42,6 +42,7 @@ function updateExportText(){
 
 function saveRequirement(e) {
     let el=$(e.target)
+    const url = "/saveRequirements/1"; 
     if (el.data("id")== "save-new") {
         $(".saveBtn").removeAttr("disabled");
         let row_el = $("#requirement_" + el.data("id"));
@@ -52,6 +53,7 @@ function saveRequirement(e) {
                                 'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                                 'frequency': row_el.find("select.frequency-select").val()
                             }}
+    console.log(row_data);
     }
     else {
         let rowid = parseInt(el.data("id"));
@@ -66,13 +68,14 @@ function saveRequirement(e) {
 }
     $.ajax({
         method: 'POST',
-        url: '/saveRequirements/1', // Bonner certification id hard-coded here
+        url: url,
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(row_data), 
 
         success: function(ids) {
             msgToast("Bonner", "Updated Bonner Requirements");
+            $("#reqAdd").removeAttr("disabled");
             // location.reload();
         },
         error: function(e) {
@@ -147,7 +150,7 @@ function addRequirement() {
     var table = $("#requirements");
     var newRow = table.find("tbody tr:last-child").clone();
     newRow.attr('id','requirement_save-new');
-    $(newRow).attr("data-id", "save-new");
+    newRow.attr("data-id", "save-new");
     newRow.find("input").val("");
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
     newRow.find("select.required-select option:last-child").attr('selected', true);
@@ -238,6 +241,7 @@ function addRequirementsRowHandlers() {
             this.setCustomValidity('Please enter a name.');
             this.reportValidity();
             $(".saveBtn").attr("disabled", "disabled");
+            $("#reqAdd").attr("disabled", "disabled");
         } else {
             $(".saveBtn").removeAttr("disabled");
             this.setCustomValidity('');
