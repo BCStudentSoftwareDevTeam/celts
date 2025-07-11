@@ -1,0 +1,146 @@
+{% set title = "Labor" %}
+{% set page_title = event.name %}
+{% set eventPast = event.isPastStart %}
+{% set tabName = 'manageLabor' %}
+{% extends "events/eventNav.html" %}
+
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/manageLabor.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
+{% endblock %}
+
+
+{% block styles %}
+
+
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.css"/>
+
+
+{% endblock %}
+
+
+{% block app_content %}
+{{super()}}
+
+
+{% from 'macros/trainingsHoverMacro.html' import trainingsHover %}
+
+
+<label class='d-none' id="eventLength">{{eventLength}}</label>
+<input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
+<div class="flex-container" style="padding: 5px;">
+  <div class='form-group d-flex row'>
+    <div class="col-6 px-1">
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addLaborModal" style="margin:5px;">Add Student Labor</a>
+      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/scannerentry" style="margin:5px;">Scanner Entry</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- #################### Attending Table #################### -->
+<h2 class="mt-4 mb-3">Labor Students</h2>
+<form method="post">
+  <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
+  <div>
+    <table class="table" id="trackLabortable" data-entry-count="{{ eventLaborData|length }}">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th class="noSort">Worked</th>
+          <th class="noSort">Remove Student</th>
+        </tr>
+      </thead>
+      <tbody class="align-middle" id="laborTable">
+        <!-- {% if eventLaborData %} -->
+          {% for participant in eventLaborData %}
+            <tr>
+              <td>
+                <input class="form-control" type='hidden' name="username" id="{{participant.user.username}}" value="{{participant.user}}" />
+                <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
+                {% if participant.user in bannedUsersForProgram %}
+                  <a href="#" data-bs-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                    <span class="bi bi-x-circle-fill text-danger"></span>
+                  </a>
+                {% endif %}
+              </td>
+              <td>{{participant.user.email}}</td>
+              <td>{{participant.user.phoneNumber}}</td>
+              <td style="text-align:center">
+                
+                <input type="checkbox" id = "workedCheckbox_{{participant.user.username}}" class='attendanceCheck'
+                  name="checkbox_{{participant.user.username}}"
+                  {% if participant.didWork %} 
+                  checked
+                  {% endif %} />
+
+                  
+              </td>
+              <td style="text-align:center">
+                <button type="button" class="removeLabor btn btn-danger btn-sm"
+                  id="{{participant.user.username}}" aria-label="remove labor">
+                  <span class="bi bi-trash h5 align-middle"></span>
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        <!-- {% endif %} -->
+      </tbody>
+    </table>
+      <div class="row">
+        <div class="col"></div>
+        <button type="submit" class="btn btn-primary float-end nowrap col-auto mx-3">Save</button>
+      </div>
+  </div>
+</form>
+
+
+<!-- #################  Modal  ################# -->
+<div class="modal fade float-start" id="addLaborModal" tabindex="-1" aria-labelledby="addLaborModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Student Labor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+            <input type="input" id="addLaborInput" class="form-control" placeholder="Search" autocomplete="off"/>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm">
+            <i class="bi bi-search ms-0"></i>
+          </button>
+        </div>
+        <ul class="list-unstyled mx-3 mt-2" id= "addLaborList">
+          {% if event.isRepeating and not event.isFirstRepeatingEvent%}
+            {% if repeatingLabor %}
+              {%for participant in repeatingLabor%}
+                <li>
+                  <input class="repeatingLabor" type="checkbox" id ="repeatingLaborCheckbox_{{loop.index}}" name="labor[]" value= {{participant}} />
+                  <label class="form-check-label" for="repeatingLaborCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                  <label class="text-dark" data-toggle="previousLaborHover">*</label>
+                </li>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+        {% if event.isRepeating and repeatingLabor and not event.isFirstRepeatingEvent  %}
+        <button type="button" id = "selectAllLabor" class="btn btn-primary" >Select All</button>
+        {% endif %}
+        <button id="addLaborButton" type="button" class="btn btn-success" disabled>Add Students</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
