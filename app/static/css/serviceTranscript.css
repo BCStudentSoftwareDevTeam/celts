@@ -1,0 +1,438 @@
+@media print {
+    @page {
+        size: letter;
+        margin: 0.2in 0.3in 0.2in 0.3in;
+    }
+
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    background-color: yellow !important;
+  }
+
+  .container-fluid {
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Hide print button and other non-essential elements */
+  .d-print-none {
+    display: none !important;
+  }
+
+  .d-print-flex {
+    display: flex !important;
+  }
+
+  .d-print-block {
+    display: block !important;
+  }
+
+  /* Header layout to match the web view */
+  .print-header-layout {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+    flex-wrap: nowrap;
+  }
+
+  /* CELTS logo positioning */
+  .print-header-layout .celts-logo {
+    flex: 0 0 auto;
+  }
+
+  .print-header-layout .celts-logo-img {
+    max-width: 150px;
+    height: auto;
+  }
+
+  /* Personal info section - centered styling */
+  .print-header-layout .personal-info {
+    flex: 1;
+    text-align: center;
+  }
+
+  .print-header-layout .personal-info h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4285f4;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .print-header-layout .personal-info h4 {
+    font-size: 18px;
+    color: #4285f4;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .print-header-layout .personal-info small {
+    font-size: 12px;
+    color: #666;
+  }
+
+  /* Hide print button in print view */
+  .print-button {
+    display: none !important;
+  }
+
+  /* Card styling for print */
+  .card {
+    border: 1px solid #ddd;
+    margin-bottom: 1.5rem;
+    page-break-inside: avoid;
+  }
+
+  .card-header {
+    padding: 0.75rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .card-header.bg-primary {
+    background-color: #4285f4 !important;
+    color: white !important;
+  }
+
+  .card-header.bg-light {
+    background-color: #f8f9fa !important;
+  }
+
+  .card-header h5 {
+    margin: 0 0 0.25rem 0;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .card-header small {
+    font-size: 11px;
+    opacity: 0.9;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  /* Table styling */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .table td {
+    font-size: 11px;
+  }
+
+  .table-bordered th,
+  .table-bordered td {
+    border: 1px solid #ddd;
+  }
+
+  .table-light th {
+    background-color: #f8f9fa;
+  }
+
+  /* Volunteer details section styling */
+  .text-primary {
+    color: #4285f4 !important;
+  }
+
+  .fw-bold {
+    font-weight: bold !important;
+  }
+
+  .text-muted {
+    color: #666 !important;
+  }
+
+  .small {
+    font-size: 11px;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1.5rem;
+  }
+
+  .py-4 {
+    padding: 1.5rem 0;
+  }
+
+  /* Service learning courses specific styling */
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Footer styling */
+  .footer-section {
+    margin-top: 2rem;
+    page-break-inside: avoid;
+  }
+
+  .footer-logo-container {
+    text-align: center;
+  }
+
+  .footer-logo {
+    width: 232px;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .border-top {
+    border-top: 1px solid #ddd !important;
+  }
+
+  .mt-5 {
+    margin-top: 3rem !important;
+  }
+
+  .pt-4 {
+    padding-top: 1.5rem !important;
+  }
+
+  /* Hide contact info in print */
+  .footer-contact {
+    display: none;
+  }
+}@media print {
+  @page {
+    size: letter;
+    margin: 0.2in 0.3in 0.2in 0.3in;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container-fluid {
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Hide print button and other non-essential elements */
+  .d-print-none {
+    display: none !important;
+  }
+
+  .d-print-flex {
+    display: flex !important;
+  }
+
+  .d-print-block {
+    display: block !important;
+  }
+
+  /* Header layout to match the web view */
+  .print-header-layout {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+    flex-wrap: nowrap;
+  }
+
+  /* CELTS logo positioning */
+  .print-header-layout .celts-logo {
+    flex: 0 0 auto;
+  }
+
+  .print-header-layout .celts-logo-img {
+    max-width: 150px;
+    height: auto;
+  }
+
+  /* Personal info section - centered styling */
+  .print-header-layout .personal-info {
+    flex: 1;
+    text-align: center;
+  }
+
+  .print-header-layout .personal-info h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4285f4;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .print-header-layout .personal-info h4 {
+    font-size: 18px;
+    color: #4285f4;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .print-header-layout .personal-info small {
+    font-size: 12px;
+    color: #666;
+  }
+
+  /* Hide print button in print view */
+  .print-button {
+    display: none !important;
+  }
+
+  /* Card styling for print */
+  .card {
+    border: 1px solid #ddd;
+    margin-bottom: 1.5rem;
+    page-break-inside: avoid;
+  }
+
+  .card-header {
+    padding: 0.75rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .card-header.bg-primary {
+    background-color: #4285f4 !important;
+    color: white !important;
+  }
+
+  .card-header.bg-light {
+    background-color: #f8f9fa !important;
+  }
+
+  .card-header h5 {
+    margin: 0 0 0.25rem 0;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .card-header small {
+    font-size: 11px;
+    opacity: 0.9;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  /* Table styling */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .table td {
+    font-size: 11px;
+  }
+
+  .table-bordered th,
+  .table-bordered td {
+    border: 1px solid #ddd;
+  }
+
+  .table-light th {
+    background-color: #f8f9fa;
+  }
+
+  /* Volunteer details section styling */
+  .text-primary {
+    color: #4285f4 !important;
+  }
+
+  .fw-bold {
+    font-weight: bold !important;
+  }
+
+  .text-muted {
+    color: #666 !important;
+  }
+
+  .small {
+    font-size: 11px;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1.5rem;
+  }
+
+  .py-4 {
+    padding: 1.5rem 0;
+  }
+
+  /* Service learning courses specific styling */
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Footer styling */
+  .footer-section {
+    margin-top: 2rem;
+    page-break-inside: avoid;
+  }
+
+  .footer-logo-container {
+    text-align: center;
+  }
+
+  .footer-logo {
+    width: 232px;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .border-top {
+    border-top: 1px solid #ddd !important;
+  }
+
+  .mt-5 {
+    margin-top: 3rem !important;
+  }
+
+  .pt-4 {
+    padding-top: 1.5rem !important;
+  }
+
+  /* Hide contact info in print */
+  .footer-contact {
+    display: none;
+  }
+}
