@@ -68,6 +68,7 @@ pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
 pem add app.models.eventRsvpLog.EventRsvpLog
 pem add app.models.celtsLabor.CeltsLabor
+pem add app.models.eventLabor.EventLabor
 pem add app.models.cceMinorProposal.CCEMinorProposal
 pem add app.models.individualRequirement.IndividualRequirement
 pem add app.models.eventCohort.EventCohort
