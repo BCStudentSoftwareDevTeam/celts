@@ -70,7 +70,7 @@ def test_getGraduationManagementUsers():
         ProfileNote.delete().execute()
         Note.delete().execute()
         ActivityLog.delete().execute()
-        EventLabor.delete().execute()
+        # EventLabor.delete().execute()
         User.delete().execute()
 
         testUser1 = User.create(username = 'usrtst1',

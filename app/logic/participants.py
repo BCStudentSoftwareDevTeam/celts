@@ -123,12 +123,12 @@ def unattendedRequiredEvents(program, user):
         return []
 
 
-def getEventParticipants(event):
-    eventParticipants = (EventParticipant.select(EventParticipant, User)
+def getEventVolunteers(event):
+    eventVolunteers = (EventParticipant.select(EventParticipant, User)
                                          .join(User)
-                                         .where(EventParticipant.event == event))
+                                         .where(EventParticipant.event == event and EventParticipant.isLabor == False))
 
-    return [p for p in eventParticipants]
+    return [p for p in eventVolunteers]
 
 def getParticipationStatusForTrainings(program, userList, term):
     """
@@ -178,23 +178,23 @@ def sortParticipantsByStatus(event):
     a list of participants who attended, and a list of all participants who have some status for the 
     event.
     """
-    eventParticipants = getEventParticipants(event)
+    eventVolunteers = getEventVolunteers(event)
 
     # get all RSVPs for event and filter out those that did not attend into separate list
     eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventParticipants]
+    eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventVolunteers]
 
     if event.isPastStart:
-        eventVolunteerData = eventParticipants
-        
+        eventVolunteerData = eventVolunteers
+
         # if the event date has passed disregard the waitlist
         eventWaitlistData = []
     else:
         # if rsvp is required for the event, grab all volunteers that are in the waitlist
-        eventWaitlistData = [volunteer for volunteer in (eventParticipants + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+        eventWaitlistData = [volunteer for volunteer in (eventVolunteers + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
         
         # put the rest of the users that are not on the waitlist into the volunteer data
         eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
     
-    return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants
+    return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers

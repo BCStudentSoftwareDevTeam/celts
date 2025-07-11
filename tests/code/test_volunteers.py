@@ -2,7 +2,7 @@ import pytest
 from flask import g
 from werkzeug.datastructures import ImmutableMultiDict
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
+from app.logic.volunteers import getEventLengthInHours, updateEventVolunteers, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.models import mainDB
 from app.models.backgroundCheck import BackgroundCheck
@@ -49,17 +49,17 @@ def test_getEventLengthInHours():
         eventLength = getEventLengthInHours(startTime, endTime, eventDate)
 
 @pytest.mark.integration
-def test_updateEventParticipants():
+def test_updateEventVolunteers():
     with mainDB.atomic() as transaction:
         # event does not exist
         participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':100, 'username': 'agliullovak'})
         with pytest.raises(Exception, match="Event does not exist."):
-            volunteerTableUpdate = updateEventParticipants(participantData)
+            volunteerTableUpdate = updateEventVolunteers(participantData)
             assert volunteerTableUpdate == False
 
         # update record if user is marked as present and user record exists in event participant table
         participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
-        volunteerTableUpdate = updateEventParticipants(participantData)
+        volunteerTableUpdate = updateEventVolunteers(participantData)
         assert volunteerTableUpdate == True
 
         eventParticipant = EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
@@ -72,7 +72,7 @@ def test_updateEventParticipants():
 
         # add two users with hours
         participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz'), ('inputHours_neillz', 75), ('checkbox_neillz', "on")])
-        volunteerTableUpdate = updateEventParticipants(participantData)
+        volunteerTableUpdate = updateEventVolunteers(participantData)
         assert volunteerTableUpdate == True
 
         # check that users were added
@@ -83,7 +83,7 @@ def test_updateEventParticipants():
 
         # remove neillz, partont unchanged
         participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz')])
-        volunteerTableUpdate = updateEventParticipants(participantData)
+        volunteerTableUpdate = updateEventVolunteers(participantData)
         assert volunteerTableUpdate == True
 
         # check that neillz was removed and partont remained the same
@@ -98,7 +98,7 @@ def test_updateEventParticipants():
 
         # delete user from event participant table if user is marked absent and they have a record in the table
         participantData = ImmutableMultiDict({'event':3, 'username': 'agliullovak'})
-        volunteerTableUpdate = updateEventParticipants(participantData)
+        volunteerTableUpdate = updateEventVolunteers(participantData)
         assert volunteerTableUpdate == True
 
         with pytest.raises(DoesNotExist):

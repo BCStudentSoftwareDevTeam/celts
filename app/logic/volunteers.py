@@ -21,7 +21,7 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     return eventLengthInHours
 
 
-def updateEventParticipants(participantData):
+def updateEventVolunteers(participantData):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 

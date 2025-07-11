@@ -1,6 +1,6 @@
 from app.models.user import User
 from app.models.event import Event
-from app.models.eventLabor import EventLabor
+from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 
 def updateEventLabor(participantData):
@@ -18,18 +18,18 @@ def updateEventLabor(participantData):
         if not userObject:
             continue
 
-        eventLabor = EventLabor.get_or_none(user=userObject, event=event)
+        eventLabor = EventParticipant.get_or_none(user=userObject, event=event)
         checkbox_value = participantData.get(f'checkbox_{username}', 'off')
         didWork = checkbox_value == "on"
 
         if eventLabor:
-            (EventLabor.update({
-                EventLabor.didWork: didWork
+            (EventParticipant.update({
+                EventParticipant.didWork: didWork
             })
-            .where(EventLabor.event == event.id, EventLabor.user == userObject.username)
+            .where(EventParticipant.event == event.id, EventParticipant.user == userObject.username)
             .execute())
         else:
-            EventLabor.create(
+            EventParticipant.create(
                 user=userObject,
                 event=event,
                 didWork=didWork
@@ -38,9 +38,9 @@ def updateEventLabor(participantData):
     return True
 
 def getLaborStudents(event):
-    eventLabor = (EventLabor.select(EventLabor, User)
+    eventLabor = (EventParticipant.select(EventParticipant, User)
                                          .join(User)
-                                         .where(EventLabor.event == event))
+                                         .where(EventParticipant.event == event and EventParticipant.isLabor == True))
 
     return [p for p in eventLabor]
 
@@ -55,7 +55,7 @@ def sortLabor(event):
     return eventLaborData, eventLabor
 
 def checkUserLabor(user,  event):
-    return EventLabor.select().where(EventLabor.user == user, EventLabor.event == event).exists()
+    return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == True).exists()
 
 
 def addStudentLaborToEvent(user, event):
@@ -69,7 +69,7 @@ def addStudentLaborToEvent(user, event):
     try:
         LaborExists = checkUserLabor(user, event)
         if not LaborExists:
-            EventLabor.create(user=user, event=event, didWork=False)
+            EventParticipant.create(user=user, event=event, didWork=False, isLabor=True)
         if LaborExists:
             return "already in"
     except Exception as e:
@@ -96,6 +96,6 @@ def addBnumberAsLabor(bnumber, eventId):
 
     else:
         userStatus = "success"
-        EventLabor.create(user=kioskUser, event=event, didWork=False)
+        EventParticipant.create(user=kioskUser, event=event, didWork=False)
 
     return kioskUser, userStatus

@@ -1258,101 +1258,119 @@ eventParticipants = [
     {
         "user": "neillz",
         "event": 1,
-        "hoursEarned": 2
+        "hoursEarned": 2,
+        "didWork": True,
+        "isLabor": False
     },
     {
         "user": "khatts",
         "event": 1,
-        "hoursEarned": 2
+        "hoursEarned": 2,
+        "didWork": True,
+        "isLabor": False
     },
     {
         "user": "neillz",
         "event": 2,
-        "hoursEarned": 2
+        "hoursEarned": 0,
+        "didWork": False,
+        "isLabor": True
     },
     {
         "user": "bryanta",
         "event": 5,
-        "hoursEarned": 0
+        "hoursEarned": 8,
+        "didWork": True,
+        "isLabor": False
     },
     {
         "user": "khatts",
-        "event": 3,
-        "hoursEarned": 3,
+        "event": 2,
+        "hoursEarned": 0,
+        "didWork": False,
+        "isLabor": True
     },
     {
-        "user" : "ayisie",
-        "event" : 1,
-        "hoursEarned" : None,
+        "user": "ayisie",
+        "event": 1,
+        "hoursEarned": 0,
+        "didWork": False,
+        "isLabor": True
     },
     {
         "user": "partont",
         "event": 2,
-        "hoursEarned": 5
+        "hoursEarned": 0,
+        "didWork": False,
+        "isLabor": True
     },
     {
         "user": "khatts",
         "event": 6,
         "hoursEarned": 3,
+        "didWork": True,
+        "isLabor": False
     },
     {
         "user": "khatts",
-        "event": 10,
-        "hoursEarned": 3,
+        "event": 3,
+        "hoursEarned": 0,
+        "didWork": False,
+        "isLabor": True
     }
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
 
-eventLabor = [
-    {
-        "user": "neillz",
-        "event": 1,
-        "didWork": True
-    },
-    {
-        "user": "khatts",
-        "event": 1,
-        "didWork": True
-    },
-    {
-        "user": "neillz",
-        "event": 2,
-        "didWork": False
-    },
-    {
-        "user": "bryanta",
-        "event": 5,
-        "didWork": False
-    },
-    {
-        "user": "khatts",
-        "event": 3,
-        "didWork": True
-    },
-    {
-        "user": "ayisie",
-        "event": 1,
-        "didWork": False
-    },
-    {
-        "user": "partont",
-        "event": 2,
-        "didWork": True
-    },
-    {
-        "user": "khatts",
-        "event": 6,
-        "didWork": True
-    },
-    {
-        "user": "khatts",
-        "event": 10,
-        "didWork": False
-    }
-]
+# eventLabor = [
+#     {
+#         "user": "neillz",
+#         "event": 1,
+#         "didWork": True
+#     },
+#     {
+#         "user": "khatts",
+#         "event": 1,
+#         "didWork": True
+#     },
+#     {
+#         "user": "neillz",
+#         "event": 2,
+#         "didWork": False
+#     },
+#     {
+#         "user": "bryanta",
+#         "event": 5,
+#         "didWork": False
+#     },
+#     {
+#         "user": "khatts",
+#         "event": 3,
+#         "didWork": True
+#     },
+#     {
+#         "user": "ayisie",
+#         "event": 1,
+#         "didWork": False
+#     },
+#     {
+#         "user": "partont",
+#         "event": 2,
+#         "didWork": True
+#     },
+#     {
+#         "user": "khatts",
+#         "event": 6,
+#         "didWork": True
+#     },
+#     {
+#         "user": "khatts",
+#         "event": 10,
+#         "didWork": False
+#     }
+# ]
 
-EventLabor.insert_many(eventLabor).on_conflict_replace().execute()
+# EventLabor.insert_many(eventLabor).on_conflict_replace().execute()
 
 
 eventRsvp =  [

@@ -745,7 +745,7 @@ def removeLaborFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
     if g.current_user.isAdmin:
-        (EventLabor.delete().where(EventLabor.user==user, EventLabor.event==eventID)).execute()
+        (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
         flash("Student successfully removed", "success")
     return ""
 

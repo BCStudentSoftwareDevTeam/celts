@@ -10,7 +10,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
+from app.logic.volunteers import updateEventVolunteers, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
 from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
@@ -31,7 +31,7 @@ def manageVolunteersPage(eventID):
     Controller that handles POST and GET requests regarding the Manage Volunteers page.
 
     POST: updates the event participants for a particular event by calling 
-    updateEventParticipants on the form.
+    updateEventVolunteers on the form.
 
     GET: retrieves all necessary participant lists and dictionaries and categorizes
     the participants/volunteers into their respective participation statuses. Then 
@@ -45,9 +45,9 @@ def manageVolunteersPage(eventID):
 
     # ------------ POST request ------------
     if request.method == "POST":
-        volunteerUpdated = updateEventParticipants(request.form)
+        volunteerUpdated = updateEventVolunteers(request.form)
 
-        # error handling depending on the boolean returned from updateEventParticipants
+        # error handling depending on the boolean returned from updateEventVolunteers
         if volunteerUpdated:
             flash("Volunteer table succesfully updated", "success")
         else:
@@ -64,9 +64,9 @@ def manageVolunteersPage(eventID):
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
   
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
-        
-        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipantsByStatus(event)
+
+        allRelevantUsers = list(set(participant.user for participant in (eventVolunteers + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
         # ----------- Get miscellaneous data -----------
 
         participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
