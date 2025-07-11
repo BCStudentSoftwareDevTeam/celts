@@ -1,26 +1,7 @@
 from app.models.user import User
 from app.models.event import Event
-from app.models.eventRsvp import EventRsvp
-from app.models.program import Program
-from app.models.backgroundCheck import BackgroundCheck
-from app.models.programManager import ProgramManager
-from datetime import datetime, date
-from app.logic.createLogs import createActivityLog
 from app.models.eventLabor import EventLabor
 from app.logic.users import isEligibleForProgram
-
-def getEventLengthInHours(startTime, endTime, eventDate):
-    """
-    Converts the event length hours into decimal
-    parameters: startTime- start time event (type: time)
-                endTime- end time event (type: time)
-                eventDate- date of the event (type: datetime)
-    """
-    #can only subtract datetime objects, not time objects. So convert time into datetime
-    eventLength = datetime.combine(eventDate, endTime) - datetime.combine(eventDate, startTime)
-    eventLengthInHours = round(eventLength.seconds/3600, 2)
-    return eventLengthInHours
-
 
 def updateEventLabor(participantData):
     """
@@ -55,53 +36,6 @@ def updateEventLabor(participantData):
             )
 
     return True
-
-def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
-    """
-    Changes the status of a users background check depending on what was marked
-    on their volunteer profile.
-    """
-    today = date.today()
-    user = User.get_by_id(user)
-    if bgStatus == '' and dateCompleted == '':
-        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
-    else:
-        if not dateCompleted:
-            dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
-        if bgStatus == 'Submitted':
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
-        elif bgStatus == 'Passed':
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
-        else:
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
-
-def deleteUserBackgroundCheck(bgCheckId, user):
-    """
-    Deletes the user's background check by marking it as deleted with a timestamp and user information.
-    """
-    bgCheck = BackgroundCheck.get_or_none(BackgroundCheck.id == bgCheckId)
-
-    if bgCheck:
-        (BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: user})
-                         .where(BackgroundCheck.id == bgCheck.id)
-                         .execute())
-
-def setProgramManager(username, program_id, action):
-    '''
-    Assigns or removes a user as a student manager for a program.
-
-    param: username - a string
-           program_id - id
-           action: add, remove
-
-    '''
-    programManager = User.get(User.username==username)
-    if action == "add":
-        programManager.addProgramManager(program_id)
-    elif action == "remove":
-        programManager.removeProgramManager(program_id)
-
 
 def getLaborStudents(event):
     eventLabor = (EventLabor.select(EventLabor, User)

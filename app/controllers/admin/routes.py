@@ -44,19 +44,10 @@ from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
 from app.logic.users import isBannedFromEvent
 
-from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
 from peewee import DoesNotExist, JOIN
-from datetime import datetime
-from playhouse.shortcuts import model_to_dict
-from app.controllers.admin import admin_bp
-from app.models.event import Event
-from app.models.program import Program
-from app.models.user import User
-from app.logic.searchUsers import searchUsers
-from app.logic.manageLabor import updateEventLabor, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck, getLaborStudents, sortLabor, addStudentLaborToEvent
-from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
+from app.logic.manageLabor import updateEventLabor, getLaborStudents, sortLabor, addStudentLaborToEvent
+from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
-from app.models.backgroundCheck import BackgroundCheck
 from app.logic.users import getBannedUsers
 
 @admin_bp.route('/admin/reports')
