@@ -21,7 +21,6 @@ from app.models.programManager import ProgramManager
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
 from app.models.activityLog import ActivityLog
-from app.models.eventLabor import EventLabor
 
 @pytest.mark.integration
 def test_setGraduationStatus():
@@ -70,7 +69,6 @@ def test_getGraduationManagementUsers():
         ProfileNote.delete().execute()
         Note.delete().execute()
         ActivityLog.delete().execute()
-        EventLabor.delete().execute()
         User.delete().execute()
 
         testUser1 = User.create(username = 'usrtst1',

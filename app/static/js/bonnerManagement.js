@@ -76,6 +76,7 @@ $(document).ready(function(){
         } else {
             fileName = `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`;
         }
+
         $.ajax({
             url: url,
             method: "GET",
