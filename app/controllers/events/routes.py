@@ -11,8 +11,6 @@ from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
-from app.logic.manageLabor import addBnumberAsLabor
-
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
 def loadKiosk(eventid):
@@ -24,8 +22,6 @@ def loadKiosk(eventid):
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def kioskSignin():
-    isLabor = request.form.get("isitlabor") == "1"
-
     """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
@@ -43,10 +39,7 @@ def kioskSignin():
         elif bnumber[0].upper() != "B":
             return "", 500
     try:
-        if isLabor:
-            kioskUser, userStatus = addBnumberAsLabor(bnumber, eventid)
-        else:
-            kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid)
+        kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid)
         if kioskUser:
             return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus}
         else:

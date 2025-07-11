@@ -27,7 +27,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
-from app.models.eventLabor import EventLabor
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
@@ -42,22 +41,7 @@ from app.logic.serviceLearningCourses import parseUploadedFile, saveCoursePartic
 
 from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
-from app.logic.users import isBannedFromEvent
 
-from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify, session
-from peewee import DoesNotExist, JOIN
-from datetime import datetime
-from playhouse.shortcuts import model_to_dict
-from app.controllers.admin import admin_bp
-from app.models.event import Event
-from app.models.program import Program
-from app.models.user import User
-from app.logic.searchUsers import searchUsers
-from app.logic.manageLabor import updateEventLabor, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck, getLaborStudents, sortLabor, addStudentLaborToEvent
-from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
-from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
-from app.models.backgroundCheck import BackgroundCheck
-from app.logic.users import getBannedUsers
 
 @admin_bp.route('/admin/reports')
 def reports():
@@ -703,113 +687,3 @@ def displayEventFile():
     isChecked = fileData.get('checked') == 'true'
     eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
-
-
-
-@admin_bp.route('/event/<eventID>/manage_labor', methods=['GET', 'POST'])
-def manageLaborPage(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}", e)
-        abort(404)
-
-    if request.method == "POST":
-        laborUpdated = updateEventLabor(request.form)
-
-        # error handling depending on the boolean returned from updateEventLabor
-        if laborUpdated:
-            flash("Labor table succesfully updated", "success")
-        else:
-            flash("Error adding labor", "danger")
-        return redirect(url_for("admin.manageLaborPage", eventID=eventID))
-   
-    # ------------ GET request ------------
-    elif request.method == "GET":
-        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
-            abort(403)
-
-        # ------- Grab the different lists of participants -------
-
-        bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
- 
-        eventLaborData, eventLabor = sortLabor(event)
-
-        allRelevantUsers = list(set(participant.user for participant in (eventLabor + eventLaborData)))
-        # ----------- Get miscellaneous data -----------
-        eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-        repeatingLabors = getPreviousSeriesEventData(event.seriesId)
-
-    return render_template("/events/manageLabor.html",
-        eventLaborData = eventLaborData,
-        eventLabor = eventLabor,
-        eventLength = eventLengthInHours,
-        event = event,
-        repeatingLabors = repeatingLabors,
-        bannedUsersForProgram = bannedUsersForProgram,)
-
-
-@admin_bp.route('/removeLaborFromEvent', methods = ['POST'])
-def removeLaborFromEvent():
-    user = request.form.get('username')
-    eventID = request.form.get('eventId')
-    if g.current_user.isAdmin:
-        (EventLabor.delete().where(EventLabor.user==user, EventLabor.event==eventID)).execute()
-        flash("Student successfully removed", "success")
-    return ""
-
-@admin_bp.route('/addLaborToEvent/<eventId>', methods = ['POST'])
-def addLaborToEvent(eventId):
-    event = Event.get_by_id(eventId)
-    successfullyAddedLabor = False
-    usernameList = request.form.getlist("selectedLabor[]")
-    alreadyAddedList = []
-    addedSuccessfullyList = []
-    errorList = []
-    
-    for user in usernameList:
-        userObj = User.get_by_id(user)
-        successfullyAddedLabor = addStudentLaborToEvent(userObj, event)
-        if successfullyAddedLabor == "already in":
-            alreadyAddedList.append(userObj.fullName)
-        else:
-            if successfullyAddedLabor:
-                addedSuccessfullyList.append(userObj.fullName)
-            else:
-                errorList.append(userObj.fullName)
-
-
-    studentLabor = ""
-    if alreadyAddedList:
-        studentLabor = ", ".join(vol for vol in alreadyAddedList)
-        flash(f"{studentLabor} was already added to this event.", "warning")
-
-    if addedSuccessfullyList:
-        studentLabor = ", ".join(vol for vol in addedSuccessfullyList)
-        flash(f"{studentLabor} added successfully.", "success")
-
-    if errorList:
-        studentLabor = ", ".join(vol for vol in errorList)
-        flash(f"Error when adding {studentLabor} to event.", "danger")
-
-    if 'ajax' in request.form and request.form['ajax']:
-        return ''
-
-    return redirect(url_for('admin.manageLaborPage', eventID = eventId))
-
-@admin_bp.route("/event/<int:event_id>/scannerentry", methods=["GET", "POST"])
-def eventKioskStatus(event_id):
-    referer = request.referrer
-    is_labor = False
-
-    if referer and "manage_labor" in referer:
-        is_labor = True
-    elif referer and "manage_volunteers" in referer:
-        is_labor = False
-
-    event = Event.get_by_id(event_id)
-    return render_template("/events/eventKiosk.html", is_labor=is_labor, event=event)
-
-@admin_bp.route('/addLaborToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
-def isLaborBanned(username, eventId):
-    return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
