@@ -26,6 +26,7 @@ class User(baseModel):
 
         self._pmCache = {}
         self._bsCache = None
+        self._isProgramManagerCache = None
     
     @property
     def processedClassLevel(self):

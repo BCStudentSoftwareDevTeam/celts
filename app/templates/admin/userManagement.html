@@ -22,6 +22,35 @@
     <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
   </div>
 {% endmacro %}
+{% macro programCard(program, loop_index, show_edit_managers=False) %}
+<div class="d-flex justify-content-between align-items-center mb-3 w-100 p-3 border rounded">
+  <div class="flex-grow-1 text-start">
+    <span class="form-label borderless fs-5">{{ program.programName }}</span>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-success btn-sm editDetails" 
+            role="button" 
+            id="programManagementButton{{ loop_index }}"  
+            loop-index="{{ loop_index }}"
+            data-programid="{{program.id}}">
+        <span style="display: none;" id="editDetailsButtonSpinner{{ loop_index }}">
+          Edit Details
+        </span>
+        <span id="editDetailsButtonText{{ loop_index }}">Edit Details</span>
+    </button>
+    {% if show_edit_managers %}
+    <button class ="btn btn-success btn-sm editProgramManagersButton"
+            data-bs-toggle="modal" 
+            data-bs-target="#editProgramManagers"
+            data-managers="{{program.managers}}"
+            data-programid="{{program.id}}"
+            data-name="{{program.programName}}">
+      Edit Managers
+    </button>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
 {% if g.current_user.isCeltsAdmin %}
 <h1 class="text-center mb-5">Admin Management</h1>
 <div class="accordion" id="adminManagement">
@@ -136,32 +165,7 @@
           </div>
   
           {% for program in programs %}
-          <div class="d-flex justify-content-between align-items-center mb-2 w-50 ps-3">
-            <div class="flex-grow-1 text-start">
-              <span class="form-label borderless">{{ program.programName }}</span>
-            </div>
-            <div>
-              <button class="btn btn-success  btn-sm d-inline editDetails" 
-                      role="button" 
-                      id="programManagementButton{{ loop.index }}"  
-                      loop-index="{{ loop.index }}"
-                      data-programid="{{program.id}}"
-                      >
-                  <span  style="display: none;" id="editDetailsButtonSpinner{{ loop.index }}">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span class="sr-only">Loading...</span>  
-                  </span>
-                  <span id="editDetailsButtonText{{ loop.index }}">Edit Details</span>
-                </button>
-              <button class ="btn btn-success btn-sm editProgramManagersButton"
-                      data-bs-toggle="modal" 
-                      data-bs-target="#editProgramManagers"
-                      data-managers="{{program.managers}}"
-                      data-programid="{{program.id}}"
-                      data-name="{{program.programName}}"
-                      > Edit Managers </button>
-            </div>
-          </div>
+          {{ programCard(program, loop.index, true) }}
           {% endfor %}
         </div>
       </div>
@@ -177,23 +181,7 @@
       <div class="d-flex flex-column align-items-center">
 
         {% for program in programs %}
-        <div class="d-flex justify-content-between align-items-center mb-3 w-100 p-3 border rounded">
-          <div class="flex-grow-1 text-start">
-            <span class="form-label borderless fs-5">{{ program.programName }}</span>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-success btn-sm editDetails" 
-                    role="button" 
-                    id="programManagementButton{{ loop.index }}"  
-                    loop-index="{{ loop.index }}"
-                    data-programid="{{program.id}}">
-                <span style="display: none;" id="editDetailsButtonSpinner{{ loop.index }}">
-                  Edit Details
-                </span>
-                <span id="editDetailsButtonText{{ loop.index }}">Edit Details</span>
-            </button>
-          </div>
-        </div>
+        {{ programCard(program, loop.index) }}
         {% endfor %}
       </div>
     </div>
