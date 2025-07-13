@@ -1,438 +1,274 @@
+/* CRITICAL: This CSS must be loaded AFTER all other stylesheets */
+/* Place this in a separate file or at the very end of your existing CSS */
+
 @media print {
-    @page {
-        size: letter;
-        margin: 0.2in 0.3in 0.2in 0.3in;
-    }
-
-  body {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    margin: 0;
-    padding: 0;
-    background-color: yellow !important;
-  }
-
-  .container-fluid {
-    padding: 0;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  /* Hide print button and other non-essential elements */
-  .d-print-none {
-    display: none !important;
-  }
-
-  .d-print-flex {
-    display: flex !important;
-  }
-
-  .d-print-block {
-    display: block !important;
-  }
-
-  /* Header layout to match the web view */
-  .print-header-layout {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem 0;
-    flex-wrap: nowrap;
-  }
-
-  /* CELTS logo positioning */
-  .print-header-layout .celts-logo {
-    flex: 0 0 auto;
-  }
-
-  .print-header-layout .celts-logo-img {
-    max-width: 150px;
-    height: auto;
-  }
-
-  /* Personal info section - centered styling */
-  .print-header-layout .personal-info {
-    flex: 1;
-    text-align: center;
-  }
-
-  .print-header-layout .personal-info h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4285f4;
-    margin: 0 0 0.25rem 0;
-  }
-
-  .print-header-layout .personal-info h4 {
-    font-size: 18px;
-    color: #4285f4;
-    margin: 0 0 0.25rem 0;
-  }
-
-  .print-header-layout .personal-info small {
-    font-size: 12px;
-    color: #666;
-  }
-
-  /* Hide print button in print view */
-  .print-button {
-    display: none !important;
-  }
-
-  /* Card styling for print */
-  .card {
-    border: 1px solid #ddd;
-    margin-bottom: 1.5rem;
-    page-break-inside: avoid;
-  }
-
-  .card-header {
-    padding: 0.75rem;
-    margin-bottom: 0;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .card-header.bg-primary {
-    background-color: #4285f4 !important;
-    color: white !important;
-  }
-
-  .card-header.bg-light {
-    background-color: #f8f9fa !important;
-  }
-
-  .card-header h5 {
-    margin: 0 0 0.25rem 0;
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .card-header small {
-    font-size: 11px;
-    opacity: 0.9;
-  }
-
-  .card-body {
-    padding: 0.75rem;
-  }
-
-  /* Table styling */
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0;
-  }
-
-  .table th,
-  .table td {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    text-align: center;
-  }
-
-  .table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  .table td {
-    font-size: 11px;
-  }
-
-  .table-bordered th,
-  .table-bordered td {
-    border: 1px solid #ddd;
-  }
-
-  .table-light th {
-    background-color: #f8f9fa;
-  }
-
-  /* Volunteer details section styling */
-  .text-primary {
-    color: #4285f4 !important;
-  }
-
-  .fw-bold {
-    font-weight: bold !important;
-  }
-
-  .text-muted {
-    color: #666 !important;
-  }
-
-  .small {
-    font-size: 11px;
-  }
-
-  .mb-2 {
-    margin-bottom: 0.5rem;
-  }
-
-  .mb-4 {
-    margin-bottom: 1.5rem;
-  }
-
-  .py-4 {
-    padding: 1.5rem 0;
-  }
-
-  /* Service learning courses specific styling */
-  .avoid-break {
-    page-break-inside: avoid;
-  }
-
-  /* Footer styling */
-  .footer-section {
-    margin-top: 2rem;
-    page-break-inside: avoid;
-  }
-
-  .footer-logo-container {
-    text-align: center;
-  }
-
-  .footer-logo {
-    width: 232px;
-    max-width: 100%;
-    height: auto;
-  }
-
-  .border-top {
-    border-top: 1px solid #ddd !important;
-  }
-
-  .mt-5 {
-    margin-top: 3rem !important;
-  }
-
-  .pt-4 {
-    padding-top: 1.5rem !important;
-  }
-
-  /* Hide contact info in print */
-  .footer-contact {
-    display: none;
-  }
-}@media print {
   @page {
     size: letter;
-    margin: 0.2in 0.3in 0.2in 0.3in;
+    margin: 0.3in 0.5in 0.3in 0.5in; /* Reduced top margin */
   }
-
-  body {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    margin: 0;
-    padding: 0;
+  
+  /* FORCE remove all top margins and padding */
+  * {
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
   }
-
+  
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Remove Bootstrap/framework margins */
   .container-fluid {
-    padding: 0;
-    margin: 0 auto;
-    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
-
-  /* Hide print button and other non-essential elements */
+  
+  /* CRITICAL: Target the main wrapper */
+  .w-100 {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Hide screen elements */
   .d-print-none {
     display: none !important;
   }
-
+  
   .d-print-flex {
     display: flex !important;
   }
-
-  .d-print-block {
-    display: block !important;
-  }
-
-  /* Header layout to match the web view */
+  
+  /* HEADER SECTION - This is the key fix */
   .print-header-layout {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem 0;
-    flex-wrap: nowrap;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 20px !important;
+    margin: 0 !important; /* Remove ALL margins */
+    padding: 0 !important; /* Remove ALL padding */
+    margin-bottom: 10px !important; /* Small bottom margin only */
+    flex-wrap: nowrap !important;
+    page-break-inside: avoid !important;
   }
-
-  /* CELTS logo positioning */
+  
+  /* Logo section */
   .print-header-layout .celts-logo {
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-
+  
   .print-header-layout .celts-logo-img {
-    max-width: 150px;
-    height: auto;
+    max-width: 200px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-
-  /* Personal info section - centered styling */
+  
+  /* Personal info section */
   .print-header-layout .personal-info {
-    flex: 1;
-    text-align: center;
+    flex: 1 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-
+  
   .print-header-layout .personal-info h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4285f4;
-    margin: 0 0 0.25rem 0;
+    font-size: 22px !important;
+    font-weight: bold !important;
+    color: #005A8B !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.1 !important;
   }
-
+  
   .print-header-layout .personal-info h4 {
-    font-size: 18px;
-    color: #4285f4;
-    margin: 0 0 0.25rem 0;
+    font-size: 16px !important;
+    color: #005A8B !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.1 !important;
   }
-
+  
   .print-header-layout .personal-info small {
-    font-size: 12px;
-    color: #666;
+    font-size: 11px !important;
+    color: #666 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-
-  /* Hide print button in print view */
-  .print-button {
-    display: none !important;
-  }
-
-  /* Card styling for print */
+  
+  /* CONTENT SECTIONS */
   .card {
-    border: 1px solid #ddd;
-    margin-bottom: 1.5rem;
-    page-break-inside: avoid;
+    border: 1px solid #ddd !important;
+    margin-bottom: 8px !important;
+    page-break-inside: avoid !important;
   }
-
+  
+  .card:first-of-type {
+    margin-top: 0 !important; /* Remove top margin from first card */
+  }
+  
   .card-header {
-    padding: 0.75rem;
-    margin-bottom: 0;
-    border-bottom: 1px solid #ddd;
+    padding: 8px 12px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #ddd !important;
   }
-
+  
   .card-header.bg-primary {
-    background-color: #4285f4 !important;
+    background-color: #005A8B !important;
     color: white !important;
   }
-
+  
   .card-header.bg-light {
     background-color: #f8f9fa !important;
   }
-
+  
   .card-header h5 {
-    margin: 0 0 0.25rem 0;
-    font-size: 14px;
-    font-weight: bold;
+    margin: 0 !important;
+    font-size: 13px !important;
+    font-weight: bold !important;
   }
-
+  
   .card-header small {
-    font-size: 11px;
-    opacity: 0.9;
+    font-size: 10px !important;
+    opacity: 0.9 !important;
   }
-
+  
   .card-body {
-    padding: 0.75rem;
+    padding: 10px !important;
   }
-
+  
   /* Table styling */
   .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+    font-size: 11px !important;
   }
-
+  
   .table th,
   .table td {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    text-align: center;
+    border: 1px solid #ddd !important;
+    padding: 6px 8px !important;
+    text-align: center !important;
   }
-
+  
   .table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    font-size: 12px;
+    background-color: #f8f9fa !important;
+    font-weight: bold !important;
+    font-size: 11px !important;
   }
-
-  .table td {
-    font-size: 11px;
-  }
-
-  .table-bordered th,
-  .table-bordered td {
-    border: 1px solid #ddd;
-  }
-
-  .table-light th {
-    background-color: #f8f9fa;
-  }
-
-  /* Volunteer details section styling */
+  
+  /* Volunteer details styling */
   .text-primary {
-    color: #4285f4 !important;
+    color: #005A8B !important;
   }
-
+  
   .fw-bold {
     font-weight: bold !important;
   }
-
+  
   .text-muted {
     color: #666 !important;
   }
-
+  
   .small {
-    font-size: 11px;
+    font-size: 10px !important;
   }
-
+  
   .mb-2 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 4px !important;
   }
-
+  
   .mb-4 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 12px !important;
+    margin-top: 0 !important;
   }
-
+  
   .py-4 {
-    padding: 1.5rem 0;
+    padding: 12px 0 !important;
   }
-
-  /* Service learning courses specific styling */
-  .avoid-break {
-    page-break-inside: avoid;
-  }
-
-  /* Footer styling */
+  
+  /* Footer - Keep together and prevent splitting */
   .footer-section {
-    margin-top: 2rem;
-    page-break-inside: avoid;
+    margin-top: 20px !important;
+    page-break-inside: avoid !important;
+    page-break-before: auto !important;
+    break-inside: avoid !important;
+    break-before: auto !important;
   }
-
+  
   .footer-logo-container {
-    text-align: center;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-
+  
   .footer-logo {
-    width: 232px;
-    max-width: 100%;
-    height: auto;
+    width: 180px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-
+  
   .border-top {
     border-top: 1px solid #ddd !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-
+  
   .mt-5 {
-    margin-top: 3rem !important;
+    margin-top: 20px !important;
   }
-
+  
   .pt-4 {
-    padding-top: 1.5rem !important;
+    padding-top: 12px !important;
   }
-
-  /* Hide contact info in print */
+  
   .footer-contact {
-    display: none;
+    display: none !important;
+  }
+  
+  /* CRITICAL: Keep entire footer together */
+  .footer-section .text-center {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* NUCLEAR OPTION: If margins still don't work, force with positioning */
+  .print-header-layout {
+    position: relative !important;
+    top: -10px !important; /* Adjust this value to move header up */
+  }
+  
+  /* EXTRA FOOTER PROTECTION */
+  .avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Force footer to stay together with minimum space */
+  .footer-section {
+    min-height: 100px !important; /* Reserves space for footer */
+    display: block !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* If content is too long, make it smaller to fit footer */
+  .card-body {
+    font-size: 10px !important;
+  }
+  
+  .card-body .small {
+    font-size: 9px !important;
   }
 }
