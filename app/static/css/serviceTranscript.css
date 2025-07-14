@@ -2,41 +2,40 @@
 /* Place this in a separate file or at the very end of your existing CSS */
 
 @media print {
+  
   @page {
     size: letter;
-    margin: 0.3in 0.5in 0.3in 0.5in; /* Reduced top margin */
+    margin: 0.3in 0.5in 0.3in 0.5in;
   }
   
-  /* FORCE remove all top margins and padding */
+  /* Base reset - only use !important for critical overrides */
   * {
-    page-break-inside: avoid !important;
-    page-break-before: avoid !important;
-    page-break-after: avoid !important;
+    page-break-inside: avoid;
+    page-break-before: avoid;
+    page-break-after: avoid;
   }
   
   html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    font-family: Arial, sans-serif !important;
-    font-size: 11px !important;
-    line-height: 1.2 !important;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.2;
   }
   
-  /* Remove Bootstrap/framework margins */
+  /* Remove Bootstrap/framework spacing - only where needed */
   .container-fluid {
     padding: 0 !important;
     margin: 0 !important;
-    width: 100% !important;
   }
   
-  /* CRITICAL: Target the main wrapper */
   .w-100 {
     margin: 0 !important;
     padding: 0 !important;
   }
   
-  /* Hide screen elements */
+  /* Hide/show elements - !important needed for display overrides */
   .d-print-none {
     display: none !important;
   }
@@ -45,134 +44,146 @@
     display: flex !important;
   }
   
-  /* HEADER SECTION - This is the key fix */
+  /* HEADER SECTION - Critical layout fixes */
   .print-header-layout {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 20px !important;
-    margin: 0 !important; /* Remove ALL margins */
-    padding: 0 !important; /* Remove ALL padding */
-    margin-bottom: 10px !important; /* Small bottom margin only */
-    flex-wrap: nowrap !important;
-    page-break-inside: avoid !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+    page-break-inside: avoid;
   }
   
   /* Logo section */
   .print-header-layout .celts-logo {
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
   }
   
   .print-header-layout .celts-logo-img {
-    max-width: 200px !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: 200px;
+    height: auto;
+    margin: 0;
+    padding: 0;
   }
   
   /* Personal info section */
   .print-header-layout .personal-info {
-    flex: 1 !important;
-    text-align: center !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    padding: 0;
   }
   
   .print-header-layout .personal-info h2 {
-    font-size: 22px !important;
-    font-weight: bold !important;
-    color: #005A8B !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.1 !important;
+    font-size: 22px;
+    font-weight: bold;
+    color: #005A8B;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1;
   }
   
   .print-header-layout .personal-info h4 {
-    font-size: 16px !important;
-    color: #005A8B !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.1 !important;
+    font-size: 16px;
+    color: #005A8B;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1;
   }
   
   .print-header-layout .personal-info small {
-    font-size: 11px !important;
-    color: #666 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    font-size: 11px;
+    color: #666;
+    margin: 0;
+    padding: 0;
   }
   
   /* CONTENT SECTIONS */
   .card {
-    border: 1px solid #ddd !important;
-    margin-bottom: 8px !important;
-    page-break-inside: avoid !important;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    page-break-inside: avoid;
   }
   
   .card:first-of-type {
-    margin-top: 0 !important; /* Remove top margin from first card */
+    margin-top: 0;
   }
   
   .card-header {
-    padding: 8px 12px !important;
-    margin: 0 !important;
-    border-bottom: 1px solid #ddd !important;
+    padding: 8px 12px;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
   }
   
-  .card-header.bg-primary {
+  /* Volunteer Hours Header - Targeting with print-card-header-hours class */
+  #volunteer-hours-card .card-header.bg-primary,
+  .card-header.print-card-header-hours.bg-primary {
     background-color: #005A8B !important;
     color: white !important;
   }
   
-  .card-header.bg-light {
+  #volunteer-hours-card .card-header h5,
+  #volunteer-hours-card .card-header small {
+    color: white !important;
+  }
+  
+  /* Other card headers */
+  .card-header.bg-light,
+  .volunteer-header {
     background-color: #f8f9fa !important;
+    color: #333 !important;
   }
   
   .card-header h5 {
-    margin: 0 !important;
-    font-size: 13px !important;
-    font-weight: bold !important;
+    margin: 0;
+    font-size: 13px;
+    font-weight: bold;
   }
   
   .card-header small {
-    font-size: 10px !important;
-    opacity: 0.9 !important;
+    font-size: 10px;
+    opacity: 0.9;
   }
   
   .card-body {
-    padding: 10px !important;
+    padding: 10px;
   }
   
   /* Table styling */
   .table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    margin: 0 !important;
-    font-size: 11px !important;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 11px;
   }
   
   .table th,
   .table td {
-    border: 1px solid #ddd !important;
-    padding: 6px 8px !important;
-    text-align: center !important;
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+    text-align: center;
   }
   
-  .table th {
-    background-color: #f8f9fa !important;
-    font-weight: bold !important;
-    font-size: 11px !important;
-  }
+  #volunteer-hours-card .table thead th,
+  #service-learning-courses-card .table thead th {
+  background-color: #f8f9fa;
+  font-weight: normal !important;
+  font-size: 11px;
+  border-bottom: 1px solid #ddd !important; /* Add this line */
+}
   
-  /* Volunteer details styling */
+  /* Utility classes - only override where necessary */
   .text-primary {
     color: #005A8B !important;
   }
   
   .fw-bold {
-    font-weight: bold !important;
+    font-weight: bold;
   }
   
   .text-muted {
@@ -180,95 +191,97 @@
   }
   
   .small {
-    font-size: 10px !important;
+    font-size: 10px;
   }
   
   .mb-2 {
-    margin-bottom: 4px !important;
+    margin-bottom: 4px;
   }
   
   .mb-4 {
-    margin-bottom: 12px !important;
-    margin-top: 0 !important;
+    margin-bottom: 12px;
+    margin-top: 0;
   }
   
   .py-4 {
-    padding: 12px 0 !important;
+    padding: 12px 0;
   }
   
   /* Footer - Keep together and prevent splitting */
   .footer-section {
-    margin-top: 20px !important;
-    page-break-inside: avoid !important;
-    page-break-before: auto !important;
-    break-inside: avoid !important;
-    break-before: auto !important;
+    margin-top: 20px;
+    page-break-inside: avoid;
+    page-break-before: auto;
+    break-inside: avoid;
+    break-before: auto;
   }
   
   .footer-logo-container {
-    text-align: center !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    text-align: center;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
   .footer-logo {
-    width: 180px !important;
-    max-width: 100% !important;
-    height: auto !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
   .border-top {
-    border-top: 1px solid #ddd !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    border-top: 1px solid #ddd;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
   .mt-5 {
-    margin-top: 20px !important;
+    margin-top: 20px;
   }
   
   .pt-4 {
-    padding-top: 12px !important;
+    padding-top: 12px;
   }
   
+  /* Hide footer contact */
   .footer-contact {
-    display: none !important;
+    display: none;
   }
   
-  /* CRITICAL: Keep entire footer together */
+  /* Keep entire footer together */
   .footer-section .text-center {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
-  /* NUCLEAR OPTION: If margins still don't work, force with positioning */
+  /* Optional: If you need to fine-tune header positioning */
   .print-header-layout {
-    position: relative !important;
-    top: -10px !important; /* Adjust this value to move header up */
+    position: relative;
+    top: -10px; /* Adjust this value to move header up if needed */
   }
   
-  /* EXTRA FOOTER PROTECTION */
+  /* Footer protection */
   .avoid-break {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
-  /* Force footer to stay together with minimum space */
+  /* Reserve space for footer */
   .footer-section {
-    min-height: 100px !important; /* Reserves space for footer */
-    display: block !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    min-height: 100px;
+    display: block;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
-  /* If content is too long, make it smaller to fit footer */
+  /* Compact content if needed */
   .card-body {
-    font-size: 10px !important;
+    font-size: 10px;
   }
   
   .card-body .small {
-    font-size: 9px !important;
+    font-size: 9px;
   }
+  
 }

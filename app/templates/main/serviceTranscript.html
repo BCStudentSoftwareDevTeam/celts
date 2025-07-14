@@ -47,8 +47,8 @@
 
   <!-- Volunteer Hours Summary Card - Adjusted to match sample -->
   {% if totalHours["totalHours"] > 0%}
-  <div class="card mb-4">
-    <div class="card-header bg-primary text-white">
+  <div class="card mb-4" id="volunteer-hours-card">
+    <div class="card-header bg-primary text-white print-card-header-hours">
       <h5 class="mb-0">Volunteer Hours</h5>
       <small>All hours below have been validated and approved by an affiliated administrator or coordinator.</small>
     </div>
@@ -75,7 +75,7 @@
 
   <!-- Volunteer Details Section - Keeping your structure but adjusting styling -->
   <div class="card mb-4">
-    <div class="card-header bg-light">
+    <div class="card-header volunteer-header ">
       <h5 class="mb-0">Volunteer details</h5>
     </div>
     <div class="card-body">
@@ -87,7 +87,7 @@
           {% endif %}
           {% if programTitle != "Bonner Scholars" %}
             <div class="mb-4">
-              <h6 class="text-primary fw-bold">{{programTitle}}</h6>
+              <h6 class="text-primary fw-bold ">{{programTitle}}</h6>
               {% for item in allEventTranscript[program] %}
                 {% if item[1] != None %}
                   <div class="mb-2">
@@ -112,9 +112,9 @@
 
   <!-- Service Learning Courses - Adjusted table styling -->
   {% if slCourses.exists() %}
-    <div class="card mb-4 avoid-break">
+    <div class="card mb-4 avoid-break" id ="service-learning-courses-card">
       <div class="card-header bg-light">
-        <h5 class="mb-0">Service learning Courses</h5>
+        <h5 class="mb-0">Service Learning Courses</h5>
       </div>
       <div class="card-body p-0">
         <table class="table table-bordered mb-0">
@@ -143,8 +143,7 @@
   <div class="footer-section">
     <div class="text-center mt-5 pt-4 border-top">
       <div class="footer-logo-container">
-        <img src="{{ url_for('static', filename='/images/logos/celts_logo_berea.png') }}" alt="Berea College" class="img-fluid footer-logo" style="
-    width: 232px;">
+        <img src="{{ url_for('static', filename='/images/logos/celts_logo_berea.png') }}" alt="Berea College" class="img-fluid footer-logo" style="width: 232px;">
       </div>
       <div class="d-print-none footer-contact mt-5">
         <p class="text-muted">
