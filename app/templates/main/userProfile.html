@@ -104,7 +104,7 @@
   </div>
     {% endif %}
 {% endif %}
-</div>
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -299,30 +299,19 @@
             {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
             <div class="col-md-6">
-              {% if g.current_user.isCeltsAdmin %}
-                <h5>Choose programs to manage:</h5>
-              {% else %}
                 <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
-              {% endif %}
-              <ul class="list-unstyled">
+                <ul class="list-unstyled">
                 {% for program in programs %}
-                  {% set action = "add" %}
-                  {% set checked = "" %}
                   {% if program.id in permissionPrograms %}
-                    {% set action = "remove" %}
-                    {% set checked = "checked" %}
-                    {% if not g.current_user.isCeltsAdmin%}
-                      <li>{{program.programName}}</li>
-                    {% endif %}
-                  {% endif %}
-                  {% if g.current_user.isCeltsAdmin%}
-                    <li>
-                      <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                      <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-                    </li>
+                    <li>{{program.programName}}</li>
                   {% endif %}
                 {% endfor %}
-              </ul>
+                </ul>
+            </div>
+            <div>
+              {% if g.current_user.isCeltsAdmin %}
+                <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% endif %}
             </div>
             {% endif %}
           </div>
@@ -348,8 +337,8 @@
                 <tr>
                   <th scope="col">Description</th>
                    {% if g.current_user.isCeltsAdmin%}
-                     <th scope="col">Status</th>
-                     <th scope="col">Date</th>
+                     <th class="required" scope="col">Status</th>
+                     <th class="required" scope="col">Date</th>
                      <th class="" id="displaySave" scope="col"></th>
                    {% endif %}
                  </tr>

@@ -90,7 +90,6 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
-
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -127,7 +126,7 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-  $("#instructorTable").on("click", ".removeButton", function() {
+  $("#instructorTable").on("click", ".removeButton", function() {  
     let closestRow = $(this).closest("tr");
     let username = closestRow.data('username');
     
@@ -135,6 +134,7 @@ $(document).ready(function(e) {
     if (username) {
         $("#instructorTableNames input[value='" + username + "']").remove();
         closestRow.remove();
+         msgFlash(`Successfully removed instructor ${username}`, "success", 1300);
     }
     updateEmptyTableMessage();
   });
@@ -303,42 +303,43 @@ function saveCourseData(url, successCallback) {
 
 function validateForm() {
   // This function ensures our form fields are valid
-  // Returns true if we are just viewing a form
-  // TODO: Generalize form validation to include textareas and selects
-
+ enableLiveCustomValidityClearing(["#courseInstructor", "#courseNameId"]);
   if (readOnly())
-      return true;
+    return true;
 
   let valid = true;
-
   let allTabs = $(".tab");
-  let allInputs = $(allTabs[currentTab]).find("input");
-  for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].required) {
-      if (!allInputs[i].value){
-        $(allInputs[i]).addClass("invalid");
-        valid = false;
-      } else {
-        $(allInputs[i]).addClass("form-control");
-      }
-    }
-  }
-  var instructors = getCourseInstructors()
-  if (!instructors.length && currentTab == 1) {
-    valid = false;
-    $("#instructorTable .emptyTableMessage").addClass("table-danger");
-    $("#instructorTable .emptyTableMessage label").removeClass("text-secondary");
-  } else {
-    $("#instructorTable .emptyTableMessage").removeClass("table-danger");
-    $("#instructorTable .emptyTableMessage label").addClass("text-secondary");
-  }
 
-  if (valid) {
-    $($(".step")[currentTab]).addClass("finish");
+  //Validating the instructor dropdown
+  if (currentTab === 1) {
+      let $courseInstructor = $("#courseInstructor");
+      let instructorRows = $("tr[data-username]");
+      
+  if (instructorRows.length === 1) {
+      $courseInstructor[0].setCustomValidity("Please select an instructor");
+      // Focus and show validation immediately
+      $courseInstructor.focus();
+      $courseInstructor[0].reportValidity();
+      valid = false;
+      return valid; // Exit early to prevent other validations from interfering
+    }
+}
+
+  // Course name validation
+  if (currentTab === 1) {
+    let $courseName = $("#courseNameId");
+    if ($courseName.val() === "") {
+      $courseName[0].setCustomValidity("Please enter a course");
+      $courseName.focus();
+      $courseName[0].reportValidity();
+      valid = false;
+      return valid; // Exit early
+    }
   }
 
   return valid;
 };
+
 
 function disableSyllabusUploadFile() {
   $("#fileUpload").prop("disabled", true);
