@@ -94,7 +94,7 @@ function updateIndicatorCounts(isChecked){
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
       // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student-Led Services (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student-Led Services`)
+      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Volunteer Programs (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Volunteer Programs`)
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
