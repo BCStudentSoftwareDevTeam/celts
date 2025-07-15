@@ -17,9 +17,3 @@ from flask import g
 def injectGlobalData():
     isprogramManager = True if list(ProgramManager.select(ProgramManager, User).join(User).where(User.username == g.current_user).execute()) else False 
     return {"isprogramManager" : isprogramManager}
-
-
-#   user = (User.select(User, EmergencyContact, InsuranceInfo)
-#                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
-#                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
-#                 .where(User.username == username).limit(1))

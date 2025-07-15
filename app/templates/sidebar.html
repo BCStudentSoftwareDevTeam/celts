@@ -29,7 +29,7 @@
         </a>
       </li>
       {% endif %}
-      {% if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isprogramManager)%}
+      {% if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isprogramManager) %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event    
@@ -48,8 +48,6 @@
           Course Proposals
         </a>
         {% endif %}
-      </li>
-      <li>
       </li>
       <li>
         {% if g.current_user.isCeltsAdmin %}
