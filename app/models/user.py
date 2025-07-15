@@ -26,6 +26,7 @@ class User(baseModel):
 
         self._pmCache = {}
         self._bsCache = None
+        self._isProgramManagerCache = None
     
     @property
     def processedClassLevel(self):
@@ -78,4 +79,14 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
+    
+    @property
+    def isProgramManager(self):
+        from app.models.programManager import ProgramManager
+
+        if self._isProgramManagerCache is None:
+            self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
+            
+        return self._isProgramManagerCache
+
 
