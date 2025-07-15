@@ -15,5 +15,5 @@ from flask import g
 
 @app.context_processor
 def injectGlobalData():
-    isprogramManager = True if list(ProgramManager.select(ProgramManager, User).join(User).where(User.username == g.current_user).execute()) else False 
-    return {"isprogramManager" : isprogramManager}
+    isProgramManager = True if list(ProgramManager.select(ProgramManager, User).join(User).where(User.username == g.current_user).execute()) else False 
+    return {"isProgramManager" : isProgramManager}
