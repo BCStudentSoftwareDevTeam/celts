@@ -1322,57 +1322,6 @@ eventParticipants = [
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
 
-# eventLabor = [
-#     {
-#         "user": "neillz",
-#         "event": 1,
-#         "didWork": True
-#     },
-#     {
-#         "user": "khatts",
-#         "event": 1,
-#         "didWork": True
-#     },
-#     {
-#         "user": "neillz",
-#         "event": 2,
-#         "didWork": False
-#     },
-#     {
-#         "user": "bryanta",
-#         "event": 5,
-#         "didWork": False
-#     },
-#     {
-#         "user": "khatts",
-#         "event": 3,
-#         "didWork": True
-#     },
-#     {
-#         "user": "ayisie",
-#         "event": 1,
-#         "didWork": False
-#     },
-#     {
-#         "user": "partont",
-#         "event": 2,
-#         "didWork": True
-#     },
-#     {
-#         "user": "khatts",
-#         "event": 6,
-#         "didWork": True
-#     },
-#     {
-#         "user": "khatts",
-#         "event": 10,
-#         "didWork": False
-#     }
-# ]
-
-# EventLabor.insert_many(eventLabor).on_conflict_replace().execute()
-
-
 eventRsvp =  [
     {
         "user":"mupotsal",

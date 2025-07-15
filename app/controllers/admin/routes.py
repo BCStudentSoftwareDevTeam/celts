@@ -27,7 +27,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
-from app.models.eventLabor import EventLabor
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
