@@ -135,10 +135,12 @@ $(document).ready(function() {
     $(".removeLabor").prop("disabled", true)
     let username =  this.id;
     let eventId = $('#eventID').val()
+    let fullName = $(`#${username}FullName`).text();    
+
     $.ajax({
       url: '/removeLaborFromEvent',
       type: "POST",
-      data: {username: username, eventId: eventId},
+      data: {username: username, eventId: eventId, fullName: fullName,},
       success: function(response) {
          location.reload();
       },

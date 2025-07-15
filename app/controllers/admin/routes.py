@@ -39,6 +39,7 @@ from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
+from app.logic.createLogs import createRsvpLog
 
 from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
@@ -753,10 +754,11 @@ def manageLaborPage(eventID):
 def removeLaborFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
+    fullName = request.form.get('fullName')
     if g.current_user.isAdmin:
         userInLaborTable = EventLabor.select(EventLabor, User).join(User).where(EventLabor.user == user, EventLabor.event==eventID).execute()
-        (EventLabor.delete().where(EventLabor.user==user, EventLabor.event==eventID)).execute()
         flash("Student successfully removed", "success")
+        createRsvpLog(eventID,f"Removed {fullName} from labor RSVP")
     return ""
 
 @admin_bp.route('/addLaborToEvent/<eventId>', methods = ['POST'])
@@ -788,6 +790,8 @@ def addLaborToEvent(eventId):
 
     if addedSuccessfullyList:
         studentLabor = ", ".join(vol for vol in addedSuccessfullyList)
+
+        createRsvpLog(eventId, f"Added {studentLabor} to labor RSVP")
         flash(f"{studentLabor} added successfully.", "success")
 
     if errorList:
