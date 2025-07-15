@@ -90,6 +90,13 @@
       </li>
 
       {% endif %}
+      {% if g.current_user.isProgramManager %}
+        <a href="/admin"
+           class="nav-link text-white {{'active' if request.path == '/admin'}}"
+           {% if request.path == '/admin' %}aria-current="page"{% endif %}>
+          Program Details
+        </a>
+      {% endif %}
     </ul>
     <hr>
     {% if env != 'production' %}
@@ -105,5 +112,6 @@
         </form>
     {% endif %}
     <a type="button" href='/logout' class="btn btn-secondary btn-secondary">Log out</a>
+    
   </div>
 </div>
