@@ -347,7 +347,7 @@ def eventTravelForm(eventID):
     if not (g.current_user.isCeltsAdmin):
         abort(403)
 
-    if request.method == "POST" or request.form.getlist("username") != (None or []):
+    if request.method == "POST" and request.form.getlist("username") !=  []:
         usernameList = request.form.getlist("username")
         usernameList = usernameList.copy()
         userList = []
