@@ -44,12 +44,6 @@ def trainedParticipants(programID, targetTerm):
 
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
-
-def checkUserParticipant(user,  event, laborCheck):
-    if laborCheck == True:
-        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == True).exists()
-    else:
-        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == False).exists()
     
 def getEventVolunteers(event):
     eventVolunteers = (EventParticipant.select(EventParticipant, User)
@@ -291,6 +285,11 @@ def addBnumberAsParticipant(bnumber, eventId):
 
     return kioskUser, userStatus
 
+def checkUserParticipant(user,  event, laborCheck):
+    if laborCheck == True:
+        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == True).exists()
+    else:
+        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == False).exists()
 
 # ---------------------- Labor Stuff ----------------------
 
