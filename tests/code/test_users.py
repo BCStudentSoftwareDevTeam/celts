@@ -15,7 +15,7 @@ from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
-from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
+from app.logic.participants import addUserBackgroundCheck, deleteUserBackgroundCheck
 
 @pytest.mark.integration
 def test_deleteUserBackgroundCheck():

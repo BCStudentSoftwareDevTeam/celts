@@ -12,10 +12,10 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
-from app.logic.volunteers import getEventLengthInHours, updateEventVolunteers
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventVolunteers, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.participants import updateEventVolunteers
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventVolunteers, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserParticipant, addVolunteerToEvent, sortParticipantsByStatus
 from app.models.eventRsvp import EventRsvp
-
+from app.logic.sharedLogic import getEventLengthInHours
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -98,9 +98,9 @@ def test_addPersonToEvent():
             newEvent = Event.get(name="Test event 1234")
 
             user = User.get_by_id("ramsayb2")
-            userAdded = addPersonToEvent(user, newEvent)
+            userAdded = addVolunteerToEvent(user, newEvent)
             assert userAdded == True, "User was not added"
-            assert checkUserVolunteer(user, newEvent), "No Volunteer record was added"
+            assert checkUserParticipant(user, newEvent, False), "No Volunteer record was added"
             assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
             transaction.rollback()
 
@@ -113,10 +113,10 @@ def test_addPersonToEvent():
             
             newEvent = Event.get(name="Test event 1234")
 
-            userAdded = addPersonToEvent(user, newEvent)
+            userAdded = addVolunteerToEvent(user, newEvent)
             assert userAdded == True, "User was not added"
             assert checkUserRsvp(user, newEvent), "No RSVP record was added"
-            assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
+            assert not checkUserParticipant(user, newEvent, False), "A Volunteer record was added instead"
             transaction.rollback()
 
             tomorrow = datetime.today() + timedelta(days=1)
@@ -128,14 +128,14 @@ def test_addPersonToEvent():
                                             program = 9)
             waitlistEvent = Event.get(name="Waitlist Event")
             rsvpUser = User.get_by_id("ayisie")
-            
-            addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
+
+            addRsvp = addVolunteerToEvent(rsvpUser, waitlistEvent)
             rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
             assert addRsvp == True
             assert len(rsvpNoWaitlist) == 1
 
             waitlistUser = User.get_by_id("partont")
-            addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
+            addWaitlist = addVolunteerToEvent(waitlistUser, waitlistEvent)
             rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
             
             assert addWaitlist == True

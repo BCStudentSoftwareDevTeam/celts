@@ -2,13 +2,14 @@ import pytest
 from flask import g
 from werkzeug.datastructures import ImmutableMultiDict
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventVolunteers, addUserBackgroundCheck
+from app.logic.participants import updateEventVolunteers, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.models import mainDB
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 from peewee import DoesNotExist
 from dateutil import parser
+from app.logic.sharedLogic import getEventLengthInHours
 
 
 @pytest.mark.integration

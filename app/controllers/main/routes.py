@@ -36,7 +36,7 @@ from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addVolunteerToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
 @main_bp.route('/logout', methods=['GET'])
@@ -464,7 +464,7 @@ def volunteerRegister():
 
     personAdded = False
     if isEligible:
-        personAdded = addPersonToEvent(user, event)
+        personAdded = addVolunteerToEvent(user, event, False)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")

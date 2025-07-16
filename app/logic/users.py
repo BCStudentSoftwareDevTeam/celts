@@ -8,7 +8,6 @@ from app.models.profileNote import ProfileNote
 from app.models.programBan import ProgramBan
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
-from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
 from dateutil import parser

@@ -6,7 +6,7 @@ from app.logic.userManagement import *
 from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
-from app.logic.volunteers import setProgramManager
+from app.logic.participants import setProgramManager
 from peewee import DoesNotExist
 from app.models import mainDB
 import os

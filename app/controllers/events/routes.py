@@ -11,7 +11,7 @@ from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
-from app.logic.manageLabor import addBnumberAsLabor
+from app.logic.participants import addBnumberAsLabor
 
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])

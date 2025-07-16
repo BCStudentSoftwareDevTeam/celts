@@ -10,13 +10,14 @@ from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventVolunteers, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
-from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
+from app.logic.participants import updateEventVolunteers, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
+from app.logic.participants import trainedParticipants, addVolunteerToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.createLogs import createActivityLog, createRsvpLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
+from app.logic.sharedLogic import getEventLengthInHours
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -135,7 +136,7 @@ def addVolunteer(eventId):
     
     for user in usernameList:
         userObj = User.get_by_id(user)
-        successfullyAddedVolunteer = addPersonToEvent(userObj, event)
+        successfullyAddedVolunteer = addVolunteerToEvent(userObj, event)
         if successfullyAddedVolunteer == "already in":
             alreadyAddedList.append(userObj.fullName)
         else:

@@ -11,7 +11,7 @@ from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCe
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
-from app.logic.volunteers import setProgramManager
+from app.logic.participants import setProgramManager
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
 from app.models.user import User
