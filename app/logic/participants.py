@@ -45,10 +45,15 @@ def trainedParticipants(programID, targetTerm):
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
     
-def getEventVolunteers(event):
-    eventVolunteers = (EventParticipant.select(EventParticipant, User)
+def getEventParticipants(event, laborCheck): 
+    if laborCheck  == True:
+        eventVolunteers = (EventParticipant.select(EventParticipant, User)
                                          .join(User)
-                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
+                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == True)))
+    else:
+        eventVolunteers = (EventParticipant.select(EventParticipant, User)
+                                            .join(User)
+                                            .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
 
     return [p for p in eventVolunteers]
 
@@ -118,7 +123,7 @@ def sortParticipantsByStatus(event):
     a list of participants who attended, and a list of all participants who have some status for the 
     event.
     """
-    eventVolunteers = getEventVolunteers(event)
+    eventVolunteers = getEventParticipants(event, False)
 
     # get all RSVPs for event and filter out those that did not attend into separate list
     eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
@@ -327,18 +332,9 @@ def updateEventLabor(participantData):
 
     return True
 
-def getLaborStudents(event):
-    eventLabor = (EventParticipant.select(EventParticipant, User)
-                                         .join(User)
-                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == True)))
-
-    return [p for p in eventLabor]
-
-
-
 def sortLabor(event):
 
-    eventLabor = getLaborStudents(event)
+    eventLabor = getEventParticipants(event, True)
 
     eventLaborData = eventLabor
 

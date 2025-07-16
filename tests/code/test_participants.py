@@ -13,7 +13,7 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.participants import updateEventVolunteers
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventVolunteers, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserParticipant, addVolunteerToEvent, sortParticipantsByStatus
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserParticipant, addVolunteerToEvent, sortParticipantsByStatus
 from app.models.eventRsvp import EventRsvp
 from app.logic.sharedLogic import getEventLengthInHours
 
@@ -360,7 +360,7 @@ def test_getEventVolunteers():
 
     khatts = User.get_by_id('khatts')
     khatts_participant = EventParticipant.get(event=event, user=khatts)
-    eventVolunteers = getEventVolunteers(event)
+    eventVolunteers = getEventParticipants(event, False)
     assert khatts_participant in eventVolunteers
     khatts_index = eventVolunteers.index(khatts_participant)
     assert eventVolunteers[khatts_index].hoursEarned == 2
@@ -368,7 +368,7 @@ def test_getEventVolunteers():
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():
     event = Event.get_by_id(1)
-    eventParticipantsDict = getEventVolunteers(event)
+    eventParticipantsDict = getEventParticipants(event, False)
     assert "agliullovak" not in eventParticipantsDict
 
 @pytest.mark.integration
@@ -496,7 +496,7 @@ def test_sortParticipantsByStatus():
         assert eventNonAttendedData == [partontRsvp]
         assert eventWaitlistData == []
         assert eventVolunteerData == [neillzParticipant, khattsParticipant, ayisieParticipant]
-        assert eventVolunteers == getEventVolunteers(testingEvent)
+        assert eventVolunteers == getEventParticipants(testingEvent, False)
 
         transaction.rollback()
 

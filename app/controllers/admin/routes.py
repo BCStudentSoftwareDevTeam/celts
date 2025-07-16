@@ -44,7 +44,7 @@ from app.logic.volunteerSpreadsheet import createSpreadsheet
 from app.logic.users import isBannedFromEvent
 
 from peewee import DoesNotExist, JOIN
-from app.logic.participants import updateEventLabor, getLaborStudents, sortLabor, addStudentLaborToEvent
+from app.logic.participants import updateEventLabor, getEventParticipants, sortLabor, addStudentLaborToEvent
 from app.logic.sharedLogic import getEventLengthInHours
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.logic.users import getBannedUsers
