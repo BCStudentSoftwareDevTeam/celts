@@ -2,3 +2,21 @@
     cursor: pointer;
     background-color: #f0f0f0;
 }
+
+.accordion-item {
+    padding-bottom: 3px;
+    padding-top: 3px;
+}
+
+.accordion-button {
+    font-size: 20px;
+    
+}
+
+.engagement-row {
+    text-align: left;
+}
+
+.accordion-body {
+    padding-top: 0;
+}

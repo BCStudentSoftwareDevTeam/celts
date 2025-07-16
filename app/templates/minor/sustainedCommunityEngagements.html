@@ -1,5 +1,7 @@
-<div class="tab-pane fade show {{ 'active' if activeTab == 'sustainedCommunityEngagements' or activeTab is not defined else '' }}" id="pills-sustainedCommunityEngagements" role="tabpanel" aria-labelledby="sustainedCommunityEngagements">
+
+<div class="tab-pane fade show {{ 'active' if activeTab == 'sustainedCommunityEngagements' or activeTab is not defined else '' }} text-center" id="pills-sustainedCommunityEngagements" role="tabpanel" aria-labelledby="sustainedCommunityEngagements">
     <p class="pt-2">Requires twenty hours of engagement over the ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+    <h3>Semesters:</h3>
     <div class="accordion" id="communityEngagement">
       {% if sustainedEngagementByTerm %}
       {% for term, engagements in sustainedEngagementByTerm.items() %}
@@ -11,15 +13,10 @@
         </h3>
         <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#communityEngagement">
           <div class="accordion-body">
-            <div class="container-fluid col-10">
+            <div class="container-fluid col-25">
               <div class="row d-flex justify-content-center mb-3">
                 <div class="col-md-6 mb-3">
                   <table class="table mb-3">
-                    <thead>
-                      <tr>
-                        <th scope="col">Community Engagement Activity</th>
-                      </tr>
-                    </thead>
                     <tbody>
                       {% for engagement in engagements %}
                       <tr class="engagement-row" data-engagement-data='{{ engagement|tojson }}'>
