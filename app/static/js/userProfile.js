@@ -26,10 +26,6 @@ $(document).ready(function(){
     });
   })
 
-  $("#printButton").on("click", function() {
-        let username = $(this).data('username')
-        printDocument(`/profile/${username}/travelForm`)
-      })
   $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
@@ -94,7 +90,7 @@ $(document).ready(function(){
     } else if (profileAction == "Insurance Information"){
       window.location.href = `/profile/${username}/insuranceInfo`
     } else if(profileAction == "Print Travel Form"){
-      printDocument(`/profile/${username}/travelForm`)
+      window.open(`/profile/${username}/travelForm`, '_blank')    
     } else if (profileAction == "View Service Transcript"){
       window.location.href = `/profile/${username}/serviceTranscript`
     } else if (profileAction == "Manage CCE Minor") {
