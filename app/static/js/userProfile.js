@@ -1,4 +1,7 @@
 $(document).ready(function(){
+  //Load flash message from sessionStorage, if any
+  msgFlash();
+
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -201,6 +204,7 @@ $(document).ready(function(){
     });
 
   $('#addNoteForm').submit(function(event) {
+
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
     let isBonner = $("#bonnerInput").is(":checked")
@@ -212,8 +216,12 @@ $(document).ready(function(){
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
-        target = isBonner ? "bonner" : "notes"
-        reloadWithAccordion(target)
+          target = isBonner ? "bonner" : "notes"
+          msgFlash("Successfully added a note", "success", 1300, true);
+          location.reload()
+      },
+      error: function(error) {
+        console.log("error")
       }
     });
   });
@@ -235,7 +243,10 @@ $(document).ready(function(){
     * Background Check Functionality
     */
   // Updates the Background check of a volunteer in the database
+
   $(".savebtn").click(function () {
+    msgFlash()
+      enableLiveCustomValidityClearing([".passedBackgroundCheck"])
       $(this).prop("disabled", true);
       let bgCheckType = $(this).data("id")
 
@@ -245,41 +256,46 @@ $(document).ready(function(){
       let bgDate =  bgDateInput.val()
       let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
-      if (bgStatus == '') {
-        bgStatusInput.focus()
-        bgStatusInput.addClass("invalid");
-        window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-        $(this).prop("disabled", false);
-        return false
-      }
-
-      if (bgDate == ''){
-        bgDateInput.focus()
-        bgDateInput.addClass("invalid");
-        window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
-        $(this).prop("disabled", false);
-        return false
-      }
-
-      let data = {
-          bgStatus: bgStatus,      // Expected to be one of the three background check statuses
-          user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-          bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-          bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
-      }
-      $.ajax({
-        url: "/addBackgroundCheck",
-        type: "POST",
-        data: data,
-        success: function(s){
-          var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-          reloadWithAccordion("background")
-        },
-        error: function(error, status){
-            console.log(error, status)
+        if (bgStatus == '') {
+          bgStatusInput.focus()
+           $('.form-select').each(function() {
+                bgStatusInput[0].setCustomValidity("Please enter a status");
+                bgStatusInput[0].reportValidity();
+          });
+          $(this).prop("disabled", false);
+          return false
         }
-      })
-  });
+
+        if (bgDate == ''){
+          bgDateInput.focus()
+          $('.form-control').each(function() {
+                bgDateInput[0].setCustomValidity("Please enter a date");
+                bgDateInput[0].reportValidity();
+          });
+          $(this).prop("disabled", false);
+          return false
+        }
+
+        let data = {
+            bgStatus: bgStatus,      // Expected to be one of the three background check statuses
+            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+            bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
+        }
+        $.ajax({
+          url: "/addBackgroundCheck",
+          type: "POST",
+          data: data,
+          success: function(s){
+            var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+            msgFlash(`Successfully added background check`, "success", 1300,true)
+            reloadWithAccordion("background")
+          },
+          error: function(error, status){
+              console.log(error, status)
+          }
+        })
+    });
 
   $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
     let data = {
@@ -292,8 +308,8 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", `Successfully deleted background check. <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`)
-      },
+       msgFlash(`Successfully deleted background check, <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`, "success")
+      },        
       error: function(error, status){
         console.log(error,status)
       }
