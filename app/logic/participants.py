@@ -126,7 +126,7 @@ def unattendedRequiredEvents(program, user):
 def getEventVolunteers(event):
     eventVolunteers = (EventParticipant.select(EventParticipant, User)
                                          .join(User)
-                                         .where(EventParticipant.event == event and EventParticipant.isLabor == False))
+                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
 
     return [p for p in eventVolunteers]
 

@@ -40,7 +40,7 @@ def updateEventLabor(participantData):
 def getLaborStudents(event):
     eventLabor = (EventParticipant.select(EventParticipant, User)
                                          .join(User)
-                                         .where(EventParticipant.event == event and EventParticipant.isLabor == True))
+                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == True)))
 
     return [p for p in eventLabor]
 
