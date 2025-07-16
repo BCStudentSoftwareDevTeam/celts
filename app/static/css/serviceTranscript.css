@@ -1,5 +1,4 @@
 
-
 /* Alternating row colors for Service Learning Courses */
 .slc-table tbody tr:nth-child(odd) {
   background-color: white;
@@ -8,91 +7,11 @@
 .slc-table tbody tr:nth-child(even) {
   background-color: #F8F9FA;
 }
-
 /* Print styles */
 @media print {
   @page {
     size: letter;
     margin: 0.5in 0.1in 0.5in 0.1in;
-  }
-
-  * {
-    page-break-inside: avoid;
-    page-break-before: avoid;
-    page-break-after: avoid;
-  }
-
-  .slc-table tbody tr:nth-child(odd) {
-    background-color: white !important;
-  }
-
-  .slc-table tbody tr:nth-child(even) {
-    background-color: #F8F9FA !important;
-  }
-
-  /* Ensure page elements don’t break awkwardly */
-  .card,
-  .card-body,
-  .footer-section,
-  .print-header-layout,
-  .footer-logo,
-  .footer-logo-container,
-  .text-center {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  /* Hide contact details when printing */
-  .footer-contact,
-  .d-print-none {
-    display: none !important;
-  }
-
-  /* Show print-only layout */
-  .d-print-flex {
-    display: flex !important;
-  }
-
-  /* Style the compact print header */
-  .print-header-layout {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-    margin-bottom: 10px;
-    flex-wrap: nowrap;
-    position: relative;
-    top: -10px;
-  }
-
-  .print-header-layout img {
-    max-width: 200px;
-    height: auto;
-  }
-
-  .print-header-layout .personal-info {
-    flex: 1;
-    text-align: center;
-  }
-
-  .print-header-layout .personal-info h2 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #005c90;
-    line-height: 1.1;
-    margin: 0;
-  }
-
-  .print-header-layout .personal-info h4 {
-    font-size: 16px;
-    color: #005c90;
-    line-height: 1.1;
-    margin: 0;
-  }
-
-  .print-header-layout .personal-info small {
-    font-size: 11px;
-    color: #666;
   }
 
   .footer-logo {
