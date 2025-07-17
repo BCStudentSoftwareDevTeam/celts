@@ -41,7 +41,6 @@ function calculateRepeatingEventFrequency() {
     endDate: $("#repeatingEventsEndDate").val(),
     location: $("#repeatingEventsLocationPicker").val() || ''
   }
-  console.log(eventDatesAndName);
   $.ajax({
     type: "POST",
     url: "/makeRepeatingEvents",
@@ -372,7 +371,7 @@ function loadOfferingsToModal() {
 function loadRepeatingOfferingToModal(offering) {
   var seriesTable = $("#generatedEventsTable");
   var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
-  console.log(offering);
+
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
