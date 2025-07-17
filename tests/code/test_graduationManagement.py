@@ -21,7 +21,6 @@ from app.models.programManager import ProgramManager
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
 from app.models.activityLog import ActivityLog
-from app.models.eventLabor import EventLabor
 
 @pytest.mark.integration
 def test_setGraduationStatus():
