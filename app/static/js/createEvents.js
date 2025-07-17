@@ -41,6 +41,7 @@ function calculateRepeatingEventFrequency() {
     endDate: $("#repeatingEventsEndDate").val(),
     location: $("#repeatingEventsLocationPicker").val() || ''
   }
+  
   $.ajax({
     type: "POST",
     url: "/makeRepeatingEvents",
@@ -55,7 +56,7 @@ function calculateRepeatingEventFrequency() {
       $("#generatedEvents").removeClass("d-none");
     },
     error: function (error) {
-      console.log(error)
+     
       displayNotification("Failed to generate events.");
     }
   });
@@ -371,7 +372,7 @@ function loadOfferingsToModal() {
 function loadRepeatingOfferingToModal(offering) {
   var seriesTable = $("#generatedEventsTable");
   var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
-
+  
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
