@@ -127,7 +127,18 @@
               <button class="btn btn-primary" id="tableCardToggle" nowrap>Card View</button>
             </div>
             <div class="col-auto align-items-end">
-              <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
+              <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Print
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" id="volutneerListItem" href="#">Print Volunteer List</a>
+                  <a class="dropdown-item" id="travelFormItem" href="#">Print Travel Form</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-auto align-items-end">
+              <form target="_blank" action="{{ url_for("main.eventTravelForm", eventID = event.id )}}" method="POST" id="volunteerUsernames"></form>
             </div>
           </div>
         </div>
@@ -157,7 +168,6 @@
         {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
       </tbody>
     </table>
-
 {% else %}
     <h3>No volunteer information available for this event.</h3>
 {% endif %}
