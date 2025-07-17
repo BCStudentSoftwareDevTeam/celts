@@ -230,10 +230,7 @@ $('#saveSeries').on('click', function () {
       $(endTimeInputs[i]).addClass('border-red');
     }
   }
-
-  if ($(dataTable).children().length < 1) {
-    displayNotification("Please create events.")
-  }
+  let noEventsCreated = ($(dataTable).children().length < 1);
 
   // Check if there are duplicate event offerings
   let eventListings = {};
@@ -249,8 +246,9 @@ $('#saveSeries').on('click', function () {
       eventListings[eventListing] = i
     }
   }
-
-  if (isEmpty) {
+  if(noEventsCreated) {
+    displayNotification("Please create events.");
+  } else if (isEmpty) {
     let emptyFieldMessage = "Event name, date or location field is empty";
     displayNotification(emptyFieldMessage);
   }
@@ -571,8 +569,14 @@ $(document).ready(function () {
       $("#multipleOfferingSlots").removeClass('d-none');
     }
   });
-
-  $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
+  
+  $("#repeatingEventsNamePicker, " + "#repeatingEventsLocationPicker").on("input", handleRepeatingEventsChange); 
+  
+  $("#repeatingEventsStartDate, " +
+ "#repeatingEventsEndDate, " +
+    "#repeatingEventsStartTime, " +
+    "#repeatingEventsEndTime"
+  ).on("change", handleRepeatingEventsChange);
 
   function handleRepeatingEventsChange() {
     if (verifyRepeatingFields()) {
