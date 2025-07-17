@@ -5,8 +5,9 @@
 <link rel="stylesheet" href="{{url_for('static', filename = 'css/travelForm.css')  }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
-{% block app_content %}
-<div class= "w-100 d-print-block">
+{% block content %}
+{% for userData in userList %}
+<div class= "w-100 d-print-block page">
     <div>
         {% set width = 161 %}
         <img src="{{url_for('static', filename='images/logos/celts_vertical_b&w.png')}}" class="" width ="{{width}}" height="{{width * (199/192)}}">
@@ -146,13 +147,11 @@
     <br>
     <div class='underlined d-print-block'>{{userData.healthIssues}}</div>
 </div>
+{% endfor %}
 
+{% block script%}
+<script>
+    print()
+</script>
 {% endblock %}
-
-
-
-
-
-
-
-
+{% endblock %}
