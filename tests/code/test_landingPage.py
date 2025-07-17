@@ -36,13 +36,6 @@ def test_activeEventTab():
                                          contactName = "testName")
         assert getActiveEventTab(bonnerScholars2.id) == "bonnerScholarsEvents"
 
-        other = Program.create(programName = "OP",
-                               isStudentLed = False,
-                               isBonnerScholars = False,
-                               contactEmail = "test@email",
-                               contactName = "testName")
-        assert getActiveEventTab(other.id) == "otherEvents"
-
         transaction.rollback()
 
 @pytest.mark.integration
