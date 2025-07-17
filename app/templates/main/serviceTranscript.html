@@ -2,6 +2,25 @@
 {% extends "base.html" %}
 {% block app_content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/serviceTranscript.css') }}">
+
+{# Calculate filtered totals excluding Bonner Scholars #}
+{% set filteredEventHours = [] %}
+{% set filteredCourseHours = totalHours["totalCourseHours"] | round(2) | int %}
+{% if allEventTranscript %}
+  {% for program in allEventTranscript %}
+    {% set programTitle = program.programName if program.programName else program %}
+    {% if programTitle != "Bonner Scholars" %}
+      {% for item in allEventTranscript[program] %}
+        {% if item[1] is not none and item[1] != "" %}
+          {% set _ = filteredEventHours.append(item[1] | float) %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% set filteredEventHoursTotal = filteredEventHours | sum | round(2) | int %}
+{% set filteredTotalHours = filteredEventHoursTotal + filteredCourseHours %}
+
 <div class="w-100 d-print-inline-block">
   <div class="container-fluid bg-light p-4 mb-4">
     <div class="row align-items-center d-print-none">
@@ -36,7 +55,7 @@
     </div>
   </div>
 
-  {% if totalHours["totalHours"] > 0 %}
+  {% if filteredTotalHours > 0 %}
   <div class="card mb-4">
     <div class="card-header text-white" style = "background-color: #005c90">
       <h5 class="mb-0">Volunteer Hours</h5>
@@ -53,9 +72,9 @@
         </thead>
         <tbody>
           <tr>
-            <td class="text-center fw-bold">{{ totalHours["totalEventHours"] | round(2) | int }}</td>
-            <td class="text-center fw-bold">{{ totalHours["totalCourseHours"] | round(2) | int }}</td>
-            <td class="text-center fw-bold">{{ totalHours["totalHours"] | round(2) | int }}</td>
+            <td class="text-center fw-bold">{{ filteredEventHoursTotal }}</td>
+            <td class="text-center fw-bold">{{ filteredCourseHours | int }}</td>
+            <td class="text-center fw-bold">{{ filteredTotalHours | int }}</td>
           </tr>
         </tbody>
       </table>
