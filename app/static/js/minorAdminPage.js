@@ -2,29 +2,33 @@ import searchUser from './searchUser.js'
 
 
 $(document).ready(function() {
+  // Load flash message from sessionStorage, if any
+  msgFlash();
+
   $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     let activeTab = $(e.target).attr('id').replace('-tab', '');
     let newUrl = window.location.pathname + '?tab=' + activeTab;
     history.pushState(null, '', newUrl);
   });
 
-  $('.remove_minor_candidate').on('click', function() {
-      let username = $(this).attr('id'); 
-      let isAdding = false
-      
-      $.ajax({
-          type: 'POST',
-          url: '/profile/' + username + '/indicateInterest',
-          data: JSON.stringify({ "isAdding": isAdding }),
-          contentType: "application/json",
-          success: function(response) {
-            location.reload()
-          },
-          error: function(error) {
-           console.log("error")
-          }
-      });
-  });
+$('.remove_minor_candidate').on('click', function() {
+    let username = $(this).attr('id'); 
+    let isAdding = false
+    
+    $.ajax({
+        type: 'POST',
+        url: '/profile/' + username + '/indicateInterest',
+        data: JSON.stringify({ "isAdding": isAdding }),
+        contentType: "application/json",
+        success: function(response) {
+            msgFlash("Candidate minor successfully removed", "success", 1500, true);
+            location.reload();
+        },
+        error: function(error) {
+            console.log("error")
+        }
+    });
+});
 
 
   $('#engagedStudentsTable').DataTable();
@@ -88,6 +92,7 @@ function emailAll(){
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's
   // checkboxes are selected
+  
   let checkboxesDisplayedInModal = $("#addInterestedStudentsModal input[type=checkbox]:checked")
   let interestedStudentsList = []
   checkboxesDisplayedInModal.each(function(index, checkbox){
@@ -114,6 +119,7 @@ function updateInterestedStudents(){
     $("#addInterestedStudentsbtn").prop("disabled", true)
   } else {
     $("#addInterestedStudentsbtn").prop("disabled", false)
+    msgFlash("Succssesfully added student intrested in minor.", "success", 1300, true)
   }
 }
 
