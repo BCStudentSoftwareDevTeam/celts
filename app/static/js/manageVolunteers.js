@@ -2,8 +2,6 @@ import searchUser from './searchUser.js'
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
-  var iconShowing = false
-
   $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
   $('[data-toggle="previousVolunteerHover"]').popover({
     trigger: "hover",
@@ -104,24 +102,46 @@ $(document).ready(function() {
     var userlist = $(".repeatingVolunteer").map(function(){
       return $(this).val()
     }).get()
-    function callback(selected) {
+
+      function callback(selected) {
       let user = $("#addVolunteerInput").val()
-      if (userlist.includes(selected["username"]) == false){
-          userlist.push(user)
-          let i = userlist.length;
-          $("#addVolunteerList").prepend("<li class id= 'addVolunteerElements"+i+"'> </li>")          
-          $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
-          $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
-          handleBanned(selected["username"], $("#eventID").val(), i)
-          $("#userlistCheckbox"+i).click(updateSelectVolunteer)
-          updateSelectVolunteer()
+
+      // Check if user is already in the list
+      if (userlist.includes(selected["username"])) {
+        msgFlash("User already selected.")
+        return;
       }
-      else {
-          msgFlash("User already selected.")
-      }
+
+      // Check banned status BEFORE adding user
+      let eventId = $("#eventID").val();
+      $.ajax({
+        url: `/addVolunteersToEvent/${selected["username"]}/${eventId}/isBanned`,
+        type: "GET",
+        success: function(response) {
+          if (response.banned) {
+            msgToast("Error", "This user is banned from this program and cannot be added.", 5000);
+            return; 
+          }
+          
+          // User is not banned, proceed to add them
+          addUserToList(user, selected);
+        },
+      });
     }
+
+    // Helper function to add user to the list
+    function addUserToList(user, selected) {
+      userlist.push(user);
+      let i = userlist.length;
+      $("#addVolunteerList").prepend("<li class id= 'addVolunteerElements"+i+"'> </li>");          
+      $("#addVolunteerElements"+i).append("<input type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >");
+      $("#addVolunteerElements"+i).append("<label for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>");
+      $("#userlistCheckbox"+i).click(updateSelectVolunteer);
+      updateSelectVolunteer();
+    }
+
   $("#addVolunteersButton").prop('disabled', true);
-+
+
   $("#addVolunteerModal").on("shown.bs.modal", function() {
       $('#addVolunteerInput').focus();
   });
@@ -190,25 +210,5 @@ $(document).ready(function() {
           return $(this).attr('data-content');
       }
     });
-  }
-  
-
-  function handleBanned(username, eventId, index){
-    $.ajax({
-      url: `/addVolunteersToEvent/${username}/${eventId}/isBanned`,
-      type: "GET",
-      success: function(response){
-        if (response.banned){
-          $("#addVolunteerElements"+index).append("<a href='#' data-toggle='tooltip' data-placement='top' title='User is banned from this program.'><span class='bi bi-x-circle-fill text-danger'></span></a>")
-          if (!iconShowing){
-            $("#banned-message").removeAttr("hidden")
-            iconShowing = true
-          }
-        }
-      },
-      error: function(request, status, error){
-          console.log(status, error)
-      }
-    })
   }
 });
