@@ -118,32 +118,34 @@
   </div>
 
   {% if slCourses.exists() %}
-  <div class="card mb-4" style="page-break-inside: avoid;">
-    <div class="card-header bg-light">
-      <h5 class="mb-0">Service-Learning Courses</h5>
-    </div>
-    <div class="card-body p-0">
-      <table class="table table-bordered mb-0 slc-table">
-        <thead class="table-light">
-          <tr>
-            <th>Course</th>
-            <th>Term</th>
-            <th>Accrued Service Hours</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for slcourse in slCourses %}
-          <tr>
-            <td>{{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
-            <td>{{ slcourse.term.description }}</td>
-            <td>{{ slcourse.hoursEarned }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+<div class="card mb-4" style="page-break-inside: avoid;">
+  <div class="card-header bg-light">
+    <h5 class="mb-0">Service-Learning Courses</h5>
   </div>
-  {% endif %}
+  <div class="card-body p-0">
+    <table class="table table-bordered mb-0 slc-table">
+      <thead class="table-light">
+        <tr>
+          <th>Course</th>
+          <th>Term</th>
+          <th>Accrued Service Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slcourse in slCourses %}
+          {% if "Bonner" not in slcourse.courseName %}
+            <tr>
+              <td>{{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
+              <td>{{ slcourse.term.description }}</td>
+              <td>{{ slcourse.hoursEarned }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
 
   <div class="mt-5 pt-4  text-center" style="page-break-inside: avoid;">
     <div class="d-print-none mt-5">
