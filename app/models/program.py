@@ -9,7 +9,7 @@ class Program(baseModel):
     bereaUrl = TextField(null=True)
     programDescription = TextField()
     partner = CharField(null=True)
-    isStudentLed = BooleanField(default=False)
+    isVolunteerOpportunities = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
     isOtherCeltsSponsored = BooleanField(default=False)
     contactName = CharField(null=True,default='')

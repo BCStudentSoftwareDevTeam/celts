@@ -118,7 +118,7 @@ def test_addBonnerCohortToRsvpLog():
             # Create a test event associated with a Bonner Scholars program
             programEvent = Program.create(id = 15,
                                         programName = "Bonner Scholars",
-                                        isStudentLed = False,
+                                        isVolunteerOpportunities = False,
                                         isBonnerScholars = True,
                                         contactEmail = "test@email",
                                         contactName = "testName")

@@ -1041,7 +1041,7 @@ DROP TABLE IF EXISTS `program`;
 CREATE TABLE `program` (
   `id` int NOT NULL AUTO_INCREMENT,
   `programName` varchar(255) NOT NULL,
-  `isStudentLed` tinyint(1) NOT NULL,
+  `isVolunteerOpportunities` tinyint(1) NOT NULL,
   `isBonnerScholars` tinyint(1) NOT NULL,
   `contactName` varchar(255) DEFAULT NULL,
   `contactEmail` varchar(255) DEFAULT NULL,

@@ -224,17 +224,17 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventRecords.append(eventRecord)
     return eventRecords
 
-def getStudentLedEvents(term):
-    studentLedEvents = list(Event.select(Event, Program)
+def getVolunteerOpportunities(term):
+    volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
-                                 .where(Program.isStudentLed,
+                                 .where(Program.isVolunteerOpportunities,
                                         Event.term == term, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
     programs = {}
 
-    for event in studentLedEvents:
+    for event in volunteerOpportunities:
         programs.setdefault(event.program, []).append(event)
 
     return programs
@@ -248,14 +248,14 @@ def getEngagementEvents(term):
                                  .execute())
     return engagementEvents
 
-def getUpcomingStudentLedCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
     """
-        Return a count of all upcoming events for each student led program.
+        Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
     
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
-                            .where(Program.isStudentLed,
+                            .where(Program.isVolunteerOpportunities,
                                     Event.term == term, Event.deletionDate == None,
                                     (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
@@ -314,7 +314,7 @@ def getCeltsLabor(term):
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
                                    ((Program.isOtherCeltsSponsored) |
-                                   ((Program.isStudentLed == False) &
+                                   ((Program.isVolunteerOpportunities == False) &
                                    (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())

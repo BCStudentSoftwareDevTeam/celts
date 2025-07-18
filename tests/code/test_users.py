@@ -275,7 +275,7 @@ def test_getStudentManagerForEvent():
         {
         "id":13,
         "programName":"testProgram",
-        "isStudentLed": False,
+        "isVolunteerOpportunities": False,
         "isBonnerScholars":False,
         }
         ]

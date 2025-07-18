@@ -50,8 +50,8 @@
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-2 mb-2" id="pills-tab" role="tablist">
   <li class="col-md-2 col-12 nav-item" role="presentation">
-    <button class="nav-link {{'active' if activeTab == 'studentLedEvents' else ''}}" id="studentLedEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
+    <button class="nav-link {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="volunteerOpportunities"
+    data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Volunteer Opportunities</button>
   </li>
   <li class="col-md-2 col-12 nav-item" role="presentation">
     <button class="nav-link {{'active' if activeTab == 'trainingEvents' else ''}}" id="trainingEvents"
@@ -82,7 +82,7 @@
   <table class="table">
     <thead>
       <tr>
-        {% if type != "bonner" and type != "studentLed" %}
+        {% if type != "bonner" and type != "volunteerOpportunities" %}
         <th scope="col">Program</th>
         {% endif %}
         <th scope="col">Event Name</th>
@@ -100,7 +100,7 @@
           {% else %}
             <tr height = '50' class="">
           {% endif %}
-            {% if type != "bonner" and type != "studentLed" %}
+            {% if type != "bonner" and type != "volunteerOpportunities" %}
               <td class="text-dark">{{event.program.programName}}</td>
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
@@ -149,25 +149,25 @@
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>
-          {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
+          {% set colspan_value = 5 if type == 'bonner' or type == 'volunteerOpportunities' else 6 %}
           <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
         </tr>
       {% endif %}
      </tbody>
    </table>
  </div>
-{% elif type != "studentLed" %}
+{% elif type != "volunteerOpportunities" %}
   <p>There are no events for this program</p>
 {% endif %}
 {% endmacro %}
 
-<!-- #############  Student Led Services  ############# -->
+<!-- #############  Volunteer Opportunities   ############# -->
 
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedEvents %}
+  <div class="tab-pane fade show {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+    {% if volunteerOpportunities %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedEvents.items() %}
+      {% for program,events in volunteerOpportunities.items() %}
         <div class="accordion-item">
           <div class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button {{'show' if programID == program.id else 'collapsed'}}"
@@ -177,10 +177,10 @@
                     aria-expanded="true"
                     aria-controls="accordion__body_{{program}}">
                     {{program.programName}}
-                    {% if program.id not in countUpcomingStudentLedEvents%}
+                    {% if program.id not in countUpcomingVolunteerOpportunities%}
                       <span class="ms-auto fw-light fst-italic">0 upcoming events</span>
                     {% else %}
-                        <span class="ms-auto fw-light fst-italic">{{countUpcomingStudentLedEvents[program.id]}} upcoming event{% if countUpcomingStudentLedEvents[program.id] > 1 %}s{% endif %}</span>
+                        <span class="ms-auto fw-light fst-italic">{{countUpcomingVolunteerOpportunities[program.id]}} upcoming event{% if countUpcomingVolunteerOpportunities[program.id] > 1 %}s{% endif %}</span>
                     {% endif %}
 
             </button>
@@ -189,7 +189,7 @@
                 class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
-                {{createTable(events, "studentLed")}}
+                {{createTable(events, "volunteerOpportunities")}}
             </div>
           </div>
         {% endfor %}

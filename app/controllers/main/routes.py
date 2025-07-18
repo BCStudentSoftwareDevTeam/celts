@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getCeltsLabor, getEngagementEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -69,7 +69,7 @@ def landingPage():
 def goToEventsList(programID):
     return {"activeTab": getActiveEventTab(programID)}
 
-@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents", 'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "volunteerOpportunities", 'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
@@ -85,8 +85,8 @@ def events(selectedTerm, activeTab, programID):
     term: Term = Term.get_by_id(currentTerm)
 
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
-    studentLedEvents = getStudentLedEvents(term)
-    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
+    volunteerOpportunities = getVolunteerOpportunities(term)
+    countUpcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
@@ -97,13 +97,13 @@ def events(selectedTerm, activeTab, programID):
     # Fetch toggle state from session    
     toggleState = request.args.get('toggleState', 'unchecked')
 
-    # compile all student led events into one list
+    # compile all volunteer opportunitiesevents into one list
     studentEvents = []
-    for studentEvent in studentLedEvents.values():
+    for studentEvent in volunteerOpportunities.values():
         studentEvents += studentEvent # add all contents of studentEvent to the studentEvents list
 
     # Get the count of all term events for each category to display in the event list page.
-    studentLedEventsCount: int = len(studentEvents)
+    volunteerOpportunitiesCount: int = len(studentEvents)
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
@@ -111,7 +111,7 @@ def events(selectedTerm, activeTab, programID):
 
     # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
-        studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
+        volunteerOpportunitiesCount: int = sum(list(countUpcomingVolunteerOpportunities.values()))
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
@@ -128,7 +128,7 @@ def events(selectedTerm, activeTab, programID):
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            "studentLedEventsCount": studentLedEventsCount,
+            "volunteerOpportunitiesCount": volunteerOpportunitiesCount,
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
@@ -138,7 +138,7 @@ def events(selectedTerm, activeTab, programID):
     
     return render_template("/events/eventList.html",
                             selectedTerm = term,
-                            studentLedEvents = studentLedEvents,
+                            volunteerOpportunities = volunteerOpportunities,
                             trainingEvents = trainingEvents,
                             engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
@@ -151,7 +151,7 @@ def events(selectedTerm, activeTab, programID):
                             activeTab = activeTab,
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
-                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
+                            countUpcomingVolunteerOpportunities = countUpcomingVolunteerOpportunities,
                             toggleState = toggleState,
                             )
 

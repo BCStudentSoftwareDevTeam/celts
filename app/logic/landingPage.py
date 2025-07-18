@@ -35,7 +35,7 @@ def getActiveEventTab(programID):
     program = Program.get_by_id(programID)
     if program.isBonnerScholars:
         return "bonnerScholarsEvents"
-    elif program.isStudentLed:
-        return "studentLedEvents"
+    elif program.isVolunteerOpportunities:
+        return "volunteerOpportunities"
     else:
         return "celtsLabor"
