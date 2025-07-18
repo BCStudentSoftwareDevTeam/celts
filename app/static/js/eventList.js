@@ -88,10 +88,7 @@ function updateIndicatorCounts(isChecked){
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
-<<<<<<< HEAD
       const celtsLaborCount = Number(eventsCount.celtsLaborCount);
-=======
->>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
       const toggleStatus = eventsCount.toggleStatus;
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
@@ -101,10 +98,7 @@ function updateIndicatorCounts(isChecked){
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
-<<<<<<< HEAD
-      celtsLaborCount > 0 ? $("#celtsLabor").html(`Celts Labor (${celtsLaborCount})`) : $("#celtsLabor").html(`Celts Labor`)
-=======
->>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
+      celtsLaborCount > 0 ? $("#celtsLabor").html(`Celts Labor  (${celtsLaborCount})`) : $("#celtsLabor").html(`Celts Labor `)
     },
     error: function(request, status, error) {
       console.log(status,error);
