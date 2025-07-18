@@ -418,7 +418,15 @@ function formatDate(originalDate) {
  */
 $(document).ready(function () {
   var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
-
+  
+  // This is to prevent the server from being overloaded with requests while the user is typing
+  let debounceTimer;
+  $("#repeatingEventsNamePicker, #repeatingEventsLocationPicker").on("input", function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      handleRepeatingEventsChange(); 
+    }, 7000); 
+  });
   //makes sure bonners toggle will stay on between event pages
   if (isEditPage) {
     if ($("#checkBonners")) {
