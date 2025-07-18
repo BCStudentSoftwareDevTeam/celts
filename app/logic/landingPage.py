@@ -38,4 +38,4 @@ def getActiveEventTab(programID):
     elif program.isStudentLed:
         return "studentLedEvents"
     else:
-        return "otherEvents"
+        return "celtsLabor"

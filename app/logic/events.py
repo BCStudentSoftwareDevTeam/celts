@@ -298,17 +298,17 @@ def getBonnerEvents(term):
                                      .execute())
     return bonnerScholarsEvents
 
-def getOtherEvents(term):
+def getCeltsLabor(term):
     """
     
     Get the list of the events not caught by other functions to be displayed in
-    the Other Events section of the Events List page.
+    the Celts Labor section of the Events List page.
     :return: A list of Other Event objects
     """
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
     
-    otherEvents = list(Event.select(Event, Program)
+    celtsLabor = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
                             .where(Event.term == term, Event.deletionDate == None,
                                    Event.isTraining == False,
@@ -319,7 +319,7 @@ def getOtherEvents(term):
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
 
-    return otherEvents
+    return celtsLabor
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
