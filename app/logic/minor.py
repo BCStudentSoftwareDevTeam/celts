@@ -324,7 +324,7 @@ def getCommunityEngagementByTerm(username):
                                                                                        "id":event.program.id,
                                                                                        "type":"program",
                                                                                        "matched": event.matchedReq,
-                                                                                       "term":event.term.id
+                                                                                       "term":event.term.id,
                                                                                       })
 
     # sorting the communityEngagementByTermDict by the term id
