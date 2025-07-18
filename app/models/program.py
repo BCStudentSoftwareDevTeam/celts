@@ -24,10 +24,6 @@ class Program(baseModel):
             return self.instagramUrl
         if self.facebookUrl:
             return self.facebookUrl
-    
-        if self.programName == "Hunger Initiatives":
-            return "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/hunger-initiatives"
-
         return None  # Explicitly return None if nothing else is available
     @property
     def description(self):
