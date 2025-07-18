@@ -419,6 +419,7 @@ function formatDate(originalDate) {
 $(document).ready(function () {
   var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
   
+
   // This is to prevent the server from being overloaded with requests while the user is typing
   let debounceTimer;
   $("#repeatingEventsNamePicker, #repeatingEventsLocationPicker").on("input", function () {
