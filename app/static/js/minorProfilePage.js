@@ -68,6 +68,8 @@ function changeAction(action){
       toggleEngagementCredit($(this).is(':checked'), engagementData, this)
   });
 
+  
+
   // ************** END SUSTAINED COMMUNITY ENGAGEMENTS ************** //
 
   // ************** SUMMER EXPERIENCE ************** //
@@ -212,6 +214,8 @@ function showEngagementInformation(engagementInfoDict) {
       html.push("</div>")
       // modify the displayed html by joining together the list we have been pushing to
       $(`#set${term}`).html(html.join(""))
+      const myElement = document.getElementById(`set${term}`);
+      myElement.style.backgroundColor = "#F0F0F0"; // light gray background
     },
     error: function(request, status, error) {
       msgFlash("Error displaying information!", "danger")

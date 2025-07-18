@@ -12,7 +12,6 @@
     font-size: 20px;
     
 }
-
 .engagement-row {
     text-align: left;
 }
@@ -22,10 +21,20 @@
 }
 
 .container-fluid {
+    padding-right: 12px;
+} 
+
+.activity_section {
     padding: 0px;
+}
+
+.activity_info {
+    padding: 0px;
+    text-align: left;
 }
 
 .btn {
     padding: 11px;
 }
 
+ 
