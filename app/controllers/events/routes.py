@@ -11,7 +11,6 @@ from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
-from app.logic.participants import addBnumberAsLabor
 
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
@@ -44,9 +43,9 @@ def kioskSignin():
             return "", 500
     try:
         if isLabor:
-            kioskUser, userStatus = addBnumberAsLabor(bnumber, eventid)
+            kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid, True)
         else:
-            kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid)
+            kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid, False)
         if kioskUser:
             return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus}
         else:

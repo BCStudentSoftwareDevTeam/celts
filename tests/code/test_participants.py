@@ -327,12 +327,12 @@ def test_addBnumberAsParticipant():
     # Tests the Kiosk
     # user is banned
     with mainDB.atomic() as transaction:
-        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
+        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2, False)
         assert userStatus == "banned"
 
 
         # user is already signed in
-        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
+        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2, False)
         assert userStatus == "already signed in"
 
         # user is eligible but the user is not in EventParticipant and EventRsvp
@@ -341,7 +341,7 @@ def test_addBnumberAsParticipant():
             EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
             EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
+            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2, False)
             assert userStatus == "success"
 
             participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)

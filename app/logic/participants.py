@@ -44,18 +44,6 @@ def trainedParticipants(programID, targetTerm):
 
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
-    
-def getEventParticipants(event, laborCheck): 
-    if laborCheck  == True:
-        eventVolunteers = (EventParticipant.select(EventParticipant, User)
-                                         .join(User)
-                                         .where((EventParticipant.event == event) & (EventParticipant.isLabor == True)))
-    else:
-        eventVolunteers = (EventParticipant.select(EventParticipant, User)
-                                            .join(User)
-                                            .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
-
-    return [p for p in eventVolunteers]
 
 def unattendedRequiredEvents(program, user):
 
@@ -73,8 +61,6 @@ def unattendedRequiredEvents(program, user):
             return attendedRequiredEventsList
     else:
         return []
-
-
 def getParticipationStatusForTrainings(program, userList, term):
     """
     This function returns a dictionary of all trainings for a program and
@@ -263,7 +249,7 @@ def addVolunteerToEvent(user, event):
 
 # ---------------------- Mutual Stuff ----------------------
 
-def addBnumberAsParticipant(bnumber, eventId):
+def addBnumberAsParticipant(bnumber, eventId, isLabor):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
     try:
@@ -280,13 +266,16 @@ def addBnumberAsParticipant(bnumber, eventId):
         userStatus = "already signed in"
 
     else:
-        userStatus = "success"
         # We are not using addVolunteerToEvent to do this because 
         # that function checks if the event is in the past, but
         # someone could start signing people up via the kiosk
         # before an event has started
-        totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.create (user=kioskUser, event=event, hoursEarned=totalHours)
+        userStatus = "success"
+        if isLabor == True:
+            EventParticipant.create(user=kioskUser, event=event, didWork = False, isLabor = True)
+        else:
+            totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+            EventParticipant.create (user=kioskUser, event=event, hoursEarned=totalHours, didWork = True, isLabor = False)
 
     return kioskUser, userStatus
 
@@ -296,6 +285,17 @@ def checkUserParticipant(user,  event, laborCheck):
     else:
         return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == False).exists()
 
+def getEventParticipants(event, laborCheck): 
+    if laborCheck  == True:
+        eventVolunteers = (EventParticipant.select(EventParticipant, User)
+                                         .join(User)
+                                         .where((EventParticipant.event == event), (EventParticipant.isLabor == True)))
+    else:
+        eventVolunteers = (EventParticipant.select(EventParticipant, User)
+                                            .join(User)
+                                            .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
+
+    return [p for p in eventVolunteers]
 # ---------------------- Labor Stuff ----------------------
 
 def updateEventLabor(participantData):
@@ -361,24 +361,24 @@ def addStudentLaborToEvent(user, event):
 
     return True
     
-def addBnumberAsLabor(bnumber, eventId):
-    """Accepts scan input and signs in the user. If user exists or is already
-    signed in will return user and login status"""
-    try:
-        kioskUser = User.get(User.bnumber == bnumber)
-    except Exception as e:
-        print(e)
-        return None, "does not exist"
+# def (bnumber, eventId):
+#     """Accepts scan input and signs in the user. If user exists or is already
+#     signed in will return user and login status"""
+#     try:
+#         kioskUser = User.get(User.bnumber == bnumber)
+#     except Exception as e:
+#         print(e)
+#         return None, "does not exist"
 
-    event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(event.program, kioskUser):
-        userStatus = "banned"
+#     event = Event.get_by_id(eventId)
+#     if not isEligibleForProgram(event.program, kioskUser):
+#         userStatus = "banned"
 
-    elif checkUserParticipant(kioskUser, event, True):
-        userStatus = "already signed in"
+#     elif checkUserParticipant(kioskUser, event, True):
+#         userStatus = "already signed in"
 
-    else:
-        userStatus = "success"
-        EventParticipant.create(user=kioskUser, event=event, didWork=False)
+#     else:
+#         userStatus = "success"
+#         EventParticipant.create(user=kioskUser, event=event, didWork = False, isLabor = True)
 
-    return kioskUser, userStatus
+#     return kioskUser, userStatus
