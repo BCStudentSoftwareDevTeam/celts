@@ -298,6 +298,7 @@ def getBonnerEvents(term):
                                      .execute())
     return bonnerScholarsEvents
 
+<<<<<<< HEAD
 def getCeltsLabor(term):
     """
     
@@ -321,6 +322,8 @@ def getCeltsLabor(term):
 
     return celtsLabor
 
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in as long

@@ -9,7 +9,11 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
+<<<<<<< HEAD
 from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingStudentLedCount
+=======
+from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, addEventView, getUpcomingStudentLedCount
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 
 @pytest.mark.integration
 @pytest.fixture
@@ -46,6 +50,7 @@ def special_bonner():
     bonnerEvent.delete_instance(bonnerEvent)
 
 @pytest.mark.integration
+<<<<<<< HEAD
 @pytest.fixture
 def special_celtsLabor():
         nonProgramEvent = Event.create(name = "Test for nonProgram",
@@ -62,6 +67,8 @@ def special_celtsLabor():
         nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 def test_getStudentLedEvents(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
@@ -292,12 +299,15 @@ def test_getEngagementEvents():
         transaction.rollback()
 
 @pytest.mark.integration
+<<<<<<< HEAD
 def test_getCeltsLabor(special_celtsLabor):
     otherEvent = special_celtsLabor
     celtsLabor = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
     assert celtsLabor == getCeltsLabor(4)
 
 @pytest.mark.integration
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 def test_eventViewCount():
     with mainDB.atomic() as transaction:
         testEvent = Event.create(name = "Test Student view",

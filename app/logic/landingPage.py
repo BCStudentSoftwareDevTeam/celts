@@ -37,5 +37,8 @@ def getActiveEventTab(programID):
         return "bonnerScholarsEvents"
     elif program.isStudentLed:
         return "studentLedEvents"
+<<<<<<< HEAD
     else:
         return "celtsLabor"
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248

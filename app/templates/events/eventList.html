@@ -67,12 +67,15 @@
       data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
     </li>
     {% endif %}
+<<<<<<< HEAD
   {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isLaborOnly %}
     <li class="col-md-2 col-12 nav-item" role="presentation">
       <button class="nav-link {{'active' if activeTab == 'celtsLabor' else ''}}" id="celtsLabor"
       data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Celts Labor</button>
     </li>
     {% endif %}
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
   </ul>
 </div>
 
@@ -207,9 +210,12 @@
   <div class="tab-pane {{'active' if activeTab == 'bonnerScholarsEvents' else ''}} fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerEvents, "bonner")}}
   </div>
+<<<<<<< HEAD
   <div class="tab-pane {{'active' if activeTab == 'celtsLabor' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createTable(celtsLabor, "other")}}
   </div>
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 </div>
 {% include 'events/emailModal.html' %}
 <script>

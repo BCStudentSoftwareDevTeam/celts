@@ -1,6 +1,6 @@
 import json
 import datetime
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
@@ -26,7 +26,11 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
+<<<<<<< HEAD
 from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getCeltsLabor, getEngagementEvents
+=======
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getEngagementEvents
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -90,7 +94,10 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
+<<<<<<< HEAD
     celtsLabor = getCeltsLabor(term)
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 
     managersProgramDict = getManagerProgramDict(g.current_user)
 
@@ -107,7 +114,10 @@ def events(selectedTerm, activeTab, programID):
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
+<<<<<<< HEAD
     celtsLaborCount: int = len(celtsLabor)
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 
     # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
@@ -121,9 +131,12 @@ def events(selectedTerm, activeTab, programID):
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
+<<<<<<< HEAD
         for event in celtsLabor:
             if event.isPastEnd:
                 celtsLaborCount -= 1
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
 
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -132,7 +145,10 @@ def events(selectedTerm, activeTab, programID):
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
+<<<<<<< HEAD
             "celtsLaborCount": celtsLaborCount,
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
             "toggleStatus": toggleState
         })
     
@@ -142,7 +158,10 @@ def events(selectedTerm, activeTab, programID):
                             trainingEvents = trainingEvents,
                             engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
+<<<<<<< HEAD
                             celtsLabor = celtsLabor,
+=======
+>>>>>>> 6cdecea162d1d26d4077000b745010f3924ee248
                             listOfTerms = listOfTerms,
                             rsvpedEventsID = rsvpedEventsID,
                             currentEventRsvpAmount = currentEventRsvpAmount,
@@ -329,13 +348,48 @@ def travelForm(username):
                 .where(User.username == username).limit(1))
     if not list(user):
         abort(404)
-    userData = list(user.dicts())[0]
-    userData = {key: value if value else '' for (key, value) in userData.items()}
+    userList = list(user.dicts())[0]
+    userList = [{key: value if value else '' for (key, value) in userList.items()}]
 
     return render_template ('/main/travelForm.html',
-                            userData = userData
+                            userList = userList
                             )
 
+@main_bp.route('/event/<eventID>/travelForm', methods=['GET', 'POST'])
+def eventTravelForm(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
+
+    if not (g.current_user.isCeltsAdmin):
+        abort(403)
+
+    if request.method == "POST" and request.form.getlist("username") !=  []:
+        usernameList = request.form.getlist("username")
+        usernameList = usernameList.copy()
+        userList = []
+        for username in usernameList:
+            user = (User.select(User, EmergencyContact, InsuranceInfo)
+                        .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                        .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                        .where(User.username == username).limit(1))
+            if not list(username):
+                abort(404)
+            userData = list(user.dicts())[0]
+            userData = {key: value if value else '' for (key, value) in userData.items()}
+            userList.append(userData)
+            
+        
+    else:
+        return redirect(f"/event/{eventID}/volunteer_details")
+            
+     
+    return render_template ('/main/travelForm.html',
+                           usernameList = usernameList,
+                           userList = userList,
+                           )
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
