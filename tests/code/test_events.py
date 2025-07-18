@@ -300,7 +300,7 @@ def test_calculateRecurringEventFrequency():
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
                  'endDate': parser.parse("03/11/2023"),
-                 'location':("a big room")}
+                 'location': "a big room"}
 
     # test correct response
     returnedEvents = getRepeatingEventsData(eventInfo)
