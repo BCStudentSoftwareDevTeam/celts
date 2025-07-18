@@ -67,10 +67,12 @@
       data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
     </li>
     {% endif %}
-  <li class="col-md-2 col-12 nav-item" role="presentation">
-    <button class="nav-link {{'active' if activeTab == 'otherEvents' else ''}}" id="otherEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
-  </li>
+  {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isLaborOnly %}
+    <li class="col-md-2 col-12 nav-item" role="presentation">
+      <button class="nav-link {{'active' if activeTab == 'celtsLabor' else ''}}" id="celtsLabor"
+      data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Celts Labor</button>
+    </li>
+    {% endif %}
   </ul>
 </div>
 
@@ -205,8 +207,8 @@
   <div class="tab-pane {{'active' if activeTab == 'bonnerScholarsEvents' else ''}} fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerEvents, "bonner")}}
   </div>
-  <div class="tab-pane {{'active' if activeTab == 'otherEvents' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(otherEvents, "other")}}
+  <div class="tab-pane {{'active' if activeTab == 'celtsLabor' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+    {{createTable(celtsLabor, "other")}}
   </div>
 </div>
 {% include 'events/emailModal.html' %}

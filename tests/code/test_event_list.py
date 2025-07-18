@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
+from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingStudentLedCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -47,7 +47,7 @@ def special_bonner():
 
 @pytest.mark.integration
 @pytest.fixture
-def special_otherEvents():
+def special_celtsLabor():
         nonProgramEvent = Event.create(name = "Test for nonProgram",
                                        term = 4,
                                        description = "Special event test for nonProgram",
@@ -292,10 +292,10 @@ def test_getEngagementEvents():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getOtherEvents(special_otherEvents):
-    otherEvent = special_otherEvents
-    otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    assert otherEvents == getOtherEvents(4)
+def test_getCeltsLabor(special_celtsLabor):
+    celtsLabor = special_celtsLabor
+    celtsLabor = [Event.get_by_id(11), Event.get_by_id(7), celtsLabor]
+    assert celtsLabor == getCeltsLabor(4)
 
 @pytest.mark.integration
 def test_eventViewCount():
