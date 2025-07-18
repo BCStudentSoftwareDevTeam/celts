@@ -30,7 +30,7 @@ from app.logic.events import attemptSaveEvent, attemptSaveMultipleOfferings, sav
 from app.logic.events import calculateNewSeriesId, getPreviousSeriesEventData, getUpcomingEventsForUser, calculateNewSeriesId
 from app.logic.events import deleteEventAndAllFollowing, deleteAllEventsInSeries, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent, copyRsvpToNewEvent
 from app.logic.participants import updateEventVolunteers
-from app.logic.participants import addVolunteerToEvent
+from app.logic.participants import addParticipantToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
 

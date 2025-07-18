@@ -38,13 +38,14 @@ from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
+from app.logic.participants import sortParticipants
 
 from app.controllers.admin import admin_bp
 from app.logic.volunteerSpreadsheet import createSpreadsheet
 from app.logic.users import isBannedFromEvent
 
 from peewee import DoesNotExist, JOIN
-from app.logic.participants import updateEventLabor, getEventParticipants, sortLabor, addStudentLaborToEvent
+from app.logic.participants import updateEventLabor, getEventParticipants, addParticipantToEvent
 from app.logic.sharedLogic import getEventLengthInHours
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.logic.users import getBannedUsers
@@ -723,7 +724,7 @@ def manageLaborPage(eventID):
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
  
-        eventLaborData, eventLabor = sortLabor(event)
+        eventLaborData, eventLabor = sortParticipants(event, True)
 
         allRelevantUsers = list(set(participant.user for participant in (eventLabor + eventLaborData)))
         # ----------- Get miscellaneous data -----------
@@ -759,7 +760,7 @@ def addLaborToEvent(eventId):
     
     for user in usernameList:
         userObj = User.get_by_id(user)
-        successfullyAddedLabor = addStudentLaborToEvent(userObj, event)
+        successfullyAddedLabor = addParticipantToEvent(userObj, event, True)
         if successfullyAddedLabor == "already in":
             alreadyAddedList.append(userObj.fullName)
         else:

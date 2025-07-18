@@ -100,7 +100,7 @@ def getParticipationStatusForTrainings(program, userList, term):
     return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
 
 
-def sortParticipantsByStatus(event):
+def sortParticipants(event, isLabor):
     """
     Takes in an event object, queries all participants, and then filters those
     participants by their attendee status.
@@ -109,29 +109,36 @@ def sortParticipantsByStatus(event):
     a list of participants who attended, and a list of all participants who have some status for the 
     event.
     """
-    eventVolunteers = getEventParticipants(event, False)
+    if not isLabor:
+        eventVolunteers = getEventParticipants(event, False)
 
-    # get all RSVPs for event and filter out those that did not attend into separate list
-    eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventVolunteers]
+        # get all RSVPs for event and filter out those that did not attend into separate list
+        eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+        eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventVolunteers]
 
-    if event.isPastStart:
-        eventVolunteerData = eventVolunteers
+        if event.isPastStart:
+            eventVolunteerData = eventVolunteers
 
-        # if the event date has passed disregard the waitlist
-        eventWaitlistData = []
-    else:
-        # if rsvp is required for the event, grab all volunteers that are in the waitlist
-        eventWaitlistData = [volunteer for volunteer in (eventVolunteers + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            # if the event date has passed disregard the waitlist
+            eventWaitlistData = []
+        else:
+            # if rsvp is required for the event, grab all volunteers that are in the waitlist
+            eventWaitlistData = [volunteer for volunteer in (eventVolunteers + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            
+            # put the rest of the users that are not on the waitlist into the volunteer data
+            eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
+            eventNonAttendedData = []
         
-        # put the rest of the users that are not on the waitlist into the volunteer data
-        eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
-        eventNonAttendedData = []
-    
-    return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers
+        return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers
+    else:
+        eventLabor = getEventParticipants(event, True)
+
+        eventLaborData = eventLabor
+
+        return eventLaborData, eventLabor
 
 
-def updateEventVolunteers(participantData):
+def updateEventVolunteers(participantData, isLabor):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 
@@ -139,7 +146,7 @@ def updateEventVolunteers(participantData):
     """
     event = Event.get_or_none(Event.id==participantData['event'])
     if not event:
-        raise Exception("Event does not exist.") # ???
+        raise Exception("Event does not exist.")
         return False
 
 
@@ -164,87 +171,6 @@ def updateEventVolunteers(participantData):
             return False
     return True
 
-def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
-    """
-    Changes the status of a users background check depending on what was marked
-    on their volunteer profile.
-    """
-    today = date.today()
-    user = User.get_by_id(user)
-    if bgStatus == '' and dateCompleted == '':
-        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'Draft'.")
-    else:
-        if not dateCompleted:
-            dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
-        if bgStatus == 'Submitted':
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
-        elif bgStatus == 'Passed':
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
-        else:
-            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
-
-def deleteUserBackgroundCheck(bgCheckId, user):
-    """
-    Deletes the user's background check by marking it as deleted with a timestamp and user information.
-    """
-    bgCheck = BackgroundCheck.get_or_none(BackgroundCheck.id == bgCheckId)
-
-    if bgCheck:
-        (BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: user})
-                         .where(BackgroundCheck.id == bgCheck.id)
-                         .execute())
-
-def setProgramManager(username, program_id, action):
-    '''
-    Assigns or removes a user as a student manager for a program.
-
-    param: username - a string
-           program_id - id
-           action: add, remove
-
-    '''
-    programManager = User.get(User.username==username)
-    if action == "add":
-        programManager.addProgramManager(program_id)
-    elif action == "remove":
-        programManager.removeProgramManager(program_id)
-
-def addVolunteerToEvent(user, event):
-    """
-        Add a user to an event.
-        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
-        If the event is in the future, rsvp for the user (EventRsvp)
-
-        Returns True if the operation was successful, false otherwise
-    """
-    try:
-        volunteerExists = checkUserParticipant(user, event, False)
-        rsvpExists = checkUserRsvp(user, event)
-        if event.isPastStart:
-            if not volunteerExists:
-                # We duplicate these two lines in addBnumberAsParticipant
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
-        else:
-            if not rsvpExists:
-                currentRsvp = getEventRsvpCountsForTerm(event.term)
-                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
-                EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
-
-                targetList = "the waitlist" if waitlist else "the RSVP list"
-                if g.current_user.username == user.username:
-                    createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
-                else:
-                    createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
-
-        if volunteerExists or rsvpExists:
-            return "already in"
-    except Exception as e:
-        print(e)
-        return False
-
-    return True
 
 
 # ---------------------- Mutual Stuff ----------------------
@@ -296,6 +222,94 @@ def getEventParticipants(event, laborCheck):
                                             .where((EventParticipant.event == event) & (EventParticipant.isLabor == False)))
 
     return [p for p in eventVolunteers]
+
+def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
+    """
+    Changes the status of a users background check depending on what was marked
+    on their volunteer profile.
+    """
+    today = date.today()
+    user = User.get_by_id(user)
+    if bgStatus == '' and dateCompleted == '':
+        createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'Draft'.")
+    else:
+        if not dateCompleted:
+            dateCompleted = None
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
+        if bgStatus == 'Submitted':
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
+        elif bgStatus == 'Passed':
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
+        else:
+            createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
+
+
+def setProgramManager(username, program_id, action):
+    '''
+    Assigns or removes a user as a student manager for a program.
+
+    param: username - a string
+           program_id - id
+           action: add, remove
+
+    '''
+    programManager = User.get(User.username==username)
+    if action == "add":
+        programManager.addProgramManager(program_id)
+    elif action == "remove":
+        programManager.removeProgramManager(program_id)
+
+def deleteUserBackgroundCheck(bgCheckId, user):
+    """
+    Deletes the user's background check by marking it as deleted with a timestamp and user information.
+    """
+    bgCheck = BackgroundCheck.get_or_none(BackgroundCheck.id == bgCheckId)
+
+    if bgCheck:
+        (BackgroundCheck.update({BackgroundCheck.deletionDate: datetime.now(), BackgroundCheck.deletedBy: user})
+                         .where(BackgroundCheck.id == bgCheck.id)
+                         .execute())       
+
+def addParticipantToEvent(user, event, isLabor):
+    """
+        Add a user to an event.
+        If the event is in the past, add the user as a volunteer or laborer (EventParticipant) including hours worked.
+        If the event is in the future, rsvp for the user (EventRsvp)
+
+        Returns True if the operation was successful, false otherwise
+    """
+    try:
+        participantExists = checkUserParticipant(user, event, False)
+        rsvpExists = checkUserRsvp(user, event)
+        if not participantExists:
+            if not isLabor:
+                if event.isPastStart:
+                    if not participantExists:
+                        # We duplicate these two lines in addBnumberAsParticipant
+                        eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                        EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+                else:
+                    if not rsvpExists:
+                        currentRsvp = getEventRsvpCountsForTerm(event.term)
+                        waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
+                        EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+
+                        targetList = "the waitlist" if waitlist else "the RSVP list"
+                        if g.current_user.username == user.username:
+                            createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
+                        else:
+                            createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
+            else:
+                    EventParticipant.create(user=user, event=event, didWork=False, isLabor=True)
+        elif participantExists or rsvpExists:
+            return "already in"
+    except Exception as e:
+        print(e)
+        return False
+
+    return True
+
+
 # ---------------------- Labor Stuff ----------------------
 
 def updateEventLabor(participantData):
@@ -306,7 +320,7 @@ def updateEventLabor(participantData):
     """
     event = Event.get_or_none(Event.id == participantData['event'])
     if not event:
-        return False
+        raise Exception("Event does not exist.")
 
     for username in participantData.getlist("username"):
         userObject = User.get_or_none(User.username == username)
@@ -331,54 +345,3 @@ def updateEventLabor(participantData):
             )
 
     return True
-
-def sortLabor(event):
-
-    eventLabor = getEventParticipants(event, True)
-
-    eventLaborData = eventLabor
-
-    return eventLaborData, eventLabor
-
-
-def addStudentLaborToEvent(user, event):
-    """
-        Add a user to an event.
-        If the event is in the past, add the user as a volunteer (EventParticipant)
-        If the event is in the future, rsvp for the user (EventRsvp)
-
-        Returns True if the operation was successful, false otherwise
-    """
-    try:
-        LaborExists = checkUserParticipant(user, event, True)
-        if not LaborExists:
-            EventParticipant.create(user=user, event=event, didWork=False, isLabor=True)
-        if LaborExists:
-            return "already in"
-    except Exception as e:
-        print(e)
-        return False
-
-    return True
-    
-# def (bnumber, eventId):
-#     """Accepts scan input and signs in the user. If user exists or is already
-#     signed in will return user and login status"""
-#     try:
-#         kioskUser = User.get(User.bnumber == bnumber)
-#     except Exception as e:
-#         print(e)
-#         return None, "does not exist"
-
-#     event = Event.get_by_id(eventId)
-#     if not isEligibleForProgram(event.program, kioskUser):
-#         userStatus = "banned"
-
-#     elif checkUserParticipant(kioskUser, event, True):
-#         userStatus = "already signed in"
-
-#     else:
-#         userStatus = "success"
-#         EventParticipant.create(user=kioskUser, event=event, didWork = False, isLabor = True)
-
-#     return kioskUser, userStatus

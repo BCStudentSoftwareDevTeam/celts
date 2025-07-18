@@ -11,7 +11,7 @@ from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
 from app.logic.searchUsers import searchUsers
 from app.logic.participants import updateEventVolunteers, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
-from app.logic.participants import trainedParticipants, addVolunteerToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
+from app.logic.participants import trainedParticipants, addParticipantToEvent, getParticipationStatusForTrainings, sortParticipants
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -65,7 +65,7 @@ def manageVolunteersPage(eventID):
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
   
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipantsByStatus(event)
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipants(event, False)
 
         allRelevantUsers = list(set(participant.user for participant in (eventVolunteers + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
         # ----------- Get miscellaneous data -----------
@@ -136,7 +136,7 @@ def addVolunteer(eventId):
     
     for user in usernameList:
         userObj = User.get_by_id(user)
-        successfullyAddedVolunteer = addVolunteerToEvent(userObj, event)
+        successfullyAddedVolunteer = addParticipantToEvent(userObj, event, False)
         if successfullyAddedVolunteer == "already in":
             alreadyAddedList.append(userObj.fullName)
         else:

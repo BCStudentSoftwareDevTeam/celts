@@ -13,7 +13,7 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.participants import updateEventVolunteers
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserParticipant, addVolunteerToEvent, sortParticipantsByStatus
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserParticipant, addParticipantToEvent, sortParticipants
 from app.models.eventRsvp import EventRsvp
 from app.logic.sharedLogic import getEventLengthInHours
 
@@ -98,7 +98,7 @@ def test_addPersonToEvent():
             newEvent = Event.get(name="Test event 1234")
 
             user = User.get_by_id("ramsayb2")
-            userAdded = addVolunteerToEvent(user, newEvent)
+            userAdded = addParticipantToEvent(user, newEvent, False)
             assert userAdded == True, "User was not added"
             assert checkUserParticipant(user, newEvent, False), "No Volunteer record was added"
             assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
@@ -113,7 +113,7 @@ def test_addPersonToEvent():
             
             newEvent = Event.get(name="Test event 1234")
 
-            userAdded = addVolunteerToEvent(user, newEvent)
+            userAdded = addParticipantToEvent(user, newEvent, False)
             assert userAdded == True, "User was not added"
             assert checkUserRsvp(user, newEvent), "No RSVP record was added"
             assert not checkUserParticipant(user, newEvent, False), "A Volunteer record was added instead"
@@ -129,13 +129,13 @@ def test_addPersonToEvent():
             waitlistEvent = Event.get(name="Waitlist Event")
             rsvpUser = User.get_by_id("ayisie")
 
-            addRsvp = addVolunteerToEvent(rsvpUser, waitlistEvent)
+            addRsvp = addParticipantToEvent(rsvpUser, waitlistEvent, False)
             rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
             assert addRsvp == True
             assert len(rsvpNoWaitlist) == 1
 
             waitlistUser = User.get_by_id("partont")
-            addWaitlist = addVolunteerToEvent(waitlistUser, waitlistEvent)
+            addWaitlist = addParticipantToEvent(waitlistUser, waitlistEvent, False)
             rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
             
             assert addWaitlist == True
@@ -492,7 +492,7 @@ def test_sortParticipantsByStatus():
         khattsParticipant = EventParticipant.get(user = "khatts", event = testingEvent)
         ayisieParticipant = EventParticipant.get(user = "ayisie", event = testingEvent)
 
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipantsByStatus(testingEvent)
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipants(testingEvent, False)
         assert eventNonAttendedData == [partontRsvp]
         assert eventWaitlistData == []
         assert eventVolunteerData == [neillzParticipant, khattsParticipant, ayisieParticipant]
@@ -522,7 +522,7 @@ def test_sortParticipantsByStatus():
         mupotsalRsvp = EventRsvp.get(user = "mupotsal", event = testFutureEvent)
         ayisieRsvp = EventRsvp.get(user = "ayisie", event = testFutureEvent)
 
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipantsByStatus(testFutureEvent)
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventVolunteers = sortParticipants(testFutureEvent, False)
         assert eventNonAttendedData == []
         assert eventWaitlistData == [ayisieRsvp]
         assert eventVolunteerData == [agliullovakRsvp, mupotsalRsvp]
