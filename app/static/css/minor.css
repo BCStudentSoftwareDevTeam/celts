@@ -18,5 +18,14 @@
 }
 
 .accordion-body {
-    padding-top: 0;
+    padding: 0px;
 }
+
+.container-fluid {
+    padding: 0px;
+}
+
+.btn {
+    padding: 11px;
+}
+
