@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
+from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, addEventView, getUpcomingStudentLedCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -44,22 +44,6 @@ def special_bonner():
 
     yield bonnerEvent
     bonnerEvent.delete_instance(bonnerEvent)
-
-@pytest.mark.integration
-@pytest.fixture
-def special_otherEvents():
-        nonProgramEvent = Event.create(name = "Test for nonProgram",
-                                       term = 4,
-                                       description = "Special event test for nonProgram",
-                                       timeStart = "19:00:00",
-                                       timeEnd = "22:00:00",
-                                       location = "moon",
-                                       isTraining = False,
-                                       startDate = "2021-12-12",
-                                       program = 9)
-
-        yield nonProgramEvent
-        nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
 def test_getStudentLedEvents(training_events):
@@ -290,12 +274,6 @@ def test_getEngagementEvents():
         assert returnedEvent == [engagementEvent]
 
         transaction.rollback()
-
-@pytest.mark.integration
-def test_getOtherEvents(special_otherEvents):
-    otherEvent = special_otherEvents
-    otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    assert otherEvents == getOtherEvents(4)
 
 @pytest.mark.integration
 def test_eventViewCount():

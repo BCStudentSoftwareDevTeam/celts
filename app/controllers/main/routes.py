@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents, getEngagementEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getEngagementEvents
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -90,7 +90,6 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
-    otherEvents = getOtherEvents(term)
 
     managersProgramDict = getManagerProgramDict(g.current_user)
 
@@ -107,7 +106,6 @@ def events(selectedTerm, activeTab, programID):
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
-    otherEventsCount: int = len(otherEvents)
 
     # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
@@ -121,9 +119,6 @@ def events(selectedTerm, activeTab, programID):
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
-        for event in otherEvents:
-            if event.isPastEnd:
-                otherEventsCount -= 1
 
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -132,7 +127,6 @@ def events(selectedTerm, activeTab, programID):
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
-            "otherEventsCount": otherEventsCount,
             "toggleStatus": toggleState
         })
     
@@ -142,7 +136,6 @@ def events(selectedTerm, activeTab, programID):
                             trainingEvents = trainingEvents,
                             engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
-                            otherEvents = otherEvents,
                             listOfTerms = listOfTerms,
                             rsvpedEventsID = rsvpedEventsID,
                             currentEventRsvpAmount = currentEventRsvpAmount,

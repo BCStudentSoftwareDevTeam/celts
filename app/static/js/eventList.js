@@ -88,7 +88,6 @@ function updateIndicatorCounts(isChecked){
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
-      const otherEventsCount = Number(eventsCount.otherEventsCount);
       const toggleStatus = eventsCount.toggleStatus;
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
@@ -98,7 +97,6 @@ function updateIndicatorCounts(isChecked){
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
-      otherEventsCount > 0 ? $("#otherEvents").html(`Other Events (${otherEventsCount})`) : $("#otherEvents").html(`Other Events`)
     },
     error: function(request, status, error) {
       console.log(status,error);
