@@ -516,8 +516,6 @@ function checkValidation() {
   }
 }
 
-
-
 /*
  * Run when the webpage is ready for javascript
  */
@@ -531,7 +529,7 @@ $(document).ready(function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function () {
       handleRepeatingEventsChange(); 
-    }, 7000); 
+    }, 3000); 
   });
   //makes sure bonners toggle will stay on between event pages
   if (isEditPage) {
@@ -671,8 +669,14 @@ $("#cancelEvent").on('click', function (event) {
       $("#multipleOfferingSlots").removeClass('d-none');
     }
   });
+  
+  $("#repeatingEventsNamePicker, " + "#repeatingEventsLocationPicker").on("input", handleRepeatingEventsChange); 
 
-  $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
+  $("#repeatingEventsStartDate, " +
+ "#repeatingEventsEndDate, " +
+    "#repeatingEventsStartTime, " +
+    "#repeatingEventsEndTime"
+  ).on("change", handleRepeatingEventsChange);
 // this handels start date, end date, last event date, start time, and end time 
   function handleRepeatingEventsChange() {
     if (!verifyRepeatingFields()) {
