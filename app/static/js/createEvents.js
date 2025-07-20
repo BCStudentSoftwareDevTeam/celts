@@ -41,7 +41,7 @@ function calculateRepeatingEventFrequency() {
     endDate: $("#repeatingEventsEndDate").val(),
     location: $("#repeatingEventsLocationPicker").val() || ''
   }
-  console.log(eventDatesAndName);
+  
   $.ajax({
     type: "POST",
     url: "/makeRepeatingEvents",
@@ -56,7 +56,7 @@ function calculateRepeatingEventFrequency() {
       $("#generatedEvents").removeClass("d-none");
     },
     error: function (error) {
-      console.log(error)
+     
       displayNotification("Failed to generate events.");
     }
   });
@@ -385,7 +385,7 @@ function loadOfferingsToModal() {
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
   var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
-  console.log(offering);
+  
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
@@ -523,7 +523,16 @@ function checkValidation() {
  */
 $(document).ready(function () {
   var isEditPage = (window.location.pathname == '/event/' + $('#newEventID').val() + '/edit')
+  
 
+  // This is to prevent the server from being overloaded with requests while the user is typing
+  let debounceTimer;
+  $("#repeatingEventsNamePicker, #repeatingEventsLocationPicker").on("input", function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      handleRepeatingEventsChange(); 
+    }, 7000); 
+  });
   //makes sure bonners toggle will stay on between event pages
   if (isEditPage) {
     if ($("#checkBonners")) {
