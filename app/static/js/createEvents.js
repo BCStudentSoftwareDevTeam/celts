@@ -761,11 +761,9 @@ $("#cancelEvent").on('click', function (event) {
 
     if (startDateSelected < now && endDateSelected > now) {
       $("#pastDateWarningText").text("This event is currently in progress!")
-    }
-    else if (startDateSelected < now && endDateSelected < now) {
+  } else if (startDateSelected < now && endDateSelected < now) {
       $("#pastDateWarningText").text("This event is in the past!")
-    }
-    else
+  }else{
       $("#pastDateWarningText").text("")
   }
 
@@ -796,6 +794,7 @@ $("#cancelEvent").on('click', function (event) {
   } else {
     $(".timepicker").prop("type", "time");
     $(".timeIcons").prop("hidden", true);
+  }
   }
 
   if ($(".datePicker").is("readonly")) {
@@ -851,8 +850,9 @@ $("#cancelEvent").on('click', function (event) {
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
-  
-});
+  });
+
+
 
 
 
