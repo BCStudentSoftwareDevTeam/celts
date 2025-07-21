@@ -162,6 +162,7 @@ function changeAction(action){
 })
 
 function showEngagementInformation(engagementInfoDict) {
+  console.log(engagementInfoDict)
   let type = engagementInfoDict['type'],
       id = engagementInfoDict['id'],
       term= engagementInfoDict['term'];

@@ -306,7 +306,8 @@ def getCommunityEngagementByTerm(username):
                  "id":course.id,
                  "type":"course",
                  "matched": course.matchedReq,
-                 "term":course.term.id})
+                 "term":course.term.id, 
+                 "courseAbbreviation": course.courseAbbreviation})
 
     programMatchCase = Case(None, [(IndividualRequirement.program.is_null(True) , 0)], 1)
 
@@ -324,7 +325,7 @@ def getCommunityEngagementByTerm(username):
                                                                                        "id":event.program.id,
                                                                                        "type":"program",
                                                                                        "matched": event.matchedReq,
-                                                                                       "term":event.term.id,
+                                                                                       "term":event.term.id                                                                                  
                                                                                       })
 
     # sorting the communityEngagementByTermDict by the term id
