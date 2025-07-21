@@ -63,9 +63,17 @@ def special_celtsLabor():
 
 @pytest.mark.integration
 def test_getVolunteerOpportunities(training_events):
-    volunteerOpportunities = training_events
-    allVolunteerOpportunitiesProgram = {volunteerOpportunities.program: [volunteerOpportunities]}
-    assert allVolunteerOpportunitiesProgram == getVolunteerOpportunities(2)
+
+    training_events.term = 2
+    training_events.isService = True
+    training_events.deletionDate = None
+    training_events.program.isVolunteerOpportunities = True
+    training_events.save()
+    training_events.program.save()
+
+    expected = {training_events.program: [training_events]}
+    actual = getVolunteerOpportunities(2)
+    assert expected == actual
 
 @pytest.mark.integration
 def test_getUpcomingVolunteerOpportunitiesCount():
@@ -84,6 +92,7 @@ def test_getUpcomingVolunteerOpportunitiesCount():
                                       timeEnd = "06:00:00",
                                       location = "The Moon",
                                       isTraining = False,
+                                      isService = True,
                                       startDate = "2021-08-02",
                                       program = 3)
          
@@ -95,6 +104,7 @@ def test_getUpcomingVolunteerOpportunitiesCount():
                                         timeEnd = "06:00:00",
                                         location = "The Sun",
                                         isTraining = False,
+                                        isService = True,
                                         startDate = "2021-08-02",
                                         program = 3)
         
@@ -106,6 +116,7 @@ def test_getUpcomingVolunteerOpportunitiesCount():
                                         timeEnd = "06:00:00",
                                         location = "Mars",
                                         isTraining = False,
+                                        isService = True,
                                         startDate = "2021-08-02",
                                         program = 3)
         
@@ -135,6 +146,7 @@ def test_getUpcomingVolunteerOpportunitiesCount():
                                           timeEnd = "06:00:00",
                                           location = "The Moon",
                                           isTraining = False,
+                                          isService = True,
                                           startDate = "2021-08-02",
                                           program = 2)
         
