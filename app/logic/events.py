@@ -228,7 +228,7 @@ def getVolunteerOpportunities(term):
     volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where(Program.isVolunteerOpportunities,
-                                        Event.term == term, Event.deletionDate == None)
+                                        Event.term == term, Event.isService == True, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
@@ -256,7 +256,7 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isVolunteerOpportunities,
-                                    Event.term == term, Event.deletionDate == None,
+                                    Event.term == term, Event.isService == True, Event.deletionDate == None,
                                     (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
