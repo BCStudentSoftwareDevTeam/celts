@@ -41,7 +41,7 @@ def test_activeEventTab():
                                isBonnerScholars = False,
                                contactEmail = "test@email",
                                contactName = "testName")
-        assert getActiveEventTab(other.id) == "otherEvents"
+        assert getActiveEventTab(other.id) == "celtsLabor"
 
         transaction.rollback()
 
