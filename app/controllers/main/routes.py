@@ -305,18 +305,24 @@ def insuranceInfo(username):
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
-
-        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        if not rowsUpdated:
-            InsuranceInfo.create(user = username, **request.form)
-
-        createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
-        flash('Insurance information saved successfully!', 'success') 
-
-        if request.args.get('action') == 'exit':
-            return redirect (f"/profile/{username}")
-        else:
-            return redirect (f"/profile/{username}/emergencyContact")
+    existing_record = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+        
+    if existing_record:
+        # Update existing record
+        for key, value in request.form.items():
+            setattr(existing_record, key, value)
+        existing_record.save()
+    else:
+        # Create new record
+        InsuranceInfo.create(user=username, **request.form)
+    
+    createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
+    flash('Insurance information saved successfully!', 'success')
+    
+    if request.args.get('action') == 'exit':
+        return redirect(f"/profile/{username}")
+    else:
+        return redirect(f"/profile/{username}/emergencyContact")
 
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
