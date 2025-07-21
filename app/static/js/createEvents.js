@@ -671,12 +671,10 @@ $("#cancelEvent").on('click', function (event) {
   });
   
   $("#repeatingEventsNamePicker, " + "#repeatingEventsLocationPicker").on("input", handleRepeatingEventsChange); 
-
   $("#repeatingEventsStartDate, " +
- "#repeatingEventsEndDate, " +
+    "#repeatingEventsEndDate, " +
     "#repeatingEventsStartTime, " +
-    "#repeatingEventsEndTime"
-  ).on("change", handleRepeatingEventsChange);
+    "#repeatingEventsEndTime").on("change", handleRepeatingEventsChange);
 // this handels start date, end date, last event date, start time, and end time 
   function handleRepeatingEventsChange() {
     if (!verifyRepeatingFields()) {
