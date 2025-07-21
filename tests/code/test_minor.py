@@ -231,10 +231,11 @@ def test_getCommunityEngagementByTerm(testUser):
                                     isService = 1,
                                     startDate = "2021-12-12",
                                     isCanceled = False,
-                                    program = 1)        
+                                    program = 1,
+                                    )        
         
         testCourse = Course.create(courseName="test get course information",
-                                   courseAbbreviation="TGCI",
+                                   courseAbbreviation="TEST",
                                    sectionDesignation="something",
                                    courseCredit=1.0,
                                    term=3, # Summer 2021
@@ -254,7 +255,7 @@ def test_getCommunityEngagementByTerm(testUser):
         # write out what we expect the result to be as the getCommunityEngagementByTerm is suppose to return name, id, type, matched and term
         expectedServiceResult = OrderedDict({
                 ("Fall 2020", 1):[{"name":serviceEvent.program.programName, "id":serviceEvent.program.id, "type":"program", "matched": False, "term":serviceEvent.term.id}],
-                ("Summer 2021", 3):[{"name":serviceCourse.courseName, "id":serviceCourse.id, "type":"course", "matched": False, "term":serviceCourse.term.id}]})
+                ("Summer 2021", 3):[{"name":serviceCourse.courseName, "id":serviceCourse.id, "type":"course", "matched": False, "term":serviceCourse.term.id, "courseAbbreviation":serviceCourse.courseAbbreviation}]})
         
         # get the actual result from getCommunityEngagementByTerm
         actualServiceResult = getCommunityEngagementByTerm(testUser.username)
@@ -275,10 +276,11 @@ def test_getCommunityEngagementByTerm(testUser):
                                     isService = 0,
                                     startDate = "2021-1-1",
                                     isCanceled = False,
-                                    program = 2)
-        
+                                    program = 2,
+                                    )
+
         testCourse = Course.create(courseName="test get course information",
-                                courseAbbreviation="TGCI",
+                                courseAbbreviation="TEST",
                                 sectionDesignation="something",
                                 courseCredit=1.0,
                                 term=3,
@@ -298,12 +300,12 @@ def test_getCommunityEngagementByTerm(testUser):
         #This expected result is without the non-service event as the return value of getCommunityEngagementByTerm 
         #is suppose to return name, id, type, matched and term of events with only isService as True
         expectedNonServiceResult = OrderedDict({
-            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
+            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id, "courseAbbreviation":nonServiceCourse.courseAbbreviation}]})
         
         #This expected result is with the non-service event to test whether getCommunityEngagementByTerm is actualy returning only service events and courses
         unexpectedResultWithoutServiceEvent = OrderedDict({
             ("Spring 2021", 2):[{"name":nonServiceEvent.program.programName, "id":nonServiceEvent.program.id, "type":"program", "matched": False, "term":nonServiceEvent.term.id}],
-            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id}]})
+            ("Summer 2021", 3):[{"name":nonServiceCourse.courseName, "id":nonServiceCourse.id, "type":"course", "matched": False, "term":nonServiceCourse.term.id, "courseAbbreviation":nonServiceCourse.courseAbbreviation}]})
         
         # get the actual result from getCommunityEngagementByTerm
         actualNonServiceResult = getCommunityEngagementByTerm(testUser.username)
