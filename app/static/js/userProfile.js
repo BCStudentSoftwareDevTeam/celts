@@ -336,6 +336,7 @@ $(document).ready(function(){
 
     } else {
         $("#dietContainer").show();
+        $("#diet").val("");
     }
   });
   $(".saveDiet").on('click', function() {
