@@ -14,7 +14,7 @@ $(document).ready(function(){
         success: function(response) {
           let accept = "You have indicated interest in CCE Minor.";
           let decline = "You have indicated you are not interested in the CCE Minor.";
-        
+       
           let msg = isAdding ? accept : decline;
           msgToast('Success', msg);
           $("#interestIndicatedText").text(msg);
@@ -54,7 +54,7 @@ $(document).ready(function(){
     var username = $(this).data('username');
     var programID = $(this).data("programid");
     displayTranscriptStatus(programID);
-    
+   
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -77,7 +77,7 @@ $(document).ready(function(){
     //show for 0.5s and fade out last for 0.5s
     setTimeout(function() {
       $('#transcriptStatus-' + programID).fadeOut(500, function() {
-          $(this).text(''); 
+          $(this).text('');
       });
     }, 500);
   }
@@ -140,7 +140,7 @@ $(document).ready(function(){
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
-    
+   
   });
 
   $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
@@ -153,7 +153,7 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
-    
+   
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
@@ -336,6 +336,7 @@ $(document).ready(function(){
 
     } else {
         $("#dietContainer").show();
+        $("#diet").val("");
     }
   });
   $(".saveDiet").on('click', function() {
@@ -366,8 +367,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"username":volunteerUsername, 
-            "programId":programId,       
+    data : {"username":volunteerUsername,
+            "programId":programId,      
             "action":action,          
              },
 
@@ -383,7 +384,5 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
       }
   })
 
-  
+ 
 }
-
-
