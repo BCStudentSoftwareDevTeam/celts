@@ -147,8 +147,6 @@ def updateEventVolunteers(participantData):
     event = Event.get_or_none(Event.id==participantData['event'])
     if not event:
         raise Exception("Event does not exist.")
-        return False
-
 
     for username in participantData.getlist("username"):
         userObject = User.get_or_none(User.username==username)
@@ -170,8 +168,6 @@ def updateEventVolunteers(participantData):
         else:
             return False
     return True
-
-
 
 # ---------------------- Mutual Stuff ----------------------
 
@@ -243,7 +239,6 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
         else:
             createActivityLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
-
 def setProgramManager(username, program_id, action):
     '''
     Assigns or removes a user as a student manager for a program.
@@ -308,7 +303,6 @@ def addParticipantToEvent(user, event, isLabor):
         return False
 
     return True
-
 
 # ---------------------- Labor Stuff ----------------------
 
