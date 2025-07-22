@@ -138,7 +138,7 @@ def sortParticipants(event, isLabor):
         return eventLaborData, eventLabor
 
 
-def updateEventVolunteers(participantData, isLabor):
+def updateEventVolunteers(participantData):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 
