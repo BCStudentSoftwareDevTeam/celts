@@ -1,24 +1,23 @@
 from app.models import *
 
-
 class User(baseModel):
-    username = CharField(primary_key = True)
-    bnumber = CharField(unique = True)
+    username = CharField(primary_key=True)
+    bnumber = CharField(unique=True)
     email = CharField()
-    phoneNumber = CharField(null = True)
+    phoneNumber = CharField(null=True)
     firstName = CharField()
     lastName  = CharField()
     cpoNumber = CharField(null=False)   
-    isStudent = BooleanField(default = False)
-    major = CharField(null = True)
-    classLevel = CharField(null = True)
-    isFaculty = BooleanField(default = False)
-    isStaff = BooleanField(default = False)
-    isCeltsAdmin = BooleanField(default  =False)
-    isCeltsStudentStaff = BooleanField(default = False)
+    isStudent = BooleanField(default=False)
+    major = CharField(null=True)
+    rawClassLevel = CharField(null=True)
+    isFaculty = BooleanField(default=False)
+    isStaff = BooleanField(default=False)
+    isCeltsAdmin = BooleanField(default=False)
+    isCeltsStudentStaff = BooleanField(default=False)
     dietRestriction = TextField(null=True)
-    minorInterest = BooleanField(default=False)
-    hasGraduated = BooleanField(default=False)   
+    minorInterest = BooleanField(null=True)
+    hasGraduated = BooleanField(default=False)
     declaredMinor = BooleanField(default=False)
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
@@ -27,7 +26,14 @@ class User(baseModel):
 
         self._pmCache = {}
         self._bsCache = None
-        
+        self._isProgramManagerCache = None
+    
+    @property
+    def processedClassLevel(self):
+        if not self.rawClassLevel:
+            return ""
+        return "Graduated" if (self.hasGraduated) else self.rawClassLevel
+
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
@@ -73,5 +79,14 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
-
     
+    @property
+    def isProgramManager(self):
+        from app.models.programManager import ProgramManager
+
+        if self._isProgramManagerCache is None:
+            self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
+            
+        return self._isProgramManagerCache
+
+

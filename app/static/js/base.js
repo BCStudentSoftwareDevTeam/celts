@@ -1,4 +1,4 @@
-const flashMessageResponse = function flashEventResponse(message){
+function flashMessageResponse(message) {
   if (message.slice(-8) == "deleted."){
 
     return `<strong><a href="/event/undo" style="color: dark-green;">Undo</a></strong>` 
@@ -6,19 +6,57 @@ const flashMessageResponse = function flashEventResponse(message){
   return '';
 }
 
-function msgFlash(flash_message, status){
-    if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
-    $("#flash_container").prepend(`
-      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${flashMessageResponse(flash_message)}
-        <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
-      </div>`);
-    $(".close-alert").click(function(){
-      $(this).closest(".alert").delay(1000).fadeOut();
-    })
+function enableLiveCustomValidityClearing(selectors) {
+  selectors.forEach(selector => {
+    $(selector).each(function () {
+      // Avoid rebinding listeners on already-bound elements
+      if (!$(this).data("has-clearing-listener")) {
+        $(this).on("input", function () {
+          this.setCustomValidity("");
+        });
+        $(this).data("has-clearing-listener", true); // flag it
+      }
+    });
+  });
 }
 
+function msgFlash(flashMessage, status, timeout=2500, afterReload=false) {
+    if (afterReload) {
+      // Save message to sessionStorage for next page load
+      sessionStorage.setItem('flashMessage', JSON.stringify({
+          message: flashMessage,
+          type: status,
+          timeout: timeout
+      }));
+      return;
+    }
 
+    if (!flashMessage || !status) {
+      const storedMessage = sessionStorage.getItem('flashMessage');
+      if (storedMessage) {
+        const messageData = JSON.parse(storedMessage);
+        flashMessage = messageData.message;
+        status = messageData.type;
+        timeout = messageData.timeout ?? 2500;
+        sessionStorage.removeItem('flashMessage');
+      } else {
+        return; // Nothing to show
+      }
+    }
+
+    if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
+    $("#flash_container").prepend(`
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
+        ${flashMessageResponse(flashMessage)}
+        <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
+      </div>`);
+    if (timeout) {
+      $(".alert").delay(timeout).fadeOut();
+    }
+    $(".close-alert").click(function(){
+      $(this).closest(".alert").delay(250).fadeOut();
+    })
+}
 
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {
@@ -33,7 +71,7 @@ $(document).ready(function() {
 
 });
 
-function msgToast(head, body){
+function msgToast(head, body, duration=3000){
   if ($("#liveToast").is(":visible") == true){
     $('#liveToast').removeClass("show")
     $('#liveToast').addClass("hide")
@@ -41,6 +79,10 @@ function msgToast(head, body){
   $("#toast-header").html(head)
   $("#toast-body").html(body)
   toastList[0].show()
+
+  setTimeout(() => {
+    toastList[0].hide();
+  }, duration);
 }
 
 function setupPhoneNumber(editButtonId, phoneInput){
@@ -113,7 +155,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             "phoneNumber":phoneInput.val()},
       success: function(s){
         $(phoneInputId).attr("data-value",phoneInput.val())
-        msgToast("Phone Number", "Successfully updated the phone number.")
+        msgFlash("Successfully updated the phone number.","success" )
       },
       error: function(request, status, error) {
         msgFlash("Phone number not updated.", "danger")

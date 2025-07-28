@@ -14,6 +14,17 @@ function cohortRequest(year, method, username){
   })
 }
 
+function downloadSpreadsheet(blob, fileName) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
 function addSearchCapabilities(inputElement){
     $(inputElement).on("input", function(){
         let year = $(this).data('year');
@@ -21,10 +32,19 @@ function addSearchCapabilities(inputElement){
     });
 }
 
+function updateExportText(){
+    const activeYearElement = document.querySelector(".nav-link.year.active");
+    if (!activeYearElement) return;
+
+    const startingYear = Number(activeYearElement.getAttribute("data-year"));
+    const newText = `(${startingYear - 5} - ${startingYear})`;
+    document.getElementById("last5").textContent = newText;
+}
 
 /*** Run After Page Load *************************************/
 $(document).ready(function(){
     $("#addCohort").on('click', addCohort);
+    
     $("input[type=search]").each((i, inputElement) => addSearchCapabilities(inputElement));
     $(".removeBonner").on("click", function(){
         let year = $(this).data('year');
@@ -44,6 +64,38 @@ $(document).ready(function(){
         }
     });
 
+    $(".export-spreadsheet").on('click', function() {
+        const startingYear = document.getElementsByClassName("nav-link year active")[0].getAttribute("data-year")
+        const noOfYears = this.getAttribute("data-years")
+        const url = `/bonnerXls/${startingYear}/${noOfYears}`
+        let fileName;
+        if (noOfYears === "all") {
+            fileName = "Bonner Spreadsheet, All Cohorts";
+        } else if (Number(noOfYears) === 1) {
+            fileName = `Bonner Spreadsheet, ${startingYear} - ${Number(startingYear) + 1}`;
+        } else {
+            fileName = `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`;
+        }
+
+        $.ajax({
+            url: url,
+            method: "GET",
+            xhrFields: { responseType: "blob" },
+            success: function (blob) {
+                msgFlash("Download Successful", "success");
+                downloadSpreadsheet(blob, fileName);
+            },
+            error: function (error, status) {
+                msgFlash("Download Failed", "danger");
+                console.log("Error response:", error.responseText, status);
+        }
+    })
+    })
+
+    $(".year").on('click', function() {
+        updateExportText();
+    });
+
     addRequirementsRowHandlers()
 
     // Add Requirement handler
@@ -60,6 +112,8 @@ $(document).ready(function(){
 
 });
 /** End onready ****************************/
+
+document.addEventListener("DOMContentLoaded", updateExportText);
 
 /* Add a new requirements row and focus it */
 function addRequirement() {
@@ -103,6 +157,7 @@ function addCohort(){
     // Add functionality to the search box on the newly added tab
     addSearchCapabilities($(`#search-${newCohortYear}`).get());
 }
+
 /* Get the data for the whole requirement set and save them */
 function saveRequirements() {
     var data = $("#requirements tbody tr").map((i,row) => (

@@ -18,6 +18,10 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
+from app.logic.createLogs import createActivityLog
+from app.logic.fileHandler import FileHandler
+from app.logic.serviceLearningCourses import deleteCourseObject
+from app.models.attachmentUpload import AttachmentUpload
 
 
 def createSummerExperience(username, formData):
@@ -182,7 +186,7 @@ def getDeclaredMinorStudents():
     """
     Get a list of the students who have declared minor
     """
-    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor)
+    declaredStudents = User.select().where(User.isStudent & User.declaredMinor)
 
     interestedStudentList = [model_to_dict(student) for student in declaredStudents]
 
@@ -393,3 +397,17 @@ def removeSummerExperience(username):
     """
     term, summerExperienceToDelete = getSummerExperience(username)
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
+
+def removeProposal(proposalID) -> None:
+    """
+    Delete summer experience or other engagement objects from the CCEMinorProposal table. 
+    File objects attached to the CCEMinorProposal object are also deleted. 
+    """
+    proposalID = int(proposalID)
+
+    proposalAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
+    if proposalAttachment:
+        proposalFileHandler = FileHandler(proposalId=proposalID)
+        proposalFileHandler.deleteFile(proposalAttachment.id)
+
+    CCEMinorProposal.delete().where(CCEMinorProposal.id == proposalID).execute()

@@ -1244,7 +1244,7 @@ CREATE TABLE `user` (
   `isCeltsStudentStaff` tinyint(1) NOT NULL,
   `dietRestriction` text,
   `major` varchar(255) DEFAULT NULL,
-  `classLevel` varchar(255) DEFAULT NULL,
+  `rawClassLevel` varchar(255) DEFAULT NULL,
   `minorInterest` tinyint(1) NOT NULL,
   `cpoNumber` varchar(255) NOT NULL,
   `hasGraduated` tinyint(1) NOT NULL,

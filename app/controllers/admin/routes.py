@@ -40,7 +40,7 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getImportedCourses, getInstructorCourses, editImportedCourses
 
 from app.controllers.admin import admin_bp
-from app.logic.spreadsheet import createSpreadsheet
+from app.logic.volunteerSpreadsheet import createSpreadsheet
 
 
 @admin_bp.route('/admin/reports')
@@ -66,7 +66,7 @@ def switchUser():
     print(f"Switching user from {g.current_user} to",request.form['newuser'])
     session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
 
-    return redirect(request.referrer)
+    return redirect(request.referrer) 
 
 
 @admin_bp.route('/eventTemplates')
@@ -117,6 +117,7 @@ def createEvent(templateid, programid):
         savedEvents = None
         eventData.update(request.form.copy())
         eventData = preprocessEventData(eventData)
+
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
@@ -267,7 +268,7 @@ def eventDisplay(eventId):
         event = Event.get_by_id(eventId)
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event == event
-        ))
+        )) 
         invitedYears = [str(cohort.year) for cohort in invitedCohorts]
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
@@ -659,16 +660,15 @@ def updatecohort(year, method, username):
     else:
         flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
-
     return ""
 
-@admin_bp.route("/bonnerxls")
-def bonnerxls():
+@admin_bp.route("/bonnerXls/<startingYear>/<noOfYears>")
+def getBonnerXls(startingYear, noOfYears):
     if not g.current_user.isCeltsAdmin:
         abort(403)
-
-    newfile = makeBonnerXls()
+    newfile = makeBonnerXls(startingYear, noOfYears)
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
+
 
 @admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
 def saveRequirements(certid):

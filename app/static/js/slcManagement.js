@@ -1,5 +1,7 @@
 import {getCourseInstructors, getRowUsername, createNewRow} from './instructorTable.js'
 import searchUser from './searchUser.js';
+
+
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
   $('.modal').on('hidden.bs.modal', function () {
@@ -26,7 +28,8 @@ $(document).ready(function() {
       } else if ($(this).attr('data-content') == "Approved") {
         return "This proposal has been approved by CELTS."
 
-      } else if ($(this).attr('data-content') == "In Progress") {
+
+      } else if ($(this).attr('data-content') == "Draft") {
         return "This proposal has not been submitted for review."
 
       } else if ($(this).attr('data-content') == "Imported") {
@@ -35,7 +38,6 @@ $(document).ready(function() {
       }
     }
   });
-
 
   $("#instructorTable").on("click", ".removeButton", function() {
     $(this).closest("tr").find(".editButton").each(function() {
@@ -127,7 +129,7 @@ function renew(){
       }
     })
     resetAllSelections()
-}
+  }
 function withdraw(){
   // uses hidden label to withdraw course
   let courseID = $("#courseID").val();
@@ -138,9 +140,13 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-        console.log(status,error);
+        console.log(status,error);      
+        
+    },
+    done: function () {
+      $('#' + courseID).val('---');
     }
-  })
+  });
 };
 
 function changeTerm() {

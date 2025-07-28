@@ -2,7 +2,7 @@ from app.models import*
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
-from app.models.cceMinorProposal import CCEMinorProposal 
+from app.models.cceMinorProposal import CCEMinorProposal
 
 class AttachmentUpload(baseModel):
     event = ForeignKeyField(Event, null=True)

@@ -1,26 +1,31 @@
 $(document).ready(function(){
-  $("#expressInterest").on("click", function() {
+  //Load flash message from sessionStorage, if any
+  msgFlash();
+
+  $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
-    let isAdding = true 
-    
+    let isAdding = $(this).is(':checked');
+
     $.ajax({
         url: "/profile/"+username+"/indicateInterest",
         type: "POST",
         data: JSON.stringify({ "isAdding": isAdding }),
         contentType: "application/json",
-        success: function(s) {
+        success: function(response) {
+          let accept = "You have indicated interest in CCE Minor.";
+          let decline = "You have indicated you are not interested in the CCE Minor.";
+       
+          let msg = isAdding ? accept : decline;
+          msgToast('Success', msg);
+          $("#interestIndicatedText").text(msg);
         },
         error: function(request, status, error) {
           console.log(status, error)
-          msgToast("Error!", "Failed to save changes!")
+          msgToast("Error!","Failed to save changes!")
         }
     });
   })
 
-  $("#printButton").on("click", function() {
-        let username = $(this).data('username')
-        printDocument(`/profile/${username}/travelForm`)
-      })
   $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
@@ -49,7 +54,7 @@ $(document).ready(function(){
     var username = $(this).data('username');
     var programID = $(this).data("programid");
     displayTranscriptStatus(programID);
-    
+   
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -72,7 +77,7 @@ $(document).ready(function(){
     //show for 0.5s and fade out last for 0.5s
     setTimeout(function() {
       $('#transcriptStatus-' + programID).fadeOut(500, function() {
-          $(this).text(''); 
+          $(this).text('');
       });
     }, 500);
   }
@@ -85,7 +90,7 @@ $(document).ready(function(){
     } else if (profileAction == "Insurance Information"){
       window.location.href = `/profile/${username}/insuranceInfo`
     } else if(profileAction == "Print Travel Form"){
-      printDocument(`/profile/${username}/travelForm`)
+      window.open(`/profile/${username}/travelForm`, '_blank')    
     } else if (profileAction == "View Service Transcript"){
       window.location.href = `/profile/${username}/serviceTranscript`
     } else if (profileAction == "Manage CCE Minor") {
@@ -124,8 +129,8 @@ $(document).ready(function(){
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).data("name "));
+    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
+    $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
@@ -135,11 +140,10 @@ $(document).ready(function(){
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
-    
+   
   });
 
-
-  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
@@ -149,7 +153,7 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
-    
+   
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
@@ -200,6 +204,7 @@ $(document).ready(function(){
     });
 
   $('#addNoteForm').submit(function(event) {
+
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
     let isBonner = $("#bonnerInput").is(":checked")
@@ -211,11 +216,15 @@ $(document).ready(function(){
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
-        target = isBonner ? "bonner" : "notes"
-        reloadWithAccordion(target)
+          target = isBonner ? "bonner" : "notes"
+          msgFlash("Successfully added a note", "success", 1300, true);
+          location.reload()
+      },
+      error: function(error) {
+        console.log("error")
       }
     });
-});
+  });
 
   $(".deleteNoteButton").click(function() {
     let username = $(this).data('username')
@@ -230,32 +239,39 @@ $(document).ready(function(){
     });
   });
 
-    /*
-     * Background Check Functionality
-     */
-    // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () {
-        $(this).prop("disabled", true);
-        let bgCheckType = $(this).data("id")
+  /*
+    * Background Check Functionality
+    */
+  // Updates the Background check of a volunteer in the database
 
-        var bgStatusInput = $("#" + bgCheckType)
-        var bgDateInput = $("#" + bgCheckType + "_date")
+  $(".savebtn").click(function () {
+    msgFlash()
+      enableLiveCustomValidityClearing([".passedBackgroundCheck"])
+      $(this).prop("disabled", true);
+      let bgCheckType = $(this).data("id")
 
-        let bgDate =  bgDateInput.val()
-        let bgStatus = $("[data-id=" + bgCheckType + "]").val()
+      var bgStatusInput = $("#" + bgCheckType)
+      var bgDateInput = $("#" + bgCheckType + "_date")
+
+      let bgDate =  bgDateInput.val()
+      let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
         if (bgStatus == '') {
           bgStatusInput.focus()
-          bgStatusInput.addClass("invalid");
-          window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+           $('.form-select').each(function() {
+                bgStatusInput[0].setCustomValidity("Please enter a status");
+                bgStatusInput[0].reportValidity();
+          });
           $(this).prop("disabled", false);
           return false
         }
 
         if (bgDate == ''){
           bgDateInput.focus()
-          bgDateInput.addClass("invalid");
-          window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+          $('.form-control').each(function() {
+                bgDateInput[0].setCustomValidity("Please enter a date");
+                bgDateInput[0].reportValidity();
+          });
           $(this).prop("disabled", false);
           return false
         }
@@ -272,6 +288,7 @@ $(document).ready(function(){
           data: data,
           success: function(s){
             var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+            msgFlash(`Successfully added background check`, "success", 1300,true)
             reloadWithAccordion("background")
           },
           error: function(error, status){
@@ -291,8 +308,8 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", `Successfully deleted background check. <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`)
-      },
+       msgFlash(`Successfully deleted background check, <a href="/profile/undo" id="bgCheckUndo" class="mx-2">Undo</a>`, "success")
+      },        
       error: function(error, status){
         console.log(error,status)
       }
@@ -300,18 +317,28 @@ $(document).ready(function(){
   });
 
   // Popover functionality
-    var requiredTraining = $(".trainingPopover");
-    requiredTraining.popover({
-       trigger: "hover",
-       sanitize: false,
-       html: true,
-       content: function() {
-            return $(this).attr('data-content');
-        }
-    });
-
+  var requiredTraining = $(".trainingPopover");
+  requiredTraining.popover({
+      trigger: "hover",
+      sanitize: false,
+      html: true,
+      content: function() {
+          return $(this).attr('data-content');
+      }
+  });
+ 
   setupPhoneNumber("#updatePhone", "#phoneInput")
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
 
+    } else {
+        $("#dietContainer").show();
+        $("#diet").val("");
+    }
+  });
   $(".saveDiet").on('click', function() {
     let data = {
       dietInfo: $("#diet").val(),
@@ -340,8 +367,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"username":volunteerUsername, 
-            "programId":programId,       
+    data : {"username":volunteerUsername,
+            "programId":programId,      
             "action":action,          
              },
 
@@ -356,4 +383,6 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
+
+ 
 }

@@ -48,8 +48,8 @@ users = [
         "isCeltsStudentStaff": False,
         "dietRestriction": "Diary",
         "major": None,
-        "classLevel": None,
-        "minorInterest": 0,
+        "rawClassLevel": None,
+        "minorInterest": None,
 
     },
     {
@@ -64,7 +64,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
-        "classLevel": "Senior",
+        "rawClassLevel": "Senior",
         "minorInterest": 1,
     },
     {
@@ -79,7 +79,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
         "major": "Psychology",
-        "classLevel": "Sophomore",
+        "rawClassLevel": "Sophomore",
         "minorInterest": 0,
     },
 
@@ -95,8 +95,8 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer and Information Science",
-        "classLevel": "Junior",
-        "minorInterest": 0,
+        "rawClassLevel": "Junior",
+        "minorInterest": None,
     },
     {
         "username" : "ayisie",
@@ -110,8 +110,8 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Chemistry",
-        "classLevel": "Junior",
-        "minorInterest": 1,
+        "rawClassLevel": "Junior",
+        "minorInterest": None,
 
     },
     {
@@ -126,8 +126,8 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": None,
-        "classLevel": None,
-        "minorInterest": 1,
+        "rawClassLevel": None,
+        "minorInterest": None,
     },
     {
         "username": "bryanta",
@@ -138,8 +138,8 @@ users = [
         "lastName": "Bryant",
         "isStudent": True,
         "major": "Biology",
-        "classLevel": "Senior",
-        "minorInterest": 1,
+        "rawClassLevel": "Senior",
+        "minorInterest": None,
 
     },
     {
@@ -151,8 +151,8 @@ users = [
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
         "major": "Computer Science",
-        "classLevel": "Senior",
-        "minorInterest": 1,
+        "rawClassLevel": "Senior",
+        "minorInterest": None,
 
     },
     {
@@ -165,8 +165,8 @@ users = [
         "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True,
         "major": None,
-        "classLevel": None,
-        "minorInterest": 1,
+        "rawClassLevel": None,
+        "minorInterest": None,
 
     },
     {
@@ -181,8 +181,8 @@ users = [
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "major": None,
-        "classLevel": None,
-        "minorInterest": 0,
+        "rawClassLevel": None,
+        "minorInterest": None,
     },
      {
         "username": "qasema",
@@ -196,8 +196,8 @@ users = [
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "major": None,
-        "classLevel": None,
-        "minorInterest": 0,
+        "rawClassLevel": None,
+        "minorInterest": None,
     },
     {
         "username": "stettnera2",
@@ -212,8 +212,8 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
         "major": None,
-        "classLevel": None,
-        "minorInterest": 0,
+        "rawClassLevel": None,
+        "minorInterest": None,
     },
     {
         "username": "bledsoef",
@@ -226,7 +226,7 @@ users = [
         "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
-        "minorInterest": 0,
+        "minorInterest": None,
     },
     {
         "username" : "makindeo",
@@ -240,8 +240,38 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
-        "classLevel": "Senior",
-        "minorInterest": 1,
+        "rawClassLevel": "Senior",
+        "minorInterest": None,
+    },
+    {
+        "username" : "michels",
+        "bnumber" : "B00781963",
+        "email": "michels@berea.edu",
+        "phoneNumber": "(555)555-9999",
+        "firstName" : "Stevenson",
+        "lastName" : "Michel",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Senior",
+        "minorInterest": None,
+    },
+    {
+        "username" : "hoerstl",
+        "bnumber" : "B00791233",
+        "email": "hoerstl@berea.edu",
+        "phoneNumber": "(555)555-9999",
+        "firstName" : "Lawrence",
+        "lastName" : "Hoerst",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Senior",
+        "minorInterest": None,
     },
 ]
 User.insert_many(users).on_conflict_replace().execute()
@@ -259,6 +289,8 @@ bonners = [
     { "year": 2022, "user": "neillz" },
     { "year": 2022, "user": "ramsayb2" },
     { "year": 2022, "user": "makindeo" },
+    { "year": 2022, "user": "michels" },
+    { "year": 2022, "user": "hoerstl" },
     ]
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 

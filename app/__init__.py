@@ -105,14 +105,14 @@ supportContactEmail = app.config["support_email_contact"]
 @app.errorhandler(403)
 def handle_bad_request(e):
     return render_template("/errors/403error.html",
-                            supportEmail = supportContactEmail)
+                            supportEmail = supportContactEmail), 403
 
 @app.errorhandler(404)
 def handle_bad_request(e):
     return render_template("/errors/404error.html",
-                            supportEmail = supportContactEmail)
+                            supportEmail = supportContactEmail), 404
 
 @app.errorhandler(500)
 def handle_bad_request(e):
     return render_template("/errors/500error.html",
-                            supportEmail = supportContactEmail)
+                            supportEmail = supportContactEmail), 500

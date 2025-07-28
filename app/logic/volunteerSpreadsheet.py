@@ -219,7 +219,7 @@ def createSpreadsheet(academicYear):
 
     makeDataXls(volunteerHoursByProgram(academicYear), hoursByProgramColumns, "Total Hours By Program", workbook)
     makeDataXls(volunteerMajorAndClass(academicYear, User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
-    makeDataXls(volunteerMajorAndClass(academicYear, User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
+    makeDataXls(volunteerMajorAndClass(academicYear, User.rawClassLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
     makeDataXls(repeatVolunteersPerProgram(academicYear), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
     makeDataXls(repeatVolunteers(academicYear), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
     makeDataXls(getRetentionRate(academicYear), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)

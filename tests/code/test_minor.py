@@ -1,10 +1,11 @@
 import pytest
+import os
 import uuid
 from peewee import *
 from flask import g
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
-from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from app import app
 
 from app.models import mainDB
@@ -18,9 +19,12 @@ from app.models.eventParticipant import EventParticipant
 from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
-from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience
+from app.models.attachmentUpload import AttachmentUpload
+from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
 from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
+from app.logic.fileHandler import FileHandler
+
 
 @pytest.fixture
 def testUser(request):
@@ -120,8 +124,8 @@ def test_getCourseInformation(testUser):
 @pytest.mark.integration
 def test_toggleMinorInterest(testUser):
     with mainDB.atomic() as transaction:
-        # make sure users have the default values of false and not interested, respectively
-        assert testUser.minorInterest == False
+        # make sure users have the default values of None
+        assert testUser.minorInterest == None
         toggleMinorInterest(testUser.username, True)
         
         testUser = User.get_by_id(testUser.username)
@@ -568,10 +572,65 @@ def test_createOtherEngagementRequest(testUser, testProposal):
         assert len(initialOtherExperiences) == 1 
 
         transaction.rollback()
+
+@pytest.mark.parametrize("testProposal", [
+    {"proposalType": "otherEngagement"}
+], indirect=True)
+@pytest.mark.integration
+def test_removeProposal(testProposal, testUser):
+    '''creates a test course with all foreign key fields. tests if they can
+    be deleted'''
+
+    testProposalId = 999
+
+    with mainDB.atomic() as transaction:
+
+        assert list(CCEMinorProposal.select(CCEMinorProposal.id).where(CCEMinorProposal.id == testProposalId)) == []
+
+
+        testOtherEngagement = CCEMinorProposal.create(id=testProposalId,
+                                student = testUser.username,
+                                proposalType = 'Other Engagement',
+                                createdBy = testUser.username,
+                                status = 'Pending',
+                                **testProposal
+                            )
+        assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testOtherEngagement]
+
+        # creates a base object for proposal events 
+        proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
+
+        handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=testProposalId)
+
+        # uploading a file to proposalattachments 
+        handledProposalFile.saveFiles()
         
+        try:
+            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
+            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
+            
+            with app.app_context():
+                g.current_user = testUser.username
+                removeProposal(testProposalId)
+
+            assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
+        
+            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
+            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
+
+        except Exception as e:
+            raise e 
+        
+        finally:
+            fileExists = AttachmentUpload.get_or_none(proposal_id = testProposalId)
+            fullFilePath = handledProposalFile.getFileFullPath(f'{testProposalId}.pdf')
+            if fileExists:
+                os.remove(fullFilePath)
+
+        transaction.rollback()
         
 @pytest.mark.integration
-def testDeclareMinorInterest():
+def test_declareMinorInterest():
     
     with mainDB.atomic() as transaction:
         # Get three students with interest in minor
@@ -613,7 +672,7 @@ def testDeclareMinorInterest():
 
 
 @pytest.mark.integration
-def testGetDeclaredMinorStudents():
+def test_getDeclaredMinorStudents():
     
     with mainDB.atomic() as transaction:
         # Get all the declared students

@@ -14,20 +14,7 @@
 {% endblock %}
 
 {% block app_content %}
-{% if volunteer.isStudent and not totalSustainedEngagements%}
-  <div class="float-end rounded d-none d-lg-block minorInfoBox">
-    <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click 
-      <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-      for more information.
-    </p>
-    {% if g.current_user.isAdmin %}
-      <label for="expressInterest">{{volunteer.firstName}} {{volunteer.lastName}} is interested in the CCE Minor.</label>
-    {% else %}
-      <label for="expressInterest">Are you interested in pursuing the CCE Minor?</label>
-    {% endif %}
-      <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
-  </div>
-{% endif %}
+
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
@@ -44,21 +31,19 @@
     {% if volunteer.major -%}
     <div>{{volunteer.major}}</div>
     {% endif %}
-    {% if volunteer.classLevel -%}
-    <div>{{volunteer.classLevel}}</div>
-    {% endif %}
+    <div>{{volunteer.processedClassLevel}}</div>
     {% if volunteer.cpoNumber %}
       <div>
-      {{volunteer.cpoNumber}} 
+      {{volunteer.cpoNumber}}
     </div>
     {% else %}
       <div>
     </div>
     {%endif%}
   </div>
-      
+     
   <div class="row pb-2 pe-0">
-    
+   
     <div class="col"></div>
     <div class="col-auto pe-0 ">
       <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
@@ -79,6 +64,47 @@
   </div>
 </div>
 <div class="accordion" id="userProfile">
+
+<!-- ################# Community & Civic Engagement Minor ################ -->
+{% if g.current_user.isStudent %}
+  <div class="accordion-item">
+    {% if not g.current_user.isCeltsStudentStaff or g.current_user.username == username %}
+    <h3 class="accordion-header" id="headingZero">
+       {% set focus = "open" if visibleAccordion == "MinorTable" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse"
+      data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Community & Civic Engagement Minor</button>
+    </h3>
+      <div id="collapseZero" class="accordion-collapse collapse {{show}} " aria-labelledby="headingZero" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="row table-responsive">
+             <p for="expressInterest">Did you know we have a Community and Civic Engagement Minor? Click
+             <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+             for more information.
+             </p>
+              <div class="form-check form-switch" id="togglebuttonuser">
+              <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
+                {% if expressInterest is none %}
+                  Are you interested in the CCE Minor?
+                {% else %}
+                  You have indicated
+                  {% if expressInterest is false %}
+                    you are not interested
+                  {% else %}
+                    interest
+                  {% endif %}
+                  in the CCE Minor.                                
+                {% endif %}
+              </label></strong>
+                <input class="form-check-input" data-username ="{{volunteer.username}}"
+                type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
+             </div>
+          </div>
+        </div>
+     </div>
+  </div>
+    {% endif %}
+{% endif %}
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -114,7 +140,7 @@
               <tr class="{{ eventStatus }}">
                   <td>{{event.program.programName if event.program else '--'}}</td>
                   <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-                  <td nowrap>{{ '<i>In Progress</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
+                  <td nowrap>{{ '<i>Draft</i>' | safe if eventStatus == 'ongoing-event' else event.startDate.strftime('%m/%d/%Y') }}</td>
                   <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
                   <td nowrap>{{event.timeEnd.strftime('%-I:%M %p')}}</td>
                   <td>{{event.location}}</td>
@@ -168,6 +194,7 @@
             {% endif %}
           </table>
         </div>
+        <a class="btn btn-primary btn-sm" href="{{volunteer.username}}/serviceTranscript" > View Service Transcript</a>
       </div>
     </div>
   </div>
@@ -228,16 +255,16 @@
                         <i class="bi bi-pencil editIcon"></i></button>
                     {% endif %}
                     </td>
-                    
+                   
                     {% if g.current_user.isCeltsAdmin %}
                         <td class="onTranscript">
-                          <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}" 
+                          <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}"
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
                           <div id="transcriptStatus-{{row.program.id}}" class="transcriptStatus"></div>
                         </td>
                     {% endif %}
-                    
-                    
+                   
+                   
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -272,30 +299,19 @@
             {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
             <div class="col-md-6">
-              {% if g.current_user.isCeltsAdmin %}
-                <h5>Choose programs to manage:</h5>
-              {% else %}
                 <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
-              {% endif %}
-              <ul class="list-unstyled">
+                <ul class="list-unstyled">
                 {% for program in programs %}
-                  {% set action = "add" %}
-                  {% set checked = "" %}
                   {% if program.id in permissionPrograms %}
-                    {% set action = "remove" %}
-                    {% set checked = "checked" %}
-                    {% if not g.current_user.isCeltsAdmin%}
-                      <li>{{program.programName}}</li>
-                    {% endif %}
-                  {% endif %}
-                  {% if g.current_user.isCeltsAdmin%}
-                    <li>
-                      <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                      <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-                    </li>
+                    <li>{{program.programName}}</li>
                   {% endif %}
                 {% endfor %}
-              </ul>
+                </ul>
+            </div>
+            <div>
+              {% if g.current_user.isCeltsAdmin %}
+                <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% endif %}
             </div>
             {% endif %}
           </div>
@@ -321,8 +337,8 @@
                 <tr>
                   <th scope="col">Description</th>
                    {% if g.current_user.isCeltsAdmin%}
-                     <th scope="col">Status</th>
-                     <th scope="col">Date</th>
+                     <th class="required" scope="col">Status</th>
+                     <th class="required" scope="col">Date</th>
                      <th class="" id="displaySave" scope="col"></th>
                    {% endif %}
                  </tr>
@@ -446,8 +462,14 @@
         <div class="container">
           <form>
             <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+              <div class=" form-check form-switch mb-2">
+                <label class="custom-control-label" for="checkDietRestriction"><strong> No dietary restrictions</strong></label>
+                <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
+              </div>
+                  <div id="dietContainer">
+                          <label for="usr">Please enter any dietary restrictions you have:</label>
+                          <textarea class="form-control" id="diet" placeholder="Enter Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+                  </div>  
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
@@ -537,7 +559,7 @@
           <h5 class="modal-title">Add Notes</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <div class="input-group">
             <div class="form-group input-group-x form-outline">
               {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
@@ -576,10 +598,10 @@
             </div>
           </div>
         </div>
-  		  <div class="modal-footer justify-content-between">
-    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    			<button id="notesSaveButton" data-username="{{volunteer.username}}" type="submit" class="btn btn-primary">Save</button>
-  		  </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="notesSaveButton" data-username="{{volunteer.username}}" type="submit" class="btn btn-primary">Save</button>
+        </div>
       </div>
     </div>
   </form>
@@ -592,10 +614,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title-ban">Ban Volunteer</h5>
+          <h5 class="modal-title-ban"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="align=center">
+        <div class="modal-body" style="align:center">
           <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
           <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
@@ -606,20 +628,21 @@
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
           </div>
-          
+         
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget col-xs-10">
               <textarea name="name" rows="8" cols="80" type="input" id="banNoteTxtArea" class="form-control" placeholder="Please add a note for this change" ></textarea>
             </div>
           </div>
         </div>
-  		  <div class="modal-footer justify-content-between">
-    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    			<button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
-  		  </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
+        </div>
       </div>
     </div>
   </form>
 </div>
+
 <!-- ################# Ban or Unban Modal ################ -->
 {% endblock %}
