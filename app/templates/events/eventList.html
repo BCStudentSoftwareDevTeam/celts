@@ -51,7 +51,7 @@
   <ul class="nav nav-tabs nav-fill mx-2 mb-2" id="pills-tab" role="tablist">
   <li class="col-md-2 col-12 nav-item" role="presentation">
     <button class="nav-link {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="volunteerOpportunities"
-    data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Volunteer Opportunities</button>
+    data-bs-toggle="pill" data-bs-target="#pills-volunteer-opportunities" type="button" role="tab" aria-controls="pills-volunteer-opportunities" aria-selected="true">Volunteer Opportunities</button>
   </li>
  {% if not user.isLaborOnly %}
   <li class="col-md-2 col-12 nav-item" role="presentation">
@@ -168,7 +168,7 @@
 <!-- #############  Volunteer Opportunities   ############# -->
 
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+  <div class="tab-pane fade show {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="pills-volunteer-opportunities" role="tabpanel" aria-labelledby="pills-volunteer-opportunities-tab">
     {% if volunteerOpportunities %}
     <div class="accordion" id="categoryAccordion">
       {% for program,events in volunteerOpportunities.items() %}
@@ -212,7 +212,7 @@
     {{createTable(bonnerEvents, "bonner")}}
   </div>
   <div class="tab-pane {{'active' if activeTab == 'celtsLabor' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(celtsLabor, "other")}}
+    {{createTable(celtsLabor, "celtsLabor")}}
   </div>
 </div>
 {% include 'events/emailModal.html' %}
