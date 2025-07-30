@@ -53,7 +53,6 @@ function saveRequirement(e) {
                                 'required': row_el.find("select.required-select").val() == 'Required' ? true : false,
                                 'frequency': row_el.find("select.frequency-select").val()
                             }}
-    console.log(row_data);
     }
     else {
         let rowid = parseInt(el.data("id"));
@@ -74,9 +73,9 @@ function saveRequirement(e) {
         data: JSON.stringify(row_data), 
 
         success: function(ids) {
-            msgToast("Bonner", "Updated Bonner Requirements");
+            msgToast("Success", "Updated Bonner Requirements");
             $("#reqAdd").removeAttr("disabled");
-            // location.reload();
+            location.reload();
         },
         error: function(e) {
             msgToast("Error", "Error Saving Requirements");
@@ -95,6 +94,9 @@ $(document).ready(function(e){
         let year = $(this).data('year');
         cohortRequest(year, "remove", $(this).data("username"));
     });
+    // Add requirements sorting
+    // https://github.com/SortableJS/Sortable
+    // https://sortablejs.github.io/Sortable/
     var requirementsObj = new Sortable($('#requirements tbody')[0], {
         animation: 150,
         forceFallback: false,
@@ -160,8 +162,7 @@ function addRequirement() {
     let newSaveBtn = newRow.find(".saveBtn")[0];
     newRow.find("select.frequency-select").attr("name", "frequency-new");
     table.append(newRow)
-    // newSaveBtn.addEventListener("click", enableSave());
-   
+      
     addRequirementsRowHandlers()
     newRow.find("input").focus()
     $("#reqAdd").attr("disabled", "disabled")
