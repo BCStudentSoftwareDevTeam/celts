@@ -73,7 +73,7 @@ function saveRequirement(e) {
 
         success: function(ids) {
             msgToast("Bonner", "Updated Bonner Requirements");
-            // location.reload();
+            $("#reqAdd").removeAttr("disabled");
         },
         error: function(e) {
             msgToast("Error", "Error Saving Requirements");
@@ -223,7 +223,6 @@ function addRequirementsRowHandlers() {
             },
             error: function(e) {
                 msgToast("Error", "Error Removing Requirement");
-                location.reload();
             }
         })   
     })
