@@ -77,7 +77,7 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
 
     Arguments:
         certId - The id of the certification whose requirements we are updating
-        newRequirements - a list of dictionaries. Each dictionary needs 'id', 'required', 'frequency', and 'name'.
+        newRequirements - a dictionary of dictionaries. Each dictionary needs 'id', 'required', 'frequency', and 'name'.
 
     Returns:
         A list of CertificationRequirement objects corresponding to the given `newRequirements` list.
@@ -109,14 +109,6 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
         certRequirement.save()
         return True
 
-def saveRequirement(requirementData):
-    newRequirement = CertificationRequirement()
-    newRequirement.isRequired = bool(requirementData('required'))
-    newRequirement.frequency = requirementData['frequency']
-    newRequirement.name = requirementData['name']
-    newRequirement.save()
-    return newRequirement.get_id()
- 
 def updateCertRequirementForEvent(event, requirement):
     """
     Add a certification requirement to an event. 

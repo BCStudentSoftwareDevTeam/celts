@@ -42,6 +42,7 @@ function updateExportText(){
 
 function saveRequirement(e) {
     let el=$(e.target)
+    const url = "/saveRequirements/1"; 
     if (el.data("id")== "save-new") {
         $(".saveBtn").removeAttr("disabled");
         let row_el = $("#requirement_" + el.data("id"));
@@ -66,14 +67,20 @@ function saveRequirement(e) {
 }
     $.ajax({
         method: 'POST',
-        url: '/saveRequirements/1', // Bonner certification id hard-coded here
+        url: url,
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(row_data), 
 
         success: function(ids) {
+<<<<<<< HEAD
             msgToast("Bonner", "Updated Bonner Requirements");
             $("#reqAdd").removeAttr("disabled");
+=======
+            msgToast("Success", "Updated Bonner Requirements");
+            $("#reqAdd").removeAttr("disabled");
+            location.reload();
+>>>>>>> c9243e26c89ff45b189b1d947cb507d7c1dfdf47
         },
         error: function(e) {
             msgToast("Error", "Error Saving Requirements");
@@ -92,6 +99,9 @@ $(document).ready(function(e){
         let year = $(this).data('year');
         cohortRequest(year, "remove", $(this).data("username"));
     });
+    // Add requirements sorting
+    // https://github.com/SortableJS/Sortable
+    // https://sortablejs.github.io/Sortable/
     var requirementsObj = new Sortable($('#requirements tbody')[0], {
         animation: 150,
         forceFallback: false,
@@ -114,6 +124,7 @@ $(document).ready(function(e){
         } else {
             fileName = `Bonner Spreadsheet, ${Number(startingYear) - Number(noOfYears)} - ${startingYear}`;
         }
+
         $.ajax({
             url: url,
             method: "GET",
@@ -147,7 +158,7 @@ function addRequirement() {
     var table = $("#requirements");
     var newRow = table.find("tbody tr:last-child").clone();
     newRow.attr('id','requirement_save-new');
-    $(newRow).attr("data-id", "save-new");
+    newRow.attr("data-id", "save-new");
     newRow.find("input").val("");
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
     newRow.find("select.required-select option:last-child").attr('selected', true);
@@ -156,8 +167,7 @@ function addRequirement() {
     let newSaveBtn = newRow.find(".saveBtn")[0];
     newRow.find("select.frequency-select").attr("name", "frequency-new");
     table.append(newRow)
-    // newSaveBtn.addEventListener("click", enableSave());
-   
+      
     addRequirementsRowHandlers()
     newRow.find("input").focus()
     $("#reqAdd").attr("disabled", "disabled")
@@ -237,6 +247,7 @@ function addRequirementsRowHandlers() {
             this.setCustomValidity('Please enter a name.');
             this.reportValidity();
             $(".saveBtn").attr("disabled", "disabled");
+            $("#reqAdd").attr("disabled", "disabled");
         } else {
             $(".saveBtn").removeAttr("disabled");
             this.setCustomValidity('');
