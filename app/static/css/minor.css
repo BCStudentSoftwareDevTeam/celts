@@ -2,3 +2,22 @@
     cursor: pointer;
     background-color: #f0f0f0;
 }
+
+.dataTables_length {
+    float: right !important;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: left !important;
+    text-align: left !important;
+}
+
+th {
+    padding: 10px 9px !important;
+}
+
+.paginate_button {
+    padding: 0.1em 0.5em !important;
+    margin-top: 5px !important;
+}
+

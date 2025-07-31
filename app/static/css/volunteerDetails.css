@@ -29,7 +29,7 @@
         break-inside: avoid;
     }
 
-    .dataTables_info, .dataTables_length, .dataTables_filter, .dataTables_paginate {
+    .dataTables_info, .dataTables_filter, .dataTables_length, .dataTables_paginate {
         display:none;
     }  
 
