@@ -184,7 +184,7 @@ def addBnumberAsParticipant(bnumber, eventId, isLabor):
     if not isEligibleForProgram(event.program, kioskUser):
         userStatus = "banned"
 
-    elif checkUserParticipant(kioskUser, event, False):
+    elif checkUserParticipant(kioskUser, event):
         userStatus = "already signed in"
 
     else:
@@ -201,11 +201,8 @@ def addBnumberAsParticipant(bnumber, eventId, isLabor):
 
     return kioskUser, userStatus
 
-def checkUserParticipant(user,  event, laborCheck):
-    if laborCheck == True:
-        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == True).exists()
-    else:
-        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.isLabor == False).exists()
+def checkUserParticipant(user,  event):
+        return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
 
 def getEventParticipants(event, laborCheck): 
     if laborCheck  == True:
@@ -274,7 +271,7 @@ def addParticipantToEvent(user, event, isLabor):
         Returns True if the operation was successful, false otherwise
     """
     try:
-        participantExists = checkUserParticipant(user, event, False)
+        participantExists = checkUserParticipant(user, event)
         rsvpExists = checkUserRsvp(user, event)
         if not participantExists:
             if not isLabor:

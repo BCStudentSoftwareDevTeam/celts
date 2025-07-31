@@ -100,7 +100,7 @@ def test_addPersonToEvent():
             user = User.get_by_id("ramsayb2")
             userAdded = addParticipantToEvent(user, newEvent, False)
             assert userAdded == True, "User was not added"
-            assert checkUserParticipant(user, newEvent, False), "No Volunteer record was added"
+            assert checkUserParticipant(user, newEvent), "No Volunteer record was added"
             assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
             transaction.rollback()
 
@@ -116,7 +116,7 @@ def test_addPersonToEvent():
             userAdded = addParticipantToEvent(user, newEvent, False)
             assert userAdded == True, "User was not added"
             assert checkUserRsvp(user, newEvent), "No RSVP record was added"
-            assert not checkUserParticipant(user, newEvent, False), "A Volunteer record was added instead"
+            assert not checkUserParticipant(user, newEvent), "A Volunteer record was added instead"
             transaction.rollback()
 
             tomorrow = datetime.today() + timedelta(days=1)
