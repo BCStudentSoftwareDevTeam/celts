@@ -101,7 +101,7 @@ $(document).ready(function(){
           $("#partner").val(programInfo.partner);
           $("#contactEmail").val(programInfo.contactEmail);
           $("#contactName").val(programInfo.contactName);
-          $("#location").val(programInfo.location);
+          $("#location").val(programInfo.defaultLocation);
           $("#programid").val(programInfo.programid)
           $("#instagramUrl").val(programInfo.instagramUrl);
           $("#facebookUrl").val(programInfo.facebookUrl);
@@ -208,6 +208,7 @@ function editProgramManager(username, fullName, programId, action){
           $(`#programManagersTable #${username}`)
           .closest('tr')
           .remove()
+          msgToast("Confirmed", "You have just deleted a program manager")
           updateManagers(programId)
         })
         if (newManagers.length){
