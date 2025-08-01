@@ -133,6 +133,42 @@
   </div>
 </div>
 
+<!--Required Training-->
+<div class="form-group mb-4">
+  <label class="form-label" for="requiredTraining"><strong>Required Training</strong></label>
+  <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="noTrainingRequired" name="requiredTraining[]" 
+             {{"checked" if not eventData.requiredTraining or eventData.requiredTraining == ''}}>
+      <label class="form-check-label" for="noTrainingRequired">
+        <strong>None Required</strong>
+      </label>
+    </div>
+    {% if trainingEvents %}
+      <hr class="my-2">
+      {% set seen_names = {} %}
+      {% for training in trainingEvents %}
+        {% if training.name not in seen_names %}
+          {% set _ = seen_names.update({training.name: training.id}) %}
+          <div class="form-check">
+            <input class="form-check-input training-checkbox" type="checkbox" 
+                   value="{{training.id}}" 
+                   id="training_{{training.id}}" 
+                   name="requiredTraining[]"
+                   {{"checked" if eventData.requiredTraining and training.id|string in eventData.requiredTraining.split(',')}}>
+            <label class="form-check-label" for="training_{{training.id}}">
+              {{training.name}}
+            </label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="text-muted mb-0"><em>No training events available</em></p>
+    {% endif %}
+  </div>
+  <small class="form-text text-muted">Select all trainings required before attending this event</small>
+</div>
+
 <p class="text-danger fw-bold" id="pastDateWarningText"> </p>  <!-- This is the text for the Event to show if it ended. The text will be filled out using JS function. -->
 
 {% endmacro %}
