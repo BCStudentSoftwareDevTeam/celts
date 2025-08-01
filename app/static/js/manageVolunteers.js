@@ -11,7 +11,6 @@ $(document).ready(function() {
     html: true,
     content: "Previous Volunteer"
   });
-
   
   function initializeTable(){
     let tableID = this.id
@@ -38,7 +37,6 @@ $(document).ready(function() {
     }
   }
   $("table").each(initializeTable)
-
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -130,7 +128,6 @@ $(document).ready(function() {
     searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
   });
 
-
   function removeVolunteer(){
     $(".removeVolunteer").prop("disabled", true)
     let username =  this.id;
@@ -159,7 +156,6 @@ $(document).ready(function() {
       }
     });
   });
-
 
   $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
@@ -191,7 +187,6 @@ $(document).ready(function() {
       }
     });
   }
-  
 
   function handleBanned(username, eventId, index){
     $.ajax({

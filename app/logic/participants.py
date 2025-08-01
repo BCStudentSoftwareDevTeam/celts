@@ -99,7 +99,6 @@ def getParticipationStatusForTrainings(program, userList, term):
     
     return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
 
-
 def sortParticipants(event, isLabor):
     """
     Takes in an event object, queries all participants, and then filters those
@@ -136,7 +135,6 @@ def sortParticipants(event, isLabor):
         eventLaborData = eventLabor
 
         return eventLaborData, eventLabor
-
 
 def updateEventVolunteers(participantData):
     """

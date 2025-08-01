@@ -529,5 +529,3 @@ def test_sortParticipantsByStatus():
         assert eventVolunteers == []
 
         transaction.rollback()
-
-  

@@ -100,7 +100,6 @@ $(document).ready(function(e) {
         submitData();
     });
 
-
     // Opens the camera to scan the ID
     $('.qr-reader-button').on("click", function() {
         $('#qr-reader').toggle();
@@ -173,4 +172,3 @@ function submitData() {
         }
     });
 }
-
