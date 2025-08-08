@@ -243,7 +243,6 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                expressInterest = volunteer.minorInterest 
                             )
     abort(403)
 
