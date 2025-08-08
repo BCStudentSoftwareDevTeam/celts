@@ -35,7 +35,6 @@ $(document).ready(function(){
     });
   })
 
-  $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -89,23 +88,6 @@ $(document).ready(function(){
           $(this).text('');
       });
     }, 500);
-  }
-
-  function changeAction(e){
-    let profileAction = $(this).val()
-    let username = $(this).data('username')
-    if (profileAction == "Emergency Contact"){
-      window.location.href = `/profile/${username}/emergencyContact`
-    } else if (profileAction == "Insurance Information"){
-      window.location.href = `/profile/${username}/insuranceInfo`
-    } else if(profileAction == "Print Travel Form"){
-      window.open(`/profile/${username}/travelForm`, '_blank')    
-    } else if (profileAction == "View Service Transcript"){
-      window.location.href = `/profile/${username}/serviceTranscript`
-    } else if (profileAction == "Manage CCE Minor") {
-      window.location.href = `/profile/${username}/cceMinor`
-    }
-    $(this).val('')
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
@@ -341,8 +323,8 @@ $(document).ready(function(){
   // Dietary Restrictions
   function saveDiet() {
     let data = {
-      dietInfo: $dietInput.val(),
-      user: $dietInput.data("user")
+      dietInfo: $("#diet").val(),
+      user: $("#diet").data("user")
     };
     
     $.ajax({
@@ -350,18 +332,7 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s) {
-        $('#check-icon').remove();
-        $('<i>', {
-          class: 'bi bi-check',
-          id: 'check-icon',
-          text: 'Saved!'
-        }).appendTo('#dietContainer');
-        
-        setTimeout(function() {
-          $('#check-icon').fadeOut('slow', function() {
-            $(this).remove();
-          });
-        }, 2000);
+        $('#saveNotification').fadeIn('fast').delay(1000).fadeOut('slow');
       }
     });
   }
@@ -371,19 +342,21 @@ $(document).ready(function(){
     if (norestrict) {
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
+        saveDiet()
     }
 
-  var typingTimer;
-  var saveInterval = 500; //milliseconds
+    var typingTimer;
+    var saveInterval = 1000; //milliseconds
 
-  $("#diet").on('input', function() {
-    clearTimeout(typingTimer);
-    $('#check-icon').remove();
-    
-    typingTimer = setTimeout(saveDiet, doneTypingInterval);
+    $("#diet").on('input', function() {
+      clearTimeout(typingTimer);
+      $('#check-icon').remove();
+      
+      typingTimer = setTimeout(saveDiet, saveInterval);
+    });
   });
-  
-});
+
+}); // end document.ready()
 
 // Update program manager status
 function updateManagers(el, volunteerUsername ) {

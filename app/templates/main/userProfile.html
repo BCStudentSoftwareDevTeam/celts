@@ -17,7 +17,7 @@
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
-<div class="row">
+<div class="row mb-2">
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
@@ -37,12 +37,19 @@
     {%endif%}
   </div>
 </div>
+<div class="profile-links">
   <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
+
   {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-      <a href="{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm" role="button">Print Travel Form</a>
+    <a href="/profile/{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm">Print Travel Form</a>
   {% endif %}
-  <a href="{{volunteer.username}}/serviceTranscript" class="btn btn-primary btn-sm">View Service Transcript</a>
-  <br>&nbsp; 
+
+  <a href="/profile/{{volunteer.username}}/serviceTranscript" class="btn btn-primary btn-sm">View Service Transcript</a>
+
+  {% if volunteer.minorInterest %}
+    <a href="/profile/{{volunteer.username}}/cceMinor" class="btn btn-primary btn-sm">Manage CCE Minor</a>
+  {% endif %}
+</div>
       
 <div class="accordion" id="userProfile">
 
@@ -62,13 +69,13 @@
              <a href="https://berea.smartcatalogiq.com/en/current/catalog/majors-and-minors/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
              for more information.
              </p>
-              <div class="form-check form-switch" id="togglebuttonuser">
+              <div class="form-check form-switch" id="toggleMinorInterest">
               <strong><label class="custom-control-label" id="interestIndicatedText" for="expressInterest">
-                {% if expressInterest is none %}
+                {% if volunteer.minorInterest is none %}
                   Are you interested in the CCE Minor?
                 {% else %}
                   You have indicated
-                  {% if expressInterest is false %}
+                  {% if volunteer.minorInterest is false %}
                     you are not interested
                   {% else %}
                     interest
@@ -77,7 +84,7 @@
                 {% endif %}
               </label></strong>
                 <input class="form-check-input" data-username ="{{volunteer.username}}"
-                type="checkbox" id="checkIsInterest" name="isInterested" {%if expressInterest %} checked {% endif %} />
+                type="checkbox" id="checkIsInterest" name="isInterested" {%if volunteer.minorInterest %} checked {% endif %} />
              </div>
           </div>
         </div>
@@ -623,18 +630,17 @@
 
         <br>
         <h5>Dietary Restrictions</h5>
+        {% set norestrictions = (volunteer.dietRestriction == "No dietary restrictions") %}
         <div class=" form-check form-switch mb-2">
           <label class="form-label custom-control-label" for="checkDietRestriction"> No dietary restrictions</label>
-          <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if (volunteer.dietRestriction == "No dietary restrictions")}} />
+          <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if norestrictions}} />
+          <span id="saveNotification" class="text-success" style="display:none"> Saved!</span>
         </div>
-        <form style="margin-bottom: auto;" id="dietContainer">
-          <div class="container">
+          <div class="container" id="dietContainer" {%if norestrictions%} style="display:none" {%endif%}>
             <div class="form-group">
               <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
-          <br>
         </div>
-        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
