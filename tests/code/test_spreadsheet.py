@@ -138,7 +138,7 @@ def test_repeatVolunteers(fixture_info):
     #repeat volunteers people who participated in more than one event
     testEvent = Event.create(name="Test Event",
                                 term=fixture_info["term1"],
-                                program=fixture_info['event2'])
+                                program=fixture_info['program1'])
     EventParticipant.create(user='doej',
                             event=testEvent,
                             hoursEarned=1)
