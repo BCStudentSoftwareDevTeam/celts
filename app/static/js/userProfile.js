@@ -23,7 +23,7 @@ $(document).ready(function(){
         success: function(response) {
           let accept = "You have indicated interest in CCE Minor.";
           let decline = "You have indicated you are not interested in the CCE Minor.";
-        
+       
           let msg = isAdding ? accept : decline;
           msgToast('Success', msg);
           $("#interestIndicatedText").text(msg);
@@ -63,7 +63,7 @@ $(document).ready(function(){
     var username = $(this).data('username');
     var programID = $(this).data("programid");
     displayTranscriptStatus(programID);
-    
+   
     $.ajax({
         type: "POST",
         url: `/profile/${username}/updateTranscript/${programID}`,
@@ -86,7 +86,7 @@ $(document).ready(function(){
     //show for 0.5s and fade out last for 0.5s
     setTimeout(function() {
       $('#transcriptStatus-' + programID).fadeOut(500, function() {
-          $(this).text(''); 
+          $(this).text('');
       });
     }, 500);
   }
@@ -149,7 +149,7 @@ $(document).ready(function(){
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
-    
+   
   });
 
   $("#banNoteTxtArea, #banEndDatepicker").on('input change' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
@@ -162,7 +162,7 @@ $(document).ready(function(){
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
-    
+   
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
@@ -337,22 +337,9 @@ $(document).ready(function(){
   });
  
   setupPhoneNumber("#updatePhone", "#phoneInput")
-  $("#checkDietRestriction").on("change",  function() {
-    let norestrict = $(this).is(':checked');
-    if (norestrict) {
-        $("#dietContainer").hide();
-        $("#diet").val("No dietary restrictions");
-    }
 
-  var typingTimer;
-  var doneTypingInterval = 750;
-  var $dietInput = $('#diet');
-
-$dietInput.on('input', function() {
-  clearTimeout(typingTimer);
-  $('#check-icon').remove();
-  
-  typingTimer = setTimeout(function() {
+  // Dietary Restrictions
+  function saveDiet() {
     let data = {
       dietInfo: $dietInput.val(),
       user: $dietInput.data("user")
@@ -377,12 +364,29 @@ $dietInput.on('input', function() {
         }, 2000);
       }
     });
-  }, doneTypingInterval);
-});
+  }
+
+  $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+    }
+
+  var typingTimer;
+  var saveInterval = 500; //milliseconds
+
+  $("#diet").on('input', function() {
+    clearTimeout(typingTimer);
+    $('#check-icon').remove();
+    
+    typingTimer = setTimeout(saveDiet, doneTypingInterval);
+  });
   
 });
 
-function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
+// Update program manager status
+function updateManagers(el, volunteerUsername ) {
   let programId=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
@@ -393,8 +397,8 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"username":volunteerUsername, 
-            "programId":programId,       
+    data : {"username":volunteerUsername,
+            "programId":programId,      
             "action":action,          
              },
 
@@ -409,7 +413,4 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
-
-  
 }
-});
