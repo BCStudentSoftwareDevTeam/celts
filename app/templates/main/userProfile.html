@@ -41,7 +41,7 @@
   <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
 
   {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
-    <a href="/profile/{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm">Print Travel Form</a>
+    <a href="/profile/{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm" target="_blank">Print Travel Form</a>
   {% endif %}
 
   <a href="/profile/{{volunteer.username}}/serviceTranscript" class="btn btn-primary btn-sm">View Service Transcript</a>
