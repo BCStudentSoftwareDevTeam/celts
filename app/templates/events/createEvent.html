@@ -252,6 +252,9 @@
         <label class="custom-control-label" for="checkServiceHours"><strong>This event earns service hours.</strong></label>
         <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}} />
       </div>
+      <div id="serviceHoursDisclaimer" class="alert alert-danger" style="display:none;">
+        I understand that I am participating in this activity as a volunteer, that it is not part of my Work-Learning-Service (WLS) role, that I will not receive compensation, and that I am choosing to engage in this activity for service-learning or personal enrichment.
+      </div>
       <div class="form-check form-switch">
         <label class="custom-control-label" for="checkEngagement"><strong>This event is engagement or education.</strong></label>
         <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />

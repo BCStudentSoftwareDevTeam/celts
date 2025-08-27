@@ -528,7 +528,15 @@ $(document).ready(function() {
   let typeBoxes = $("#checkIsTraining, #checkServiceHours, #checkEngagement, #checkBonners")
   typeBoxes.on('click', function (event) {
     typeBoxes.not($(event.target)).prop('checked', false);
+
+    $("#serviceHoursDisclaimer").toggle($("#checkServiceHours").is(":checked"));
   });
+
+  $("#checkServiceHours").on("change", function () {
+    $("#serviceHoursDisclaimer").toggle($(this).is(":checked"));
+  });
+
+  $("#checkServiceHours").trigger("change");
 
   //to show the msgFlash message when the event is canceled
 $("#cancelEvent").on('click', function (event) {
