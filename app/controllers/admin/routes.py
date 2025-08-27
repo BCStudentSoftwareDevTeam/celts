@@ -293,9 +293,23 @@ def eventDisplay(eventId):
 
                 
     if request.method == "POST": # Attempt to save form
-        eventData = request.form.copy()
+        eventData = model_to_dict(event, recurse=False) 
+        eventData.update(request.form.copy())
+        eventData = preprocessEventData(eventData)
+
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+            if eventData.get('isSeries'):
+                eventData['seriesData'] = json.loads(eventData['seriesData'])
+                eventData.pop('id', None)
+                eventData.pop('seriesId', None)     # Brian, do you think there's any case where we'd like to preserve the seriesId?
+                succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
+                if not succeeded:
+                    for index, validationErrorMessage in failedSavedOfferings:
+                        eventData['seriesData'][index]['isDuplicate'] = True
+                    validationErrorMessage = failedSavedOfferings[-1][1] # The last validation error message from the list of offerings if there are multiple
+                    print(f"Failed to save offerings {failedSavedOfferings}")
+            else:
+                savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)

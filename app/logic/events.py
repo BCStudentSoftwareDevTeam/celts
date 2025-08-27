@@ -119,7 +119,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data inheriting from the original eventData
-    seriesData = eventData.get('seriesData')
+    seriesData = eventData['seriesData']
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -183,7 +183,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
         raise Exception("Unvalidated data passed to saveEventToDb")
     
     isNewEvent = ('id' not in newEventData)
-
     eventRecords = []
     with mainDB.atomic():
         
