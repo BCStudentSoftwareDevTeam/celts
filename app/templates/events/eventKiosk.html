@@ -15,6 +15,18 @@
     <!--<button onclick="openFullscreen();">Open Video in Fullscreen Mode</button>-->
     <div>
       <h1 class="my-5" align="center">{{ event.name }}</h1>
+      {% if event.isService or event.program_id == 5 %}
+      <h3 class="text-danger" align="center">Attention</h3>
+      {% endif %}
+      {% if event.isService %}
+      <p align="center">
+        I understand that I am participating in this activity as a volunteer, that it is not part of my Work-Learning-Service (WLS) role, that I will not receive compensation, and that I am choosing to engage in this activity for service-learning or personal enrichment.
+      </p>
+      {% elif event.program_id == 5%}
+      <p align="center">
+        I acknowledge that when I sign in to this event, I am fulfilling a requirement for my Bonner Scholarship, and I am not clocked in for my labor position.
+      </p>
+      {% endif %}
       <h2 class="m-5" align="center">{{ bNumberToUser }}</h2>
     </div>
     <div id="signinData" class="mx-auto px-5 mb-2">
