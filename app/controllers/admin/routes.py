@@ -300,9 +300,17 @@ def eventDisplay(eventId):
         try:
             if eventData.get('isSeries'):
                 eventData['seriesData'] = json.loads(eventData['seriesData'])
+                originalEventId = eventData.pop('id', None)
                 eventData.pop('id', None)
                 eventData.pop('seriesId', None)     # Brian, do you think there's any case where we'd like to preserve the seriesId?
                 succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
+                if succeeded and originalEventId:
+                    # Delete the hanging event
+                    Event.get_by_id(originalEventId).delete_instance()
+                    print(f"Deleted original event {originalEventId} after creating series")
+                    flash("Series successfully created!", "success")
+                    return redirect(url_for("admin.eventDisplay", eventId=savedEvents[0].id))
+
                 if not succeeded:
                     for index, validationErrorMessage in failedSavedOfferings:
                         eventData['seriesData'][index]['isDuplicate'] = True
