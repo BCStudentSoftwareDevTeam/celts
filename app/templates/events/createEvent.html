@@ -83,6 +83,8 @@
   </div>
   <div class="form-group col-md-6" id="checkIsSeriesToggleContainer">
     <div style="margin-top: 2.3em;" >
+  {# only show the series toggle if we are creating a new event #}
+  {% if isNewEvent %}
       <div class="form-check form-switch pb-1">
         <fieldset>
           <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
@@ -90,6 +92,7 @@
             {{"checked" if eventData.isSeries}} />
         </fieldset>
       </div>
+  {% endif %}
     </div>
   </div>
 </div>
