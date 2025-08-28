@@ -63,7 +63,7 @@
 
     {% endblock %}
 
-    {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
+    {% macro locationTimeMacro(eventData, pageLocation) %}
 <div class="form-group mb-4">
   <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
   <input class="form-control needsValidation all" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
@@ -167,7 +167,7 @@
         {% set hideMultipleOffering = "d-none" %}
       {% endif %}
 
-      {{locationTimeMacro(eventData, hideDate, 'main')}}
+      {{locationTimeMacro(eventData, 'main')}}
 
       <div class="d-none" id="multipleOfferingTableDiv">
         <table class="table table-striped" id="offeringsTable">
@@ -413,7 +413,7 @@
           <p> Are you sure you want to renew this event?</p>
           <p> A renewed event will use the current event's RSVP and location information to create a new event.</p>
           <div class="form-group">
-            {{ locationTimeMacro(eventData, hideDate, 'modal') }}
+            {{ locationTimeMacro(eventData, 'modal') }}
           </div>
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
