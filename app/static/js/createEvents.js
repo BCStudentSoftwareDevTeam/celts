@@ -297,12 +297,12 @@ function updateEventNameField() {
       names.add(offering.eventName)
     });
     let offeringsText = Array.from(names).join(", ")
-    $('#inputEventName').prop('placeholder', offeringsText)
+    $('#inputEventName').val(offeringsText)
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
     let offeringText = $("#repeatingEventsNamePicker").val()
-    $('#inputEventName').prop('placeholder', offeringText)
+    $('#inputEventName').val(offeringText)
   } 
 }
 
@@ -461,8 +461,8 @@ function checkValidation() {
   
   if (isAllVolunteer) {
     // Validate all volunteer specific fields
-    $("#inputEventName").val('All Volunteer Training')
     allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
+
   } else if (seriesEvent) {
     // Validate series-specific fields
     allFieldFilled = validateFieldGroup(".series", allFieldFilled);
