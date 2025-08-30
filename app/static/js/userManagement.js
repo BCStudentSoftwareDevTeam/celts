@@ -210,10 +210,11 @@ function editProgramManager(username, fullName, programId, action){
           .remove()
           msgToast("Confirmed", "You have just deleted a program manager")
           updateManagers(programId)
+
+          if (!(newManagers.length)){
+            $('#noManagersText').removeClass("d-none")
+          }
         })
-        if (newManagers.length){
-          $('#noManagersText').removeClass("d-none")
-        }
       }
     },
     error: function(error, status){
