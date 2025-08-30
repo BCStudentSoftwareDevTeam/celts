@@ -132,7 +132,7 @@ $(document).ready(function(){
   });
 
   $(".editProgramManagersButton").on('click', function(){
-    $('#programPlaceholder').attr('data-programid', $(this).data('programid'))
+    $('#programPlaceholder').data('programid', $(this).data('programid'))
     $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
     $('#noManagersText').addClass("d-none")
