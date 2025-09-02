@@ -167,6 +167,23 @@ function verifyRepeatingFields(){
   return isEmpty
 }
 
+/*
+ * Update the position of the Save button so that it is always on the screen as 
+ * the window scrolls and changes size. The position on the screen is determined 
+ * in the fixedButton class */
+const saveBtn = $('#saveButton');
+function updateSavePosition() {
+  const originalTop = saveBtn.parent()[0].getBoundingClientRect().top; // relative to scroll
+  const buttonHeight = 40;
+
+  if ($(window).height() < originalTop + buttonHeight) {
+    saveBtn.addClass('fixedButton');
+  } else {
+    saveBtn.removeClass('fixedButton');
+  }
+}
+$(window).on('scroll resize load', updateSavePosition);
+
 $('#saveSeries').on('click', function(e) {
   e.preventDefault(); // Prevent default form submission at the start
   enableLiveCustomValidityClearing([".multipleOfferingNameField"])
@@ -393,6 +410,9 @@ function updateOfferingsTable() {
                                   "</tr>"
                                 );
   });
+
+  //recalculate the save button
+  updateSavePosition()
 }
 
 //visual date formatting for multi-event table
@@ -800,7 +820,6 @@ function handleTimeFormatting(timeArray){
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
   
 });
-
 
 
 
