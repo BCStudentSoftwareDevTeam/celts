@@ -243,7 +243,6 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                expressInterest = volunteer.minorInterest 
                             )
     abort(403)
 
@@ -306,9 +305,7 @@ def insuranceInfo(username):
         if g.current_user.username != username:
             abort(403)
 
-        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        if not rowsUpdated:
-            InsuranceInfo.create(user = username, **request.form)
+        InsuranceInfo.replace({**request.form, "user": username}).execute()
 
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
