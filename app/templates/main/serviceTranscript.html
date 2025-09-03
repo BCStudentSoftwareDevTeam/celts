@@ -81,78 +81,67 @@
     </div>
   </div>
   {% endif %}
-
-  <div class="card mb-4">
-    <div class="card-header bg-light">
-      <h5 class="mb-0">Volunteer Hour Details</h5>
-    </div>
-    <div class="card-body">
-      {% if allEventTranscript %}
-        {% set item_counter = 0 %}
-        {% for program in allEventTranscript %}
-          {% set programTitle = program.programName if program.programName else program %}
-          {% if programTitle != "Bonner Scholars" %}
-            {% set item_counter = item_counter + 1 %}
-            <div class="mb-4 p-3 {% if item_counter % 2 == 0 %}bg-light{% endif %}" style="page-break-inside: avoid;">
-              <h6 class="fw-bold" style = "color: #005c90">{{ programTitle }}</h6>
-              {% for item in allEventTranscript[program] %}
-                {% if item[1] is not none %}
-                  <div class="mb-2">
-                    <small class="text-muted">{{ item[0] }} - {{ item[1] | round(2) }} hour(s)</small>
-                  </div>
-                {% endif %}
-              {% endfor %}
-              {% if programTitle != "CELTS Sponsored Events" %}
-                <p class="text-muted small mb-2">{{ program.description }}</p>
-                <a class="d-print-none small" href="{{ program.url }}" target="_blank">More Information</a>
-              {% endif %}
-            </div>
+  {% if allEventTranscript %}
+    {% for program in allEventTranscript %}
+      {% set programTitle = program.programName %}
+      {% if not programTitle %}
+        {% set programTitle = program %}
+      {% endif %}
+        <div class="card-body">
+          <h5 class="card-title bg-light ps-2 pe-5 border-bottom">{{programTitle}}</h5>
+          {% for item in allEventTranscript[program] %}
+            {% if item[1] != None %}
+              <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
+            {% endif %}
+          {% endfor %}
+          {% if programTitle != "CELTS Sponsored Events" %}
+            <p class="card-text">{{program.description}}</p>
+            <a class="d-print-none" href="{{program.url}}" target="_blank" class="card-link">More Information</a>
           {% endif %}
         {% endfor %}
       {% else %}
         <div class="text-center py-4">
           <h6 class="text-muted">No Volunteer Record</h6>
         </div>
-      {% endif %}
-    </div>
-  </div>
-
-  {% if slCourses.exists() %}
-<div class="card mb-4" style="page-break-inside: avoid;">
-  <div class="card-header bg-light">
-    <h5 class="mb-0">Service-Learning Courses</h5>
-  </div>
-  <div class="card-body p-0">
-    <table class="table table-bordered mb-0 slc-table">
-      <thead class="table-light">
+    {% endfor %}
+  {% endif %}
+  {% if totalHours["totalHours"] > 0%}
+    
+    {% if slCourses.exists() %}
+      <h2 class="m-3">Service-Learning Courses</h2>
+      <table class="table table-bordered table-striped m-3">
+      <tr>
+      <th>Course</th>
+      <th>Term</th>
+      <th class="w-25">Accrued Service Hours</th>
+      </tr>
+      {% for slcourse in slCourses %}
         <tr>
-          <th>Course</th>
-          <th>Term</th>
-          <th>Accrued Service Hours</th>
+        <td> {{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
+        <td> {{ slcourse.term.description }}</td>
+        <td class="w-25">{{ slcourse.hoursEarned }}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for slcourse in slCourses %}
-          {% if "Bonner" not in slcourse.courseName %}
-            <tr>
-              <td>{{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
-              <td>{{ slcourse.term.description }}</td>
-              <td>{{ slcourse.hoursEarned }}</td>
-            </tr>
-          {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-{% endif %}
+      {% endfor %}
+      </table>
+    {% endif %}
 
-  <div class="mt-5 pt-4  text-center" style="page-break-inside: avoid;">
-    <div class="d-print-none mt-5">
-      <p class="text-muted">
-        If there are any corrections that need to be made, contact
-        <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a>
-      </p>
+    <div class="float-front ms-3 pt-1">
+      <p class="fw-bold  pd-3 d-inline fs-6 ">Event Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
+
+    </div>
+
+    <div class="ms-3">
+      <div class="float-front pt-1">
+      <p class="fw-bold pb-3 d-inline fs-6 ">Service Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+      </div>
+    </div>
+    
+    <div class="float-front ms-3 pt-1">
+      
+      <p class="fw-bold pb-3 d-inline fs-6">Total Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom fs-6" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
     </div>
   </div>
 </div>
