@@ -38,7 +38,7 @@ def totalVolunteerHours(academicYear):
     query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
                              .join(Event, on=(EventParticipant.event == Event.id))
                              .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
+                             .where(Term.academicYear == academicYear) & (Event.isService == True)
              )
 
     return query.tuples()
