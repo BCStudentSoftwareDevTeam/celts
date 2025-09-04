@@ -18,12 +18,16 @@ def getProgramTranscript(username):
     """
     # Add up hours earned in a term for each program they've participated in
 
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
-                      .where((EventParticipant.user == username) & (Event.deletionDate == None))
+                      .where((EventParticipant.user == username) & (Event.deletionDate == None)
+                             & (Event.isService == True) & (Event.isCanceled == False) & (Event.isTraining == False))
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+
+    print(EventData)
 
     # Fetch all ProgramBan objects for the user
     bannedProgramsForParticipant = ProgramBan.select().where(ProgramBan.user == username)
