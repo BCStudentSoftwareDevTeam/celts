@@ -22,10 +22,10 @@ def fixture_info():
         program3 = Program.create(id=503, programName='Program3')
         program4 = Program.create(id=504, programName='Program4')
 
-        event1 = Event.create(id=501, name='Event1', term=term1, program=program1)
-        event2 = Event.create(id=502, name='Event2', term=term1, program=program2)
-        event3 = Event.create(id=503, name='Event3', term=term1, program=program3)
-        event4 = Event.create(id=504, name='Event4', term=term2, program=program4)
+        event1 = Event.create(id=501, name='Event1', term=term1, program=program1, isService=True)
+        event2 = Event.create(id=502, name='Event2', term=term1, program=program2, isService=True)
+        event3 = Event.create(id=503, name='Event3', term=term1, program=program3, isService=True)
+        event4 = Event.create(id=504, name='Event4', term=term2, program=program4, isService=True)
 
         eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
         eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
@@ -138,7 +138,7 @@ def test_repeatVolunteers(fixture_info):
     #repeat volunteers people who participated in more than one event
     testEvent = Event.create(name="Test Event",
                                 term=fixture_info["term1"],
-                                program=fixture_info['program1'])
+                                program=fixture_info['program1'], isService=True)
     EventParticipant.create(user='doej',
                             event=testEvent,
                             hoursEarned=1)
@@ -148,16 +148,16 @@ def test_repeatVolunteers(fixture_info):
 
     testEvent2 = Event.create(name="Spring2021Event",
                                 term=fixture_info["term1"],
-                                program=fixture_info['program1'])
-    
-    EventParticipant.create(user = 'doej', event = testEvent2, hoursEarned=0)
-    
+                                program=fixture_info['program1'], isService=True)
+
+    EventParticipant.create(user='doej', event=testEvent2, hoursEarned=0)
+
     # Check for separate events
     assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 3)]
 
     testEvent2 = Event.create(name="Spring2021Event",
                                 term=fixture_info["term1"],
-                                program=fixture_info['program2'])
+                                program=fixture_info['program2'], isService=True)
     EventParticipant.create(user='doej', 
                             event=testEvent2,
                             hoursEarned=1)
@@ -172,7 +172,7 @@ def test_repeatVolunteersPerProgram(fixture_info):
     
     testEvent3 = Event.create(name="Test Event",
                                 term=fixture_info['term1'], 
-                                program=fixture_info['program1'])
+                                program=fixture_info['program1'], isService=True)
     EventParticipant.create(user='doej',
                             event=testEvent3,
                             hoursEarned=1)
@@ -182,7 +182,7 @@ def test_repeatVolunteersPerProgram(fixture_info):
 
     testEvent4 = Event.create(name="Test Event 2",
                                 term=fixture_info['term1'], 
-                                program=fixture_info['program1'])
+                                program=fixture_info['program1'], isService=True)
     EventParticipant2 = EventParticipant.create(user='doej',
                                                 event=testEvent4,
                                                 hoursEarned=1)
@@ -240,7 +240,7 @@ def test_onlyCompletedAllVolunteer(fixture_info):
                                 term=fixture_info['term1'],
                                 program=fixture_info['program1'],
                                 isTraining=1,
-                                isAllVolunteerTraining=1)
+                                isAllVolunteerTraining=1, isService=True)
     EventParticipant.create(user = 'builderb', # Not participated in event
                             event = allVolunteerEvent, # Added to all volunteer training event
                             hoursEarned = 1)
@@ -250,7 +250,7 @@ def test_onlyCompletedAllVolunteer(fixture_info):
 
     testEvent = Event.create(name="Test Event",
                                 program=fixture_info['program1'],
-                                term=fixture_info['term1'])
+                                term=fixture_info['term1'], isService=True)
     EventParticipant.create(user = 'builderb', # Only participated in all volunteer event
                             event = testEvent,
                             hoursEarned = 1)
@@ -273,7 +273,7 @@ def test_volunteerProgramHours(fixture_info):
     
     testEvent = Event.create(name="Test Event",
                                 program=fixture_info['program1'],
-                                term=fixture_info['term1'])
+                                term=fixture_info['term1'], isService=True)
     EventParticipant.create(user = 'doej',
                             event = testEvent,
                             hoursEarned = 2)
@@ -366,7 +366,7 @@ def test_getUniqueVolunteers(fixture_info):
     User.create(username="testt", firstName="Test", lastName="Tester", bnumber="B55555")
     testEvent = Event.create(name="Test Event",
                                 term = fixture_info['term1'],
-                                program = fixture_info['program1'])
+                                program = fixture_info['program1'], isService=True)
     EventParticipant.create(user = 'testt',    
                             event = testEvent,
                             hoursEarned = 1)

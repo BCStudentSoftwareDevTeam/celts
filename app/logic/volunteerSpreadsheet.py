@@ -59,13 +59,13 @@ def onlyCompletedAllVolunteer(academicYear):
     subQuery = (EventParticipant.select(EventParticipant.user_id)
                 .join(Event)
                 .join(Term)
-                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear & (Event.isService == True)))
+                .where((Event.name != "All Volunteer Training") & (Term.academicYear == academicYear) & (Event.isService == True)))
 
     onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                         .join(User).switch(EventParticipant)
                         .join(Event)
                         .join(Term)
-                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear & (Event.isService == True), EventParticipant.user_id.not_in(subQuery)))
+                        .where((Event.name == "All Volunteer Training") & (Term.academicYear == academicYear) & (Event.isService == True) & (EventParticipant.user_id.not_in(subQuery))))
 
     return onlyAllVolunteer.tuples()
 
