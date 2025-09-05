@@ -17,7 +17,7 @@ def getUniqueVolunteers(academicYear):
                         .join(User).switch(EventParticipant)
                         .join(Event)
                         .join(Term)
-                        .where(Term.academicYear == academicYear)
+                        .where((Term.academicYear == academicYear) & (Event.isService == True))
                         .order_by(EventParticipant.user_id))
 
     return uniqueVolunteers.tuples()
@@ -38,7 +38,7 @@ def totalVolunteerHours(academicYear):
     query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
                              .join(Event, on=(EventParticipant.event == Event.id))
                              .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear) & (Event.isService == True)
+                             .where((Term.academicYear == academicYear) & (Event.isService == True))
              )
 
     return query.tuples()
@@ -49,7 +49,7 @@ def volunteerProgramHours(academicYear):
                              .join(Event, on=(EventParticipant.event_id == Event.id))
                              .join(Program, on=(Event.program_id == Program.id))
                              .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
+                             .where((Term.academicYear == academicYear) & (Event.isService == True))
                              .group_by(Program.programName, EventParticipant.user_id))
 
     return volunteerProgramHours.tuples()
@@ -59,13 +59,13 @@ def onlyCompletedAllVolunteer(academicYear):
     subQuery = (EventParticipant.select(EventParticipant.user_id)
                 .join(Event)
                 .join(Term)
-                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear))
+                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear & (Event.isService == True)))
 
     onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                         .join(User).switch(EventParticipant)
                         .join(Event)
                         .join(Term)
-                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear, EventParticipant.user_id.not_in(subQuery)))
+                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear & (Event.isService == True), EventParticipant.user_id.not_in(subQuery)))
 
     return onlyAllVolunteer.tuples()
 
@@ -75,7 +75,7 @@ def volunteerHoursByProgram(academicYear):
              .join(Event)
              .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
              .join(Term, on=(Term.id == Event.term))
-             .where(Term.academicYear == academicYear)
+             .where((Term.academicYear == academicYear) & (Event.isService == True))
              .group_by(Program.programName)
              .order_by(Program.programName))
 
@@ -87,7 +87,7 @@ def volunteerMajorAndClass(academicYear, column, reorderClassLevel=False):
                      .join(EventParticipant, on=(User.username == EventParticipant.user_id))
                      .join(Event, on=(EventParticipant.event_id == Event.id))
                      .join(Term, on=(Event.term == Term.id))
-                     .where(Term.academicYear == academicYear)
+                     .where((Term.academicYear == academicYear) & (Event.isService == True))
                      .group_by(column))
 
     if reorderClassLevel:
@@ -113,7 +113,7 @@ def repeatVolunteersPerProgram(academicYear):
                              .join(Program, on=(Event.program == Program.id))
                              .join(User, on=(User.username == EventParticipant.user_id))
                              .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)  
+                             .where((Term.academicYear == academicYear) & (Event.isService == True))
                              .group_by(User.firstName, User.lastName, Event.program)
                              .having(fn.COUNT(EventParticipant.event_id) > 1)
                              .order_by(Event.program, User.lastName))
@@ -126,7 +126,7 @@ def repeatVolunteers(academicYear):
                              .join(User, on=(User.username == EventParticipant.user_id))
                              .join(Event, on=(EventParticipant.event == Event.id))
                              .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
+                             .where((Term.academicYear == academicYear) & (Event.isService == True))
                              .group_by(User.firstName, User.lastName)
                              .having(fn.COUNT(EventParticipant.user_id) > 1))
 
