@@ -49,7 +49,7 @@ def getUniqueVolunteers(academicYear):
     return (columns,query.tuples())
 
 
-def getVolunteerProgramEventByTerm(term):
+def getAllTermData(term):
     base = getBaseQuery(term.academicYear)
 
     columns = ["Full Name", "Username", "Program Name", "Event Name"]
@@ -59,11 +59,12 @@ def getVolunteerProgramEventByTerm(term):
     return (columns,query.tuples())
 
 
-def totalVolunteerHours(academicYear):
+def totalHours(academicYear):
     base = getBaseQuery(academicYear)
 
-    columns = ["Total Volunteer Hours"]
-    query = base.select(fn.SUM(EventParticipant.hoursEarned)).where(Event.isService == True)
+    columns = ["Total Service Hours", "Other Participation Hours"]
+    query = base.select(fn.SUM(Case(None,((Event.isService, EventParticipant.hoursEarned),),0)),
+                        fn.SUM(Case(None,((~Event.isService, EventParticipant.hoursEarned),),0)))
 
     return (columns, query.tuples())
 
@@ -92,14 +93,15 @@ def onlyCompletedAllVolunteer(academicYear):
     return (columns, query.tuples())
 
 
-def volunteerHoursByProgram(academicYear):
+def totalHoursByProgram(academicYear):
     base = getBaseQuery(academicYear)
 
-    columns = ["Program", "Hours"]
-    query = (base.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-             .where(Event.isService == True)
-             .group_by(Program.programName)
-             .order_by(Program.programName))
+    columns = ["Program", "Service Hours", "Other Hours"]
+    query = (base.select(Program.programName,
+                         fn.SUM(Case(None,((Event.isService, EventParticipant.hoursEarned),),0)),
+                         fn.SUM(Case(None,((~Event.isService, EventParticipant.hoursEarned),),0)))
+                 .group_by(Program.programName)
+                 .order_by(Program.programName))
 
     return (columns, query.tuples())
 
@@ -227,8 +229,8 @@ def createSpreadsheet(academicYear):
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    makeDataXls("Total Service Hours", totalVolunteerHours(academicYear), workbook)
-    makeDataXls("Total Service Hours By Program", volunteerHoursByProgram(academicYear), workbook)
+    makeDataXls("Total Hours", totalHours(academicYear), workbook)
+    makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook)
     makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook)
     makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, reorderClassLevel=True), workbook)
     makeDataXls("Repeat Participants", repeatVolunteers(academicYear), workbook)
@@ -239,8 +241,8 @@ def createSpreadsheet(academicYear):
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
-    makeDataXls(fallTerm.description, getVolunteerProgramEventByTerm(fallTerm), workbook)
-    makeDataXls(springTerm.description, getVolunteerProgramEventByTerm(springTerm), workbook)
+    makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook)
+    makeDataXls(springTerm.description, getAllTermData(springTerm), workbook)
 
     workbook.close()
 
