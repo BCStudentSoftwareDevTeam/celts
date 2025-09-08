@@ -20,101 +20,84 @@ from app.models.term import Term
 #
 ####################################################################################
 
+def getFallTerm(academicYear):
+    return Term.get(Term.description % "Fall%", Term.academicYear == academicYear)
+
+def getSpringTerm(academicYear):
+    return Term.get(Term.description % "Spring%", Term.academicYear == academicYear)
+
+
 def getBaseQuery(academicYear):
     return (EventParticipant.select()
                             .join(User).switch(EventParticipant)
                             .join(Event)
+                            .join(Program).switch(Event)
                             .join(Term)
-                            .where(Event.deletionDate == None, Event.isCanceled == False)
+                            .where(Term.academicYear == academicYear,
+                                   Event.deletionDate == None, 
+                                   Event.isCanceled == False)
                             .order_by(Event.startDate))
 
 
 def getUniqueVolunteers(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Username", "Full Name", "B-Number"]
-    query = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
-                        .join(User).switch(EventParticipant)
-                        .join(Event)
-                        .join(Term)
-                        .where(Term.academicYear == academicYear,
-                               Event.isService == True,
-                               Event.deletionDate == None,
-                               Event.isCanceled == False)
-                        .order_by(EventParticipant.user_id))
+    query = (base.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
+                 .where(Event.isService == True))
 
     return (columns,query.tuples())
 
 
 def getVolunteerProgramEventByTerm(term):
+    base = getBaseQuery(term.academicYear)
+
     columns = ["Full Name", "Username", "Program Name", "Event Name"]
-    query = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
-                        .join(User).switch(EventParticipant)
-                        .join(Event)
-                        .join(Program)
-                         .where(Event.term == term,
-                                Event.isService == True,
-                                Event.deletionDate == None,
-                                Event.isCanceled == False)
-                        .order_by(EventParticipant.user_id))
+    query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
+                         .where(Event.term == term, Event.isService == True))
 
     return (columns,query.tuples())
 
 
 def totalVolunteerHours(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Total Volunteer Hours"]
-    query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-                             .join(Event, on=(EventParticipant.event == Event.id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear,
-                                    Event.isService == True,
-                                    Event.deletionDate == None,
-                                    Event.isCanceled == False))
+    query = base.select(fn.SUM(EventParticipant.hoursEarned)).where(Event.isService == True)
 
     return (columns, query.tuples())
 
 
 def volunteerProgramHours(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Program Name", "Volunteer Username", "Volunteer Hours"]
-    query = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
-                             .join(Event, on=(EventParticipant.event_id == Event.id))
-                             .join(Program, on=(Event.program_id == Program.id))
-                             .join(Term, on=(Event.term == Term.id))
-                            .where(Term.academicYear == academicYear,
-                                   Event.isService == True,
-                                   Event.deletionDate == None,
-                                   Event.isCanceled == False)
-                             .group_by(Program.programName, EventParticipant.user_id))
+    query = (base.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
+                 .where(Event.isService == True)
+                 .group_by(Program.programName, EventParticipant.user_id))
 
     return (columns, query.tuples())
 
 
 def onlyCompletedAllVolunteer(academicYear):
-    columns = ["Username", "Full Name"]
-    subQuery = (EventParticipant.select(EventParticipant.user_id)
-                .join(Event)
-                .join(Term)
-                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear))
+    base = getBaseQuery(academicYear)
+    base2 = getBaseQuery(academicYear)
 
-    query = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
-                            .join(User).switch(EventParticipant)
-                            .join(Event)
-                            .join(Term)
-                            .where(Event.name == "All Volunteer Training", 
-                                   Term.academicYear == academicYear, 
-                                   EventParticipant.user_id.not_in(subQuery)))
+    columns = ["Username", "Full Name"]
+    subQuery = base2.select(EventParticipant.user_id).where(~Event.isAllVolunteerTraining)
+
+    query = (base.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
+                 .where(Event.isAllVolunteerTraining, EventParticipant.user_id.not_in(subQuery)))
 
     return (columns, query.tuples())
 
 
 def volunteerHoursByProgram(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Program", "Hours"]
-    query = (Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-             .join(Event)
-             .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
-             .join(Term, on=(Term.id == Event.term))
-             .where(Term.academicYear == academicYear,
-                    Event.isService == True,
-                    Event.deletionDate == None,
-                    Event.isCanceled == False)
+    query = (base.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+             .where(Event.isService == True)
              .group_by(Program.programName)
              .order_by(Program.programName))
 
@@ -122,27 +105,23 @@ def volunteerHoursByProgram(academicYear):
 
 
 def volunteerMajorAndClass(academicYear, column, reorderClassLevel=False):
+    base = getBaseQuery(academicYear)
+
     columns = ["Major", "Count"]
-    query = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-                     .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                     .join(Event, on=(EventParticipant.event_id == Event.id))
-                     .join(Term, on=(Event.term == Term.id))
-                     .where(Term.academicYear == academicYear,
-                            Event.isService == True,
-                            Event.deletionDate == None,
-                            Event.isCanceled == False)
-                     .group_by(column))
+    query = (base.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+                 .where(Event.isService == True)
+                 .group_by(column))
 
     if reorderClassLevel:
         columns = ["Class Level", "Count"]
         query = query.order_by(Case(None, ((column == "Freshman", 1),
-                                                           (column == "Sophomore", 2),
-                                                           (column == "Junior", 3),
-                                                           (column == "Senior", 4),
-                                                           (column == "Graduating", 5),
-                                                           (column == "Non-Degree", 6),
-                                                           (column.is_null(), 7)),
-                                               8))
+                                           (column == "Sophomore", 2),
+                                           (column == "Junior", 3),
+                                           (column == "Senior", 4),
+                                           (column == "Graduating", 5),
+                                           (column == "Non-Degree", 6),
+                                           (column.is_null(), 7)),
+                               8))
     else:
         query = query.order_by(column.asc(nulls='LAST'))
 
@@ -150,47 +129,37 @@ def volunteerMajorAndClass(academicYear, column, reorderClassLevel=False):
 
 
 def repeatVolunteersPerProgram(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Volunteer", "Program Name", "Event Count"]
-    query = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'),
+    query = (base.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'),
                                                      Program.programName.alias("programName"),
                                                      fn.COUNT(EventParticipant.event_id).alias('event_count'))
-                             .join(Event, on=(EventParticipant.event_id == Event.id))
-                             .join(Program, on=(Event.program == Program.id))
-                             .join(User, on=(User.username == EventParticipant.user_id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear,
-                                    Event.isService == True,
-                                    Event.deletionDate == None,
-                                    Event.isCanceled == False)
-                             .group_by(User.firstName, User.lastName, Event.program)
-                             .having(fn.COUNT(EventParticipant.event_id) > 1)
-                             .order_by(Event.program, User.lastName))
+                 .where(Event.isService == True)
+                 .group_by(User.firstName, User.lastName, Event.program)
+                 .having(fn.COUNT(EventParticipant.event_id) > 1)
+                 .order_by(Event.program, User.lastName))
 
     return (columns, query.tuples())
 
 
 def repeatVolunteers(academicYear):
+    base = getBaseQuery(academicYear)
+
     columns = ["Volunteer", "Number of Events"]
-    query = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName), fn.COUNT(EventParticipant.user_id).alias('count'))
-                             .join(User, on=(User.username == EventParticipant.user_id))
-                             .join(Event, on=(EventParticipant.event == Event.id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear,
-                                    Event.isService == True,
-                                    Event.deletionDate == None,
-                                    Event.isCanceled == False)
-                             .group_by(User.firstName, User.lastName)
-                             .having(fn.COUNT(EventParticipant.user_id) > 1))
+    query = (base.select(fn.CONCAT(User.firstName, " ", User.lastName), fn.COUNT(EventParticipant.user_id).alias('count'))
+                 .where(Event.isService == True)
+                 .group_by(User.firstName, User.lastName)
+                 .having(fn.COUNT(EventParticipant.user_id) > 1))
 
     return (columns, query.tuples())
 
 
 def getRetentionRate(academicYear):
-    retentionList = []
-    fall, spring = academicYear.split("-")
-    fallParticipationDict = termParticipation(f"Fall {fall}")
-    springParticipationDict = termParticipation(f"Spring {spring}")
+    fallParticipationDict = termParticipation(getFallTerm(academicYear))
+    springParticipationDict = termParticipation(getSpringTerm(academicYear))
 
+    retentionList = []
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retentionRate in retentionRateDict.items():
         retentionList.append((program, str(round(retentionRate * 100, 2)) + "%"))
@@ -199,12 +168,11 @@ def getRetentionRate(academicYear):
     return (columns, retentionList)
 
 
-def termParticipation(termDescription):
-    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
-                          .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
-                          .join(Program, on=(Event.program == Program.id))
-                          .join(Term, on=(Event.term_id == Term.id))
-                          .where(Term.description == termDescription)
+def termParticipation(term):
+    base = getBaseQuery(term.academicYear)
+
+    participationQuery = (base.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
+                          .where(Event.term == term)
                           .order_by(EventParticipant.user))
 
     programParticipationDict = defaultdict(list)
@@ -269,8 +237,8 @@ def createSpreadsheet(academicYear):
     makeDataXls("Volunteer Hours By Program", volunteerProgramHours(academicYear), workbook)
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook)
 
-    fallTerm = Term.get(Term.description % "Fall%", Term.academicYear == academicYear)
-    springTerm = Term.get(Term.description % "Spring%", Term.academicYear == academicYear)
+    fallTerm = getFallTerm(academicYear)
+    springTerm = getSpringTerm(academicYear)
     makeDataXls(fallTerm.description, getVolunteerProgramEventByTerm(fallTerm), workbook)
     makeDataXls(springTerm.description, getVolunteerProgramEventByTerm(springTerm), workbook)
 
