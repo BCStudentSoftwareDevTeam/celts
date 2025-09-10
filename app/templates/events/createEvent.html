@@ -155,7 +155,7 @@
       <div class="form-group mb-4">
         <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
         <select class="form-select" name='term' id='inputEventTerm' required>
-          {% for term in futureTerms %}
+          {% for term in termList %}
           <option value='{{term}}' {{"selected" if term==eventData.term}}>{{term.description}}</option>
           {% endfor %}
         </select>
