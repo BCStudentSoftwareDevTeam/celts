@@ -188,7 +188,6 @@ def createEvent(templateid, programid):
                            template = template,
                            eventData = eventData,
                            termList = selectSurroundingTerms(g.current_term, prevTerms=0),
-                           allTerms = Term.select().order_by(Term.termOrder),
                            requirements = requirements,
                            bonnerCohorts = bonnerCohorts,
                            isProgramManager = isProgramManager)
