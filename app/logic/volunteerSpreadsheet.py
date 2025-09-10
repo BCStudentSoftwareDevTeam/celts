@@ -1,157 +1,203 @@
 from importlib.abc import ResourceReader
 from os import major
 import xlsxwriter
-from peewee import fn, Case, JOIN
+from peewee import fn, Case, JOIN, SQL, Select
 from collections import defaultdict
+from datetime import date, datetime,time
 
 from app import app
+from app.models import mainDB
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
 
+### READ ME FIRST! #################################################################
+#
+# It's very important that we understand the distinction between volunteers earning
+# service hours and other things that we track in our system, like student labor, 
+# bonner students, trainings, etc. The way we use 'volunteer' may not necessarily
+# be the way CELTS uses it.
+#
+####################################################################################
+
+def getFallTerm(academicYear):
+    return Term.get(Term.description % "Fall%", Term.academicYear == academicYear)
+
+def getSpringTerm(academicYear):
+    return Term.get(Term.description % "Spring%", Term.academicYear == academicYear)
+
+
+def getBaseQuery(academicYear):
+
+    # As we add joins to this query, watch out for duplicate participant rows being added
+
+    return (EventParticipant.select()
+                            .join(User).switch(EventParticipant)
+                            .join(Event)
+                            .join(Program).switch(Event)
+                            .join(Term)
+                            .where(Term.academicYear == academicYear,
+                                   Event.deletionDate == None, 
+                                   Event.isCanceled == False)
+                            .order_by(Event.startDate))
+
 
 def getUniqueVolunteers(academicYear):
-    uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
-                        .join(User).switch(EventParticipant)
-                        .join(Event)
-                        .join(Term)
-                        .where(Term.academicYear == academicYear)
-                        .order_by(EventParticipant.user_id))
+    base = getBaseQuery(academicYear)
 
-    return uniqueVolunteers.tuples()
+    columns = ["Full Name", "Email", "B-Number"]
+    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'), fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"), User.bnumber)
+                 .where(Event.isService == True)).alias('subq')
+    query = Select().from_(subquery).select(subquery.c.fullname, fn.CONCAT(subquery.c.user_id,'@berea.edu'), subquery.c.bnumber)
 
-
-def getVolunteerProgramEventByTerm(term):
-    volunteersByTerm = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
-                        .join(User).switch(EventParticipant)
-                        .join(Event)
-                        .join(Program)
-                        .where(Event.term_id == term)
-                        .order_by(EventParticipant.user_id))
-
-    return volunteersByTerm.tuples()
-
-
-def totalVolunteerHours(academicYear):
-    query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
-                             .join(Event, on=(EventParticipant.event == Event.id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
-             )
-
-    return query.tuples()
+    return (columns,query.tuples().execute(mainDB))
 
 
 def volunteerProgramHours(academicYear):
-    volunteerProgramHours = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
-                             .join(Event, on=(EventParticipant.event_id == Event.id))
-                             .join(Program, on=(Event.program_id == Program.id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
-                             .group_by(Program.programName, EventParticipant.user_id))
+    base = getBaseQuery(academicYear)
 
-    return volunteerProgramHours.tuples()
+    columns = ["Program Name", "Volunteer Hours", "Volunteer Name", "Volunteer Email", "Volunteer B-Number"]
+    query = (base.select(Program.programName, 
+                         fn.SUM(EventParticipant.hoursEarned),
+                         fn.CONCAT(User.firstName, ' ', User.lastName), 
+                         fn.CONCAT(EventParticipant.user_id,'@berea.edu'), 
+                         User.bnumber) 
+                 .where(Event.isService == True)
+                 .group_by(Program.programName, EventParticipant.user_id))
 
+    return (columns, query.tuples())
 
 def onlyCompletedAllVolunteer(academicYear):
-    subQuery = (EventParticipant.select(EventParticipant.user_id)
-                .join(Event)
-                .join(Term)
-                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear))
+    base = getBaseQuery(academicYear)
+    base2 = getBaseQuery(academicYear)
 
-    onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
-                        .join(User).switch(EventParticipant)
-                        .join(Event)
-                        .join(Term)
-                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear, EventParticipant.user_id.not_in(subQuery)))
+    columns = ["Full Name", "Email", "B-Number"]
+    subQuery = base2.select(EventParticipant.user_id).where(~Event.isAllVolunteerTraining)
 
-    return onlyAllVolunteer.tuples()
+    query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName), 
+                         fn.CONCAT(EventParticipant.user_id,'@berea.edu'), 
+                         User.bnumber) 
+                 .where(Event.isAllVolunteerTraining, EventParticipant.user_id.not_in(subQuery)))
 
+    return (columns, query.tuples())
 
-def volunteerHoursByProgram(academicYear):
-    query = (Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-             .join(Event)
-             .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
-             .join(Term, on=(Term.id == Event.term))
-             .where(Term.academicYear == academicYear)
-             .group_by(Program.programName)
-             .order_by(Program.programName))
+def totalHours(academicYear):
+    base = getBaseQuery(academicYear)
 
-    return query.tuples()
+    columns = ["Total Service Hours", "Total Training Hours", "Other Participation Hours"]
+    query = base.select(fn.SUM(Case(None,((Event.isService, EventParticipant.hoursEarned),),0)),
+                        fn.SUM(Case(None,((Event.isTraining, EventParticipant.hoursEarned),),0)),
+                        fn.SUM(Case(None,((~Event.isService & ~Event.isTraining, EventParticipant.hoursEarned),),0)))
 
+    return (columns, query.tuples())
 
-def volunteerMajorAndClass(academicYear, column, reorderClassLevel=False):
-    majorAndClass = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-                     .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                     .join(Event, on=(EventParticipant.event_id == Event.id))
-                     .join(Term, on=(Event.term == Term.id))
-                     .where(Term.academicYear == academicYear)
-                     .group_by(column))
+def totalHoursByProgram(academicYear):
+    base = getBaseQuery(academicYear)
 
-    if reorderClassLevel:
-        majorAndClass = majorAndClass.order_by(Case(None, ((column == "Freshman", 1),
-                                                           (column == "Sophomore", 2),
-                                                           (column == "Junior", 3),
-                                                           (column == "Senior", 4),
-                                                           (column == "Graduating", 5),
-                                                           (column == "Non-Degree", 6),
-                                                           (column.is_null(), 7)),
-                                               8))
+    columns = ["Program", "Service Hours", "Training Hours", "Other Hours"]
+    query = (base.select(Program.programName,
+                         fn.SUM(Case(None,((Event.isService, EventParticipant.hoursEarned),),0)),
+                         fn.SUM(Case(None,((Event.isTraining, EventParticipant.hoursEarned),),0)),
+                         fn.SUM(Case(None,((~Event.isService & ~Event.isTraining, EventParticipant.hoursEarned),),0)))
+                 .group_by(Program.programName)
+                 .order_by(Program.programName))
+
+    return (columns, query.tuples())
+
+def makeCase(fieldname):
+    return Case(fieldname,((1, "Yes"),(0, "No"),),"None")
+
+def getAllTermData(term):
+    base = getBaseQuery(term.academicYear)
+
+    columns = ["Program Name", "Event Name", "Event Description", "Event Date", "Event Start Time", "Event End Time", "Event Location",
+               "Food Provided", "Labor Only", "Training Event", "RSVP Required", "Service Event", "Engagement Event", "All Volunteer Training",
+               "RSVP Limit", "Series #", "Is Repeating Event", "Contact Name", "Contact Email",
+               "Student First Name", "Student Last Name", "Student Email", "Student B-Number", "Student Phone", "Student CPO", "Student Major", "Student Has Graduated", "Student Class Level", "Student Dietary Restrictions",
+               "Hours Earned"]
+    query = (base.select(Program.programName,Event.name, Event.description, Event.startDate, Event.timeStart, Event.timeEnd, Event.location, 
+                         makeCase(Event.isFoodProvided), makeCase(Event.isLaborOnly), makeCase(Event.isTraining), makeCase(Event.isRsvpRequired), makeCase(Event.isService), makeCase(Event.isEngagement), makeCase(Event.isAllVolunteerTraining), 
+                         Event.rsvpLimit, Event.seriesId, makeCase(Event.isRepeating), Event.contactName, Event.contactEmail,
+                         User.firstName, User.lastName, fn.CONCAT(User.username,'@berea.edu'), User.bnumber, User.phoneNumber,User.cpoNumber,User.major, makeCase(User.hasGraduated), User.rawClassLevel, User.dietRestriction, 
+                         EventParticipant.hoursEarned)
+                         .where(Event.term == term))
+
+    return (columns,query.tuples())
+
+def volunteerMajorAndClass(academicYear, column, classLevel=False):
+    base = getBaseQuery(academicYear)
+
+    columns = ["Major", "Count"]
+    query = (base.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+                 .where(Event.isService == True)
+                 .group_by(column))
+
+    if classLevel:
+        columns = ["Class Level", "Count"]
+        query = query.order_by(Case(None, ((column == "Freshman", 1),
+                                           (column == "Sophomore", 2),
+                                           (column == "Junior", 3),
+                                           (column == "Senior", 4),
+                                           (column == "Graduating", 5),
+                                           (column == "Non-Degree", 6),
+                                           (column.is_null(), 7)),
+                               8))
     else:
-        majorAndClass = majorAndClass.order_by(column.asc(nulls='LAST'))
+        query = query.order_by(SQL("count").desc())
 
-    return majorAndClass.tuples()
+    return (columns, query.tuples())
 
 
-def repeatVolunteersPerProgram(academicYear):
-    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'),
+def repeatParticipantsPerProgram(academicYear):
+    base = getBaseQuery(academicYear)
+
+    columns = ["Volunteer", "Program Name", "Event Count"]
+    query = (base.select(fn.CONCAT(User.firstName, " ", User.lastName).alias('fullName'),
                                                      Program.programName.alias("programName"),
                                                      fn.COUNT(EventParticipant.event_id).alias('event_count'))
-                             .join(Event, on=(EventParticipant.event_id == Event.id))
-                             .join(Program, on=(Event.program == Program.id))
-                             .join(User, on=(User.username == EventParticipant.user_id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)  
-                             .group_by(User.firstName, User.lastName, Event.program)
-                             .having(fn.COUNT(EventParticipant.event_id) > 1)
-                             .order_by(Event.program, User.lastName))
+                 .where(Event.isService == True)
+                 .group_by(User.firstName, User.lastName, Event.program)
+                 .having(fn.COUNT(EventParticipant.event_id) > 1)
+                 .order_by(Event.program, User.lastName))
 
-    return repeatPerProgramQuery.tuples()
+    return (columns, query.tuples())
 
 
-def repeatVolunteers(academicYear):
-    repeatAllProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName), fn.COUNT(EventParticipant.user_id).alias('count'))
-                             .join(User, on=(User.username == EventParticipant.user_id))
-                             .join(Event, on=(EventParticipant.event == Event.id))
-                             .join(Term, on=(Event.term == Term.id))
-                             .where(Term.academicYear == academicYear)
-                             .group_by(User.firstName, User.lastName)
-                             .having(fn.COUNT(EventParticipant.user_id) > 1))
+def repeatParticipants(academicYear):
+    base = getBaseQuery(academicYear)
 
-    return repeatAllProgramQuery.tuples()
+    columns = ["Number of Events", "Full Name", "Email", "B-Number"]
+    query = (base.select(fn.COUNT(EventParticipant.user_id).alias('count'),
+                         fn.CONCAT(User.firstName, ' ', User.lastName), 
+                         fn.CONCAT(EventParticipant.user_id,'@berea.edu'), 
+                         User.bnumber) 
+                 .group_by(User.firstName, User.lastName)
+                 .having(fn.COUNT(EventParticipant.user_id) > 1)
+                 .order_by(SQL("count").desc()))
+
+    return (columns, query.tuples())
 
 
 def getRetentionRate(academicYear):
-    retentionList = []
-    fall, spring = academicYear.split("-")
-    fallParticipationDict = termParticipation(f"Fall {fall}")
-    springParticipationDict = termParticipation(f"Spring {spring}")
+    fallParticipationDict = termParticipation(getFallTerm(academicYear))
+    springParticipationDict = termParticipation(getSpringTerm(academicYear))
 
+    retentionList = []
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retentionRate in retentionRateDict.items():
         retentionList.append((program, str(round(retentionRate * 100, 2)) + "%"))
 
-    return retentionList
+    columns = ["Program", "Retention Rate"]
+    return (columns, retentionList)
 
 
-def termParticipation(termDescription):
-    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
-                          .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
-                          .join(Program, on=(Event.program == Program.id))
-                          .join(Term, on=(Event.term_id == Term.id))
-                          .where(Term.description == termDescription)
+def termParticipation(term):
+    base = getBaseQuery(term.academicYear)
+
+    participationQuery = (base.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
+                          .where(Event.term == term)
                           .order_by(EventParticipant.user))
 
     programParticipationDict = defaultdict(list)
@@ -182,22 +228,35 @@ def calculateRetentionRate(fallDict, springDict):
     return retentionDict
 
 
-def makeDataXls(getData, columnTitles, sheetName, workbook):
+def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
+    # assumes the length of the column titles matches the length of the data
+    (columnTitles, dataTuples) = sheetData
     worksheet = workbook.add_worksheet(sheetName)
     bold = workbook.add_format({'bold': True})
 
-    worksheet.write_string(0, 0, sheetName)
+    worksheet.write_string(0, 0, sheetName, bold)
+    if sheetDesc:
+        worksheet.write_string(1, 0, sheetDesc)
 
     for column, title in enumerate(columnTitles):
-        worksheet.write(1, column, title, bold)
+        worksheet.write(3, column, title, bold)
 
-    for column, rowData in enumerate(getData):
-        for data, value in enumerate(rowData):
-            worksheet.write(column + 2, data, value)
+    for row, rowData in enumerate(dataTuples):
+        for column, value in enumerate(rowData):
+            # dates and times should use their text representation
+            if isinstance(value, (datetime, date, time)):
+                value = str(value)
 
+            worksheet.write(row + 4, column, value)
+
+    # set the width to the size of the text, with a maximum of 50 characters
     for column, title in enumerate(columnTitles):
-        columnData = [title] + [rowData[column] for rowData in getData]
-        setColumnWidth = max(len(str(x)) for x in columnData)
+        # put all of the data in each column into a list
+        columnData = [title] + [rowData[column] for rowData in dataTuples]
+
+        # find the largest item in the list (and cut it off at 50)
+        setColumnWidth = min(max(len(str(x)) for x in columnData),50)
+
         worksheet.set_column(column, column, setColumnWidth + 3)
 
 
@@ -205,29 +264,20 @@ def createSpreadsheet(academicYear):
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    hoursByProgramColumns = ["Program", "Hours"]
-    volunteerMajorColumns = ["Major", "Count"]
-    volunteerClassColumns = ["Class Level", "Count"]
-    repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
-    repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
-    volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
-    uniqueVolunteersColumns = ["Username", "Full Name", "B-Number"]
-    totalVolunteerHoursColumns = ["Total Volunteer Hours"]
-    volunteerProgramHoursColumns = ["Program Name", "Volunteer Username", "Volunteer Hours"]
-    onlyCompletedAllVolunteerColumns = ["Username", "Full Name"]
-    volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
+    makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
+    makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
+    makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
+    makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
+    makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
+    makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
+    makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
+    makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
+    makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
 
-    makeDataXls(volunteerHoursByProgram(academicYear), hoursByProgramColumns, "Total Hours By Program", workbook)
-    makeDataXls(volunteerMajorAndClass(academicYear, User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
-    makeDataXls(volunteerMajorAndClass(academicYear, User.rawClassLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
-    makeDataXls(repeatVolunteersPerProgram(academicYear), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
-    makeDataXls(repeatVolunteers(academicYear), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
-    makeDataXls(getRetentionRate(academicYear), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
-    makeDataXls(getUniqueVolunteers(academicYear), uniqueVolunteersColumns, "Unique Volunteers", workbook)
-    makeDataXls(totalVolunteerHours(academicYear), totalVolunteerHoursColumns, "Total Hours", workbook)
-    makeDataXls(volunteerProgramHours(academicYear), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
-    makeDataXls(onlyCompletedAllVolunteer(academicYear), onlyCompletedAllVolunteerColumns, "Only All Volunteer Training", workbook)
-    makeDataXls(getVolunteerProgramEventByTerm(Term.get_or_none(Term.description == f"Fall {academicYear.split('-')[0]}")), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
+    fallTerm = getFallTerm(academicYear)
+    springTerm = getSpringTerm(academicYear)
+    makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
+    makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
 
     workbook.close()
 
