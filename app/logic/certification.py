@@ -77,7 +77,8 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
 
     Arguments:
         certId - The id of the certification whose requirements we are updating
-        newRequirements - a dictionary of dictionaries. Each dictionary needs 'id', 'required', 'frequency', and 'name'.
+        newRequirements -  A dictionary that determines whether to create a new requirement or update an existing one. 
+        Each dictionary has this format {"required": bool, "frequency": str, "name": str}.
 
     Returns:
         A list of CertificationRequirement objects corresponding to the given `newRequirements` list.
