@@ -1,6 +1,15 @@
 $(document).ready(function(){
-  //Load flash message from sessionStorage, if any
-  msgFlash();
+
+   $("#checkDietRestriction").on("change",  function() {
+    let norestrict = $(this).is(':checked');
+    if (norestrict) {
+        $("#dietContainer").hide();
+        $("#diet").val("No dietary restrictions");
+
+    } else {
+        $("#dietContainer").show();
+    }
+  });
 
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
@@ -26,7 +35,6 @@ $(document).ready(function(){
     });
   })
 
-  $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -80,23 +88,6 @@ $(document).ready(function(){
           $(this).text('');
       });
     }, 500);
-  }
-
-  function changeAction(e){
-    let profileAction = $(this).val()
-    let username = $(this).data('username')
-    if (profileAction == "Emergency Contact"){
-      window.location.href = `/profile/${username}/emergencyContact`
-    } else if (profileAction == "Insurance Information"){
-      window.location.href = `/profile/${username}/insuranceInfo`
-    } else if(profileAction == "Print Travel Form"){
-      window.open(`/profile/${username}/travelForm`, '_blank')    
-    } else if (profileAction == "View Service Transcript"){
-      window.location.href = `/profile/${username}/serviceTranscript`
-    } else if (profileAction == "Manage CCE Minor") {
-      window.location.href = `/profile/${username}/cceMinor`
-    }
-    $(this).val('')
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
@@ -328,35 +319,47 @@ $(document).ready(function(){
   });
  
   setupPhoneNumber("#updatePhone", "#phoneInput")
+
+  // Dietary Restrictions
+  function saveDiet() {
+    let data = {
+      dietInfo: $("#diet").val(),
+      user: $("#diet").data("user")
+    };
+    
+    $.ajax({
+      type: "POST",
+      url: "/updateDietInformation",
+      data: data,
+      success: function(s) {
+        $('#saveNotification').fadeIn('fast').delay(1000).fadeOut('slow');
+      }
+    });
+  }
+
   $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
+        saveDiet()
+    }
 
-    } else {
-        $("#dietContainer").show();
-        $("#diet").val("");
-    }
-  });
-  $(".saveDiet").on('click', function() {
-    let data = {
-      dietInfo: $("#diet").val(),
-      user: $(this).data("user")
-    }
-    $.ajax({
-      type: "POST",
-      url: "/updateDietInformation",
-      data: data,
-      success: function(s){
-        reloadWithAccordion("dietaryInformation");
-      },
-    })
+    var typingTimer;
+    var saveInterval = 1000; //milliseconds
+
+    $("#diet").on('input', function() {
+      clearTimeout(typingTimer);
+      $('#check-icon').remove();
+      
+      typingTimer = setTimeout(saveDiet, saveInterval);
+    });
   });
 
-});
+}); // end document.ready()
 
-function updateManagers(el, volunteerUsername ){// retrieve the data of the student staff and program id if the boxes are checked or not
+// Update program manager status
+function updateManagers(el, volunteerUsername ) {
   let programId=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
@@ -383,6 +386,4 @@ function updateManagers(el, volunteerUsername ){// retrieve the data of the stud
           console.log(error, status)
       }
   })
-
- 
 }
