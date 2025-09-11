@@ -73,14 +73,9 @@ function saveRequirement(e) {
         data: JSON.stringify(row_data), 
 
         success: function(ids) {
-<<<<<<< HEAD
-            msgToast("Bonner", "Updated Bonner Requirements");
-            $("#reqAdd").removeAttr("disabled");
-=======
             msgToast("Success", "Updated Bonner Requirements");
             $("#reqAdd").removeAttr("disabled");
             location.reload();
->>>>>>> c9243e26c89ff45b189b1d947cb507d7c1dfdf47
         },
         error: function(e) {
             msgToast("Error", "Error Saving Requirements");
