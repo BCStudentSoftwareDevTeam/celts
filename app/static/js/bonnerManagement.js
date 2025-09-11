@@ -157,7 +157,6 @@ function addRequirement() {
     newRow.find("input").val("");
     newRow.find("select.frequency-select option:first-child").attr('selected', true);
     newRow.find("select.required-select option:last-child").attr('selected', true);
-    newRow.find(".saveBtn").attr('id',"save-new");
     newRow.find(".saveBtn").data('id',"save-new");
     let newSaveBtn = newRow.find(".saveBtn")[0];
     newRow.find("select.frequency-select").attr("name", "frequency-new");
