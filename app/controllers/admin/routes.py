@@ -171,8 +171,6 @@ def createEvent(templateid, programid):
     preprocessEventData(eventData)
     isProgramManager = g.current_user.isProgramManagerFor(programid)
 
-    futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
-
     requirements, bonnerCohorts = [], []
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
@@ -187,7 +185,7 @@ def createEvent(templateid, programid):
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
-                           futureTerms = futureTerms,
+                           termList = selectSurroundingTerms(g.current_term, prevTerms=0),
                            requirements = requirements,
                            bonnerCohorts = bonnerCohorts,
                            isProgramManager = isProgramManager)
@@ -312,7 +310,6 @@ def eventDisplay(eventId):
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.program
-    futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
@@ -340,7 +337,7 @@ def eventDisplay(eventId):
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
                                 eventData = eventData,
-                                futureTerms = futureTerms,
+                                termList = Term.select().order_by(Term.termOrder),
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
