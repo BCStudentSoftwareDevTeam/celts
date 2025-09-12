@@ -71,20 +71,18 @@ def switchUser():
 
 @admin_bp.route('/eventTemplates')
 def templateSelect():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        allprograms = getAllowedPrograms(g.current_user)
-        visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/templateSelector.html",
-                                programs=allprograms,
-                                celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
-                                templates=visibleTemplates)
-    else:
+    programs = getAllowedPrograms(g.current_user)
+    if not programs:
         abort(403)
-
+    visibleTemplates = getAllowedTemplates(g.current_user)
+    return render_template("/events/templateSelector.html",
+                            programs=programs,
+                            celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
+                            templates=visibleTemplates)
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
+    if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
