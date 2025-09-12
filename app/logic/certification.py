@@ -74,6 +74,7 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
 
     The order of the list matters. Any ids that are in the database and not in `newRequirements` will be 
     removed. IDs that do not exist in the database will be created (and given a new, auto-generated ID).
+    the requirements will be listed from top to bottom in the order of the most recent updated/created first.
 
     Arguments:
         certId - The id of the certification whose requirements we are updating
@@ -101,7 +102,9 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     certRequirement.isRequired = bool(requirement_info.get('required', False))
     certRequirement.frequency = requirement_info['frequency']
     certRequirement.name =requirement_info['name']
+    certRequirement.order = requirement_info.get('order', 0)
     certRequirement.save() 
+
     return True
 
 def updateCertRequirementForEvent(event, requirement):
