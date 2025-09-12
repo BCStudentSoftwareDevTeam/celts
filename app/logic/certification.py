@@ -86,14 +86,8 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
     # update existing and add new requirements
 
     if newRequirements.get("save-new",None) is not None:
-        newRequirement = CertificationRequirement()
-        actualRequirements = newRequirements['save-new']
-        newRequirement.certification = certId
-        newRequirement.isRequired = bool(actualRequirements.get('required', False))
-        newRequirement.frequency = actualRequirements['frequency']
-        newRequirement.name =actualRequirements['name']
-        newRequirement.save()
-        return True
+        certRequirement = CertificationRequirement()
+        requirement_info = newRequirements['save-new']
     
     else:
         certKey = list(newRequirements.keys())[0]
@@ -101,14 +95,14 @@ def updateCertRequirements(newRequirements, certId=Certification.BONNER):
             certRequirement = CertificationRequirement.get(CertificationRequirement.id == certKey)
         except DoesNotExist:
             abort(403)
-    
         requirement_info = newRequirements[certKey]
-        certRequirement.certification = certId
-        certRequirement.isRequired = bool(requirement_info.get('required', False))
-        certRequirement.frequency = requirement_info['frequency']
-        certRequirement.name =requirement_info['name']
-        certRequirement.save()
-        return True
+
+    certRequirement.certification = certId
+    certRequirement.isRequired = bool(requirement_info.get('required', False))
+    certRequirement.frequency = requirement_info['frequency']
+    certRequirement.name =requirement_info['name']
+    certRequirement.save() 
+    return True
 
 def updateCertRequirementForEvent(event, requirement):
     """
