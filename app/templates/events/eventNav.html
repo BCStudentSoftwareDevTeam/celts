@@ -58,6 +58,9 @@
                     <a class="nav-link {{ 'active' if tabName == 'manageVolunteers' }}" href="/event/{{event.id}}/manage_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'manageVolunteers' else 'false'}}">Manage Volunteers</a>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'manageLabors' }}" href="/event/{{event.id}}/manage_Labor" role="tab" aria-selected="{{ 'true' if tabName == 'manageLabors' else 'false'}}">Manage Labor</a>
+                </li>
+                 <li class="nav-item" role="presentation">
                     <a class="nav-link {{ 'active' if tabName == 'details' }}" href="/event/{{event.id}}/volunteer_details" role="tab" aria-selected="{{ 'true' if tabName == 'details' else 'false'}}">Volunteer Details</a>
                 </li>
                 <li class="nav-item" role="presentation">

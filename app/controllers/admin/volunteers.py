@@ -89,6 +89,72 @@ def manageVolunteersPage(eventID):
                                 trainedParticipantsForProgramAndTerm = trainedParticipantsForProgramAndTerm,
                                 participationStatusForTrainings = participationStatusForTrainings,
                                 currentRsvpAmount = currentRsvpAmount)
+    
+@admin_bp.route('/event/<eventID>/manage_Labor', methods=['GET', 'POST'])
+def manageLaborsPage(eventID):
+    """
+    Controller that handles POST and GET requests regarding the Manage Labor page.
+
+    POST: updates the event participants for a particular event by calling 
+    updateEventParticipants on the form.
+
+    GET: retrieves all necessary participant lists and dictionaries and categorizes
+    the participants/Labors into their respective participation statuses. Then 
+    renders the manageLabors.html template.
+    """
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
+
+    # ------------ POST request ------------
+    if request.method == "POST":
+        laborUpdate = updateEventParticipants(request.form)
+
+        # error handling depending on the boolean returned from updateEventParticipants
+        if laborUpdate:
+            flash("Labor table succesfully updated", "success")
+        else:
+            flash("Error adding Labor", "danger")
+        return redirect(url_for("admin.manageLaborsPage", eventID=eventID))
+    
+    # ------------ GET request ------------
+    elif request.method == "GET":
+        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+            abort(403)
+
+        # ------- Grab the different lists of participants -------
+        trainedParticipantsForProgramAndTerm = trainedParticipants(event.program, event.term)
+
+        bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
+  
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
+        
+        allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
+        # ----------- Get miscellaneous data -----------
+
+        participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
+
+        eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+
+        repeatingVolunteers = getPreviousSeriesEventData(event.seriesId)
+
+        currentRsvpAmount = getEventRsvpCount(event.id)
+
+        # ----------- Render template with all of the data ------------
+        return render_template("/events/manageVolunteers.html",
+                                eventVolunteerData = eventVolunteerData,
+                                eventNonAttendedData = eventNonAttendedData,
+                                eventWaitlistData = eventWaitlistData,
+                                eventLength = eventLengthInHours,
+                                event = event,
+                                repeatingVolunteers = repeatingVolunteers,
+                                bannedUsersForProgram = bannedUsersForProgram,
+                                trainedParticipantsForProgramAndTerm = trainedParticipantsForProgramAndTerm,
+                                participationStatusForTrainings = participationStatusForTrainings,
+                                currentRsvpAmount = currentRsvpAmount)
+
 
 @admin_bp.route('/event/<eventID>/volunteer_details', methods=['GET'])
 def volunteerDetailsPage(eventID):
