@@ -37,7 +37,7 @@
                     {% for year in cohorts.keys()|sort|reverse %}
                         {% set show = "active" if subTab|int == year else "" %}
                         {% set aria = "true" if subTab|int == year else "false" %}
-                        <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
+                        <button class="nav-link year {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" data-year="{{year}}" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
                     {% endfor %}  
                 </div>
                 <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
@@ -68,11 +68,10 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="flex-column ms-2">
-                    <a href="/bonnerxls" target="_blank">
-                        <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
-                        <span>Export All</span>
-                    </a>
+                <div class="d-flex flex-column ms-2">
+                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="1"> <div><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export Selected Years</div></button>
+                    <button class="btn btn-success py-2 mb-2 export-spreadsheet" data-years="5"> <div class="d-flex"><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> <a>Export Previous 5 Years</a></div><a id="last5"></a></button>
+                    <button class="btn btn-success py-2 export-spreadsheet" data-years="all"> <div></div><img class="me-2" src="static/xls-icon-3379.png" alt="Export to Excel" height="24" width="24"/> Export All Years</div></button>
                 </div>
             </div>
             <!-------------------- End cohort management --------------------->
