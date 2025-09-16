@@ -225,7 +225,7 @@ function addRequirementsRowHandlers() {
     $(".required-select").change(function(e) {
         enableSave();
     });
-    $("#requirements input").on("input blur",function(e) {
+    $("#requirements input").on("input blur", function(e) {
         if($(this).val() == "") {
             this.setCustomValidity('Please enter a name.');
             this.reportValidity();

@@ -147,7 +147,6 @@
                         </td>
                         <td>
                             <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
-                                <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option>
                                 <option value="once" {{ "selected" if req.frequency == "once" else "" }}>Once</option>
                                 <option value="annual" {{ "selected" if req.frequency == "annual" else "" }}>Annual</option>
                                 <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
