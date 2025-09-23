@@ -109,12 +109,13 @@ def test_getCertRequirementsWithCompletion():
         EventParticipant.create(event_id=14, user_id='ramsayb2')
         RequirementMatch.create(event_id=13, requirement_id=10)
         EventParticipant.create(event_id=13, user_id='ramsayb2')
+        
         cprCert = 3
-
         cprReqs = getCertRequirementsWithCompletion(certification=cprCert, username='ramsayb2')
+       
         assert len(cprReqs) == 2
-        assert not cprReqs[0].completed, "The first event should not be completed"
-        assert cprReqs[1].completed, "The second event should be completed"
+        assert not cprReqs[0].completed, "The first event should not be marked as completed"
+        assert cprReqs[1].completed, "The second event should be marked as completed"
 
         transaction.rollback()
 
@@ -170,8 +171,9 @@ def test_updateCertRequirements():
                 ]
         returnedIds = updateCertRequirements(otherId, newRequirements)
         selectedIds = getCertRequirements(certification=otherId)
+        fetchedIds = list(CertificationRequirement.select().where(CertificationRequirement.certification == otherId).order_by(CertificationRequirement.order))
         
-        assert selectedIds == list(CertificationRequirement.select().where(CertificationRequirement.certification == otherId).order_by(CertificationRequirement.order))
+        assert selectedIds == fetchedIds
         assert returnedIds == selectedIds
         assert returnedIds[1].name == "CPR 2"
         assert returnedIds[1].frequency == "once"
