@@ -496,11 +496,11 @@
                   {{req.name}}
                 </span>
                 {% if req.frequency == "term"%}
-                  {% for a in range(req.missedTerms) %}
-                    <span class="bi bi-x fs-3"></span>
-                  {% endfor %}
                   {% for i in range(req.attendedTerms) %}
                   <span class="bi bi-check fs-3 text-success"></span>
+                  {% endfor %}
+                  {% for a in range(req.missedTerms) %}
+                    <span class="bi bi-x fs-3"></span>
                   {% endfor %}
                 {% elif req.completed %}
                   <span class="bi bi-check fs-3 text-success"></span>
