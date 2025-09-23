@@ -2,7 +2,6 @@ from app import app
 import os
 #from app.login_manager import require_login
 
-
 #@app.context_processor
 #def injectGlobalData():
     #currentUser = require_login()

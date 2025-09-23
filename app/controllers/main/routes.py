@@ -1,6 +1,6 @@
 import json
 import datetime
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
@@ -224,6 +224,7 @@ def viewUsersProfile(username):
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         return render_template ("/main/userProfile.html",
+                                username=username,
                                 programs = programs,
                                 programsInterested = programsInterested,
                                 upcomingEvents = upcomingEvents,
@@ -302,9 +303,7 @@ def insuranceInfo(username):
         if g.current_user.username != username:
             abort(403)
 
-        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
-        if not rowsUpdated:
-            InsuranceInfo.create(user = username, **request.form)
+        InsuranceInfo.replace({**request.form, "user": username}).execute()
 
         createActivityLog(f"{g.current_user.fullName} updated {user.fullName}'s insurance information.")
         flash('Insurance information saved successfully!', 'success') 
@@ -325,13 +324,48 @@ def travelForm(username):
                 .where(User.username == username).limit(1))
     if not list(user):
         abort(404)
-    userData = list(user.dicts())[0]
-    userData = {key: value if value else '' for (key, value) in userData.items()}
+    userList = list(user.dicts())[0]
+    userList = [{key: value if value else '' for (key, value) in userList.items()}]
 
     return render_template ('/main/travelForm.html',
-                            userData = userData
+                            userList = userList
                             )
 
+@main_bp.route('/event/<eventID>/travelForm', methods=['GET', 'POST'])
+def eventTravelForm(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
+
+    if not (g.current_user.isCeltsAdmin):
+        abort(403)
+
+    if request.method == "POST" and request.form.getlist("username") !=  []:
+        usernameList = request.form.getlist("username")
+        usernameList = usernameList.copy()
+        userList = []
+        for username in usernameList:
+            user = (User.select(User, EmergencyContact, InsuranceInfo)
+                        .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                        .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                        .where(User.username == username).limit(1))
+            if not list(username):
+                abort(404)
+            userData = list(user.dicts())[0]
+            userData = {key: value if value else '' for (key, value) in userData.items()}
+            userList.append(userData)
+            
+        
+    else:
+        return redirect(f"/event/{eventID}/volunteer_details")
+            
+     
+    return render_template ('/main/travelForm.html',
+                           usernameList = usernameList,
+                           userList = userList,
+                           )
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
@@ -581,7 +615,7 @@ def indicateMinorInterest(username):
     if g.current_user.isCeltsAdmin or g.current_user.username == username:
         data = request.get_json()
         isAdding = data.get("isAdding", False)
-        
+
         toggleMinorInterest(username, isAdding)
 
     else:
