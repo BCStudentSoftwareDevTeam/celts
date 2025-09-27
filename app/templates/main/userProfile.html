@@ -494,22 +494,22 @@
                 title="{% if req.attendedTerms %}You have attended these terms: {{ req.attendedDescriptions | join(', ') }}{%else%} You haven't attended any terms {% endif %}"
                 {% endif %}>
                   {{req.name}}
+                  {% if req.frequency == "term"%}
+                    {% for i in range(req.attendedTerms) %}
+                    <span class="bi bi-check fs-3 text-success"></span>
+                    {% endfor %}
+                    {% for a in range(req.missedTerms) %}
+                      <span class="bi bi-x fs-3 "></span>
+                    {% endfor %}
+                    {% elif req.completed %}
+                      <span class="bi bi-check fs-3 text-success "></span>
+                  {% elif req.completed == False and req.frequency == "once" %}
+                      <span class="bi bi-x fs-3 "></span>
+                  {% elif req.completed == False and req.frequency == "twice" %}
+                        <span class="bi bi-x fs-3 "></span>
+                        <span class="bi bi-x fs-3 "></span>
+                  {% endif %}
                 </span>
-                {% if req.frequency == "term"%}
-                  {% for i in range(req.attendedTerms) %}
-                  <span class="bi bi-check fs-3 text-success"></span>
-                  {% endfor %}
-                  {% for a in range(req.missedTerms) %}
-                    <span class="bi bi-x fs-3"></span>
-                  {% endfor %}
-                {% elif req.completed %}
-                  <span class="bi bi-check fs-3 text-success"></span>
-                {% elif req.completed == False and req.frequency == "once" %}
-                  <span class="bi bi-x fs-3"></span>
-                {% elif req.completed == False and req.frequency == "twice" %}
-                    <span class="bi bi-x fs-3"></span>
-                    <span class="bi bi-x fs-3"></span>
-                {% endif %}
                 </li>
               {% endfor %}
               </ul>
