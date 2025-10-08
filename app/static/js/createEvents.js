@@ -326,18 +326,12 @@ function updateEventNameField() {
 
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
-    let names = new Set()
-    offerings.forEach(offering => {
-      names.add(offering.eventName)
-    });
-    let offeringsText = Array.from(names).join(", ")
-    $('#inputEventName').val(offeringsText)
+    $('#inputEventName').prop('placeholder', '')
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
     let offeringText = $("#repeatingEventsNamePicker").val()
-    $('#inputEventName').val(offeringText)
-  } 
+    $('#inputEventName').prop('placeholder', offeringText)  } 
 }
 
 // Save the offerings from the modal to the hidden input field
