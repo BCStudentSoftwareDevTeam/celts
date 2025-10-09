@@ -132,7 +132,7 @@ $(document).ready(function(){
   });
 
   $(".editProgramManagersButton").on('click', function(){
-    $('#programPlaceholder').attr('data-programid', $(this).data('programid'))
+    $('#programPlaceholder').data('programid', $(this).data('programid'))
     $('#programNameHeader').html(`Edit ${$(this).attr('data-name')} Managers`);
 
     $('#noManagersText').addClass("d-none")
@@ -210,10 +210,11 @@ function editProgramManager(username, fullName, programId, action){
           .remove()
           msgToast("Confirmed", "You have just deleted a program manager")
           updateManagers(programId)
+
+          if (!(newManagers.length)){
+            $('#noManagersText').removeClass("d-none")
+          }
         })
-        if (newManagers.length){
-          $('#noManagersText').removeClass("d-none")
-        }
       }
     },
     error: function(error, status){
