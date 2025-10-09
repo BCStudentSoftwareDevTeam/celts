@@ -1,0 +1,16 @@
+
+/* Alternating row colors for Service Learning Courses */
+.slc-table tbody tr:nth-child(odd) {
+  background-color: white;
+}
+
+.slc-table tbody tr:nth-child(even) {
+  background-color: #F8F9FA;
+}
+/* Print styles */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in 0.1in 0.5in 0.1in;
+  }
+}
