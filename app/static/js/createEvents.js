@@ -183,6 +183,23 @@ function verifyRepeatingFields(){
   return isEmpty
 }
 
+/*
+ * Update the position of the Save button so that it is always on the screen as 
+ * the window scrolls and changes size. The position on the screen is determined 
+ * in the fixedButton class */
+const saveBtn = $('#saveButton');
+function updateSavePosition() {
+  const originalTop = saveBtn.parent()[0].getBoundingClientRect().top; // relative to scroll
+  const buttonHeight = 40;
+
+  if ($(window).height() < originalTop + buttonHeight) {
+    saveBtn.addClass('fixedButton');
+  } else {
+    saveBtn.removeClass('fixedButton');
+  }
+}
+$(window).on('scroll resize load', updateSavePosition);
+
 $('#saveSeries').on('click', function(e) {
   e.preventDefault(); // Prevent default form submission at the start
   enableLiveCustomValidityClearing([".multipleOfferingNameField"])
@@ -416,6 +433,9 @@ function updateOfferingsTable() {
       "</tr>"
     );
   });
+
+  //recalculate the save button
+  updateSavePosition()
 }
 
 //visual date formatting for multi-event table
@@ -477,13 +497,16 @@ function checkValidation() {
   let seriesEvent = $("#checkIsSeries").is(":checked");
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked");
   let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training';
-  
   enableLiveCustomValidityClearing([".all", ".series", ".seriesWeekly", ".main", ".allV"]);
 
   // Always validate common fields (.all class)
   allFieldFilled = validateFieldGroup(".all", allFieldFilled);
   
-  if (seriesEvent) {
+  if (isAllVolunteer) {
+    // Validate all volunteer specific fields
+    allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
+
+  } else if (seriesEvent) {
     // Validate series-specific fields
     allFieldFilled = validateFieldGroup(".series", allFieldFilled);
     
@@ -494,10 +517,6 @@ function checkValidation() {
     
     // Validate event type checkboxes
     allFieldFilled = validateEventTypeCheckboxes() && allFieldFilled;
-    
-  } else if (isAllVolunteer) {
-    // Validate all volunteer specific fields
-    allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
     
   } else {
     // Validate main template fields

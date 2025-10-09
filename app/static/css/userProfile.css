@@ -1,3 +1,11 @@
+div.profile-links {
+    margin-bottom:1em;
+}
+div.profile-links a:not(:first-child) {
+  margin-left: 5px;
+  float: right;
+}
+
 .banTable tr {
   vertical-align: middle;
 }
@@ -10,20 +18,16 @@
     background-color: #cdebaa;
 }
 
-dt { 
+.bonnerNotes dt { 
     font-weight: normal;
     padding: 5px; 
     padding-bottom:0px; 
 }
 
-dd { 
+.bonnerNotes dd { 
     font-size:.9em;
     padding: 5px; 
     padding-top:0px; 
-}
-
-#printButton{
-    font-size: 15px;
 }
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
@@ -31,6 +35,7 @@ dd {
 .bonnerNotes dd:nth-of-type(odd) { background-color:#FFF; } 
 .bonnerNotes dt:nth-of-type(odd) { background-color:#FFF; }
 
-#togglebuttonuser {
+#toggleMinorInterest {
     position: relative; left: 12px; width: 95%;
 }
+
