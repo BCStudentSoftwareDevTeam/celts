@@ -331,8 +331,7 @@ function updateEventNameField() {
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
     let offeringText = $("#repeatingEventsNamePicker").val()
-    $('#inputEventName').prop('placeholder', offeringText)
-  }
+    $('#inputEventName').prop('placeholder', offeringText)  } 
 }
 
 // Save the offerings from the modal to the hidden input field

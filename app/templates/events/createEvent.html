@@ -441,14 +441,13 @@
         </div>
         
         <!-- Template eventOffering row -->
-        <div class="d-flex justify-content-start ms-1 form-check form-switch">
-          {% if showRecurringToggle %}
-            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
-            <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
-          {% else %}
-            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" hidden name="isRepeating" />
-          {% endif %}
-        </div>
+        {% if showRecurringToggle %}
+            <div class="d-flex justify-content-start ms-1 form-check form-switch">
+              <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
+              <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
+            </div>
+        {% endif %}
+        
         <div class="d-none mb-2" id="repeatingEventsDiv">
           <div class="row col-md-12 my-3">
             <div class="form-group mb-3 col-md-6">
