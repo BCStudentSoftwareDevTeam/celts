@@ -118,7 +118,9 @@ def userManagement():
     
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
+    print(terms, "Here")
     if g.current_user.isCeltsAdmin or g.current_user.isProgramManager:
+        print(terms, "Slim shady")
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(currentPrograms),
@@ -137,4 +139,5 @@ def changeTerm():
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
 def addNewTerm():
     addNextTerm()
+    flash("New term added", "success")
     return ""

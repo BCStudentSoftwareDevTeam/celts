@@ -260,6 +260,7 @@ function addNewTerm(){
     type: "POST",
     success: function(s){
       reloadWithAccordion("term")
+      
     },
     error: function(error, status){
         console.log(error, status)
