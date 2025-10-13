@@ -195,7 +195,6 @@ def getRetentionRate(academicYear):
 
 def termParticipation(term):
     base = getBaseQuery(term.academicYear)
-    print("see", base)
     
     participationQuery = (base.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("programName"))
                           .where(Event.term == term)
