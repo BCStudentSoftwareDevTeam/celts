@@ -18,10 +18,16 @@ class Program(baseModel):
 
     @property
     def url(self):
-
-        return (self.bereaUrl or self.instagramUrl or self.facebookUrl)
-
+        if self.bereaUrl:
+            return self.bereaUrl
+        if self.instagramUrl:
+            return self.instagramUrl
+        if self.facebookUrl:
+            return self.facebookUrl
+        return None  # Explicitly return None if nothing else is available
     @property
     def description(self):
-
         return self.programDescription
+    
+
+     

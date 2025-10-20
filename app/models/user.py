@@ -1,6 +1,5 @@
 from app.models import *
 
-
 class User(baseModel):
     username = CharField(primary_key=True)
     bnumber = CharField(unique=True)
@@ -17,7 +16,7 @@ class User(baseModel):
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
     dietRestriction = TextField(null=True)
-    minorInterest = BooleanField(default=False)
+    minorInterest = BooleanField(null=True)
     hasGraduated = BooleanField(default=False)
     declaredMinor = BooleanField(default=False)
 
@@ -27,6 +26,7 @@ class User(baseModel):
 
         self._pmCache = {}
         self._bsCache = None
+        self._isProgramManagerCache = None
     
     @property
     def processedClassLevel(self):
@@ -79,5 +79,14 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
-
     
+    @property
+    def isProgramManager(self):
+        from app.models.programManager import ProgramManager
+
+        if self._isProgramManagerCache is None:
+            self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
+            
+        return self._isProgramManagerCache
+
+
