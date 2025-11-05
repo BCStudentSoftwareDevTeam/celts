@@ -397,6 +397,51 @@ def deleteNote(username):
         flash("Failed to delete profile note", "danger")
     return "success"
 
+@main_bp.route('/<username>/editNote', methods=['POST'])
+def editProfileNote(username):
+    """
+    Edit an existing profile note.
+    """
+    profile_note_id = request.form.get('id')
+    new_text = (request.form.get('noteTextbox') or '').strip()
+    visibility = request.form.get('visibility')  # optional
+    bonner = request.form.get('bonner')          # optional
+
+    if not profile_note_id or not new_text:
+        return jsonify({"error": "Missing note id or content"}), 400
+
+    try:
+        pn = ProfileNote.get_by_id(profile_note_id)
+    except DoesNotExist:
+        return jsonify({"error": "ProfileNote not found"}), 404
+
+    # Ensure the note we are editing belongs to the profile in the URL
+    if pn.user.username != username:
+        abort(403)
+
+    # Only the creator OR an admin may edit the note
+    if (pn.note.createdBy != g.current_user) and (not g.current_user.isCeltsAdmin):
+        abort(403)
+
+    # Update the note text
+    pn.note.noteContent = new_text
+    pn.note.save()
+
+    # Optionally update visibility and bonner flag
+    if visibility is not None and visibility != '':
+        try:
+            pn.viewTier = int(visibility)
+        except ValueError:
+            return jsonify({"error": "Invalid visibility value"}), 400
+
+    if bonner is not None:
+        pn.isBonnerNote = (bonner == "yes")
+
+    pn.save()
+
+    flash("Successfully updated profile note", "success")
+    return jsonify({"status": "ok"})
+
 # ===========================Ban===============================================
 @main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
 def ban(program_id, username):
