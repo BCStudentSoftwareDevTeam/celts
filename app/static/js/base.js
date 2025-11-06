@@ -111,7 +111,7 @@ function setupPhoneNumber(editButtonId, phoneInput){
 
 function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   if (action == "edit" ) {
-    $(editButtonId).html("Save");
+    $(editButtonId).html('Save');
   }
   else if (action == "save" ) {
     validatePhoneNumber(editButtonId, phoneInputId, username)
@@ -119,7 +119,7 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   else if (action == "restore"){
     var phoneInput = $(phoneInputId);
     $(phoneInputId).val(phoneInput.attr("data-value"))
-    $(editButtonId).html('Edit');
+    $(editButtonId).text('Edit');
   }
 }
 

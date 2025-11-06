@@ -84,11 +84,19 @@
                     {% if eventData.isFoodProvided %}
                         <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><br><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
                     {% endif %}
+
                     {% if eventData.isService %}
                         <p>This event earns service hours.</p>
+                        <p class="border border-danger p-2">Participating in this activity means that you are a volunteer, that it is not part of your Work-Learning-Service (WLS) role, that you will not receive compensation, and that you are choosing to engage in this activity for service-learning or personal enrichment.</p>
+
+                    {% elif eventData.program.isBonnerScholars %}
+                        <p>This event does not earn service hours.</p>
+                        <p class="border border-danger p-2">Participating in this event is fulfilling a requirement for your Bonner Scholarship, and you may not be clocked in for your labor position.</p>
+
                     {% else %}
                         <p>This event does not earn service hours.</p>
                     {% endif %}
+
                     {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
                       {% if currentEventRsvpAmount >= eventData.rsvpLimit %}
                         <p>All RSVP spots are full. Feel free to join the waitlist in case more space is made available or someone is unable to attend. </p>
@@ -102,9 +110,11 @@
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
+
                     {% if eventData.isLaborOnly %}
                         <p>This event is for labor students only.</p>
                     {% endif %}
+
                     {% if eventData.seriesId %}
                         <p>
                         {% if eventData.isRepeating %}
