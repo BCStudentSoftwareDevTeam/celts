@@ -5,6 +5,7 @@
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -488,29 +489,44 @@
               <ul>
               {% for req in bonnerRequirements %}
                 <li>
-                <span {% if req.frequency == "term"%}
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="{% if req.attendedTerms %}You have attended these terms: {{ req.attendedDescriptions | join(', ') }}{%else%} You haven't attended any terms {% endif %}"
-                {% endif %}>
+                <span>
                   {{req.name}}
                   {% if req.frequency == "term"%}
-                    {% for i in range(req.attendedTerms) %}
+                    {% set totalTerms = req.attendedTerms + req.missedTerms%}
+                    {% set attendedCount = req.attendedTerms %}
+                    <span>({{attendedCount}}/{{totalTerms}})</span> 
+                    <!-- {% for i in range(req.attendedTerms) %}
                     <span class="bi bi-check fs-3  text-success"></span>
                     {% endfor %}
                     {% for a in range(req.missedTerms) %}
                       <span class="bi bi-x fs-3 "></span>
-                    {% endfor %}
+                    {% endfor %} -->
                     {% elif req.completed %}
-                      <span class="bi bi-check fs-3 text-success "></span>
+                      <span>(1/1)</span> 
                   {% elif req.completed == False and req.frequency == "once" %}
-                      <span class="bi bi-x fs-3 "></span>
+                      <span>(0/1)</span> 
                   {% elif req.completed == False and req.frequency == "twice" %}
-                        <span class="bi bi-x fs-3 "></span>
-                        <span class="bi bi-x fs-3 "></span>
+                      <span>(0/2)</span> 
                   {% endif %}
                 </span>
+                {% if req.attendedTerms %}
+                  {% set popover_text = "You have attended these terms: " ~ (req.attendedDescriptions | join(', ')) %}
+                {% else %}
+                  {% set popover_text = "You haven't attended any terms" %}
+                {% endif %}
+                <a
+                  href="#"
+                  type="button"
+                  class="bonnerCheckmark btn btn-link btn-sm"
+                  data-bs-container="body"
+                  data-bs-toggle="popover"
+                  data-bs-placement="right"
+                  data-bs-content="{{ popover_text | e }}"
+                >
+                  View
+                </a>         
                 </li>
+                </br>
               {% endfor %}
               </ul>
             </div>
