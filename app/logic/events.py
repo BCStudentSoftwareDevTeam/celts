@@ -290,32 +290,31 @@ def getTrainingEvents(term, user):
     return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
-    bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
-                                     .join(Program)
-                                     .where(Program.isBonnerScholars,
-                                            Event.term == term, Event.deletionDate == None)
-                                     .order_by(Event.startDate, Event.timeStart)
-                                     .execute())
+    bonnerScholarsEvents = list(
+        Event.select(Event, Program.id.alias("program_id"))
+            .join(Program)
+            .where(
+                Program.isBonnerScholars,
+                Event.term == term,
+                Event.deletionDate == None
+            )
+            .order_by(Event.startDate, Event.timeStart)
+            .execute()
+    )
     return bonnerScholarsEvents
 
 def getCeltsLabor(term):
     """
-    
-    Get the list of the events not caught by other functions to be displayed in
+
+    Get the list of the labor only events to be displayed in
     the Celts Labor section of the Events List page.
-    :return: A list of Other Event objects
+    :return: A list of labor only Event objects
     """
-    # Gets all events that are not associated with a program and are not trainings
-    # Gets all events that have a program but don't fit anywhere
+    # Gets all events that are labor only
     
-    celtsLabor = list(Event.select(Event, Program)
-                            .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.term == term, Event.deletionDate == None,
-                                   Event.isTraining == False,
-                                   Event.isAllVolunteerTraining == False,
-                                   ((Program.isOtherCeltsSponsored) |
-                                   ((Program.isVolunteerOpportunities == False) &
-                                   (Program.isBonnerScholars == False))))
+    celtsLabor = list(Event.select()
+                            .join(Program, JOIN.LEFT_OUTER, on=(Event.program == Program.id))
+                            .where(Program.isCeltsLabor, Event.term == term, Event.deletionDate == None, Event.isLaborOnly == True)
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
 
