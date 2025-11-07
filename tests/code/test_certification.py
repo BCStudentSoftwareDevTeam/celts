@@ -19,10 +19,11 @@ from app.logic.loginManager import getCurrentTerm
 def test_termsAttended():
     with mainDB.atomic() as transaction:
             # created the database and added the test data to test what terms are return from attendedTerms()
+        with app.app_context():
             Term.create(id = 1000, description = "Spring 2020", year = 2020, academicYear = 2019-2020, isSummer = False, isCurrentTerm = True, termOrder = 2020-1)
             Term.create(id = 1001, description = "Fall 2019", year = 2019, academicYear = 2019-2020, isSummer = False, isCurrentTerm = False, termOrder = 2019-3)
             Event.create(id = 1400, term_id = 1000, name = "Event 1", description = "Spring 2020", program_id = 5)
-            Event.create(id = 1401, term_id = 1001, name = "Event 2", description = "Fall 2019", program_id = 5)
+            Event.create(id = 1401, term_id = 1001, name = "Event 2", description = "Spring 2019", program_id = 5)
             User.create(username='zawn', rawClassLevel='Senior')  
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             RequirementMatch.create(event_id=1400, requirement_id=400)
@@ -30,18 +31,22 @@ def test_termsAttended():
             RequirementMatch.create(event_id=1401, requirement_id=400)
             EventParticipant.create(event_id=1401, user_id='zawn')
 
-            attendedTerms = termsAttended(certification=400, username='zawn')
-            assert attendedTerms == ["Spring 2020", "Fall 2019"]
+            attendedTermsNum = len(termsAttended(certification=400, username='zawn'))
+            assert attendedTermsNum == 2
+            transaction.rollback()
 
-            # created the database and added the test data to test the number of terms the student attended
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            # created the database and added the test data to test terms the student attended
             Term.create(id = 1002, description = "Summer 2019", year = 2019, academicYear = 2019-2020, isSummer = True, isCurrentTerm = False, termOrder = 2019-2)
             Event.create(id = 1402, term_id = 1002, name = "Event 3", description = "Summer 2019", program_id = 5)
+            User.create(username='zawn', rawClassLevel='Senior')  
+            CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             RequirementMatch.create(event_id=1402, requirement_id=400)
             EventParticipant.create(event_id=1402, user_id='zawn')
-
-            numberAttendedTerms = len(termsAttended(certification=400, username='zawn'))
-            assert numberAttendedTerms == 3
-            transaction.rollback()
+            attendedTerms = termsAttended(certification=400, username='zawn')
+        assert attendedTerms == []
+        transaction.rollback()
             
 @pytest.mark.integration
 def test_termsMissed():
@@ -56,8 +61,8 @@ def test_termsMissed():
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
-        assert missedTerms == 7
-        transaction.rollback()
+            assert missedTerms == ['Fall 2016', 'Spring 2016', 'Fall 2017', 'Spring 2017', 'Fall 2018', 'Spring 2018', 'Fall 2019']
+            transaction.rollback()
     
     
     with mainDB.atomic() as transaction:
@@ -69,7 +74,7 @@ def test_termsMissed():
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
-        assert missedTerms == 1
+        assert missedTerms == ["Fall 2022"]
         transaction.rollback()
      
     with mainDB.atomic() as transaction:
@@ -81,7 +86,7 @@ def test_termsMissed():
             CertificationRequirement.create(id = 400, certification_id = 1, name = "CPR Training", frequency = "term", required = True)
             g.current_term = getCurrentTerm()
             missedTerms = termsMissed(certification=1, username='zawn')
-        assert missedTerms == 8
+        assert missedTerms == ['Fall 2018', 'Spring 2018', 'Fall 2019', 'Spring 2019', 'Fall 2020', 'Spring 2020', 'Fall 2021', 'Spring 2021']
         transaction.rollback()
         
 @pytest.mark.integration
@@ -94,7 +99,7 @@ def test_getCertRequirements():
     assert ["Volunteer Training", "CPR Training"] == [r.name for r in cpr]
 
     bonner = getCertRequirements(certification=Certification.BONNER)
-    assert len(bonner) == 9
+    assert len(bonner) == 10
 
     noRequirements = getCertRequirements(certification=1111)
     assert len(noRequirements) == 0

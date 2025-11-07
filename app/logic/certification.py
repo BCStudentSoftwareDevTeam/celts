@@ -1,4 +1,4 @@
-from peewee import JOIN, DoesNotExist, Case
+from peewee import JOIN, fn, DoesNotExist, Case
 from flask import g
 from app.models.event import Event
 from app.models.term import Term
@@ -7,11 +7,13 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.requirementMatch import RequirementMatch
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
-
+import math
 def termsAttended(certification=None, username=None):
     '''
     Retrieve terms attended by a user for certification and filter them based on frequency of a term
     '''
+    if certification is None or username is None:
+        return 
     attendedTerms = []
     if username:
         attendance = (RequirementMatch.select()
@@ -19,46 +21,51 @@ def termsAttended(certification=None, username=None):
                                       .where(RequirementMatch.requirement_id == certification)  
                                       .where(EventParticipant.user == username))  
     for termRecord in range(len(attendance)):
-        attendedTerms.append(attendance[termRecord].event.term.description)
-    return attendedTerms
+        if not attendance[termRecord].event.term.description.startswith("Summer"):
+            attendedTerms.append(attendance[termRecord].event.term.description)
+    return list(set(attendedTerms))
             
 def termsMissed(certification=None, username=None): 
     '''
     Calculate how many certification-eligible terms a student has missed based on their class level
     and attendance record.
-
-    Logic:
-    - Each class level is expected to participate in 2 terms per year.
-    - If the user is currently in their final spring term (e.g., Spring of senior year), 
-      they are expected to have completed all terms: missedTerms = (level + 1) * 2.
-    - Otherwise, assume they’ve had one fewer term to attend: missedTerms = ((level + 1) * 2) - 1.
-    - If the user's classification is None, assume just 1 expected term.
-    - Subtract the number of terms the student has attended from the expected total to get the missed count.
     '''
-    classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
+    if certification is None or username is None:
+        return
+    totalTerms = termsInTotal(certification, username)   
+    attendedTerms = termsAttended(certification, username)
+    missedTerms = [term for term in totalTerms if term not in attendedTerms]
+    return missedTerms
+
+def termsInTotal(certification=None, username=None):
+    '''
+    Calculate total terms based on attended and missed terms for a user
+    '''
+    if certification is None or username is None:
+        return 
     currentTerm = g.current_term 
+    totalTerms = []
     currentDescription = currentTerm.description
-    
     # looking into a scenario where the current term is summer so that we can reassigned the current term variable to the next term     
     if currentTerm.isSummer == True:
         currentDescription = f'Fall {currentTerm.year}'
         currentTerm = Term.select(Term).where(Term.description == currentDescription).get()
     else:
         currentDescription = currentTerm.description
-
-    for level in range(4):
-        user = User.select().where(User.username == username).get()
-        if user.rawClassLevel == classLevel[level] and currentDescription == f'Spring {currentTerm.year}':
-            missedTerms = (level + 1) * 2
-        elif user.rawClassLevel == classLevel[level]:
-            missedTerms = ((level + 1) * 2) - 1
+    classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
+    user = User.select().where(User.username == username).get()
+    for level, name in enumerate(classLevel):
+        if user.rawClassLevel == name:
+            totalTermsNumber = (level + 1) * 2
+            if currentDescription != f"Spring {currentTerm.year}":
+                totalTermsNumber -= 1
+            for term in range(totalTermsNumber):
+                year = currentTerm.year - (level - (term // 2))
+                season = "Fall" if term % 2 == 0 else "Spring"
+                totalTerms.append(f"{season} {year}")
         elif str(user.rawClassLevel) == "None":
-            missedTerms = 1
-            
-    attendedTerms = termsAttended(certification, username)
-    missedTerms = missedTerms - len(attendedTerms)
-    
-    return missedTerms
+            totalTerms = 1
+    return totalTerms
 
 def getCertRequirementsWithCompletion(*, certification, username):
     """
@@ -102,8 +109,20 @@ def getCertRequirements(certification=None, username=None):
                 cert.requirement.completed = bool(cert.__dict__['completed'])
                 # this is to get the calculation when it comes to events with term as their frequency
                 if cert.requirement.frequency == "term":
-                    cert.requirement.missedTerms = termsMissed(cert.requirement.id, username)
+                    cert.requirement.missedTerms = len(termsMissed(cert.requirement.id, username))
                     cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
+                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
+                    cert.requirement.missedDescriptions = termsMissed(cert.requirement.id, username)
+                    cert.requirement.totalTerms = len(termsInTotal(cert.requirement.id, username))
+                elif cert.requirement.frequency == "twice":
+                    cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
+                    cert.requirement.missedTerms = max(0, 2 - cert.requirement.attendedTerms)
+                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
+                    cert.requirement.missedDescriptions = ([termsMissed(cert.requirement.id, username)[0], termsMissed(cert.requirement.id, username)[1]])
+                elif cert.requirement.frequency == "annual":
+                    totalTerms = len(termsInTotal(cert.requirement.id, username))
+                    cert.requirement.attendedAnnual = len(termsAttended(cert.requirement.id, username))
+                    cert.requirement.totalAnnual = int(math.floor(totalTerms/2+0.5)) if totalTerms % 2 == 1  else totalTerms/2
                     cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
             certificationList.append(cert.requirement)
 

@@ -492,27 +492,55 @@
                 <span>
                   {{req.name}}
                   {% if req.frequency == "term"%}
-                    {% set totalTerms = req.attendedTerms + req.missedTerms%}
                     {% set attendedCount = req.attendedTerms %}
-                    <span>({{attendedCount}}/{{totalTerms}})</span> 
-                    <!-- {% for i in range(req.attendedTerms) %}
-                    <span class="bi bi-check fs-3  text-success"></span>
-                    {% endfor %}
-                    {% for a in range(req.missedTerms) %}
-                      <span class="bi bi-x fs-3 "></span>
-                    {% endfor %} -->
-                    {% elif req.completed %}
+                    <span>({{attendedCount}}/{{req.totalTerms}})</span> 
+                  {% elif req.frequency == "twice" %}
+                    <span>({{req.attendedTerms}}/2)</span> 
+                  {% elif req.completed == True and req.frequency == "once" %}
                       <span>(1/1)</span> 
                   {% elif req.completed == False and req.frequency == "once" %}
                       <span>(0/1)</span> 
-                  {% elif req.completed == False and req.frequency == "twice" %}
-                      <span>(0/2)</span> 
+                  {% elif req.frequency == "annual" %}
+                      <span>({{req.attendedAnnual}}/{{req.totalAnnual}})</span>
                   {% endif %}
                 </span>
                 {% if req.attendedTerms %}
-                  {% set popover_text = "You have attended these terms: " ~ (req.attendedDescriptions | join(', ')) %}
+                  {% if req.attendedDescriptions|length > 0 or req.missedDescriptions|length > 0 %}
+                    {% set popover_text = "" %}
+                    {% if req.attendedDescriptions|length > 0 %}
+                      {% set popover_text = popover_text ~ "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
+                    {% else %}
+                      {% set popover_text = popover_text ~ "Attended: None<br>" %}
+                    {% endif %}
+                    {% if req.missedDescriptions|length > 0 %}
+                      {% set popover_text = popover_text ~ "<br>Missed:<br>" ~ (req.missedDescriptions | join(', ')) %}
+                    {% else %}
+                      {% set popover_text = popover_text ~ "<br>Missed: None" %}
+                    {% endif %}
+                  {% else %}
+                    {% set popover_text = "You haven’t attended any terms yet." %}
+                  {% endif %}
+                {% elif req.frequency == "once" and req.completed %}
+                  {% set popover_text = "You have attended the certification." %}
+
+                {% elif req.frequency == "once" and not req.completed %}
+                  {% set popover_text = "You have not attended the certification." %}
+
+                {% elif req.frequency == "twice" and req.completed %}
+                  {% set popover_text = "You have attended the certification twice." %}
+
+                {% elif req.frequency == "twice" and not req.completed %}
+                  {% set popover_text = "You have not attended the certification twice." %}
+
+                {% elif req.frequency == "annual" %}
+                  {% if req.attendedDescriptions|length > 0 %}
+                    {% set popover_text = "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
+                  {% else %}
+                    {% set popover_text = "No annual certifications attended yet." %}
+                  {% endif %}
+
                 {% else %}
-                  {% set popover_text = "You haven't attended any terms" %}
+                  {% set popover_text = "No certification attendance data available." %}
                 {% endif %}
                 <a
                   href="#"
