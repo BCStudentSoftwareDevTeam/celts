@@ -51,7 +51,7 @@ class FileHandler:
            
         return filePath
 
-    def saveFiles(self, saveOriginalFile=None):
+    def saveFiles(self, saveOriginalFile):
         """
         saveOriginalFile
         """

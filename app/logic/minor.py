@@ -28,35 +28,27 @@ def createSummerExperience(username, formData):
         Given the username of the student and the formData which includes all of
         the SummerExperience information, create a new SummerExperience object.
     """
-    try:
-        user = User.get(User.username == username)
-        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        formData = dict(formData)
-        formData.pop("contentArea")
-        return CCEMinorProposal.create(
-            student=user,
-            proposalType = 'Summer Experience',
-            contentAreas = contentAreas,
-            createdBy = g.current_user,
-            **formData,
-        )
-    except Exception as e:
-        print(f"Error saving summer experience: {e}")
-        raise e
+    user = User.get(User.username == username)
+    contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+    formData = dict(formData)
+    formData.pop("contentArea")
+    return CCEMinorProposal.create(
+        student=user,
+        proposalType = 'Summer Experience',
+        contentAreas = contentAreas,
+        createdBy = g.current_user,
+        **formData,
+    )
 
 def updateSummerExperience(proposalID, formData):
     """
         Given the username of the student and the formData which includes all of
         the SummerExperience information, create a new SummerExperience object.
     """
-    try:
-        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        formData = dict(formData)
-        formData.pop("contentArea")
-        CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
-    except Exception as e:
-        print(f"Error saving summer experience: {e}")
-        raise e
+    contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+    formData = dict(formData)
+    formData.pop("contentArea")
+    CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
 
 def getCCEMinorProposals(username):
     proposalList = []
@@ -360,7 +352,6 @@ def createOtherEngagement(username, request):
     if attachment:
         addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
         addFile.saveFiles(saveOriginalFile=proposalObject)
-
 
 def updateOtherEngagementRequest(proposalID, request):
     """
