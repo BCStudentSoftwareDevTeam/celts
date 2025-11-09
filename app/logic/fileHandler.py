@@ -88,7 +88,6 @@ class FileHandler:
                     
                 elif self.proposalId:
                     attachmentName = str(saveOriginalFile.id) + "/" + file.filename
-
                     isFileInProposal = AttachmentUpload.select().where(AttachmentUpload.proposal == self.proposalId,
                                                                     AttachmentUpload.fileName == attachmentName).exists()
                     if not isFileInProposal:

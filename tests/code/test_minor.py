@@ -6,6 +6,7 @@ from flask import g
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
+from types import SimpleNamespace
 from app import app
 
 from app.models import mainDB
@@ -106,9 +107,17 @@ def testProposal(request):
             'totalWeeks': params.get("totalWeeks", 10),
             'experienceDescription': params.get("experienceDescription", "Working day and night to make sure Finn's needs are met"),
             'status': params.get("status", 'Draft'), 
-        } 
+        }
+    mockRequestProposalObject = SimpleNamespace(
+        form=defaultProposal,
+        files=SimpleNamespace(
+            getlist=lambda key: [],
+            get=lambda key: None
+        )
+    )
+
     # override default values with those put in the parameters.
-    return defaultProposal
+    return mockRequestProposalObject
 
 @pytest.mark.integration
 def test_getCourseInformation(testUser):
@@ -205,16 +214,16 @@ def test_getCCEMinorProposals(testUser, testProposal):
         assert len(getCCEMinorProposals(testUser.username)) == 1
         
         # convert the otherEngagement to a summerExperience proposal type
-        testProposal.pop("experienceName") 
-        testProposal.pop("experienceDescription") 
+        testProposal.form.pop("experienceName") 
+        testProposal.form.pop("experienceDescription") 
 
-        testProposal["roleDescription"] = "Assistant to Finn"
-        testProposal["experienceType"] = "Internship"
-        testProposal["contentArea"] = ["Power and inequality", "Civic literacy"]
+        testProposal.form["roleDescription"] = "Assistant to Finn"
+        testProposal.form["experienceType"] = "Internship"
+        testProposal.form["contentArea"] = ["Power and inequality", "Civic literacy"]
 
         with app.app_context():
             g.current_user = testUser.username
-            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal.form))
 
         assert len(getCCEMinorProposals(testUser.username)) == 2
         
@@ -526,11 +535,18 @@ def test_getMinorProgress():
             'experienceDescription': 'Test Description',
             "status": "Draft"
         }
+        khattsRequestedEngagementRequest = SimpleNamespace(
+            form=khattsRequestedEngagement,
+            files=SimpleNamespace(
+                getlist=lambda key: [],
+                get=lambda key: None
+            )
+        )
         
         # verify that Sreynit has a summer, 1 engagement, and an other community engagement request in
         with app.app_context():
             g.current_user = "ramsayb2"
-            createOtherEngagement("khatts", khattsRequestedEngagement)
+            createOtherEngagement("khatts", khattsRequestedEngagementRequest)
             createSummerExperience("khatts", khattsSummerExperience)
 
         minorProgressWithSummerAndRequestOther = getMinorProgress()
@@ -546,7 +562,7 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
     with mainDB.atomic() as transaction:
         # create testing objects
         
-        testProposal["term"] = testTerm
+        testProposal.form["term"] = testTerm
 
         User.create(username="glek",
                     firstName="kafui",
@@ -562,7 +578,7 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
             g.current_user = "glek"
-            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal.form))
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
@@ -617,19 +633,22 @@ def test_updateOtherEngagementRequest(testUser, testProposal):
         createdOtherEngagementRequest = None
         with app.app_context():
             g.current_user = "glek"
-            createdOtherEngagementRequest = createOtherEngagement(user.username, ImmutableMultiDict(testProposal))
-
+            createOtherEngagement(user.username, testProposal)
+            createdOtherEngagementRequest = CCEMinorProposal.select().where(
+                                                                CCEMinorProposal.student == user, 
+                                                                CCEMinorProposal.proposalType == "Other Engagement"
+                                                                ).get()
         proposalID = createdOtherEngagementRequest.id
 
         assert createdOtherEngagementRequest.experienceName == "Assistant to Finn"
         assert createdOtherEngagementRequest.orgName == "Finn's Assistants"
         assert createdOtherEngagementRequest.experienceDescription == "Catering to Finn's every need" 
 
-        testProposal["experienceName"] = "Opponent to Finn"
-        testProposal["orgName"] = "Finn's Ops"
-        testProposal["experienceDescription"] = "Hating on Finn 24/7"
+        testProposal.form["experienceName"] = "Opponent to Finn"
+        testProposal.form["orgName"] = "Finn's Ops"
+        testProposal.form["experienceDescription"] = "Hating on Finn 24/7"
 
-        updateOtherEngagementRequest(proposalID, ImmutableMultiDict(testProposal))
+        updateOtherEngagementRequest(proposalID, testProposal)
 
         updatedProposal = CCEMinorProposal.get_by_id(proposalID)
         assert updatedProposal.experienceName == "Opponent to Finn"
@@ -646,19 +665,21 @@ def test_removeProposal(testProposal, testUser):
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
 
-    testProposalId = 999
-
     with mainDB.atomic() as transaction:
-
-        assert list(CCEMinorProposal.select(CCEMinorProposal.id).where(CCEMinorProposal.id == testProposalId)) == []
-
-
-        testOtherEngagement = CCEMinorProposal.create(id=testProposalId,
+        testOtherEngagement = CCEMinorProposal.create(
                                 student = testUser.username,
                                 proposalType = 'Other Engagement',
                                 createdBy = testUser.username,
-                                **testProposal
+                                **testProposal.form
                             )
+        
+        testProposal = CCEMinorProposal.select().where(
+                        CCEMinorProposal.student == testUser, 
+                        CCEMinorProposal.proposalType == "Other Engagement"
+                    ).get()
+        
+        testProposalId = testProposal.id
+        
         assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testOtherEngagement]
 
         # creates a base object for proposal events 
@@ -667,7 +688,7 @@ def test_removeProposal(testProposal, testUser):
         handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=testProposalId)
 
         # uploading a file to proposalattachments 
-        handledProposalFile.saveFiles()
+        handledProposalFile.saveFiles(testProposalId)
         
         try:
             assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
@@ -714,17 +735,17 @@ def test_updateSummerExperience(testUser, testProposal):
         createdSummerExperience = None
         with app.app_context():
             g.current_user = "glek"
-            createdSummerExperience = createSummerExperience(user.username, ImmutableMultiDict(testProposal))
+            createdSummerExperience = createSummerExperience(user.username, ImmutableMultiDict(testProposal.form))
 
         proposalID = createdSummerExperience.id
 
         assert createdSummerExperience.totalHours == 301
         assert createdSummerExperience.experienceType == "Internship"
 
-        testProposal["experienceType"] = "Not an internship"
-        testProposal["totalHours"] = 201
+        testProposal.form["experienceType"] = "Not an internship"
+        testProposal.form["totalHours"] = 201
 
-        updateSummerExperience(proposalID, ImmutableMultiDict(testProposal))
+        updateSummerExperience(proposalID, ImmutableMultiDict(testProposal.form))
 
         updatedProposal = CCEMinorProposal.get_by_id(proposalID)
         
