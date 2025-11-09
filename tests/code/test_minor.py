@@ -673,26 +673,28 @@ def test_removeProposal(testProposal, testUser):
                                 **testProposal.form
                             )
         
-        testProposal = CCEMinorProposal.select().where(
+        testProposalObject = CCEMinorProposal.select().where(
                         CCEMinorProposal.student == testUser, 
                         CCEMinorProposal.proposalType == "Other Engagement"
                     ).get()
         
-        testProposalId = testProposal.id
+        testFileName = "proposal.pdf"
+        testProposalId = testProposalObject.id
+        testFullFileName = f"{testProposalId}/{testFileName}"
         
         assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testOtherEngagement]
 
         # creates a base object for proposal events 
-        proposalFileStorageObject = [FileStorage(filename= "proposal.pdf")]
+        proposalFileStorageObject = [FileStorage(filename=testFileName)]
 
         handledProposalFile = FileHandler(proposalFileStorageObject, proposalId=testProposalId)
 
         # uploading a file to proposalattachments 
-        handledProposalFile.saveFiles(testProposalId)
+        handledProposalFile.saveFiles(testProposalObject)
         
         try:
-            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
-            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
+            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).exists()
+            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).count()
             
             with app.app_context():
                 g.current_user = testUser.username
@@ -700,15 +702,15 @@ def test_removeProposal(testProposal, testUser):
 
             assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
         
-            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").exists()
-            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == f"{testProposalId}.pdf").count()
+            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).exists()
+            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).count()
 
         except Exception as e:
             raise e 
         
         finally:
             fileExists = AttachmentUpload.get_or_none(proposal_id = testProposalId)
-            fullFilePath = handledProposalFile.getFileFullPath(f'{testProposalId}.pdf')
+            fullFilePath = handledProposalFile.getFileFullPath(testFullFileName)
             if fileExists:
                 os.remove(fullFilePath)
 
