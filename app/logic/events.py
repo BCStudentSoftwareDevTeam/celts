@@ -227,8 +227,11 @@ def saveEventToDb(newEventData, renewedEvent = False):
 def getVolunteerOpportunities(term):
     volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
-                                 .where(Program.isVolunteerOpportunities,
-                                        Event.term == term, Event.isService == True, Event.deletionDate == None)
+                                 .where((Event.term == term) &
+                                        (Event.deletionDate.is_null(True)) &
+                                        (Event.isService == True) &
+                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
+                                 )
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
@@ -240,12 +243,18 @@ def getVolunteerOpportunities(term):
     return programs
 
 def getEngagementEvents(term):
-    engagementEvents = list(Event.select(Event, Program)
-                                 .join(Program)
-                                 .where(Event.isEngagement,
-                                        Event.term == term, Event.deletionDate == None)
-                                 .order_by(Event.startDate, Event.timeStart)
-                                 .execute())
+    engagementEvents = list(
+        Event.select(Event, Program)
+             .join(Program)
+             .where(
+                 (Event.term == term) &
+                 (Event.deletionDate.is_null(True)) &
+                 (Event.isEngagement == True) &
+                 ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
+             )
+             .order_by(Event.startDate, Event.timeStart)
+             .execute()
+    )
     return engagementEvents
 
 def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
@@ -253,16 +262,23 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
         Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
     
-    upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
-                            .join(Event, on=(Program.id == Event.program_id))
-                            .where(Program.isVolunteerOpportunities,
-                                    Event.term == term, Event.isService == True, Event.deletionDate == None,
-                                    (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
-                                    Event.isCanceled == False)
-                            .group_by(Program.id))
-    
-    programCountDict = {}
+    upcomingCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate > currentTime) |
+             ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
 
+    programCountDict = {}
     for programCount in upcomingCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
@@ -277,11 +293,17 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    trainingQuery = (Event.select(Event).distinct()
-                          .join(Program, JOIN.LEFT_OUTER)
-                          .where(Event.isTraining == True,
-                                 Event.term == term, Event.deletionDate == None)
-                          .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
+    trainingQuery = (
+        Event.select(Event).distinct()
+             .join(Program, JOIN.LEFT_OUTER)
+             .where(
+                 (Event.isTraining == True) &
+                 (Event.term == term) &
+                 (Event.deletionDate.is_null(True)) &
+                 ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
+             )
+             .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart)
+    )
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -305,19 +327,18 @@ def getBonnerEvents(term):
 
 def getCeltsLabor(term):
     """
-
-    Get the list of the labor only events to be displayed in
-    the Celts Labor section of the Events List page.
-    :return: A list of labor only Event objects
+    Labor tab: events explicitly marked as Labor Only.
     """
-    # Gets all events that are labor only
-    
-    celtsLabor = list(Event.select()
-                            .join(Program, JOIN.LEFT_OUTER, on=(Event.program == Program.id))
-                            .where(Program.isCeltsLabor, Event.term == term, Event.deletionDate == None, Event.isLaborOnly == True)
-                            .order_by(Event.startDate, Event.timeStart, Event.id)
-                            .execute())
-
+    celtsLabor = list(
+        Event.select()
+             .where(
+                 (Event.term == term) &
+                 (Event.deletionDate.is_null(True)) &
+                 (Event.isLaborOnly == True)
+             )
+             .order_by(Event.startDate, Event.timeStart, Event.id)
+             .execute()
+    )
     return celtsLabor
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
