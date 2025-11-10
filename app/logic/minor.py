@@ -351,7 +351,7 @@ def createOtherEngagement(username, request):
     attachment = request.files.get("attachmentObject")
     if attachment:
         addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
-        addFile.saveFiles(saveOriginalFile=proposalObject)
+        addFile.saveFiles(parentEvent=proposalObject)
 
 def updateOtherEngagementRequest(proposalID, request):
     """
@@ -365,7 +365,7 @@ def updateOtherEngagementRequest(proposalID, request):
         deleteFile = FileHandler(proposalId=proposalID)
         deleteFile.deleteFile(existingAttachment.id)
         addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
-        addFile.saveFiles(saveOriginalFile=proposalObject)
+        addFile.saveFiles(parentEvent=proposalObject)
 
     CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
     

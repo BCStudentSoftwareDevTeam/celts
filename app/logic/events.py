@@ -173,7 +173,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     if attachmentFiles:
         for event in events:
             addFile = FileHandler(attachmentFiles, eventId=event.id)
-            addFile.saveFiles(saveOriginalFile=events[0])
+            addFile.saveFiles(parentEvent=events[0])
     return events, ""
 
 
