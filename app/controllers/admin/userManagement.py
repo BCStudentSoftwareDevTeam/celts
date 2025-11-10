@@ -137,4 +137,5 @@ def changeTerm():
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
 def addNewTerm():
     addNextTerm()
+    flash("New term added", "success")
     return ""
