@@ -245,7 +245,7 @@ def getVolunteerOpportunities(term):
 def getEngagementEvents(term):
     engagementEvents = list(Event.select(Event, Program)
                                  .join(Program)
-                                 .where(Event.isEngagement,
+                                 .where(Event.isEngagement, Event.isLaborOnly == False,
                                         Event.term == term, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
@@ -289,7 +289,7 @@ def getTrainingEvents(term, user):
     """
     trainingQuery = (Event.select(Event).distinct()
                           .join(Program, JOIN.LEFT_OUTER)
-                          .where(Event.isTraining == True,
+                          .where(Event.isTraining == True, Event.isLaborOnly == False,
                                  Event.term == term, Event.deletionDate == None)
                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
