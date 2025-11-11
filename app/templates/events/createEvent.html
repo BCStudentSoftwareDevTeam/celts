@@ -63,7 +63,7 @@
 
     {% endblock %}
 
-    {% macro locationTimeMacro(eventData, isNewEvent, pageLocation) %}
+    {% macro locationTimeMacro(eventData, pageLocation) %}
 <div class="form-group mb-4">
   <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
   <input class="form-control needsValidation all" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
@@ -83,6 +83,8 @@
   </div>
   <div class="form-group col-md-6" id="checkIsSeriesToggleContainer">
     <div style="margin-top: 2.3em;" >
+  {# only show the series toggle if we are creating a new event #}
+  {% if isNewEvent %}
       <div class="form-check form-switch pb-1">
         <fieldset>
           <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
@@ -90,6 +92,7 @@
             {{"checked" if eventData.isSeries}} />
         </fieldset>
       </div>
+  {% endif %}
     </div>
   </div>
 </div>
@@ -188,7 +191,7 @@
       <div class="form-group mb-4">
         <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
         <select class="form-select" name='term' id='inputEventTerm' required>
-          {% for term in futureTerms %}
+          {% for term in termList %}
           <option value='{{term}}' {{"selected" if term==eventData.term}}>{{term.description}}</option>
           {% endfor %}
         </select>
@@ -200,7 +203,7 @@
         {% set hideMultipleOffering = "d-none" %}
       {% endif %}
 
-      {{locationTimeMacro(eventData, hideDate, 'main')}}
+      {{locationTimeMacro(eventData, 'main')}}
 
       <div class="d-none" id="multipleOfferingTableDiv">
         <table class="table table-striped" id="offeringsTable">
@@ -358,7 +361,7 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="button" class="btn btn-primary saveBtn" id="saveButton" value="Save" />
+        <input type="button" class="btn btn-primary" id="saveButton" value="Save" />
       </div>
     </div>
   </div>
@@ -446,7 +449,7 @@
           <p> Are you sure you want to renew this event?</p>
           <p> A renewed event will use the current event's RSVP and location information to create a new event.</p>
           <div class="form-group">
-            {{ locationTimeMacro(eventData, hideDate, 'modal') }}
+            {{ locationTimeMacro(eventData, 'modal') }}
           </div>
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -473,14 +476,12 @@
         </div>
         
         <!-- Template eventOffering row -->
-        <div class="d-flex justify-content-start ms-1 form-check form-switch">
-          {% if showRecurringToggle %}
-            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
-            <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
-          {% else %}
-            <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" hidden name="isRepeating" />
-          {% endif %}
-        </div>
+        {% if showRecurringToggle %}
+            <div class="d-flex justify-content-start ms-1 form-check form-switch">
+              <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
+              <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
+            </div>
+        {% endif %}
         
         <div class="d-none mb-2" id="repeatingEventsDiv">
           <div class="row col-md-12 my-3">

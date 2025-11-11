@@ -16,6 +16,8 @@ def fixture_info():
 
         term1 = Term.create(id=500, description='Fall 2023', academicYear='2023-2024')
         term2 = Term.create(id=600, description='Fall 2024', academicYear='2024-2025')
+        term3 = Term.create(id=700, description='Spring 2024', academicYear='2023-2024')
+        term4 = Term.create(id=800, description='Spring 2025', academicYear='2024-2025')
 
         program1 = Program.create(id=501, programName='Program1')
         program2 = Program.create(id=502, programName='Program2')
@@ -53,13 +55,11 @@ def fixture_info():
         transaction.rollback()
 
 
-@pytest.mark.integration
 def test_createSpreadsheet(fixture_info):
     fixtureData = fixture_info
     createSpreadsheet("2023-2024")
     createSpreadsheet("2024-2025")
 
-@pytest.mark.integration
 def test_calculateRetentionRate():
     # Takes 2 dictionaries, a fall and spring dictionary and see who has returned in the spring from the fall term
     fallDict = ({'Adopt-a-Grandparent': ['curiem'], 'CELTS-Sponsored Event': [None]})
@@ -72,7 +72,6 @@ def test_calculateRetentionRate():
     springDict = ({'Hunger Initiatives': ['einsteina', 'lintelmannaders', 'doej', 'ayisie']})
     assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 0.75}
 
-@pytest.mark.integration
 def test_removeNullParticipants():
     #Removes empty elements fromm a list
     testInputList = ['khatts']
@@ -80,11 +79,11 @@ def test_removeNullParticipants():
     testInputList = ['khatts', '', 'ayisie']
     assert removeNullParticipants(testInputList) == ['khatts', 'ayisie']
 
-@pytest.mark.integration
 def test_termParticipation(fixture_info):
     # Checks who all participated in any given program for an even. NONE will be the result if there was an event for a program without and participants.
-    assert termParticipation('Fall 2023') == {'Program1': ['doej', 'doej2'], 'Program2': [None], 'Program3': [None] }
-    assert termParticipation('Fall 2024') == {'Program4': ['builderb']}
+    assert termParticipation(fixture_info['term1']) == {'Program1': ['doej', 'doej2'], 
+                                                        'Program2': [None], 'Program3': [None] }
+    assert termParticipation(fixture_info['term2']) == {'Program4': ['builderb']}
 
     EventParticipant.create(user = 'builderb',
                             event = fixture_info['event1'],
@@ -102,7 +101,6 @@ def test_termParticipation(fixture_info):
         participantList.sort()
     assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2'], 'Program2': ['builderb'], 'Program3': [None]}
 
-@pytest.mark.integration
 def test_getRetentionRate(fixture_info):
     #Takes an academic year and returns how many people were retained across terms by percentage for each program.
     assert sorted(getRetentionRate("2023-2024")) == [('Program1', '0.0%'), 
@@ -133,12 +131,11 @@ def test_getRetentionRate(fixture_info):
                                                         ('Program2', '0.0%'),
                                                         ('Program3', '0.0%')]
 
-@pytest.mark.integration
 def test_repeatVolunteers(fixture_info):
     #repeat volunteers people who participated in more than one event
     testEvent = Event.create(name="Test Event",
                                 term=fixture_info["term1"],
-                                program=fixture_info['event2'])
+                                program=fixture_info['program1'])
     EventParticipant.create(user='doej',
                             event=testEvent,
                             hoursEarned=1)
@@ -165,7 +162,6 @@ def test_repeatVolunteers(fixture_info):
     # Check for event from a seprate events and programs
     assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 4)]
 
-@pytest.mark.integration
 def test_repeatVolunteersPerProgram(fixture_info):
     # Find people who have participated in two events of the same program
     assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [] 
@@ -189,7 +185,6 @@ def test_repeatVolunteersPerProgram(fixture_info):
     
     assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [('John Doe', 'Program1', 3)]
 
-@pytest.mark.integration
 def test_volunteerMajorAndClass(fixture_info): 
     # Gets the list of majors or the class levels of volunteers
     assert list(volunteerMajorAndClass("2023-2024", User.major)) == list([('Biology', 1), ('Graphics Design', 1)])
@@ -218,7 +213,6 @@ def test_volunteerMajorAndClass(fixture_info):
     assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel)) == [('Junior', 1), ('Senior', 1), ('Sophomore', 2)]
     assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel, True)) == [('Sophomore', 2), ('Junior', 1), ('Senior', 1)]
 
-@pytest.mark.integration
 def test_volunteerHoursByProgram(fixture_info):
     # Gets the list of volunteer hours per program as a tuple
     assert list(volunteerHoursByProgram("2023-2024")) == [('Program1', 8.0)]
@@ -231,7 +225,6 @@ def test_volunteerHoursByProgram(fixture_info):
     # Check for newly added participant
     assert list(volunteerHoursByProgram("2023-2024")) == [('Program1', 18.0)]
 
-@pytest.mark.integration
 def test_onlyCompletedAllVolunteer(fixture_info): 
     # This function returns a list of usernames and fullnames for people who have only completed all volunteer training in a particular academic year.
     assert list(onlyCompletedAllVolunteer("2023-2024")) == []
@@ -258,7 +251,6 @@ def test_onlyCompletedAllVolunteer(fixture_info):
     # Checks whether participant is removed from the list 
     assert list(onlyCompletedAllVolunteer("2023-2024")) == []
 
-@pytest.mark.integration
 def test_volunteerProgramHours(fixture_info):
     # Returns list of (program, username, hours) for each program
     assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 5.0), ('Program1', 'doej2', 3.0)]
@@ -281,7 +273,6 @@ def test_volunteerProgramHours(fixture_info):
     # Test with additional event creation
     assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 7.0), ('Program1', 'doej2', 3.0), ('Program2', 'doej', 1.0)]
 
-@pytest.mark.integration
 def test_totalVolunteerHours(fixture_info):
     #Returns the total amount of volunteer hours in the database
     assert list(totalVolunteerHours("2023-2024")) == [(8.0,)]
@@ -310,7 +301,6 @@ def test_totalVolunteerHours(fixture_info):
     # Checking increase by multiple hours
     assert list(totalVolunteerHours("2023-2024")) == [(12.0,)]
 
-@pytest.mark.integration
 def test_getVolunteerProgramEventByTerm(fixture_info):
 # Returns a list for every eventparticipant entry for (full name, username, program, and event) for a given term
     assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == ([('John Doe', 'doej', 'Program1', 'Event1'), 
@@ -349,7 +339,6 @@ def test_getVolunteerProgramEventByTerm(fixture_info):
                                                                                                     ('John Doe', 'doej', 'Program2', 'Test Event'),
                                                                                                     ('John Doe', 'doej', 'Program2', 'Test Event 2')]
 
-@pytest.mark.integration
 def test_getUniqueVolunteers(fixture_info):
     # Returns a list of everyone who has volunteered.
     assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('doej', 'John Doe', 'B774377'),
