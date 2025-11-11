@@ -31,8 +31,6 @@ class FileHandler:
             extraDir = ""
             if self.eventId:
                 extraDir = str(self.eventId)
-            if self.proposalId:
-                extraDir = str(self.proposalId)
 
             os.makedirs(os.path.join(self.path, extraDir))
         except OSError as e:
