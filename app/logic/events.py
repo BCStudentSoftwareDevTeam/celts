@@ -243,18 +243,12 @@ def getVolunteerOpportunities(term):
     return programs
 
 def getEngagementEvents(term):
-    engagementEvents = list(
-        Event.select(Event, Program)
-             .join(Program)
-             .where(
-                 (Event.term == term) &
-                 (Event.deletionDate.is_null(True)) &
-                 (Event.isEngagement == True) &
-                 ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
-             )
-             .order_by(Event.startDate, Event.timeStart)
-             .execute()
-    )
+    engagementEvents = list(Event.select(Event, Program)
+                                 .join(Program)
+                                 .where(Event.isEngagement,
+                                        Event.term == term, Event.deletionDate == None)
+                                 .order_by(Event.startDate, Event.timeStart)
+                                 .execute())
     return engagementEvents
 
 def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
@@ -293,17 +287,11 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    trainingQuery = (
-        Event.select(Event).distinct()
-             .join(Program, JOIN.LEFT_OUTER)
-             .where(
-                 (Event.isTraining == True) &
-                 (Event.term == term) &
-                 (Event.deletionDate.is_null(True)) &
-                 ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
-             )
-             .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart)
-    )
+    trainingQuery = (Event.select(Event).distinct()
+                          .join(Program, JOIN.LEFT_OUTER)
+                          .where(Event.isTraining == True,
+                                 Event.term == term, Event.deletionDate == None)
+                          .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -329,16 +317,11 @@ def getCeltsLabor(term):
     """
     Labor tab: events explicitly marked as Labor Only.
     """
-    celtsLabor = list(
-        Event.select()
-             .where(
-                 (Event.term == term) &
-                 (Event.deletionDate.is_null(True)) &
-                 (Event.isLaborOnly == True)
-             )
-             .order_by(Event.startDate, Event.timeStart, Event.id)
-             .execute()
-    )
+    celtsLabor = list(Event.select()
+                            .join(Program, JOIN.LEFT_OUTER, on=(Event.program == Program.id))
+                            .where(Event.term == term, Event.deletionDate == None, Event.isLaborOnly == True)
+                            .order_by(Event.startDate, Event.timeStart, Event.id)
+                            .execute())
     return celtsLabor
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):

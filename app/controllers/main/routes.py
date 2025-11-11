@@ -124,18 +124,6 @@ def events(selectedTerm, activeTab, programID):
         for event in celtsLabor:
             if event.isPastEnd:
                 celtsLaborCount -= 1
-    # Show the Labor tab only to CELTS labor students who have a record for the selected term
-    showLaborTab = CeltsLabor.select().where(
-        (CeltsLabor.user == g.current_user) &
-        (CeltsLabor.term == term)
-    ).exists()
-
-    # If the user shouldn't see the Labor tab, hide its data and prevent landing on it
-    if not showLaborTab:
-        celtsLabor = []
-        celtsLaborCount = 0
-        if activeTab == "celtsLabor" or activeTab == "labor":
-            activeTab = "volunteerOpportunities"
             
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -147,7 +135,6 @@ def events(selectedTerm, activeTab, programID):
             "celtsLaborCount": celtsLaborCount,
             "toggleStatus": toggleState
         })
-    
     return render_template("/events/eventList.html",
                             selectedTerm = term,
                             volunteerOpportunities = volunteerOpportunities,
@@ -165,7 +152,6 @@ def events(selectedTerm, activeTab, programID):
                             managersProgramDict = managersProgramDict,
                             countUpcomingVolunteerOpportunities = countUpcomingVolunteerOpportunities,
                             toggleState = toggleState,
-                            showLaborTab = showLaborTab,
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
