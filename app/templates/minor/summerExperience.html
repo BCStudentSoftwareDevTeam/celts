@@ -102,10 +102,12 @@
                         {% if viewing %} disabled {% endif %}
                         {% if proposal and proposal.experienceType == "Other" %} checked {% endif %}/>
                     <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+                    {% if viewing and proposal.experienceDescription or not viewing %}
                     <input type="text" class="form-control" id="otherExperienceDescription" name="experienceDescription" placeholder="Enter your summer experience description."
                         value="{{ proposal.experienceDescription if proposal else '' }}"
                         {% if viewing %} disabled {% endif %}/>
                     </input>
+                    {% endif %}
                     <br>
                 </div>
                 <div class="form-group">
@@ -143,13 +145,14 @@
                         <div class="form-group col-6">
                             <label class="required" for="totalHours"><b>Hours</b></label><br>
                             <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours."
-                                value="300" 
+                                value="{{proposal.totalHours if proposal else 300}}" 
                                 {% if viewing %} disabled {% endif %}>
                             </input>
                         </div>
                         <div class="form-group col-6">
                             <label class="required" for="totalWeeks"><b>Weeks</b></label><br>
                             <input class="form-control" type="text" id="totalWeeks" name="totalWeeks" required placeholder="Enter the number of weeks."
+                                value="{{proposal.totalWeeks if proposal else ''}}"
                                 {% if viewing %} disabled {% endif %}>
                             </input>
                         </div>

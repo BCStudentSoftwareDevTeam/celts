@@ -48,6 +48,7 @@ def updateSummerExperience(proposalID, formData):
     contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
     formData = dict(formData)
     formData.pop("contentArea")
+    formData.pop("experienceHoursOver300")
     CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
 
 def getCCEMinorProposals(username):

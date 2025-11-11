@@ -89,7 +89,8 @@ $(document).ready(function() {
 
   // ************** SUMMER EXPERIENCE ************** //
   $('#hoursBelow300Container').hide()
-  $('#otherExperienceDescription').hide()
+  toggleUnder300HoursTextarea()
+  toggleOtherExperienceTextarea()
 
   $("input[name='experienceHoursOver300']").on("change", function() {
     toggleUnder300HoursTextarea();
@@ -219,14 +220,15 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
 }
 
 function toggleUnder300HoursTextarea() {
-  var yesRadio = $('#yes300hours');
+  var noRadio = $('#no300hours');
   var conditionalTextBox = $('#hoursBelow300Container');
-  if (yesRadio.is(':checked')) {
-    conditionalTextBox.hide()
-    $('#totalHours').val(300)
+  if (noRadio.is(':checked')) {
+    conditionalTextBox.show();
   } else {
-    conditionalTextBox.show()
-    $('#totalHours').val('')
+    conditionalTextBox.hide();
+    if ($('#yes300hours').is(':checked')) {
+      $('#totalHours').val(300);
+    }
   }
 }
 
