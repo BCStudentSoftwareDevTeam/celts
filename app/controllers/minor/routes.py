@@ -82,7 +82,7 @@ def editOrViewProposal(proposalID: int):
     if attachmentObject:
         fileHandler = FileHandler(proposalId=proposalID)
         attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName).lstrip("app/") # we need to remove app/ from the url because it prevents it from displaying
-        attachmentFileName = attachmentObject.fileName.split("/", 1)[1] # get the name without our prepended id
+        attachmentFileName = attachmentObject.fileName
     
     if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)

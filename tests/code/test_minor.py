@@ -680,7 +680,6 @@ def test_removeProposal(testProposal, testUser):
         
         testFileName = "proposal.pdf"
         testProposalId = testProposalObject.id
-        testFullFileName = f"{testProposalId}/{testFileName}"
         
         assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == [testOtherEngagement]
 
@@ -693,8 +692,8 @@ def test_removeProposal(testProposal, testUser):
         handledProposalFile.saveFiles(testProposalObject)
         
         try:
-            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).exists()
-            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).count()
+            assert AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFileName).exists()
+            assert 1 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFileName).count()
             
             with app.app_context():
                 g.current_user = testUser.username
@@ -702,15 +701,15 @@ def test_removeProposal(testProposal, testUser):
 
             assert list(CCEMinorProposal.select().where(CCEMinorProposal.id == testProposalId)) == []
         
-            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).exists()
-            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFullFileName).count()
+            assert not AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFileName).exists()
+            assert 0 == AttachmentUpload.select().where(AttachmentUpload.proposal_id == testProposalId, AttachmentUpload.fileName == testFileName).count()
 
         except Exception as e:
             raise e 
         
         finally:
             fileExists = AttachmentUpload.get_or_none(proposal_id = testProposalId)
-            fullFilePath = handledProposalFile.getFileFullPath(testFullFileName)
+            fullFilePath = handledProposalFile.getFileFullPath(testFileName)
             if fileExists:
                 os.remove(fullFilePath)
 
