@@ -8,12 +8,10 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 import math
-def termsAttended(certification=None, username=None):
+def termsAttended(certification, username):
     '''
     Retrieve terms attended by a user for certification and filter them based on frequency of a term
     '''
-    if certification is None or username is None:
-        return None
     attendedTerms = []
     if username:
         attendance = (RequirementMatch.select()
@@ -27,21 +25,17 @@ def termsAttended(certification=None, username=None):
     attendedTerms = [term for term in attendedTerms if term in totalTerms]
     return list(set(attendedTerms))
             
-def termsMissed(certification=None, username=None): 
+def termsMissed(certification, username): 
     '''
     Calculate how many certification-eligible terms a student has missed based on their class level
     and attendance record.
     '''
-    if certification is None or username is None:
-        return None
     totalTerms = termsInTotal(username)   
     attendedTerms = termsAttended(certification, username)
     missedTerms = [term for term in totalTerms if term not in attendedTerms]
     return missedTerms
 
-def termsInTotal(username=None):
-    if username is None:
-        return None
+def termsInTotal(username):
     currentTerm = g.current_term
     currentDesc = currentTerm.description 
     if currentTerm.isSummer:
@@ -112,22 +106,21 @@ def getCertRequirements(certification=None, username=None):
             if username:
                 cert.requirement.completed = bool(cert.__dict__['completed'])
                 # this is to get the calculation when it comes to events with term, twice, annual as their frequency
+                cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
+                cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
                 if cert.requirement.frequency == "term":
                     cert.requirement.missedTerms = len(termsMissed(cert.requirement.id, username))
-                    cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
-                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
                     cert.requirement.missedDescriptions = termsMissed(cert.requirement.id, username)
                     cert.requirement.totalTerms = len(termsInTotal(username))
                 elif cert.requirement.frequency == "twice":
-                    cert.requirement.attendedTerms = len(termsAttended(cert.requirement.id, username))
                     cert.requirement.missedTerms = max(0, 2 - cert.requirement.attendedTerms)
-                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
                     cert.requirement.missedDescriptions = ([termsMissed(cert.requirement.id, username)[0], termsMissed(cert.requirement.id, username)[1]])
                 elif cert.requirement.frequency == "annual":
                     totalTerms = len(termsInTotal(username))
                     cert.requirement.attendedAnnual = len(termsAttended(cert.requirement.id, username))
                     cert.requirement.totalAnnual = int(math.floor(totalTerms/2+0.5)) if totalTerms % 2 == 1  else totalTerms/2
-                    cert.requirement.attendedDescriptions = termsAttended(cert.requirement.id, username)
+                else:
+                    raise ValueError("Invalid frequency value")
             certificationList.append(cert.requirement)
 
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist

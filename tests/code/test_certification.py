@@ -19,12 +19,6 @@ from app.logic.loginManager import getCurrentTerm
 def test_termsAttended():
 
     with mainDB.atomic() as transaction:
-        with app.app_context():
-            attendedTerms = termsAttended()
-            assert attendedTerms == None
-        transaction.rollback()
-
-    with mainDB.atomic() as transaction:
         # created the database and added the test data to test what terms are return from attendedTerms()
         with app.app_context():
             Term.update(isCurrentTerm=False).execute()
@@ -45,13 +39,6 @@ def test_termsAttended():
             
 @pytest.mark.integration
 def test_termsMissed():
-    # created the database and added the test data to test the maximum amount of terms a student can miss based on their class level
-    with mainDB.atomic() as transaction:
-        with app.app_context():
-            missedTerms = termsMissed()
-            assert missedTerms == None
-        transaction.rollback()
-
     with mainDB.atomic() as transaction:
         with app.app_context():
             Term.update(isCurrentTerm=False).execute()
@@ -96,13 +83,6 @@ def test_termsMissed():
 
 @pytest.mark.integration
 def test_termsInTotal():  
-        
-    with mainDB.atomic() as transaction:
-        with app.app_context():
-            totalTerms = termsInTotal()
-            assert totalTerms == None
-        transaction.rollback()
-
     with mainDB.atomic() as transaction:
         with app.app_context():
             Term.update(isCurrentTerm=False).execute()

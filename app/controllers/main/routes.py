@@ -33,7 +33,7 @@ from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createActivityLog
-from app.logic.certification import getCertRequirementsWithCompletion, termsMissed
+from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent

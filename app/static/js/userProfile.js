@@ -35,17 +35,6 @@ $(document).ready(function(){
     });
   })
 
-  // var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  // var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-  //   return new bootstrap.Tooltip(tooltipTriggerEl)
-  // })
-  
-  // $("#printButton").on("click", function() {
-  //       let username = $(this).data('username')
-  //       printDocument(`/profile/${username}/travelForm`)
-  //     })
-  // $("#actions").on("change", changeAction)
-  // $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -319,16 +308,6 @@ $(document).ready(function(){
     })
   });
 
-  // Popover functionality
-  // var requiredTraining = $(".trainingPopover");
-  // requiredTraining.popover({
-  //     trigger: "hover",
-  //     sanitize: false,
-  //     html: true,
-  //     content: function() {
-  //         return $(this).attr('data-content');
-  //     }
-  // });
   $(function () {
     $('.trainingPopover').each(function () {
       new bootstrap.Popover(this, {
