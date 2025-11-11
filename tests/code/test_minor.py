@@ -147,8 +147,8 @@ def test_getCourseInformation(testUser):
 @pytest.mark.integration
 def test_toggleMinorInterest(testUser):
     with mainDB.atomic() as transaction:
-        # make sure users have the default values of false and not interested, respectively
-        assert testUser.minorInterest == False
+        # make sure users have the default values of None
+        assert testUser.minorInterest == None
         toggleMinorInterest(testUser.username, True)
         
         testUser = User.get_by_id(testUser.username)

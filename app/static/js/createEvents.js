@@ -62,12 +62,17 @@ function setViewForSingleOffering(){
   $(".startDatePicker").prop('required', true);
   $("#multipleOfferingTableDiv").addClass('d-none');
   $('#eventTime, #eventDate').removeClass('d-none');
+  $('#checkIsSeriesToggleContainer').addClass('col-md-6')
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
 }
 
 function setViewForSeries(){
   $(".startDatePicker").prop('required', false);
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $('#eventTime, #eventDate').addClass('d-none');
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
+  $('#checkIsSeriesToggleContainer').addClass('col-md-12')
+  $("#pastDateWarningText").text("")
 }
 
 function displayNotification(message) {
@@ -101,7 +106,7 @@ function initializeFlatpickr(obj) {
   });
 }
 
-function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null, isDuplicate=false}={}){
+function createOfferingModalRow({eventName=null, eventDate=null, startTime=null, endTime=null}={}){
 
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
 
@@ -110,8 +115,7 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   if (eventDate) {clonedOffering.find('.multipleOfferingDatePicker').val(eventDate)}
   if (startTime) {clonedOffering.find('.multipleOfferingStartTime').val(startTime)}
   if (endTime) {clonedOffering.find('.multipleOfferingEndTime').val(endTime)}
-  if (isDuplicate) {clonedOffering.addClass('border-red')}
-
+  
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
 
@@ -144,106 +148,180 @@ function createOfferingModalRow({eventName=null, eventDate=null, startTime=null,
   return clonedOffering
 }
 
-$('#saveSeries').on('click', function() {
-  //Requires that modal info updated before it can be saved, gives notifier if there are empty fields
+function verifyRepeatingFields(){
+  // verifies all fields in the repeating table are not empty.
+  let repeatingFields = $(".repeatingEventsField");
+  let isEmpty = false;
+ enableLiveCustomValidityClearing([".repeatingEventsField"]);
+
+  repeatingFields.each(function() {
+    let value = $(this).val();
+    if (value === "" || value == null){
+      this.setCustomValidity("Please fill out the required field"); // do these actions
+      this.reportValidity();
+      isEmpty = true;
+    } else {
+      this.setCustomValidity("");
+    }
+  });
+  return isEmpty
+}
+
+/*
+ * Update the position of the Save button so that it is always on the screen as 
+ * the window scrolls and changes size. The position on the screen is determined 
+ * in the fixedButton class */
+const saveBtn = $('#saveButton');
+function updateSavePosition() {
+  const originalTop = saveBtn.parent()[0].getBoundingClientRect().top; // relative to scroll
+  const buttonHeight = 40;
+
+  if ($(window).height() < originalTop + buttonHeight) {
+    saveBtn.addClass('fixedButton');
+  } else {
+    saveBtn.removeClass('fixedButton');
+  }
+}
+$(window).on('scroll resize load', updateSavePosition);
+
+$('#saveSeries').on('click', function(e) {
+  e.preventDefault(); // Prevent default form submission at the start
+  enableLiveCustomValidityClearing([".multipleOfferingNameField"])
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
-  let dataTable = isRepeatingStatus ? "#generatedEventsList" : "#multipleOfferingSlots";
-  let isEmpty = false;
-  let hasValidTimes = true;
-  let hasDuplicateListings = false;
-  let hasInvalidDates = false;
-
-
-  // Check if the input field is empty
-  eventNameInputs.each((index, eventNameInput) => {
-    if (eventNameInput.value.trim() === '') {
-      isEmpty = true;
-      $(eventNameInput).addClass('border-red');
-    } else{
-      $(eventNameInput).removeClass('border-red');
+  let startDateInput = $("#repeatingEventsStartDate");
+  let endDateInput = $("#repeatingEventsEndDate");
+  
+  let hasErrors = false; 
+  
+  // Validate repeating events fields first if it's a repeating event
+  if (isRepeatingStatus) {
+    if (verifyRepeatingFields()) {
+      hasErrors = true;
     }
-  });
-
-  // Check if the date input field is empty
-  datePickerInputs.each((index, datePickerInput) => {
-    if (datePickerInput.value.trim() === '') {
-        isEmpty = true;
-        $(datePickerInput).addClass('border-red');
-    } else {
-      $(datePickerInput).removeClass('border-red');
-    }
-  });  
-
-
-  // Check if the start time is after the end time
-  for(let i = 0; i < startTimeInputs.length; i++){
-    let startTime = startTimeInputs[i].value
-    let endTime = endTimeInputs[i].value
     
-    if (navigator.userAgent.indexOf("Chrome") == -1) {
-      startTime = format12to24HourTime(startTime)
-      endTime = format12to24HourTime(endTime)
-    }
-
-    if(startTime < endTime){
-      $(startTimeInputs[i]).removeClass('border-red');
-      $(endTimeInputs[i]).removeClass('border-red');
+    // Check if start date is before end date for repeating events
+    let startDate = new Date(startDateInput.val());
+    let endDate = new Date(endDateInput.val());
+    
+    if (endDate <= startDate) {
+      hasErrors = true;
+      $(startDateInput).addClass('border-red');
+      $(endDateInput).addClass('border-red');
+      displayNotification("The end date must be after the start date.");
     } else {
-      $(startTimeInputs[i]).addClass('border-red');
-      $(endTimeInputs[i]).addClass('border-red');
-      hasValidTimes = false;
+      $(startDateInput).removeClass('border-red');
+      $(endDateInput).removeClass('border-red');
     }
-  }
-
-  if ($(dataTable).children().length < 1){
-    displayNotification("Please create events.")
-  }
-
-  // Check if there are duplicate event offerings
-  let eventListings = {};
-  for(let i = 0; i < eventOfferings.length; i++){
-    let eventName = eventNameInputs[i].value
-    let date = datePickerInputs[i].value.trim()
-    let startTime = startTimeInputs[i].value
-    let eventListing = JSON.stringify([eventName, date, startTime])
-
-    if (eventListing in eventListings){ // If we've seen this event before mark this event and the previous as duplicates
-      hasDuplicateListings = true
-      $(eventOfferings[i]).addClass('border-red');
-      $(eventOfferings[eventListings[eventListing]]).addClass('border-red')
-    } else { // If we haven't seen this event before
-      $(eventOfferings[i]).removeClass('border-red');
-      eventListings[eventListing] = i
-    }
-  }
-
-  if (isEmpty){
-    let emptyFieldMessage = "Event name or date field is empty";
-    displayNotification(emptyFieldMessage);
-  }
-  else if (!hasValidTimes) {
-    let invalidTimeMessage = "Event end time must be after start time";
-    displayNotification(invalidTimeMessage);
-  }
-  else if (hasDuplicateListings) {
-    let eventConflictMessage = "Event listings cannot have the same event name, date, and start time";
-    displayNotification(eventConflictMessage);
+    
   } else {
+    // Validate individual event offerings for non-repeating events
+    // Check event name fields
+    eventNameInputs.each((index, eventNameInput) => {
+      if (eventNameInput.value.trim() === '') {
+        hasErrors = true;
+        $(eventNameInput)[0].setCustomValidity("Please enter an event name");
+        $(eventNameInput)[0].reportValidity();
+      } else {
+        $(eventNameInput)[0].setCustomValidity("");
+      }
+    });
+
+    // Check date picker fields
+    datePickerInputs.each((index, datePickerInput) => {
+      if (datePickerInput.value.trim() === '') {
+        hasErrors = true;
+        $(datePickerInput)[0].setCustomValidity("Please enter an event date");
+        $(datePickerInput)[0].reportValidity();
+      } else {
+        $(datePickerInput)[0].setCustomValidity("");
+      }
+    });
+
+    
+    let hasTimeErrors = false;
+    // Check if start time is before end time for each event
+    for(let i = 0; i < startTimeInputs.length; i++){
+      let startTime = startTimeInputs[i].value;
+      let endTime = endTimeInputs[i].value;
+      
+      
+      if (navigator.userAgent.indexOf("Chrome") == -1) {
+        startTime = format12to24HourTime(startTime);
+        endTime = format12to24HourTime(endTime);
+      }
+
+      if(startTime >= endTime){
+        hasTimeErrors = true;
+        startTimeInputs[i].classList.add('border-red');
+        endTimeInputs[i].classList.add('border-red');
+      } else {
+        startTimeInputs[i].classList.remove('border-red');
+        endTimeInputs[i].classList.remove('border-red');
+      }
+     }
+     if (hasTimeErrors) {
+      hasErrors = true;
+      displayNotification("Event end time must be after start time");
+    }
+
+    // Check for duplicate event offerings
+    let eventListings = {};
+    for(let i = 0; i < eventOfferings.length; i++){
+      let eventName = eventNameInputs[i].value;
+      let date = datePickerInputs[i].value.trim();
+      let startTime = startTimeInputs[i].value;
+      let eventListing = JSON.stringify([eventName, date, startTime]);
+
+      if (eventListing in eventListings){
+        hasErrors = true;
+        displayNotification("Event listings cannot have the same event name, date, and start time");
+        break; // Exit loop on first duplicate found
+      } else {
+        eventListings[eventListing] = i;
+      }
+    }
+  }
+
+  // Only proceed if there are no validation errors
+  if (!hasErrors) {
     saveOfferingsFromModal();
     $('#textNotifierPadding').removeClass('pt-5');
     updateOfferingsTable();
     pendingmultipleEvents = [];
+    $("#pastDateWarningText").text("");
     $("#checkIsSeries").prop('checked', true);
-    // Remove the modal and overlay from the DOM
+    updateEventNameField();
     $('#modalSeries').modal('hide');
+    msgFlash("You have successfully updated a series of events", "success");
   }
 });
 
+// Populate the Event Name field in the main page with the entered repeating events
+function updateEventNameField() {
+  let offerings = JSON.parse($("#seriesData").val())
+  let isSeries = $("#checkIsRepeating").is(":checked")
+
+  // Check if the event is weekly
+  if (!isSeries) {
+    // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
+    let names = new Set()
+    offerings.forEach(offering => {
+      names.add(offering.eventName)
+    });
+    let offeringsText = Array.from(names).join(", ")
+    $('#inputEventName').val(offeringsText)
+  }
+  else {
+    // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
+    let offeringText = $("#repeatingEventsNamePicker").val()
+    $('#inputEventName').val(offeringText)
+  } 
+}
 
 // Save the offerings from the modal to the hidden input field
 function saveOfferingsFromModal() {
@@ -286,22 +364,6 @@ function saveOfferingsFromModal() {
   $("#seriesData").val(offeringsJson);
 }
 
-function verifyRepeatingFields(){
-  // verifies all fields in the repeating table are not empty.
-  let repeatingFields = $(".repeatingEventsField");
-  let allFieldsFilled = true;
-  repeatingFields.each(function() {
-    let value = $(this).val();
-    if (value === "" || value == null){
-      allFieldsFilled = false;
-      return false;
-    }
-  })
-  return allFieldsFilled
-}
-
-
-
 function loadOfferingsToModal(){
   let offerings = JSON.parse($("#seriesData").val())
   if (offerings.length < 1) {return;}
@@ -316,6 +378,7 @@ function loadOfferingsToModal(){
       newOfferingModalRow.css('background-color', i % 2 ?'#f2f2f2':'#fff');
     }})
 }
+
 
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
@@ -347,6 +410,9 @@ function updateOfferingsTable() {
                                   "</tr>"
                                 );
   });
+
+  //recalculate the save button
+  updateSavePosition()
 }
 
 //visual date formatting for multi-event table
@@ -359,6 +425,95 @@ function formatDate(originalDate) {
   var year = dateObj.getUTCFullYear();
   return month + " " + day + ", " + year;
 }
+
+function validateFieldGroup(selector, allFieldFilled, message="Please fill out the required field") {
+  let isValid = allFieldFilled;
+  
+  $(selector).each(function() {
+    // Skip hidden or disabled fields
+    if (!$(this).is(":visible") || $(this).is(":disabled")) return;
+    
+    // Skip event type checkboxes from regular validation
+    let elementId = $(this).prop("id");
+    if (elementId === "checkIsTraining" || elementId === "checkServiceHours" || 
+        elementId === "checkEngagement" || elementId === "checkBonners") {
+      return;
+    }
+
+    // Check if field is empty (excluding spaces)
+    if ($(this).val().trim() === "") {
+      this.setCustomValidity(message);
+      this.reportValidity();
+      isValid = false;
+    } else {
+      this.setCustomValidity("");
+    }
+  });
+  
+  return isValid;
+}
+
+function validateEventTypeCheckboxes(message="Please select at least one of the event options.") {
+  let trainingStatus = $("#checkIsTraining").is(":checked");
+  let serviceHourStatus = $("#checkServiceHours").is(":checked");
+  let engagementStatus = $("#checkEngagement").is(":checked");
+  let bonnersStatus = $("#checkBonners").is(":checked");
+  
+  if (!(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus)) {
+    $("#checkEngagement")[0].setCustomValidity(message);
+    $("#checkEngagement")[0].reportValidity();
+    return false;
+  } else {
+    $("#checkEngagement")[0].setCustomValidity("");
+    return true;
+  }
+}
+
+function checkValidation() {
+  let allFieldFilled = true;
+  let seriesEvent = $("#checkIsSeries").is(":checked");
+  let seriesWeeklyId = $("#checkIsRepeating").is(":checked");
+  let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training';
+  enableLiveCustomValidityClearing([".all", ".series", ".seriesWeekly", ".main", ".allV"]);
+
+  // Always validate common fields (.all class)
+  allFieldFilled = validateFieldGroup(".all", allFieldFilled);
+  
+  if (isAllVolunteer) {
+    // Validate all volunteer specific fields
+    allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
+
+  } else if (seriesEvent) {
+    // Validate series-specific fields
+    allFieldFilled = validateFieldGroup(".series", allFieldFilled);
+    
+    // Validate series weekly fields if needed
+    if (seriesWeeklyId) {
+      allFieldFilled = validateFieldGroup(".seriesWeekly", allFieldFilled);
+    }
+    
+    // Validate event type checkboxes
+    allFieldFilled = validateEventTypeCheckboxes() && allFieldFilled;
+    
+  } else {
+    // Validate main template fields
+    allFieldFilled = validateFieldGroup(".main", allFieldFilled);
+    
+    // Validate event type checkboxes
+    allFieldFilled = validateEventTypeCheckboxes() && allFieldFilled;
+  }
+  
+  // Submit form if all fields are valid
+  if (allFieldFilled) {
+    const form = $("#saveEvent");
+    if (form.length) {
+      form.trigger('submit');
+    }
+  }
+}
+
+
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -378,27 +533,6 @@ $(document).ready(function() {
       minDate = null;
   }
 
-  // Initialize datepicker with proper options
-  $.datepicker.setDefaults({
-    dateFormat: 'yy/mm/dd', // Ensures compatibility across browsers
-    minDate: minDate
-  });
-
-  $(".datePicker").datepicker({
-    dateFormat: 'mm/dd/yy',
-    minDate: minDate
-  });
-
-  $(".datePicker").each(function(idx, el) {
-    var dateStr = $(el).val();
-    if (dateStr) {
-      var dateObj = new Date(dateStr);
-      if (!isNaN(dateObj.getTime())) {
-        $(el).datepicker("setDate", dateObj);
-      }
-    }
-  });
-
   handleFileSelection("attachmentObject")
 
   $("#checkRSVP").on("click", function () {
@@ -415,24 +549,35 @@ $(document).ready(function() {
     typeBoxes.not($(event.target)).prop('checked', false);
   });
 
-  $("#saveEvent").on('submit', function (event) {
-    let trainingStatus = $("#checkIsTraining").is(":checked")
-    let serviceHourStatus = $("#checkServiceHours").is(":checked")
-    let engagementStatus = $("#checkEngagement").is(":checked")
-    let bonnersStatus = $("#checkBonners").is(":checked")
+  //to show the msgFlash message when the event is canceled
+$("#cancelEvent").on('click', function (event) {
+    event.preventDefault(); // Prevent normal form submission
+    
+    // Get the form action URL
+    let formAction = $(this).closest('form').attr('action');
+    
+    // Submit via AJAX
+    $.ajax({
+        url: formAction,
+        method: 'POST',
+        success: function(response) {
+            msgFlash("You have successfully canceled the event", "success", 5000);
+            $('#cancelWarning').modal('hide');
+            // Optionally refresh the page or update the UI
+            location.reload(); // or update specific elements
+        },
+        error: function() {
+            msgFlash("Failed to cancel the event", "error");
+        }
+    });
+});
 
-    //check if user has selected a toggle, cancel form submission if not
-    let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training'
-    if(trainingStatus || serviceHourStatus || engagementStatus || bonnersStatus || isAllVolunteer) {
-      // Disable button when we are ready to submit
-      $(this).find("input[type=submit]").prop("disabled", true);
-    }
-    else {
-      msgFlash("You must indicate whether the event is a training, is an engagement, earns service hours, or is a Bonners Scholars event!", "danger");
-      event.preventDefault();
-    } 
-  });
-
+  // When Save buttton is clicked, check if required are filled and then submit
+  $("#saveButton").on('click', function (event) {
+    event.preventDefault(); //prevents from submitting
+    checkValidation();
+});
+  
   updateOfferingsTable();
   
   if ($("#checkIsSeries").is(":checked")){
@@ -445,7 +590,7 @@ $(document).ready(function() {
 
     if(!($('#inputEventName').val().trim() == '')){
       //keeps main page event name for multiple event modal
-      $('#eventName').val($('#inputEventName').val());
+      $('#eventName').val($('#inputEventName').val());// the input value from of page copied
     }
     let isSeries = $("#checkIsSeries").is(":checked")
     modalOpenedByEditButton = ($(this).attr('id') === 'edit_modal');
@@ -457,17 +602,14 @@ $(document).ready(function() {
 
       // Disable single event name field
       $('#inputEventName').prop('readonly', true)
-      $('#inputEventName').prop('placeholder', '')
       $('#inputEventName').val('')
-
     } else {
       setViewForSingleOffering()
       $('#multipleOfferingTableDiv').addClass('d-none');
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
-      $('#inputEventName').prop('placeholder', 'Enter event name')
+      $('#inputEventName').prop('placeholder', 'Enter event name')  
     }
-    
   });
 
   //untoggles the button when the modal cancel or close button is clicked
@@ -485,6 +627,7 @@ $(document).ready(function() {
       // Enable single event name field
       $('#inputEventName').prop('readonly', false)
       $('#inputEventName').prop('placeholder', 'Enter event name')
+      checkIfDateInPast();
     }
   });
 
@@ -502,16 +645,16 @@ $(document).ready(function() {
   });
   
   $("#repeatingEventsDiv").change(handleRepeatingEventsChange)
-
+// this handels start date, end date, last event date, start time, and end time 
   function handleRepeatingEventsChange() {
-    if (verifyRepeatingFields()) {
+    if (!verifyRepeatingFields()) {
       let table = $("#generatedEventsList").children();
       let startDate = new Date($("#repeatingEventsStartDate").val());
       let endDate = new Date($("#repeatingEventsEndDate").val());
       let startTime = $("#repeatingEventsStartTime").val();
       let endTime = $("#repeatingEventsEndTime").val();
-
-      if (navigator.userAgent.indexOf("Chrome") == -1) {
+      
+      if (navigator.userAgent.indexOf("Chrome") == -1) { //CHANGES 12 HOUR TO 24 HOUR
         startTime = format12to24HourTime(startTime)
         endTime = format12to24HourTime(endTime)
       }
@@ -528,6 +671,7 @@ $(document).ready(function() {
         $("#generatedEvents").addClass('d-none');
         return;
       }
+      
 
       calculateRepeatingEventFrequency();
     }
@@ -540,6 +684,7 @@ $(document).ready(function() {
     }, 500, function() {
         // After the animation completes, remove the row
         attachedRow.remove();
+        msgToast("Deletion info", "You have successfully deleted a series of events")
     });
   });
   
@@ -547,9 +692,59 @@ $(document).ready(function() {
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(createOfferingModalRow)
 
-  $("#allowPastStart").click(function() {
-    var minDate = $("#allowPastStart:checked").val() ? new Date('10/25/1999') : new Date()
+    var minDate = new Date('10/25/1999') 
     $("#startDatePicker-main").datepicker("option", "minDate", minDate)
+
+  // This converts the time to 24 hour format in case it is in 12 hour format (like in Firefox)
+function handleTimeFormatting(timeArray){    
+  let time  = timeArray[0]
+  let timeSuffix = timeArray[1]         // looks for AM or PM in time 
+  let [hours , min] = time. split(':')
+
+  if (timeArray.length === 2) {
+    hours  = parseInt(hours, 10)
+    if (timeSuffix === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (timeSuffix === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    const hoursStr = hours.toString().padStart(2, '0');
+    return [hoursStr, min]
+  }
+  return [hours, min]
+}
+
+  function checkIfDateInPast() {
+    const [month, day, year] = $("#startDatePicker-main").val().split('/')
+    const startTimeArray =  $("#startTime-main").val().split(' ') 
+    const [startHour, startMin] = handleTimeFormatting(startTimeArray)
+    const endTimeArray = $('#endTime-main').val().split(' ')
+    const [endHour, endMin] = handleTimeFormatting (endTimeArray)
+    let startDateSelected =new Date(+year, +month - 1, +day, +startHour, +startMin);  
+    let endDateSelected = new Date(+year, +month - 1, +day, +endHour, +endMin)
+    let now = new Date()
+    
+
+    if (startDateSelected < now && endDateSelected > now) {
+      $("#pastDateWarningText").text("This event is currently in progress!")
+    }
+    else if (startDateSelected < now && endDateSelected < now) {
+      $("#pastDateWarningText").text("This event is in the past!")
+    }
+    else 
+      $("#pastDateWarningText").text("")
+  }
+
+  $("#startDatePicker-main").on("change", function() {    
+    checkIfDateInPast()
+  })
+
+  $("#startTime-main").on("change", function() {    
+    checkIfDateInPast()
+  })
+  
+  $("#endTime-main").on("change", function() {    
+    checkIfDateInPast()
   })
 
   // everything except Chrome
@@ -573,7 +768,7 @@ $(document).ready(function() {
     $(".datePicker").datepicker("option", "disabled", true);
   }
 
-  $(".readonly").on('keydown paste', function (e) {
+  $(".readonly").on('keydown paste', function(e) {
     if (e.keyCode != 9) // ignore tab
       e.preventDefault();
   });
@@ -622,4 +817,8 @@ $(document).ready(function() {
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+  
 });
+
+
+

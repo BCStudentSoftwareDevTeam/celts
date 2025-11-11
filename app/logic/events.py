@@ -195,6 +195,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "timeEnd": newEventData['timeEnd'],
                 "location": newEventData['location'],
                 "isFoodProvided" : newEventData['isFoodProvided'],
+                "isLaborOnly" : newEventData['isLaborOnly'],
                 "isTraining": newEventData['isTraining'],
                 "isEngagement": newEventData['isEngagement'],
                 "isRsvpRequired": newEventData['isRsvpRequired'],
@@ -202,9 +203,9 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "startDate": newEventData['startDate'],
                 "rsvpLimit": newEventData['rsvpLimit'],
                 "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName']
+                "contactName": newEventData['contactName'],
             }
-
+        
         # The three fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
         if isNewEvent:
@@ -393,7 +394,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['isLaborOnly']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -470,14 +471,14 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'isLaborOnly']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
         else:
             eventData[checkBox] = bool(eventData[checkBox])
-
+    
     ## Process dates
     eventDates = ['startDate', 'endDate']
     for eventDate in eventDates:
