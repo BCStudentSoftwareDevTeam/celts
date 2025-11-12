@@ -521,7 +521,7 @@
                     {% set popover_text = "You haven’t attended any terms yet." %}
                   {% endif %}
                 {% elif req.frequency == "once" and req.completed %}
-                  {% set popover_text = "Attended on " ~ (req.attendedTerm) %}
+                  {% set popover_text = "Attended: " ~ (req.attendedTerm) %}
                 {% elif req.frequency == "twice"%}
                   {% set popover_text = "Attended the certification: " ~ (req.attendedDescriptions | join(', ')) ~ "." %}
                 {% elif req.frequency == "annual" %}
