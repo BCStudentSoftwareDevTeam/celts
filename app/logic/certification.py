@@ -112,9 +112,6 @@ def getCertRequirements(certification=None, username=None):
                     cert.requirement.missedTerms = len(termsMissed(cert.requirement.id, username))
                     cert.requirement.missedDescriptions = termsMissed(cert.requirement.id, username)
                     cert.requirement.totalTerms = len(termsInTotal(username))
-                elif cert.requirement.frequency == "twice":
-                    cert.requirement.missedTerms = max(0, 2 - cert.requirement.attendedTerms)
-                    cert.requirement.missedDescriptions = ([termsMissed(cert.requirement.id, username)[0], termsMissed(cert.requirement.id, username)[1]])
                 elif cert.requirement.frequency == "annual":
                     totalTerms = len(termsInTotal(username))
                     cert.requirement.attendedAnnual = len(termsAttended(cert.requirement.id, username))

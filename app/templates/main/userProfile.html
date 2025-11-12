@@ -505,7 +505,7 @@
                   {% endif %}
                 </span>
                 {% set popover_text = "" %}
-                {% if req.attendedTerms %}
+                {% if req.frequency == "term" %}
                   {% if req.attendedDescriptions|length > 0 or req.missedDescriptions|length > 0 %}
                     {% if req.attendedDescriptions|length > 0 %}
                       {% set popover_text = popover_text ~ "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
@@ -522,8 +522,8 @@
                   {% endif %}
                 {% elif req.frequency == "once" and req.completed %}
                   {% set popover_text = "Attended on " ~ (req.attendedTerm) %}
-                {% elif req.frequency == "twice" and req.completed %}
-                  {% set popover_text = "Attended the certification: " ~ (req.attendedTerm | join(', ')) ~ "." %}
+                {% elif req.frequency == "twice"%}
+                  {% set popover_text = "Attended the certification: " ~ (req.attendedDescriptions | join(', ')) ~ "." %}
                 {% elif req.frequency == "annual" %}
                   {% if req.attendedDescriptions|length > 0 %}
                     {% set popover_text = "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
