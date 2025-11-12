@@ -230,6 +230,99 @@ $(document).ready(function(){
     });
   });
 
+   /* =========================
+   * NOTES: Edit functionality
+   * ========================= */
+
+  // Open the Edit Note modal and prefill fields
+  $("#profileTable").on("click", ".editNoteButton", function () {
+    const noteId   = $(this).data("noteid");
+    const username = $(this).data("username");
+    const content  = $(this).data("content") || "";
+    const viewTier = String($(this).data("viewtier") || "");
+    const isBonner = (($(this).data("isbonner") || "") === "yes");
+
+    // Hidden fields
+    $("#editNoteId").val(noteId);
+    $("#editNoteUsername").val(username);
+
+    // Text
+    $("#editNoteTextArea").val(content);
+
+    // Visibility (if present for this user)
+    const $vis = $("#editNoteVisibility");
+    if ($vis.length) {
+      if ($vis.find(`option[value="${viewTier}"]`).length) {
+        $vis.val(viewTier);
+      } else {
+        $vis.val("1");
+      }
+    }
+
+    // Bonner toggle (if present)
+    const $bonnerToggle = $("#editBonnerToggle");
+    if ($bonnerToggle.length) {
+      $bonnerToggle.prop("checked", isBonner);
+    }
+
+    $("#editNoteModal").modal("show");
+  });
+
+  // Save changes from the Edit Note modal
+  $("#editNoteForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const noteId   = $("#editNoteId").val();
+    const username = $("#editNoteUsername").val();
+    const content  = ($("#editNoteTextArea").val() || "").trim();
+
+    if (!noteId || !username) {
+      msgToast("Error", "Missing note or user information.");
+      return false;
+    }
+    if (!content) {
+      msgToast("Error", "Note text cannot be empty.");
+      $("#editNoteTextArea").focus();
+      return false;
+    }
+
+    const data = {
+      id: noteId,                 // id used by deleteNote; likely same for edit
+      noteTextbox: content        // matches addNote
+    };
+
+    const $vis = $("#editNoteVisibility");
+    if ($vis.length) {
+      data.visibility = $vis.val(); // "1" | "2" | "3"
+    }
+
+    const $bonnerToggle = $("#editBonnerToggle");
+    if ($bonnerToggle.length) {
+      data.bonner = $bonnerToggle.is(":checked") ? "yes" : "no";
+    }
+
+    $("#editNoteSaveButton").prop("disabled", true);
+
+    $.ajax({
+      method: "POST",
+      url: "/" + username + "/editNote",   // keep route style consistent with deleteNote
+      data: data,                          // form-encoded like addNote/deleteNote
+      success: function () {
+        msgFlash("Note updated", "success", 1300, true);
+        if (typeof reloadWithAccordion === "function") {
+          reloadWithAccordion("notes");
+        } else {
+          location.reload();
+        }
+      },
+      error: function (xhr, status, err) {
+        console.log("edit note error", status, err);
+        msgToast("Error", "Could not update the note.");
+        $("#editNoteSaveButton").prop("disabled", false);
+      }
+    });
+  }); 
+
   /*
     * Background Check Functionality
     */

@@ -411,8 +411,32 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin %}
+                      <!-- EDIT -->
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary me-2 editNoteButton float-end"
+                        data-noteid="{{ row.id }}"
+                        data-username="{{ volunteer.username }}"
+                        data-content="{{ row.note.noteContent|e }}"
+                        data-viewtier="{{ row.viewTier }}"
+                        data-isbonner="{{ 'yes' if row.isBonnerNote else 'no' }}"
+                        title="Edit"
+                        aria-label="Edit note"
+                      >
+                        Edit
+                      </button>
+                      <!-- DELETE -->
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger deleteNoteButton float-end"
+                        data-noteid="{{ row.id }}"
+                        data-username="{{ volunteer.username }}"
+                        title="Delete"
+                        aria-label="Delete note"
+                      >
+                        Delete
+                      </button>
                     {% else %}
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% endif %}
@@ -560,6 +584,57 @@
   </form>
 </div>
 <!-- ################# Add Notes Modal ################ -->
+
+<!-- ################# Edit Note Modal ################ -->
+<div class="modal fade" id="editNoteModal" tabindex="-1" aria-labelledby="editProfileNoteModalLabel" aria-hidden="true">
+  <form id="editNoteForm">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Note</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Hidden IDs -->
+          <input type="hidden" id="editNoteId" name="noteId" value="">
+          <input type="hidden" id="editNoteUsername" name="username" value="{{volunteer.username}}">
+
+          <div class="mb-3">
+            <label class="form-label"><strong>Note</strong></label>
+            <textarea required name="noteTextbox" rows="6" id="editNoteTextArea" class="form-control"
+              placeholder="Update your note"></textarea>
+          </div>
+
+          {% set vis_edit = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
+          <div class="{{vis_edit}}">
+            <label class="form-label"><strong>Visibility</strong></label>
+            <select class="form-select" id="editNoteVisibility">
+              {% if g.current_user.isCeltsAdmin %}<option value="3">Admins</option>{% endif %}
+              {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                <option value="2">Admin/Student Staff</option>
+              {% endif %}
+              <option value="1">Everyone</option>
+            </select>
+          </div>
+
+          {% if volunteer.isBonnerScholar %}
+          <div class="form-check form-switch pt-3">
+            <input class="form-check-input" id="editBonnerToggle" type="checkbox" />
+            <label class="form-check-label" for="editBonnerToggle"><strong>Related to Bonner Scholars Program</strong></label>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="editNoteSaveButton" type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- ################# Edit Note Modal ################ -->
 
 <!-- ################# Ban or Unban Modal ################ -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
