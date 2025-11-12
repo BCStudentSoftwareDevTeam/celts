@@ -22,8 +22,8 @@ def termsAttended(certification, username):
         if not attendance[termRecord].event.term.isSummer:
             attendedTerms.append(attendance[termRecord].event.term.description)
     totalTerms = termsInTotal(username)
-    attendedTerms = [term for term in attendedTerms if term in totalTerms]
-    return list(set(attendedTerms))
+    attendedTerms = {term for term in attendedTerms if term in totalTerms}
+    return attendedTerms
             
 def termsMissed(certification, username): 
     '''
@@ -119,8 +119,17 @@ def getCertRequirements(certification=None, username=None):
                     totalTerms = len(termsInTotal(username))
                     cert.requirement.attendedAnnual = len(termsAttended(cert.requirement.id, username))
                     cert.requirement.totalAnnual = int(math.floor(totalTerms/2+0.5)) if totalTerms % 2 == 1  else totalTerms/2
-                else:
-                    raise ValueError("Invalid frequency value")
+                elif cert.requirement.frequency == "once" and cert.requirement.completed:
+                    term_record = (RequirementMatch
+                            .select(RequirementMatch, Event, Term)
+                            .join(Event)
+                            .join(Term)
+                            .where(RequirementMatch.requirement == cert.requirement.id)
+                            .order_by(Term.year.desc())  # latest term first
+                            .first()
+                        )
+                    cert.requirement.attendedTerm = term_record.event.term.description 
+
             certificationList.append(cert.requirement)
 
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist

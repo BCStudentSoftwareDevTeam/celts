@@ -504,9 +504,9 @@
                       <span>({{req.attendedAnnual}}/{{req.totalAnnual}})</span>
                   {% endif %}
                 </span>
+                {% set popover_text = "" %}
                 {% if req.attendedTerms %}
                   {% if req.attendedDescriptions|length > 0 or req.missedDescriptions|length > 0 %}
-                    {% set popover_text = "" %}
                     {% if req.attendedDescriptions|length > 0 %}
                       {% set popover_text = popover_text ~ "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
                     {% else %}
@@ -521,27 +521,15 @@
                     {% set popover_text = "You haven’t attended any terms yet." %}
                   {% endif %}
                 {% elif req.frequency == "once" and req.completed %}
-                  {% set popover_text = "You have attended the certification." %}
-
-                {% elif req.frequency == "once" and not req.completed %}
-                  {% set popover_text = "You have not attended the certification." %}
-
+                  {% set popover_text = "Attended on " ~ (req.attendedTerm) %}
                 {% elif req.frequency == "twice" and req.completed %}
-                  {% set popover_text = "You have attended the certification twice." %}
-
-                {% elif req.frequency == "twice" and not req.completed %}
-                  {% set popover_text = "You have not attended the certification twice." %}
-
+                  {% set popover_text = "Attended the certification: " ~ (req.attendedTerm | join(', ')) ~ "." %}
                 {% elif req.frequency == "annual" %}
                   {% if req.attendedDescriptions|length > 0 %}
                     {% set popover_text = "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
-                  {% else %}
-                    {% set popover_text = "No annual certifications attended yet." %}
                   {% endif %}
-
-                {% else %}
-                  {% set popover_text = "No certification attendance data available." %}
                 {% endif %}
+                {% if popover_text != "" %}
                 <a
                   href="#"
                   type="button"
@@ -552,7 +540,8 @@
                   data-bs-content="{{ popover_text | e }}"
                 >
                   View
-                </a>         
+                </a>   
+                {% endif %}      
                 </li>
                 </br>
               {% endfor %}
