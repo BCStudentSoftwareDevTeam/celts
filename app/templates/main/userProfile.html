@@ -517,8 +517,6 @@
                     {% else %}
                       {% set popover_text = popover_text ~ "<br>Missed: None" %}
                     {% endif %}
-                  {% else %}
-                    {% set popover_text = "You haven’t attended any events yet." %}
                   {% endif %}
                 {% elif req.frequency == "once" and req.completed %}
                   {% set popover_text = "Attended: " ~ (req.attendedTerm) %}
@@ -528,8 +526,9 @@
                   {% if req.attendedDescriptions|length > 0 %}
                     {% set popover_text = "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
                   {% endif %}
+                {% else %}
+                  {% set popover_text = "You haven’t attended any event(s) yet." %}
                 {% endif %}
-                {% if popover_text != "" %}
                 <a
                   href="#"
                   type="button"
@@ -541,7 +540,6 @@
                 >
                   View
                 </a>   
-                {% endif %}      
                 </li>
                 </br>
               {% endfor %}
