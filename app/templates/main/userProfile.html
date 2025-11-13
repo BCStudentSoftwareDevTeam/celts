@@ -322,7 +322,7 @@
               <thead>
                 <tr>
                   <th scope="col">Description</th>
-                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+                   {% if g.current_user.isCeltsAdmin %}
                      <th class="required" scope="col">Status</th>
                      <th class="required" scope="col">Date</th>
                      <th class="" id="displaySave" scope="col"></th>
@@ -343,7 +343,7 @@
                           {% endfor %}
                        </ul>
                    </td>
-                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                   {% if g.current_user.isCeltsAdmin %}
                       <td>
                           <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                               <option value=''></option>
