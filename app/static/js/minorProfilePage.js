@@ -3,6 +3,8 @@ import { validateEmail } from "./emailValidation.mjs";
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
 
+  handleFileSelection("supervisorAttachment", true)
+
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
       let matches = $(this).val().match(/\d/g);
@@ -20,6 +22,25 @@ $(document).ready(function() {
   handleFileSelection("supervisorAttachment", true, "preexistingFiles")
 
   function saveProposalData(status) {
+    $("#proposalForm").find('[required]').each(function() {
+      if (!$(this).val()) {
+        this.setCustomValidity('Please fill out this field.')
+        this.reportValidity()
+        return    
+      } else {
+        this.setCustomValidity('')
+      }
+    });
+    if ($('#proposalExperienceType').val() == "Other Engagement") {
+      var fileRowCount = $('#supervisorAttachmentContainer').children().length;
+      if (fileRowCount == 0) {
+        $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
+        $('#supervisorAttachment')[0].reportValidity()        
+        return
+      } else {
+        $('#supervisorAttachment')[0].setCustomValidity(''); 
+      }
+    }
     var formData = new FormData($("#proposalForm")[0]);
     formData.append("status", status);
 
@@ -28,6 +49,9 @@ $(document).ready(function() {
     $.ajax({
       url: actionURL,
       type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
       data: formData,
       processData: false,
       contentType: false,
@@ -70,7 +94,8 @@ $(document).ready(function() {
 
   // ************** SUMMER EXPERIENCE ************** //
   $('#hoursBelow300Container').hide()
-  $('#otherExperienceDescription').hide()
+  toggleUnder300HoursTextarea()
+  toggleOtherExperienceTextarea()
 
   $("input[name='experienceHoursOver300']").on("change", function() {
     toggleUnder300HoursTextarea();
@@ -109,7 +134,6 @@ $(document).ready(function() {
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
-
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
@@ -201,14 +225,15 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
 }
 
 function toggleUnder300HoursTextarea() {
-  var yesRadio = $('#yes300hours');
+  var noRadio = $('#no300hours');
   var conditionalTextBox = $('#hoursBelow300Container');
-  if (yesRadio.is(':checked')) {
-    conditionalTextBox.hide()
-    $('#totalHours').val(300)
+  if (noRadio.is(':checked')) {
+    conditionalTextBox.show();
   } else {
-    conditionalTextBox.show()
-    $('#totalHours').val('')
+    conditionalTextBox.hide();
+    if ($('#yes300hours').is(':checked')) {
+      $('#totalHours').val(300);
+    }
   }
 }
 

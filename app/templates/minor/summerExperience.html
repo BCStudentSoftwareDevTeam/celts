@@ -28,6 +28,7 @@
                         The minor requires an Intensive Community-Engaged Summer Experience that is focused on work that more deeply explores at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
                     </p>
                     <input type="hidden" value="{{ user.username }}" id="username"/>
+                    <input type="hidden" value="Summer Experience" id="proposalExperienceType"/> 
                 </div>
     
                 <div class="form-group">
@@ -101,10 +102,12 @@
                         {% if viewing %} disabled {% endif %}
                         {% if proposal and proposal.experienceType == "Other" %} checked {% endif %}/>
                     <label for="otherExperience">Other. Briefly describe your summer experience below if it will not be one of the other experiences listed.</label><br>
+                    {% if viewing and proposal.experienceDescription or not viewing %}
                     <input type="text" class="form-control" id="otherExperienceDescription" name="experienceDescription" placeholder="Enter your summer experience description."
                         value="{{ proposal.experienceDescription if proposal else '' }}"
                         {% if viewing %} disabled {% endif %}/>
                     </input>
+                    {% endif %}
                     <br>
                 </div>
                 <div class="form-group">
@@ -142,13 +145,14 @@
                         <div class="form-group col-6">
                             <label class="required" for="totalHours"><b>Hours</b></label><br>
                             <input class="form-control" type="text" id="totalHours" name="totalHours" required placeholder="Enter the total hours."
-                                value="300" 
+                                value="{{proposal.totalHours if proposal else 300}}" 
                                 {% if viewing %} disabled {% endif %}>
                             </input>
                         </div>
                         <div class="form-group col-6">
                             <label class="required" for="totalWeeks"><b>Weeks</b></label><br>
                             <input class="form-control" type="text" id="totalWeeks" name="totalWeeks" required placeholder="Enter the number of weeks."
+                                value="{{proposal.totalWeeks if proposal else ''}}"
                                 {% if viewing %} disabled {% endif %}>
                             </input>
                         </div>
@@ -160,12 +164,14 @@
                     <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
                       <input class="btn btn-secondary justify-start" id="exitButton" type="button" value="Back"/> 
                     </div>
+                    <div class="col-2 col-xl-1 col-12 text-sm-center">
+                    </div>
                     <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
                       {% if not viewing %}
-                          <input class="btn btn-primary" id="saveAndExitButton" type="button" value="Save and Exit"/>
-                          <input class="btn btn-primary" id="submitButton" type="button" value="Submit"/> 
+                          <input class="btn btn-primary" type="button" id="saveAsDraftButton" value="Save As Draft"/>
+                          <input class="btn btn-primary" type="button" id="submitButton" value="Submit"/> 
                           {% if g.current_user.isCeltsAdmin and proposal %}
-                            <input class="btn btn-success" id="submitAndApproveButton" type="button" value="Submit and Approve"/> 
+                            <input class="btn btn-success" type="button" id="saveAndApproveButton" value="Save and Approve"/> 
                           {% endif %}
                       {% endif %}
                     </div>

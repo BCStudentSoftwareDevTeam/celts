@@ -12,7 +12,6 @@ from app.logic.minor import (
     createOtherEngagement,
     updateOtherEngagementRequest,
     setCommunityEngagementForUser,
-    getSummerExperience,
     getEngagementTotal,
     createSummerExperience,
     updateSummerExperience,
@@ -54,11 +53,7 @@ def createOtherEngagementRequest(username):
 
     # once we submit the form for creation
     if request.method == "POST":
-        createdProposal = createOtherEngagement(username, request.form.copy())
-        attachment = request.files.get("attachmentObject")
-        if attachment:
-            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
-            addFile.saveFiles()
+        createOtherEngagement(username, request)
 
         return redirect(url_for('minor.viewCceMinor', username=username))
     
@@ -67,56 +62,51 @@ def createOtherEngagementRequest(username):
                             user = User.get_by_id(username),
                             selectableTerms = selectSurroundingTerms(g.current_term),
                             postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
-                            otherEngagement = None,
-                            attachmentFilePaths = None)
+                            attachmentFilePath = "",
+                            attachmentFileName = "",
+                            proposal = None)
 
-@minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
 @minor_bp.route('/cceMinor/viewOtherEngagement/<proposalID>', methods=['GET'])
 @minor_bp.route('/cceMinor/viewSummerExperience/<proposalID>', methods=['GET'])
+@minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
 @minor_bp.route('/cceMinor/editSummerExperience/<proposalID>', methods=['GET', 'POST'])
 def editOrViewProposal(proposalID: int):
     proposal = CCEMinorProposal.get_by_id(int(proposalID))
     if not (g.current_user.isAdmin or g.current_user.username == proposal.student):
         return abort(403)
-    
+
     attachmentObject = AttachmentUpload.get_or_none(proposal=proposalID)
-    attachmentFilePath = None
+    attachmentFilePath = ""
+    attachmentFileName = ""
 
     if attachmentObject:
         fileHandler = FileHandler(proposalId=proposalID)
-        attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName)
-        
-    if request.method == "GET" and 'view' in request.path:
+        attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName).lstrip("app/") # we need to remove app/ from the url because it prevents it from displaying
+        attachmentFileName = attachmentObject.fileName
+    
+    if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = False,
-                                contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
-                                user = User.get_by_id(proposal.student),
+                                editable = 'view' not in request.path,
                                 selectedTerm = selectedTerm,
-                                proposal = proposal,
-                                attachmentFilePaths = attachmentFilePath
-                                )
-    
-    if request.method == "GET" and 'edit' in request.path:
-        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = True,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
                                 user = User.get_by_id(proposal.student),
                                 postRoute = f"/cceMinor/editSummerExperience/{proposal.id}" if "SummerExperience" in request.path else f"/cceMinor/editOtherEngagement/{proposal.id}",
                                 proposal = proposal,
-                                attachmentFilePaths = attachmentFilePath
-                                )
+                                attachmentFilePath = attachmentFilePath,
+                                attachmentFileName = attachmentFileName
+        )
     
     if "OtherEngagement" in request.path:
-        updateOtherEngagementRequest(proposalID, request.form.copy())
+        updateOtherEngagementRequest(proposalID, request)
     else:
         updateSummerExperience(proposalID, request.form)
  
     return redirect(url_for('minor.viewCceMinor', username=proposal.student))
 
 @minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
-def createSummerExperienceExperience(username):
+def createSummerExperienceRequest(username):
     """
         Load minor management page with community engagements and summer experience
     """

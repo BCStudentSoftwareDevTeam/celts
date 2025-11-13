@@ -29,13 +29,14 @@
         </a>
       </li>
       {% endif %}
-
-      {% if g.current_user.isAdmin %}
+      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event    
         </a>
       </li>
+      {% endif %}
+      {% if g.current_user.isAdmin %}
       <li>
         <a href="/search_student" class="nav-link text-white {{'active' if request.path =='/search_student'}}" {{"aria-current='page'" if request.path =='/search_student'}}>
           Student Search
@@ -75,6 +76,9 @@
             <a href="/admin/cceMinor" id="minorManagement" class="minorManagement nav-link text-white {{ 'active' if request.path =='/admin/cceMinor' }}">
               Minor Management
             </a>
+            <a href="/admin/graduationManagement" id="graduationManagement" class="graduationManagement nav-link text-white {{ 'active' if request.path =='/admin/graduationManagement' }}">
+              Graduation Management
+            </a>
 
             <a href="/admin/reports" id="reports" class="reports nav-link text-white {{ 'active' if request.path =='/admin/reports' }}">
               Reports
@@ -85,6 +89,13 @@
         {% endif %}
       </li>
 
+      {% endif %}
+      {% if g.current_user.isProgramManager %}
+        <a href="/admin"
+           class="nav-link text-white {{'active' if request.path == '/admin'}}"
+           {% if request.path == '/admin' %}aria-current="page"{% endif %}>
+          Program Details
+        </a>
       {% endif %}
     </ul>
     <hr>
@@ -101,5 +112,6 @@
         </form>
     {% endif %}
     <a type="button" href='/logout' class="btn btn-secondary btn-secondary">Log out</a>
+    
   </div>
 </div>

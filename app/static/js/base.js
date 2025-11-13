@@ -1,4 +1,4 @@
-const flashMessageResponse = function flashEventResponse(message){
+function flashMessageResponse(message) {
   if (message.slice(-8) == "deleted."){
 
     return `<strong><a href="/event/undo" style="color: dark-green;">Undo</a></strong>` 
@@ -6,19 +6,57 @@ const flashMessageResponse = function flashEventResponse(message){
   return '';
 }
 
-function msgFlash(flash_message, status){
-    if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
-    $("#flash_container").prepend(`
-      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flash_message}
-        ${flashMessageResponse(flash_message)}
-        <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
-      </div>`);
-    $(".close-alert").click(function(){
-      $(this).closest(".alert").delay(1000).fadeOut();
-    })
+function enableLiveCustomValidityClearing(selectors) {
+  selectors.forEach(selector => {
+    $(selector).each(function () {
+      // Avoid rebinding listeners on already-bound elements
+      if (!$(this).data("has-clearing-listener")) {
+        $(this).on("input", function () {
+          this.setCustomValidity("");
+        });
+        $(this).data("has-clearing-listener", true); // flag it
+      }
+    });
+  });
 }
 
+function msgFlash(flashMessage, status, timeout=2500, afterReload=false) {
+    if (afterReload) {
+      // Save message to sessionStorage for next page load
+      sessionStorage.setItem('flashMessage', JSON.stringify({
+          message: flashMessage,
+          type: status,
+          timeout: timeout
+      }));
+      return;
+    }
 
+    if (!flashMessage || !status) {
+      const storedMessage = sessionStorage.getItem('flashMessage');
+      if (storedMessage) {
+        const messageData = JSON.parse(storedMessage);
+        flashMessage = messageData.message;
+        status = messageData.type;
+        timeout = messageData.timeout ?? 2500;
+        sessionStorage.removeItem('flashMessage');
+      } else {
+        return; // Nothing to show
+      }
+    }
+
+    if (!["success", "warning", "info", "danger"].includes(status)) status = "danger";
+    $("#flash_container").prepend(`
+      <div class="alert alert-${status} alert-dismissible alert-success" role="alert">${flashMessage}
+        ${flashMessageResponse(flashMessage)}
+        <button type="button" class="btn-close kiosk-hide close-alert" aria-label="Close"></button>
+      </div>`);
+    if (timeout) {
+      $(".alert").delay(timeout).fadeOut();
+    }
+    $(".close-alert").click(function(){
+      $(this).closest(".alert").delay(250).fadeOut();
+    })
+}
 
 $(document).ready(function() {
     $("select[name='newuser']").on('change', function(e) {
@@ -33,7 +71,7 @@ $(document).ready(function() {
 
 });
 
-function msgToast(head, body){
+function msgToast(head, body, duration=3000){
   if ($("#liveToast").is(":visible") == true){
     $('#liveToast').removeClass("show")
     $('#liveToast').addClass("hide")
@@ -41,6 +79,10 @@ function msgToast(head, body){
   $("#toast-header").html(head)
   $("#toast-body").html(body)
   toastList[0].show()
+
+  setTimeout(() => {
+    toastList[0].hide();
+  }, duration);
 }
 
 function setupPhoneNumber(editButtonId, phoneInput){
@@ -69,7 +111,7 @@ function setupPhoneNumber(editButtonId, phoneInput){
 
 function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   if (action == "edit" ) {
-    $(editButtonId).html("Save");
+    $(editButtonId).html('Save');
   }
   else if (action == "save" ) {
     validatePhoneNumber(editButtonId, phoneInputId, username)
@@ -77,7 +119,7 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   else if (action == "restore"){
     var phoneInput = $(phoneInputId);
     $(phoneInputId).val(phoneInput.attr("data-value"))
-    $(editButtonId).html('Edit');
+    $(editButtonId).text('Edit');
   }
 }
 
@@ -113,7 +155,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             "phoneNumber":phoneInput.val()},
       success: function(s){
         $(phoneInputId).attr("data-value",phoneInput.val())
-        msgToast("Phone Number", "Successfully updated the phone number.")
+        msgFlash("Successfully updated the phone number.","success" )
       },
       error: function(request, status, error) {
         msgFlash("Phone number not updated.", "danger")
@@ -163,54 +205,35 @@ function handleFileSelection(fileInputId, single=false){
   var attachedObjectContainerId = fileInputId + "Container"
   $(fileBoxId).after(`<div id="`+attachedObjectContainerId+`" class="py-0 px-0"></div>`)
   var objectContainerId = "#" + attachedObjectContainerId
-  // if we have files that are already saved and we want to load in we can
-  // specify an element of where to find those files
-  let data = $(fileBoxId).data("file")
-  let preexistingFiles = [{name: data}]
-  $(fileBoxId).prop("files", preexistingFiles)
 
-  populateSelectedFiles(fileBoxId, objectContainerId, single)
+  // if we have files that are already saved we can get their information from here
+  let filePath = $(fileBoxId).data("file-path")
+  let fileName = $(fileBoxId).data("file-name")
+
+  let existingFile = {
+    name: fileName,
+    path: filePath
+  }
+  if (filePath && fileName) {
+    populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single, existingFile)
+  }
   $(fileBoxId).on('change', () => populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single));
 }
 
-function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single) {
-  const selectedFiles = $(fileBoxId).prop('files');
+function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single, existingFile=null) {
+  const selectedFiles = existingFile ? [existingFile] : $(fileBoxId).prop('files');
   for (let i = 0; i < selectedFiles.length; i++){
     const file = selectedFiles[i];
     if (hasUniqueFileName(file.name)){
       let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
-      let fileExtension = file.name.split(".").pop();
-      let iconClass = '';
-      switch(fileExtension) {
-        case 'jpg': 
-        case 'png':
-        case 'jpeg':
-          iconClass = "bi-file-image";
-          break
-        case 'pdf':
-          iconClass = 'bi-filetype-pdf';
-          break
-        case 'docx':
-          iconClass = 'bi-filetype-docx';
-          break
-        case 'xlsx':
-          iconClass = 'bi-filetype-xlsx';
-          break
-        default:
-          iconClass = 'bi-file-earmark-arrow-up';
-      }
       let trashNum = ($(objectContainerId+ " .row").length)
+      let iconClass = getIconClass(file)
+      let fileHTML = generateFileRowHTML(trashNum, iconClass, fileName)
+      if (existingFile) {
+        let viewing = $("#isViewing").val()
+        fileHTML = generateFileRowHTML(trashNum, iconClass, existingFile.name, existingFile.path, viewing)
+      }
       var fullTrashId = "#trash" + trashNum
-      let fileHTML = " \
-            <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
-              <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-              <div id='attachedFile" + trashNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
-              <div class='col' style='text-align:right'> \
-                <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
-                  <span class='bi bi-trash fs-6'></span>\
-                </div>\
-              </div> \
-            </div>"
       if (single) {
         $(objectContainerId).html(fileHTML)
       }
@@ -236,5 +259,48 @@ function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectConta
       }
     }
   }
-  $(fileBoxId).prop('files', getSelectedFiles());
+  if (!existingFile) {
+    $(fileBoxId).prop('files', getSelectedFiles());
+  }
+}
+
+function generateFileRowHTML(trashNum, iconClass, fileName, filePath=null, showTrash=true) {
+  return `
+    <div class='border row p-0 m-0' id='attachedFilesRow${trashNum}'>
+      <i class='col-auto fs-3 px-3 bi ${iconClass}'></i>
+      ${filePath != null ?
+        `<a id='attachedFile${trashNum}' data-filename='${fileName}' href='/${filePath}' target='_blank' class='fileName col-auto pt-2' data-toggle='tooltip' data-placement='top' title='${fileName}'>${fileName}</a>`
+        : `<div id='attachedFile${trashNum}' data-filename='${fileName}' class='fileName col-auto pt-2'>${fileName}</div>`
+      }
+      <div ${showTrash ? 'hidden' : ''} class='col' style='text-align:right'>
+        <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash${trashNum}' data-filenum='${trashNum}'>
+          <span class='bi bi-trash fs-6'></span>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function getIconClass(file) {
+  let iconClass = '';
+  let fileExtension = file.name.split(".").pop();
+  switch(fileExtension) {
+    case 'jpg': 
+    case 'png':
+    case 'jpeg':
+      iconClass = "bi-file-image";
+      break
+    case 'pdf':
+      iconClass = 'bi-filetype-pdf';
+      break
+    case 'docx':
+      iconClass = 'bi-filetype-docx';
+      break
+    case 'xlsx':
+      iconClass = 'bi-filetype-xlsx';
+      break
+    default:
+      iconClass = 'bi-file-earmark-arrow-up';
+  }
+  return iconClass
 }

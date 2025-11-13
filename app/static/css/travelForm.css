@@ -36,3 +36,8 @@ img {
     margin-bottom: 0;
 }
 
+@media print {
+    .page { 
+        break-after: page; 
+    }
+}

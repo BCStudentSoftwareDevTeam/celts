@@ -156,7 +156,7 @@ def addToDb(userList):
                         lastName=user['lastName'],
                         email=user['email'],
                         major=user['major'],
-                        classLevel=user['classLevel'],
+                        rawClassLevel=user['rawClassLevel'],
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
                     logger.debug(f" Updated user {user['bnumber']}")
@@ -168,7 +168,7 @@ def addToDb(userList):
         except Exception as e:
             logger.error(f" Failed to insert or update user {user['bnumber']}: {e}")
             
-        return [usersAdded, usersUpdated]
+    return [usersAdded, usersUpdated]
 
 def getFacultyStaffData():
     """
@@ -198,7 +198,7 @@ def getFacultyStaffData():
                 "isFaculty": True,
                 "isStaff": False,
                 "major": None,
-                "classLevel": None,
+                "rawClassLevel": None,
                 "cpoNumber": row[5].strip(),
             }
             for row in c.execute('select * from STUSTAFF')
@@ -238,7 +238,7 @@ def getStudentData():
                 "lastName": row[3].strip(),
                 "isStudent": True,
                 "major": row[6].strip(),
-                "classLevel": row[4].strip(),
+                "rawClassLevel": row[4].strip(),
                 "cpoNumber": row[10].strip(),
             }
             for row in c.execute('select * from STUDATA')

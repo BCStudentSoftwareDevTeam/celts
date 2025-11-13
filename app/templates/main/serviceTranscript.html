@@ -1,79 +1,159 @@
-{%set title ="Service Transcript"%}
-{% extends "base.html"%}
-
+{% set title = "Service Transcript" %}
+{% extends "base.html" %}
 {% block app_content %}
-<div class="w-100 d-print-inline-block">
-  <h1 class="text-center mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
-  {% if studentLabor %}
-    <div class="card-body">
-      <h5 class="card-title">CELTS Labor History:</h5>
-      {% for position, term in studentLabor.items() %}
-        <p class="card-text">{{position}}: {{term|join(", ")}}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
-  {% if allEventTranscript %}
-    {% for program in allEventTranscript %}
-      {% set programTitle = program.programName %}
-      {% if not programTitle %}
-        {% set programTitle = program %}
-      {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{programTitle}}</h5>
-          {% for item in allEventTranscript[program] %}
-            {% if item[1] != None %}
-              <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
-            {% endif %}
-          {% endfor %}
-          {% if programTitle != "CELTS Sponsored Events" %}
-            <p class="card-text">{{program.description}}</p>
-            <a class="d-print-none" href="{{program.url}}" target="_blank" class="card-link">More Information</a>
-          {% endif %}
-        </div>
-    {% endfor %}
-  {% endif %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/serviceTranscript.css') }}">
 
-  {% if totalHours["totalHours"] > 0%}
-    <div class="float-end">
-      <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
-    </div>
-    {% if slCourses.exists() %}
-      <br><h2 class="m-1">Service-Learning Courses</h2>
-      <table class="table table-bordered table-striped">
-      <tr>
-      <th>Course</th>
-      <th>Term</th>
-      <th class="w-25">Accrued Service Hours</th>
-      </tr>
-      {% for slcourse in slCourses %}
-        <tr>
-        <td> {{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
-        <td> {{ slcourse.term.description }}</td>
-        <td class="w-25">{{ slcourse.hoursEarned }}</td>
-        </tr>
+{# Calculate filtered totals excluding Bonner Scholars #}
+{% set filteredEventHours = [] %}
+{% set filteredCourseHours = totalHours["totalCourseHours"] | round(2) | int %}
+{% if allEventTranscript %}
+  {% for program in allEventTranscript %}
+    {% set programTitle = program.programName if program.programName else program %}
+    {% if programTitle != "Bonner Scholars" %}
+      {% for item in allEventTranscript[program] %}
+        {% if item[1] is not none and item[1] != "" %}
+          {% set _ = filteredEventHours.append(item[1] | float) %}
+        {% endif %}
       {% endfor %}
-      </table>
     {% endif %}
-    <div class="pt-4">
-      <div class="float-end">
-      <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+  {% endfor %}
+{% endif %}
+{% set filteredEventHoursTotal = filteredEventHours | sum | round(2) | int %}
+{% set filteredTotalHours = filteredEventHoursTotal + filteredCourseHours %}
+
+<div class="w-100 d-print-inline-block">
+  <div class="container-fluid bg-light p-4 mb-4">
+    <div class="row align-items-center d-print-none">
+      <!-- CELTS Logo Section -->
+      <div class="col-md-3 d-flex align-items-center">
+        <img src="{{ url_for('static', filename='/images/logos/celts_logo.png') }}" alt="CELTS Logo" class="img-fluid me-3" style="max-height: 60px;">
+      </div>
+      <!-- Personal Info Section -->
+      <div class="col-md-6 text-center">
+        <h2 class="mb-1 fw-bold" style = "color: #000000">{{ userData.firstName }} {{ userData.lastName }}</h2>
+        <h4 class="mb-0 text-muted" >Service Transcript</h4>
+        <small class="text-muted">Volunteering Since {{ startDate }}</small>
+      </div>
+      <!-- Print Button -->
+      <div class="col-md-3 text-end">
+        <button type="button" class="btn btn-primary d-print-none" onclick="window.print()">
+          <span class="bi bi-printer"></span> Print
+        </button>
       </div>
     </div>
-    <p>*Volunteering since {{ startDate }}</p>
-    <div class="float-end">
-      <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
-      <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
+
+    <!-- Print-only header -->
+    <div class="d-none d-print-flex align-items-center mb-2" style="gap: 20px;">
+      <div>
+        <img src="{{ url_for('static', filename='/images/logos/celts_logo.png') }}" alt="CELTS Logo" class="img-fluid" style="max-width: 200px;">
+      </div>
+      <div class="flex-grow-1 text-center">
+        <h2 class="mb-0 fw-bold"  style="font-size: 22px; color: #000000">{{ userData.firstName }} {{ userData.lastName }}</h2>
+        <h4 class="mb-0 text-muted" style="font-size: 16px">Service Transcript</h4>
+        <small class="text-muted" style="font-size: 11px;  color: #005c90">Volunteering Since {{ startDate }}</small>
+      </div>
     </div>
-    {% else %}
-      <h5>No Volunteer Record</h5>
-    {% endif %}
-  <div class="d-print-none pt-5">
-    <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
+  </div>
+
+  {% if filteredTotalHours > 0 %}
+  <div class="card mb-4">
+    <div class="card-header text-white" style = "background-color: #005c90">
+      <h5 class="mb-0">Volunteer Hours</h5>
+      <small>All hours below have been validated and approved by an affiliated administrator or coordinator.</small>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-bordered mb-0" >
+        <thead class="table-light">
+          <tr>
+            <th class="text-center">Volunteer Hours</th>
+            <th class="text-center">Service-Learning Hours</th>
+            <th class="text-center">Total Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center fw-bold">{{ filteredEventHoursTotal }}</td>
+            <td class="text-center fw-bold">{{ filteredCourseHours | int }}</td>
+            <td class="text-center fw-bold">{{ filteredTotalHours | int }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Volunteer Hour Details</h5>
+    </div>
+    <div class="card-body">
+      {% if allEventTranscript %}
+        {% set item_counter = 0 %}
+        {% for program in allEventTranscript %}
+          {% set programTitle = program.programName if program.programName else program %}
+          {% if programTitle != "Bonner Scholars" %}
+            {% set item_counter = item_counter + 1 %}
+            <div class="mb-4 p-3 {% if item_counter % 2 == 0 %}bg-light{% endif %}" style="page-break-inside: avoid;">
+              <h6 class="fw-bold" style = "color: #005c90">{{ programTitle }}</h6>
+              {% for item in allEventTranscript[program] %}
+                {% if item[1] is not none %}
+                  <div class="mb-2">
+                    <small class="text-muted">{{ item[0] }} - {{ item[1] | round(2) }} hour(s)</small>
+                  </div>
+                {% endif %}
+              {% endfor %}
+              {% if programTitle != "CELTS Sponsored Events" %}
+                <p class="text-muted small mb-2">{{ program.description }}</p>
+                <a class="d-print-none small" href="{{ program.url }}" target="_blank">More Information</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="text-center py-4">
+          <h6 class="text-muted">No Volunteer Record</h6>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if slCourses.exists() %}
+<div class="card mb-4" style="page-break-inside: avoid;">
+  <div class="card-header bg-light">
+    <h5 class="mb-0">Service-Learning Courses</h5>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-bordered mb-0 slc-table">
+      <thead class="table-light">
+        <tr>
+          <th>Course</th>
+          <th>Term</th>
+          <th>Accrued Service Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slcourse in slCourses %}
+          {% if "Bonner" not in slcourse.courseName %}
+            <tr>
+              <td>{{ slcourse.courseName if slcourse.courseName else slcourse.courseAbbreviation }}</td>
+              <td>{{ slcourse.term.description }}</td>
+              <td>{{ slcourse.hoursEarned }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+  <div class="mt-5 pt-4  text-center" style="page-break-inside: avoid;">
+    <div class="d-print-none mt-5">
+      <p class="text-muted">
+        If there are any corrections that need to be made, contact
+        <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a>
+      </p>
+    </div>
   </div>
 </div>
 {% endblock %}
-
-

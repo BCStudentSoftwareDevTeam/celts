@@ -5,7 +5,7 @@ from app.models.event import Event
 class EventParticipant(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event, backref="participants")
-    hoursEarned = FloatField(null=True)
+    hoursEarned = FloatField(null = False, default = 0)
 
     # Add this property so that we can combine these objects with EventRsvp objects in one array
     @property
