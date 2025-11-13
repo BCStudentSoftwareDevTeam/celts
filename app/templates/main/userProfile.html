@@ -338,7 +338,10 @@
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
                            <li>
                              {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+
+                             {% if g.current_user.isCeltsAdmin %}
+                              <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+                              {% endif %}
                            </li>
                           {% endfor %}
                        </ul>
