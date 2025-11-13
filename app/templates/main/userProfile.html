@@ -308,7 +308,7 @@
 <!-- ################# CELTS Labor Section ################ -->
 
 <!-- ################# Background Check Section ################ -->
-  {% if g.current_user.isCeltsAdmin %}
+  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFive">
         {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
@@ -322,7 +322,7 @@
               <thead>
                 <tr>
                   <th scope="col">Description</th>
-                   {% if g.current_user.isCeltsAdmin%}
+                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                      <th class="required" scope="col">Status</th>
                      <th class="required" scope="col">Date</th>
                      <th class="" id="displaySave" scope="col"></th>
@@ -343,7 +343,7 @@
                           {% endfor %}
                        </ul>
                    </td>
-                   {% if g.current_user.isCeltsAdmin %}
+                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                       <td>
                           <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                               <option value=''></option>
