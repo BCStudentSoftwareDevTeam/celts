@@ -52,9 +52,6 @@ $(document).ready(function() {
       data: formData,
       processData: false,
       contentType: false,
-      data: formData,
-      processData: false,
-      contentType: false,
       success: function(response) {
         window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
       },
