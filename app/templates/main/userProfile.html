@@ -330,43 +330,58 @@
                  </tr>
                </thead>
                <tbody>
-                 {% for bgType in backgroundTypes %}
-                 <tr>
-                   <td>
-                       <h6>{{bgType.description}}</h6>
-                       <ul class="mb-0" id="bgHistory{{bgType.id}}" >
-                          {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                           <li>
-                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-
-                             {% if g.current_user.isCeltsAdmin %}
-                              <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+                {% for bgType in backgroundTypes %}
+                  {% set showRow = namespace(value=True) %}
+                    {% if g.current_user.isCeltsStudentStaff and not g.current_user.isCeltsAdmin %}
+                      {% set showRow.value = False %}
+                  {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                    {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
+                      {% set showRow.value = True %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                {% if showRow.value %}
+                  <tr>
+                    <td>
+                      <h6>{{bgType.description}}</h6>
+                      <ul class="mb-0" id="bgHistory{{bgType.id}}">
+                        {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                          {% if g.current_user.isCeltsAdmin
+                                or (bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed']) %}
+                            <li>
+                              {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
+                              {% if g.current_user.isCeltsAdmin %}
+                                <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
                               {% endif %}
-                           </li>
-                          {% endfor %}
-                       </ul>
-                   </td>
-                   {% if g.current_user.isCeltsAdmin %}
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    </td>
+                    {% if g.current_user.isCeltsAdmin %}
                       <td>
-                          <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
-                              <option value=''></option>
-                              <option value="Submitted">Submitted</option>
-                              <option value="Passed">Passed</option>
-                              <option value="Failed">Failed</option>
-                          </select>
+                        <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                          <option value=''></option>
+                          <option value="Submitted">Submitted</option>
+                          <option value="Passed">Passed</option>
+                          <option value="Failed">Failed</option>
+                        </select>
                       </td>
                       <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
-                      <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
-                  {% endif %}
+                      <td>
+                        <button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button>
+                      </td>
+                    {% endif %}
                   </tr>
-                {%endfor%}
-               </tbody>
-            </table>
-          </div>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  {% endif %}
+  </div>
+{% endif %}
 <!-- ################# Background Check Section  ################ -->
 
 <!-- ################# Notes Section ################ -->
