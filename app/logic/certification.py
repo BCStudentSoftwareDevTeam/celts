@@ -13,11 +13,10 @@ def termsAttended(certification, username):
     Retrieve terms attended by a user for certification and filter them based on frequency of a term
     '''
     attendedTerms = []
-    if username:
-        attendance = (RequirementMatch.select()
-                                      .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event)) 
-                                      .where(RequirementMatch.requirement_id == certification)  
-                                      .where(EventParticipant.user == username))  
+    attendance = (RequirementMatch.select()
+                                    .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event)) 
+                                    .where(RequirementMatch.requirement_id == certification)  
+                                    .where(EventParticipant.user == username))  
     for termRecord in range(len(attendance)):
         if not attendance[termRecord].event.term.isSummer:
             attendedTerms.append(attendance[termRecord].event.term.description)
