@@ -62,7 +62,36 @@ def termsInTotal(username):
             break  
     return totalTerms
 
-
+def termsInTotal(username):
+    """
+    Returns a list of Fall + Spring semesters a student has attended, like ["Fall 2023", "Spring 2024"]
+    """
+    user = User.select().where(User.username == username).get()
+    currentTerm = g.current_term
+    studentStanding = user.rawClassLevel
+    currentTermIsFall = currentTerm.description.startswith("Fall")
+    fallAndSpringTerms = []
+    
+    classLevelToYears = {"Freshman": 1, "Sophomore": 2, "Junior": 3, "Senior": 4}
+    yearsCompleted = classLevelToYears.get(studentStanding)
+    
+    if currentTerm.isSummer or currentTermIsFall:
+        studentStartYear = currentTerm.year - yearsCompleted + 1
+        totalTermsList = (yearsCompleted) * 2 - 1
+    else:  # Spring
+        studentStartYear = currentTerm.year - yearsCompleted
+        totalTermsList = (yearsCompleted) * 2
+    
+    for i in range(totalTermsList):
+        if i % 2 == 0:  # Fall
+            semester = "Fall"
+            year = studentStartYear + i // 2
+        else:  # Spring
+            semester = "Spring"
+            year = studentStartYear + i // 2 + 1
+        fallAndSpringTerms.append(f"{semester} {year}")
+    
+    return fallAndSpringTerms
 
 def getCertRequirementsWithCompletion(*, certification, username):
     """
