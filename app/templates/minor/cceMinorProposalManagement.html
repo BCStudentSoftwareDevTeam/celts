@@ -25,7 +25,7 @@
                         <option value="Withdraw">Withdraw</option>
                         <option value="Edit">Edit</option>
                         {% if g.current_user.isCeltsAdmin == True %}
-                            <option {{'disabled' if proposal['status'] != "Approved" else ''}} value="Mark as Completed">Mark as Completed</option>
+                            <option {{'disabled' if proposal['status'] != "Approved" else ''}} value="Completed">Mark as Completed</option>
                         {% endif %}
                         <option value="Notes">Notes</option>
                         <option value="Print">Print</option>

@@ -1,6 +1,8 @@
 $(document).ready(function() {
-    $("#withdrawBtn").on("click", withdrawProposal);
-})
+    $("#withdrawBtn").on("click", function(){
+        updateProposalStatus('withdraw')
+    })
+});
 function changeAction(action){
     let proposalID = action.id;
     let proposalType = $(action).data('type')
@@ -8,15 +10,16 @@ function changeAction(action){
     // decides what to do based on selection
     if (proposalAction == "Edit"){
         location = `/cceMinor/edit${proposalType.replace(/\s+/g, '')}/` + proposalID;
-    }
-    if (proposalAction == "View"){
+    } else if (proposalAction == "View"){
         location = `/cceMinor/view${proposalType.replace(/\s+/g, '')}/` + proposalID;
-    }
-    if (proposalAction == "Withdraw"){
+    } else if (proposalAction == "Withdraw"){
         $('#proposalID').val(proposalID);
         $('#withdrawModal').modal('show');
-       
-      }
+    } else if (proposalAction == "Completed"){
+        $('#proposalID').val(proposalID);
+        updateProposalStatus('complete')
+        console.log('kkkk')
+    }
     resetAllSelections()
   }
 
@@ -24,21 +27,23 @@ function resetAllSelections() {
     $('.form-select').val('---');
 }
 
-function withdrawProposal(){
-    // uses hidden label to withdraw course
+function updateProposalStatus(action){
+    // for withdrawing proposals or marking them as complete
     let proposalID = $("#proposalID").val();
-    let username = $("#username").val()
+    let username = $("#username").val();
+
     $.ajax({
-        url: `/cceMinor/withdraw/${username}/${proposalID}`,
+        url: `/cceMinor/${action}/${username}/${proposalID}`,
         type: "POST",
-        success: function(s){
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-        },  
+        success: function(res){
+            window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`;
+        },
         error: function(request, status, error) {
             console.log(status, error);
         }
-    })
-    resetAllSelections()
-};
+    });
+
+    resetAllSelections();
+}
 
 window.changeAction = changeAction;

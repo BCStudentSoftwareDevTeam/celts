@@ -436,3 +436,9 @@ def removeProposal(proposalID) -> None:
         proposalFileHandler.deleteFile(proposalAttachment.id)
 
     CCEMinorProposal.delete().where(CCEMinorProposal.id == proposalID).execute()
+
+def changeProposalStatus(proposalID, newStatus) -> None:
+    """
+    Changes the status of a proposal.
+    """
+    CCEMinorProposal.update(status=newStatus).where(CCEMinorProposal.id == int(proposalID))

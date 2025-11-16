@@ -9,6 +9,7 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import (
+    changeProposalStatus,
     createOtherEngagement,
     updateOtherEngagementRequest,
     setCommunityEngagementForUser,
@@ -152,6 +153,18 @@ def withdrawProposal(username, proposalID):
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
     
+@minor_bp.route('/cceMinor/complete/<username>/<proposalID>', methods = ['POST'])
+def completeProposal(username, proposalID):
+    try:
+        if g.current_user.isAdmin or g.current_user.isFaculty or g.current_user == username:
+            changeProposalStatus(proposalID, "Completed")
+            flash("Experience successfully completed", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        print(e)
+        flash("Proposal status could not be changed", 'warning')
+    return ""
 
 @minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
 def returnMinorSpreadsheet():
