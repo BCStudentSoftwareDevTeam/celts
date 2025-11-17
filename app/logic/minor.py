@@ -191,7 +191,7 @@ def getDeclaredMinorStudents():
     Get a list of the students who have declared minor
     """
     hideGraduatedStudentsWhere = getHideGraduatedStudentsWhereClause(g.current_user)
-    declaredStudents = User.select().where(User.isStudent & User.minorInterest & User.declaredMinor, hideGraduatedStudentsWhere)
+    declaredStudents = User.select().where(User.isStudent & User.declaredMinor, hideGraduatedStudentsWhere)
 
     interestedStudentList = [model_to_dict(student) for student in declaredStudents]
 
