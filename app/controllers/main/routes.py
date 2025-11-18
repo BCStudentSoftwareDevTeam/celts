@@ -111,7 +111,6 @@ def events(selectedTerm, activeTab, programID):
 
     # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
-        volunteerOpportunitiesCount: int = sum(list(countUpcomingVolunteerOpportunities.values()))
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
