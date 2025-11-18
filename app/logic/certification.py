@@ -59,39 +59,22 @@ def termsInTotal(username):
                     season = "Spring"
                     year = startYear + (k // 2) + 1
                 totalTerms.append(f"{season} {year}")
+            break
+        elif user.rawClassLevel == "NULL" or user.rawClassLevel == "Graduating" or user.rawClassLevel == "Non-Degree":
+            totalTermsCount = 8
+            currentYear = currentTerm.year
+            currentSeason = "Fall" if "Fall" in currentTerm.description else "Spring"
+            for a in range(totalTermsCount):
+                totalTerms.append(f"{currentSeason} {currentYear}")
+                if currentSeason == "Fall":
+                    currentSeason = "Spring"
+                else: 
+                    currentSeason = "Fall"
+                    currentYear -= 1
+            list.reverse(totalTerms) 
             break  
     return totalTerms
 
-def termsInTotal(username):
-    """
-    Returns a list of Fall + Spring semesters a student has attended, like ["Fall 2023", "Spring 2024"]
-    """
-    user = User.select().where(User.username == username).get()
-    currentTerm = g.current_term
-    studentStanding = user.rawClassLevel
-    currentTermIsFall = currentTerm.description.startswith("Fall")
-    fallAndSpringTerms = []
-    
-    classLevelToYears = {"Freshman": 1, "Sophomore": 2, "Junior": 3, "Senior": 4}
-    yearsCompleted = classLevelToYears.get(studentStanding)
-    
-    if currentTerm.isSummer or currentTermIsFall:
-        studentStartYear = currentTerm.year - yearsCompleted + 1
-        totalTermsList = (yearsCompleted) * 2 - 1
-    else:  # Spring
-        studentStartYear = currentTerm.year - yearsCompleted
-        totalTermsList = (yearsCompleted) * 2
-    
-    for i in range(totalTermsList):
-        if i % 2 == 0:  # Fall
-            semester = "Fall"
-            year = studentStartYear + i // 2
-        else:  # Spring
-            semester = "Spring"
-            year = studentStartYear + i // 2 + 1
-        fallAndSpringTerms.append(f"{semester} {year}")
-    
-    return fallAndSpringTerms
 
 def getCertRequirementsWithCompletion(*, certification, username):
     """
@@ -126,7 +109,6 @@ def getCertRequirements(certification=None, username=None):
                 .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))
                 .where(EventParticipant.user.is_null(True) | (EventParticipant.user == username))
                 .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
-
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
         certificationList = []
@@ -154,7 +136,6 @@ def getCertRequirements(certification=None, username=None):
                             .first()
                         )
                     cert.requirement.attendedTerm = term_record.event.term.description 
-
             certificationList.append(cert.requirement)
 
         # the .distinct() doesn't work efficiently, so we have to manually go through the list and removed duplicates that exist
@@ -166,20 +147,15 @@ def getCertRequirements(certification=None, username=None):
             if certificationList[certificationIndex] not in validCertification:
                 validCertification.add(certificationList[certificationIndex])
                 uniqueCertification.append(certificationList[certificationIndex])
-                
             certificationIndex += 1
-            
         certificationList = uniqueCertification
-        
         return certificationList
-    
     certificationDict = {}
     for cert in reqList:
         if cert.id not in certificationDict.keys():
             certificationDict[cert.id] = {"data": cert, "requirements": []}
         if getattr(cert, 'requirement', None):
             certificationDict[cert.id]["requirements"].append(cert.requirement)
-            
     return certificationDict
 
 def updateCertRequirements(certId, newRequirements):

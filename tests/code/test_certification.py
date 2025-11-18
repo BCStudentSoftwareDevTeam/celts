@@ -96,6 +96,16 @@ def test_termsInTotal():
     with mainDB.atomic() as transaction:
         with app.app_context():
             Term.update(isCurrentTerm=False).execute()
+            Term.create(id = 1000, description = "Spring 2020", year = 2020, academicYear = 2019-2020, isSummer = False, isCurrentTerm = True, termOrder = 2020-1)
+            g.current_term = getCurrentTerm() 
+            User.create(username='zawn', rawClassLevel='Graduating') 
+            totalTerms = termsInTotal(username='zawn')
+            assert totalTerms == ["Fall 2016", "Spring 2017", "Fall 2017", "Spring 2018", "Fall 2018", "Spring 2019", "Fall 2019", "Spring 2020"]
+        transaction.rollback()
+
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            Term.update(isCurrentTerm=False).execute()
             Term.create(id = 1000, description = "Fall 2018", year = 2018, academicYear = 2017-2018, isSummer = False, isCurrentTerm = True, termOrder = 2018-3)
             g.current_term = getCurrentTerm() 
             User.create(username='zawn', rawClassLevel='Sophomore') 
@@ -127,19 +137,20 @@ def test_getCertRequirements():
 def test_getCertRequirementsWithCompletion():
 
     with mainDB.atomic() as transaction:
-        # add two matches for the same requirement to make sure we only return one row per requirement
-        RequirementMatch.create(event_id=14, requirement_id=10)
-        EventParticipant.create(event_id=14, user_id='ramsayb2')
-        RequirementMatch.create(event_id=13, requirement_id=10)
-        EventParticipant.create(event_id=13, user_id='ramsayb2')
-        
-        cprCert = 3
-        cprReqs = getCertRequirementsWithCompletion(certification=cprCert, username='ramsayb2')
-       
-        assert len(cprReqs) == 2
-        assert not cprReqs[0].completed, "The first event should not be marked as completed"
-        assert cprReqs[1].completed, "The second event should be marked as completed"
-
+        with app.app_context():
+            # # add two matches for the same requirement to make sure we only return one row per requirement
+            Term.update(isCurrentTerm=False).execute()
+            Term.create(id=1000, description="Spring 2020", year=2020, academicYear=2019-2020, isSummer=False, isCurrentTerm=True, termOrder=2020-1)
+            g.current_term = getCurrentTerm()
+            RequirementMatch.create(event_id=14, requirement_id=10)
+            EventParticipant.create(event_id=14, user_id='ramsayb2')
+            RequirementMatch.create(event_id=13, requirement_id=10)
+            EventParticipant.create(event_id=13, user_id='ramsayb2')
+            cprcert = 3
+            cprreqs = getCertRequirementsWithCompletion(certification=cprcert, username='ramsayb2')
+            assert len(cprreqs) == 2
+            assert not cprreqs[0].completed, "The first event should not be completed"
+            assert cprreqs[1].completed, "The second event should be completed"
         transaction.rollback()
 
 @pytest.mark.integration
