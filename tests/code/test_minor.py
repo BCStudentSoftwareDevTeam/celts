@@ -22,6 +22,7 @@ from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.logic.minor import ( 
+    changeProposalStatus,
     createOtherEngagement,
     getMinorInterest,
     getMinorProgress,
@@ -745,6 +746,7 @@ def test_updateSummerExperience(testUser, testProposal):
 
         testProposal.form["experienceType"] = "Not an internship"
         testProposal.form["totalHours"] = 201
+        testProposal.form["experienceHoursOver300"] = ""    # adding this because the updateSummerExperience tries to pop this key
 
         updateSummerExperience(proposalID, ImmutableMultiDict(testProposal.form))
 
@@ -752,6 +754,35 @@ def test_updateSummerExperience(testUser, testProposal):
         
         assert updatedProposal.totalHours == 201
         assert updatedProposal.experienceType == "Not an internship"
+
+        transaction.rollback()
+
+@pytest.mark.parametrize("testProposal", [
+    {"proposalType": "otherEngagement"}
+], indirect=True)
+@pytest.mark.integration
+def test_changeProposalStatus(testProposal, testUser):
+
+    with mainDB.atomic() as transaction:
+        # Create a proposal to update
+        createdProposal = CCEMinorProposal.create(
+            student=testUser.username,
+            proposalType="Other Engagement",
+            createdBy=testUser.username,
+            **testProposal.form
+        )
+
+        proposalID = createdProposal.id
+
+        newStatus = "Completed"
+
+        with app.app_context():
+            g.current_user = testUser.username
+            changeProposalStatus(proposalID, newStatus)
+
+        updatedProposal = CCEMinorProposal.get_by_id(proposalID)
+
+        assert updatedProposal.status == newStatus
 
         transaction.rollback()
 

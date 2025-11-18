@@ -441,4 +441,4 @@ def changeProposalStatus(proposalID, newStatus) -> None:
     """
     Changes the status of a proposal.
     """
-    CCEMinorProposal.update(status=newStatus).where(CCEMinorProposal.id == int(proposalID))
+    CCEMinorProposal.update(status=newStatus).where(CCEMinorProposal.id == int(proposalID)).execute()

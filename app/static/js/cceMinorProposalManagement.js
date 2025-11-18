@@ -18,7 +18,6 @@ function changeAction(action){
     } else if (proposalAction == "Completed"){
         $('#proposalID').val(proposalID);
         updateProposalStatus('complete')
-        console.log('kkkk')
     }
     resetAllSelections()
   }
