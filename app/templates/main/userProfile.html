@@ -365,39 +365,29 @@
               {% else %}
                 {% set anyAllowed = namespace(value=False) %}
                 {% for bgType in backgroundTypes %}
+                  {% set allowed = namespace(items=[]) %}
                   {% for bgStatus in allBackgroundHistory[bgType.id] %}
                     {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
+                      {% set _ = allowed.items.append(bgStatus) %}
                       {% set anyAllowed.value = True %}
                     {% endif %}
                   {% endfor %}
+                  {% if allowed.items %}
+                    <tr>
+                      <td>
+                        <h6>{{bgType.description}}</h6>
+                        <ul class="mb-0" id="bgHistory{{bgType.id}}">
+                          {% for bgStatus in allowed.items %}
+                            <li>
+                              {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </td>
+                    </tr>
+                  {% endif %}
                 {% endfor %}
-
-                {% if anyAllowed.value %}
-                  {% for bgType in backgroundTypes %}
-                    {% set typeAllowed = namespace(value=False) %}
-                    {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                      {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
-                        {% set typeAllowed.value = True %}
-                      {% endif %}
-                    {% endfor %}
-                    {% if typeAllowed.value %}
-                      <tr>
-                        <td>
-                          <h6>{{bgType.description}}</h6>
-                          <ul class="mb-0" id="bgHistory{{bgType.id}}">
-                            {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                              {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
-                                <li>
-                                  {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                                </li>
-                              {% endif %}
-                            {% endfor %}
-                          </ul>
-                        </td>
-                      </tr>
-                    {% endif %}
-                  {% endfor %}
-                {% else %}
+                {% if not anyAllowed.value %}
                   <tr>
                     <td>There are no background checks</td>
                   </tr>
