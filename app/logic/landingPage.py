@@ -31,11 +31,21 @@ def getManagerProgramDict(user):
             managerProgramDict[row.program]["managers"] = f'{managerProgramDict[row.program]["managers"]}, {row.user.firstName} {row.user.lastName}'
     return managerProgramDict
 
-def getActiveEventTab(programID):
-    program = Program.get_by_id(programID)
-    if program.isBonnerScholars:
+def getActiveEventTab(programID=None, explicit_tab=None):
+    if explicit_tab:
+        return explicit_tab
+
+    if programID is None:
+        return "celtsLabor"
+
+    try:
+        program = Program.get_by_id(programID)
+    except Program.DoesNotExist:
+        return "celtsLabor"
+
+    if getattr(program, "isBonnerScholars", False):
         return "bonnerScholarsEvents"
-    elif program.isVolunteerOpportunities:
+    elif getattr(program, "isVolunteerOpportunities", False):
         return "volunteerOpportunities"
     else:
         return "celtsLabor"
