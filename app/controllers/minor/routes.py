@@ -75,7 +75,15 @@ def editOrViewProposal(proposalID: int):
     proposal = CCEMinorProposal.get_by_id(int(proposalID))
     if not (g.current_user.isAdmin or g.current_user.username == proposal.student):
         return abort(403)
+    
+    isApproved = proposal.status in ['Approved', 'Completed']
+    editProposal = 'view' not in request.path
 
+    # if proposal is approved, only admins can edit, but not if the admin is the student
+    if isApproved and editProposal:
+        if g.current_user.username == proposal.student or not g.current_user.isAdmin:
+            return abort(403)
+    
     attachmentObject = AttachmentUpload.get_or_none(proposal=proposalID)
     attachmentFilePath = ""
     attachmentFileName = ""
@@ -88,7 +96,8 @@ def editOrViewProposal(proposalID: int):
     if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = 'view' not in request.path,
+                                editable = editProposal,
+                                isApproved = isApproved,
                                 selectedTerm = selectedTerm,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
