@@ -231,9 +231,9 @@ def test_getCCEMinorProposals(testUser, testProposal):
         summerExperienceCount = 0
         otherExperienceCount = 0
         for experience in getCCEMinorProposals(testUser.username):
-            if experience["type"] == "Summer Experience":
+            if experience.proposalType == "Summer Experience":
                 summerExperienceCount+=1
-            elif experience["type"] == "Other Engagement":
+            elif experience.proposalType == "Other Engagement":
                 otherExperienceCount+=1
             else:
                 raise AssertionError

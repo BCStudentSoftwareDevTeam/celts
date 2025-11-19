@@ -52,21 +52,7 @@ def updateSummerExperience(proposalID, formData):
     CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
 
 def getCCEMinorProposals(username):
-    proposalList = []
-
-    cceMinorProposals = list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
-
-    for experience in cceMinorProposals:
-        proposalList.append({
-            "id": experience.id,
-            "type": experience.proposalType,
-            "createdBy": experience.createdBy, 
-            "supervisor": experience.supervisorName,
-            "term": experience.term,
-            "status": experience.status,
-        })
-
-    return proposalList 
+    return list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
 
 def getEngagementTotal(engagementData):
     """ 

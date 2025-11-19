@@ -14,12 +14,12 @@
         <tbody>
             {% for proposal in proposalList %}
                 <tr>
-                    <td id="type-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
-                    <td id="creator-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
-                    <td id="supervisor-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
-                    <td id="term-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
+                    <td id="type-{{ proposal.id }}">{{ proposal.proposalType }}</td>
+                    <td id="creator-{{ proposal.id }}">{{proposal.createdBy.firstName}} {{proposal.createdBy.lastName}}</td>
+                    <td id="supervisor-{{ proposal.id }}">{{proposal.supervisorName}}</td>
+                    <td id="term-{{ proposal.id }}">{{ proposal.term.description }}</td>
                     <td>
-                        <select class="form-select proposalData" id="{{proposal['id']}}" data-type="{{proposal['type']}}" onchange='changeAction(this)'>
+                        <select class="form-select proposalData" id="{{proposal.id}}" data-type="{{proposal.proposalType}}" onchange='changeAction(this)'>
                         <option value="---" disabled selected>Select Action</option>
                         <option value="View">View</option>
                         {% if proposal.status not in ['Approved', 'Completed'] or g.current_user.isCeltsAdmin %}
@@ -27,13 +27,13 @@
                         {% endif %}                         
                         <option value="Withdraw">Withdraw</option>
                         {% if g.current_user.isCeltsAdmin == True %}
-                            <option {{'disabled' if proposal['status'] != "Approved" else ''}} value="Completed">Mark as Completed</option>
+                            <option {{'disabled' if proposal.status != "Approved" else ''}} value="Completed">Mark as Completed</option>
                         {% endif %}
                         </select>
                     </td>
                     <td>
                         {% from 'macros/cceMinorStatusMacro.html' import minorStatusMacro %}
-                        {{ minorStatusMacro(proposal['status']) }}
+                        {{ minorStatusMacro(proposal.status) }}
                     </td>
                 </tr>
             {% endfor %}
