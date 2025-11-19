@@ -339,49 +339,41 @@
                         {% for bgStatus in allBackgroundHistory[bgType.id] %}
                           <li>
                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                            {% if g.current_user.isCeltsAdmin %}
-                              <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
-                            {% endif %}
+                            <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
                           </li>
                         {% endfor %}
                       </ul>
                     </td>
-                    {% if g.current_user.isCeltsAdmin %}
-                      <td>
-                        <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
-                          <option value=''></option>
-                          <option value="Submitted">Submitted</option>
-                          <option value="Passed">Passed</option>
-                          <option value="Failed">Failed</option>
-                        </select>
-                      </td>
-                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
-                      <td>
-                        <button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button>
-                      </td>
-                    {% endif %}
+                    <td>
+                      <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                        <option value=''></option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Passed">Passed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    </td>
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
+                    <td>
+                      <button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button>
+                    </td>
                   </tr>
                 {% endfor %}
               {% else %}
                 {% set anyAllowed = namespace(value=False) %}
                 {% for bgType in backgroundTypes %}
-                  {% set allowed = namespace(items=[]) %}
+                  {% set allowedHtml = namespace(value='') %}
                   {% for bgStatus in allBackgroundHistory[bgType.id] %}
                     {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
-                      {% set _ = allowed.items.append(bgStatus) %}
                       {% set anyAllowed.value = True %}
+                      {% set allowedHtml.value = allowedHtml.value ~ '<li>' ~ bgStatus.backgroundCheckStatus ~ ': ' ~ bgStatus.dateCompleted.strftime("%m/%d/%Y") ~ '</li>' %}
                     {% endif %}
                   {% endfor %}
-                  {% if allowed.items %}
+                  {% if allowedHtml.value %}
                     <tr>
                       <td>
                         <h6>{{bgType.description}}</h6>
                         <ul class="mb-0" id="bgHistory{{bgType.id}}">
-                          {% for bgStatus in allowed.items %}
-                            <li>
-                              {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                            </li>
-                          {% endfor %}
+                          {{ allowedHtml.value | safe }}
                         </ul>
                       </td>
                     </tr>
