@@ -3,24 +3,26 @@ $(document).ready(function() {
         updateProposalStatus('withdraw')
     })
 });
-function changeAction(action){
-    let proposalID = action.id;
-    let proposalType = $(action).data('type')
-    let proposalAction = action.value;
-    // decides what to do based on selection
-    if (proposalAction == "Edit"){
-        location = `/cceMinor/edit${proposalType.replace(/\s+/g, '')}/` + proposalID;
-    } else if (proposalAction == "View"){
-        location = `/cceMinor/view${proposalType.replace(/\s+/g, '')}/` + proposalID;
-    } else if (proposalAction == "Withdraw"){
-        $('#proposalID').val(proposalID);
+
+function changeAction(element) {
+    const proposalId = element.id;
+    const proposalType = $(element).data('type');
+    const proposalAction = element.value;
+    $('#proposalID').val(proposalId);
+
+    if (proposalAction === "Edit") {
+        location = `/cceMinor/edit${proposalType.replace(/\s+/g, '')}/${proposalId}`;
+    } else if (proposalAction === "View") {
+        location = `/cceMinor/view${proposalType.replace(/\s+/g, '')}/${proposalId}`;
+    } else if (proposalAction === "withdraw") {
         $('#withdrawModal').modal('show');
-    } else if (proposalAction == "Completed"){
-        $('#proposalID').val(proposalID);
-        updateProposalStatus('complete')
+    } else {
+        updateProposalStatus(proposalAction.toLowerCase());
     }
-    resetAllSelections()
-  }
+
+    resetAllSelections();
+}
+
 
 function resetAllSelections() {
     $('.form-select').val('---');

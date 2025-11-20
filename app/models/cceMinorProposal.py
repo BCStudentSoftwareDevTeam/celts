@@ -31,3 +31,7 @@ class CCEMinorProposal(baseModel):
         if not int(self.totalHours) or (int(self.totalHours) and int(self.totalHours) >= 300):
             return True
         return False
+    
+    @property
+    def isApproved(self):
+        return self.status in ['Approved', 'Completed']

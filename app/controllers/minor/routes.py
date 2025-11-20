@@ -74,11 +74,10 @@ def editOrViewProposal(proposalID: int):
     if not (g.current_user.isAdmin or g.current_user.username == proposal.student.username):
         return abort(403)
     
-    isApproved = proposal.status in ['Approved', 'Completed']
     editProposal = 'view' not in request.path
 
     # if proposal is approved, only admins can edit, but not if the admin is the student
-    if isApproved and editProposal:
+    if proposal.isApproved and editProposal:
         if g.current_user.username == proposal.student or not g.current_user.isAdmin:
             return abort(403)
     
@@ -96,7 +95,6 @@ def editOrViewProposal(proposalID: int):
         flash("Once approved, a proposal can only be edited by an admin.", 'warning')
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
                                 editable = editProposal,
-                                isApproved = isApproved,
                                 selectedTerm = selectedTerm,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
                                 selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
@@ -148,31 +146,34 @@ def getEngagementInformation(username, type, id, term):
     return information
 
 
-@minor_bp.route('/cceMinor/withdraw/<username>/<proposalID>', methods = ['POST'])
-def withdrawProposal(username, proposalID):
+@minor_bp.route('/cceMinor/<action>/<username>/<proposalId>', methods=['POST'])
+def updateProposal(action, username, proposalId):
     try:
-        if g.current_user.isAdmin or g.current_user.isFaculty or g.current_user == username:
-            removeProposal(proposalID)
-            flash("Experience successfully withdrawn", 'success')
-        else:
-            flash("Unauthorized to perform this action", 'warning')
+        if not (g.current_user.isAdmin or g.current_user.isFaculty or g.current_user.username == username):
+            flash("Unauthorized to perform this action", "warning")
+            return ""
+
+        actionMap = {
+            "withdraw": ("Withdrawn", "Proposal successfully withdrawn"),
+            "complete": ("Completed", "Proposal successfully completed"),
+            "approve": ("Approved", "Proposal approved"),
+            "unapprove": ("Submitted", "Proposal unapproved"),
+        }
+
+        if action not in actionMap:
+            flash("Invalid action", "warning")
+            return ""
+
+        newStatus, message = actionMap[action]
+        changeProposalStatus(proposalId, newStatus)
+        flash(message, "success")
+
     except Exception as e:
         print(e)
-        flash("Withdrawal Unsuccessful", 'warning')
+        flash("Proposal status could not be changed", "warning")
+
     return ""
-    
-@minor_bp.route('/cceMinor/complete/<username>/<proposalID>', methods = ['POST'])
-def completeProposal(username, proposalID):
-    try:
-        if g.current_user.isAdmin or g.current_user.isFaculty or g.current_user == username:
-            changeProposalStatus(proposalID, "Completed")
-            flash("Experience successfully completed", 'success')
-        else:
-            flash("Unauthorized to perform this action", 'warning')
-    except Exception as e:
-        print(e)
-        flash("Proposal status could not be changed", 'warning')
-    return ""
+
 
 @minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
 def returnMinorSpreadsheet():

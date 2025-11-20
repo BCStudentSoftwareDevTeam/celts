@@ -22,12 +22,19 @@
                         <select class="form-select proposalData" id="{{proposal.id}}" data-type="{{proposal.proposalType}}" onchange='changeAction(this)'>
                         <option value="---" disabled selected>Select Action</option>
                         <option value="View">View</option>
-                        {% if proposal.status not in ['Approved', 'Completed'] or g.current_user.isCeltsAdmin %}
+                        {% if not proposal.isApproved or g.current_user.isCeltsAdmin %}
                             <option value="Edit">Edit</option>
                         {% endif %}                         
+                        {% if g.current_user.isCeltsAdmin %}
+                            {% if proposal.isApproved %}
+                                <option value="Unapprove">Unapprove</option>
+                            {% else %}
+                                <option value="Approve">Approve</option>
+                            {% endif %}
+                        {% endif %}                      
                         <option value="Withdraw">Withdraw</option>
                         {% if g.current_user.isCeltsAdmin == True %}
-                            <option {{'disabled' if proposal.status != "Approved" else ''}} value="Completed">Mark as Completed</option>
+                            <option {{'disabled' if proposal.status != "Approved" else ''}} value="Complete">Mark as Completed</option>
                         {% endif %}
                         </select>
                     </td>
