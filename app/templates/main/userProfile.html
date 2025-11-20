@@ -359,27 +359,27 @@
                   </tr>
                 {% endfor %}
               {% else %}
-                {% set anyAllowed = namespace(value=False) %}
+                {% set noBackground = namespace(value=True) %}
                 {% for bgType in backgroundTypes %}
-                  {% set allowedHtml = namespace(value='') %}
+                  {% set checkedBackground = namespace(value='') %}
                   {% for bgStatus in allBackgroundHistory[bgType.id] %}
                     {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
-                      {% set anyAllowed.value = True %}
-                      {% set allowedHtml.value = allowedHtml.value ~ '<li>' ~ bgStatus.backgroundCheckStatus ~ ': ' ~ bgStatus.dateCompleted.strftime("%m/%d/%Y") ~ '</li>' %}
+                      {% set noBackground.value = False %}
+                      {% set checkedBackground.value = checkedBackground.value ~ '<li>' ~ bgStatus.backgroundCheckStatus ~ ': ' ~ bgStatus.dateCompleted.strftime("%m/%d/%Y") ~ '</li>' %}
                     {% endif %}
                   {% endfor %}
-                  {% if allowedHtml.value %}
+                  {% if checkedBackground.value %}
                     <tr>
                       <td>
                         <h6>{{bgType.description}}</h6>
                         <ul class="mb-0" id="bgHistory{{bgType.id}}">
-                          {{ allowedHtml.value | safe }}
+                          {{ checkedBackground.value | safe }}
                         </ul>
                       </td>
                     </tr>
                   {% endif %}
                 {% endfor %}
-                {% if not anyAllowed.value %}
+                {% if noBackground.value %}
                   <tr>
                     <td>There are no background checks</td>
                   </tr>
