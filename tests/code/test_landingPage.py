@@ -16,28 +16,24 @@ def test_activeEventTab():
     with mainDB.atomic() as transaction:
 
         volunteerOpportunities = Program.create(programName = "SL",
-                                    isVolunteerOpportunities = True,
                                     isBonnerScholars = False,
                                     contactEmail = "test@email",
                                     contactName = "testName")
         assert getActiveEventTab(volunteerOpportunities.id) == "volunteerOpportunities"
 
         bonnerScholars1 = Program.create(programName = "BS1",
-                                         isVolunteerOpportunities = False,
                                          isBonnerScholars = True,
                                          contactEmail = "test@email",
                                          contactName = "testName")
         assert getActiveEventTab(bonnerScholars1.id) == "bonnerScholarsEvents"
 
         bonnerScholars2 = Program.create(programName = "BS2",
-                                         isVolunteerOpportunities = True,
                                          isBonnerScholars = True,
                                          contactEmail = "test@email",
                                          contactName = "testName")
         assert getActiveEventTab(bonnerScholars2.id) == "bonnerScholarsEvents"
 
         other = Program.create(programName = "OP",
-                               isVolunteerOpportunities = False,
                                isBonnerScholars = False,
                                contactEmail = "test@email",
                                contactName = "testName")
@@ -53,7 +49,6 @@ def test_managerProgramDict():
         assert os.path.join('static', 'files/programattachments/1.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
 
         noImageProgram = Program.create(programName = "Program with No Image",
-                                        isVolunteerOpportunities = False,
                                         isBonnerScholars = False,
                                         contactEmail = "",
                                         contactName = "")

@@ -784,26 +784,24 @@ def test_upcomingEvents():
         # user can mark interest for it
         programForInterest = Program.create(id = 13,
                                             programName = "BOO",
-                                            isVolunteerOpportunities = False,
+                                             = False,
                                             isBonnerScholars = False,
                                             contactEmail = "test@email",
                                             contactName = "testName")
         programForInterest2 = Program.create(id = 14,
                                            programName = "BOO2",
-                                           isVolunteerOpportunities = False,
                                            isBonnerScholars = False,
                                            contactEmail = "test@email",
                                            contactName = "testName")
         programForBanning = Program.create(id = 15,
                                            programName = "BANNED",
-                                           isVolunteerOpportunities = False,
+                                           isBonnerScholars = False,
                                            isBonnerScholars = False,
                                            contactEmail = "test@email",
                                            contactName = "testName")
         
         programForMultiple = Program.create(id = 16,
                                         programName = "TestMultiple",
-                                        isVolunteerOpportunities = False,
                                         isBonnerScholars = False,
                                         contactEmail = "test@email",
                                         contactName = "testName")
@@ -937,7 +935,6 @@ def test_volunteerHistory():
         # Create a program that will have the program event created off of it
         participatedProgram = Program.create(id = 13,
                                              programName = "BOO",
-                                             isVolunteerOpportunities = False,
                                              isBonnerScholars = False,
                                              contactEmail = "test@email",
                                              contactName = "testName",)
@@ -1326,7 +1323,7 @@ def test_inviteCohortsToEvent():
             testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
             programEvent = Program.create(id = 13,
                                         programName = "Bonner Scholars",
-                                        isVolunteerOpportunities = False,
+                                         = False,
                                         isBonnerScholars = True,
                                         contactEmail = "test@email",
                                         contactName = "testName")
@@ -1360,7 +1357,6 @@ def test_updateEventCohorts():
             testDate = datetime.strptime("2025-10-01 05:00","%Y-%m-%d %H:%M")
             programEvent = Program.create(id = 13,
                                           programName = "Bonner Scholars",
-                                          isVolunteerOpportunities = False,
                                           isBonnerScholars = True,
                                           contactEmail = "test@email",
                                           contactName = "testName")

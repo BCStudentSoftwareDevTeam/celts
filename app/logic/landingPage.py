@@ -34,10 +34,8 @@ def getManagerProgramDict(user):
 def getActiveEventTab(programID=None, explicit_tab=None):
     if explicit_tab:
         return explicit_tab
-
     if programID is None:
         return "celtsLabor"
-
     try:
         program = Program.get_by_id(programID)
     except Program.DoesNotExist:
@@ -45,7 +43,5 @@ def getActiveEventTab(programID=None, explicit_tab=None):
 
     if getattr(program, "isBonnerScholars", False):
         return "bonnerScholarsEvents"
-    elif getattr(program, "isVolunteerOpportunities", False):
-        return "volunteerOpportunities"
     else:
         return "celtsLabor"
