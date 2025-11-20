@@ -29,8 +29,6 @@ def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    if not (g.current_user.isAdmin):
-        return abort(403)
 
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
 
@@ -73,7 +71,7 @@ def createOtherEngagementRequest(username):
 @minor_bp.route('/cceMinor/editSummerExperience/<proposalID>', methods=['GET', 'POST'])
 def editOrViewProposal(proposalID: int):
     proposal = CCEMinorProposal.get_by_id(int(proposalID))
-    if not (g.current_user.isAdmin or g.current_user.username == proposal.student):
+    if not (g.current_user.isAdmin or g.current_user.username == proposal.student.username):
         return abort(403)
     
     isApproved = proposal.status in ['Approved', 'Completed']
@@ -95,6 +93,7 @@ def editOrViewProposal(proposalID: int):
     
     if request.method == "GET":
         selectedTerm = Term.get_by_id(proposal.term)
+        flash("Once approved, a proposal can only be edited by an admin.", 'warning')
         return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
                                 editable = editProposal,
                                 isApproved = isApproved,
