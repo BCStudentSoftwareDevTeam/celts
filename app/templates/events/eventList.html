@@ -61,7 +61,7 @@
   </li>
   {% endif %}
 
-  {% if engagementEvents and engagementEvents|length %}
+  {% if user.username or engagementEvents and engagementEvents|length %}
   <li class="col-md-2 col-12 nav-item" role="presentation">
     <button class="nav-link {{'active' if activeTab == 'engagementEvents' else ''}}" id="engagementEvents"
     data-bs-toggle="pill" data-bs-target="#pills-engagement" type="button" role="tab" aria-controls="pills-engagement" aria-selected="false">Education and Engagement</button>
