@@ -36,18 +36,8 @@ def termsMissed(certification, username):
 
 def termsInTotal(username):
     '''
-    This function calculates all the terms a student have enrolled based on their class level.
-    This is under the impression that as Bonnor Scholars they start their term in Fall and end in four year along with Summer not being counted.
-    Thus, if the current term is summer it is changed to Fall for display purpose.
-    The logic is as follows:
-        we get the current term and current term description (Spring 2022).
-        we get the user's class level (Freshman, Sophomore, Junior, Senior) and loop to see which level they are in.
-        Based on their level and based on the current term description if it is Fall because spring is the last term of each semester it is even and we intially populate 
-            based on even count then we minus 1 to get the correct number of terms.
-        Then if its Spring we set the start year (the year Fall where they start Bonner) to (if they are senior in 2022) current year (2022) - level(3 ie index) -1 (because each student starts 
-            at Fall mid year so -1 along -4 will successfully push it to 2018) - (2018, 2019)(2019, 2020)(2020, 2021)(2021, 2022)
-        While for Fall we don't have that additional -1 to comne with the logic and we use %2 to find if its even which is Spring or odd if its Fall.
-        Then the edge case of NULL, Graduating, Non-Degree is handled by assuming they have been here for 4 years (8 terms) and we populate the terms based on current term backwards.
+    The function returns all non-summer academic terms a student should have, based on their class level where it finds
+    the start term and populate from it with Fall-start alignment and special handling for NULL/Non-degree class level
     '''
     currentTerm = g.current_term
     currentDesc = currentTerm.description 
