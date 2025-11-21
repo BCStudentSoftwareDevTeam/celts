@@ -330,8 +330,12 @@
               </tr>
             </thead>
             <tbody>
-              {% if g.current_user.isCeltsAdmin %}
+                {% set ns = namespace(backgroundChecksExist=false) %}
                 {% for bgType in backgroundTypes %}
+                    {% if not g.current_user.isCeltsAdmin and not allBackgroundHistory[bgType.id] %}
+                        {% continue %} 
+                    {% endif %}
+                    {% set ns.backgroundChecksExist = true %}
                   <tr>
                     <td>
                       <h6>{{bgType.description}}</h6>
@@ -339,11 +343,14 @@
                         {% for bgStatus in allBackgroundHistory[bgType.id] %}
                           <li>
                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
+                            {% if g.current_user.isCeltsAdmin %}
                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+                            {% endif %}
                           </li>
                         {% endfor %}
                       </ul>
                     </td>
+                  {% if g.current_user.isCeltsAdmin %}
                     <td>
                       <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                         <option value=''></option>
@@ -356,35 +363,14 @@
                     <td>
                       <button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button>
                     </td>
+                  {% endif %}
                   </tr>
                 {% endfor %}
-              {% else %}
-                {% set noBackground = namespace(value=True) %}
-                {% for bgType in backgroundTypes %}
-                  {% set checkedBackground = namespace(value='') %}
-                  {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                    {% if bgStatus.backgroundCheckStatus in ['Submitted', 'Passed', 'Failed'] %}
-                      {% set noBackground.value = False %}
-                      {% set checkedBackground.value = checkedBackground.value ~ '<li>' ~ bgStatus.backgroundCheckStatus ~ ': ' ~ bgStatus.dateCompleted.strftime("%m/%d/%Y") ~ '</li>' %}
-                    {% endif %}
-                  {% endfor %}
-                  {% if checkedBackground.value %}
-                    <tr>
-                      <td>
-                        <h6>{{bgType.description}}</h6>
-                        <ul class="mb-0" id="bgHistory{{bgType.id}}">
-                          {{ checkedBackground.value | safe }}
-                        </ul>
-                      </td>
-                    </tr>
-                  {% endif %}
-                {% endfor %}
-                {% if noBackground.value %}
+                {% if not ns.backgroundChecksExist %}
                   <tr>
-                    <td>There are no background checks</td>
+                    <td>No background checks have been submitted.</td>
                   </tr>
                 {% endif %}
-              {% endif %}
             </tbody>
           </table>
         </div>
