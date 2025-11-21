@@ -23,16 +23,7 @@ def termsAttended(certification, username):
     totalTerms = termsInTotal(username)
     attendedTerms = {term for term in attendedTerms if term in totalTerms}
     return attendedTerms
-            
-def termsMissed(certification, username): 
-    '''
-    Calculate how many certification-eligible terms a student has missed based on their class level
-    and attendance record.
-    '''
-    totalTerms = termsInTotal(username)   
-    attendedTerms = termsAttended(certification, username)
-    missedTerms = [term for term in totalTerms if term not in attendedTerms]
-    return missedTerms
+ 
 
 def termsInTotal(username):
     '''
@@ -64,8 +55,9 @@ def termsInTotal(username):
                     year = startYear + (k // 2) + 1
                 totalTerms.append(f"{season} {year}")
             break
-        elif user.rawClassLevel == "NULL" or user.rawClassLevel == "Graduating" or user.rawClassLevel == "Non-Degree":
+    if user.rawClassLevel == "NULL" or user.rawClassLevel == "Graduating" or user.rawClassLevel == "Non-Degree":
             totalTermsCount = 8
+            print ("dora")  
             currentYear = currentTerm.year
             currentSeason = "Fall" if "Fall" in currentTerm.description else "Spring"
             for a in range(totalTermsCount):
@@ -76,8 +68,17 @@ def termsInTotal(username):
                     currentSeason = "Fall"
                     currentYear -= 1
             list.reverse(totalTerms) 
-            break  
     return totalTerms
+
+def termsMissed(certification, username): 
+    '''
+    Calculate how many certification-eligible terms a student has missed based on their class level
+    and attendance record.
+    '''
+    totalTerms = termsInTotal(username) 
+    attendedTerms = termsAttended(certification, username)
+    missedTerms = [term for term in totalTerms if term not in attendedTerms]
+    return missedTerms
 
 
 def getCertRequirementsWithCompletion(*, certification, username):
