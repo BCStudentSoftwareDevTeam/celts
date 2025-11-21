@@ -55,9 +55,9 @@ def termsInTotal(username):
                     year = startYear + (k // 2) + 1
                 totalTerms.append(f"{season} {year}")
             break
-    if user.rawClassLevel == "NULL" or user.rawClassLevel == "Graduating" or user.rawClassLevel == "Non-Degree":
-            totalTermsCount = 8
-            print ("dora")  
+   
+    if user.rawClassLevel is None or user.rawClassLevel in ["NULL", "Graduating", "Non-Degree"]:
+            totalTermsCount = 8 
             currentYear = currentTerm.year
             currentSeason = "Fall" if "Fall" in currentTerm.description else "Spring"
             for a in range(totalTermsCount):
