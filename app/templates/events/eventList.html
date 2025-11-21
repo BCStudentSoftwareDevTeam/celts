@@ -75,7 +75,7 @@
     </li>
     {% endif %}
 
-  {% if user.isCeltsAdmin or user.isCeltsStudentStaff or (celtsLabor and celtsLabor|length) %}
+  {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.hasCurrentCeltsLabor %}
     <li class="col-md-2 col-12 nav-item" role="presentation">
       <button class="nav-link {{'active' if activeTab == 'celtsLabor' else ''}}" id="celtsLabor"
       data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Celts Labor</button>

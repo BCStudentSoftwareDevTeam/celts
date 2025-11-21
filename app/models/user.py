@@ -15,6 +15,7 @@ class User(baseModel):
     isStaff = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
+    hasCurrentCeltsLabor = BooleanField(default=False)
     dietRestriction = TextField(null=True)
     minorInterest = BooleanField(null=True)
     hasGraduated = BooleanField(default=False)
@@ -46,6 +47,13 @@ class User(baseModel):
             self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
 
         return self._bsCache
+    
+    @property
+    def hasCurrentCeltsLabor(self):
+        if self._bsCache is None:
+            from app.models.celtsLabor import CeltsLabor
+            self.hasCurrentCeltsLabor = CeltsLabor.select().where(CeltsLabor.user == self, CeltsLabor.term.isCurrent == True).exists()
+        return self.hasCurrentCeltsLabor
 
     @property
     def fullName(self):
