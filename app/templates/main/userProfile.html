@@ -321,62 +321,76 @@
 <!-- ################# CELTS Labor Section ################ -->
 
 <!-- ################# Background Check Section ################ -->
-  {% if g.current_user.isCeltsAdmin %}
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingFive">
-        {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Background Check</button>
-      </h3>
-      {% set show = "show" if visibleAccordion == "background" else "" %}
-      <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
-        <div class="accordion-body">
-          <div class="table-responsive">
-            <table class="table table-striped" id="bgHistoryTable">
-              <thead>
-                <tr>
-                  <th scope="col">Description</th>
-                   {% if g.current_user.isCeltsAdmin%}
-                     <th class="required" scope="col">Status</th>
-                     <th class="required" scope="col">Date</th>
-                     <th class="" id="displaySave" scope="col"></th>
-                   {% endif %}
-                 </tr>
-               </thead>
-               <tbody>
-                 {% for bgType in backgroundTypes %}
-                 <tr>
-                   <td>
-                       <h6>{{bgType.description}}</h6>
-                       <ul class="mb-0" id="bgHistory{{bgType.id}}" >
-                          {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                           <li>
-                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
-                           </li>
-                          {% endfor %}
-                       </ul>
-                   </td>
-                   {% if g.current_user.isCeltsAdmin %}
-                      <td>
-                          <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
-                              <option value=''></option>
-                              <option value="Submitted">Submitted</option>
-                              <option value="Passed">Passed</option>
-                              <option value="Failed">Failed</option>
-                          </select>
-                      </td>
-                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
-                      <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
+{% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingFive">
+      {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Background Check</button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "background" else "" %}
+    <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="bgHistoryTable">
+            <thead>
+              <tr>
+                <th scope="col">Description</th>
+                {% if g.current_user.isCeltsAdmin %}
+                  <th class="required" scope="col">Status</th>
+                  <th class="required" scope="col">Date</th>
+                  <th class="" id="displaySave" scope="col"></th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+                {% set ns = namespace(backgroundChecksExist=false) %}
+                {% for bgType in backgroundTypes %}
+                    {% if not g.current_user.isCeltsAdmin and not allBackgroundHistory[bgType.id] %}
+                        {% continue %} 
+                    {% endif %}
+                    {% set ns.backgroundChecksExist = true %}
+                  <tr>
+                    <td>
+                      <h6>{{bgType.description}}</h6>
+                      <ul class="mb-0" id="bgHistory{{bgType.id}}">
+                        {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                          <li>
+                            {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
+                            {% if g.current_user.isCeltsAdmin %}
+                            <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+                            {% endif %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                  {% if g.current_user.isCeltsAdmin %}
+                    <td>
+                      <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                        <option value=''></option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Passed">Passed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    </td>
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
+                    <td>
+                      <button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button>
+                    </td>
                   {% endif %}
                   </tr>
-                {%endfor%}
-               </tbody>
-            </table>
-          </div>
+                {% endfor %}
+                {% if not ns.backgroundChecksExist %}
+                  <tr>
+                    <td>No background checks have been submitted.</td>
+                  </tr>
+                {% endif %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  {% endif %}
+  </div>
+{% endif %}
 <!-- ################# Background Check Section  ################ -->
 
 <!-- ################# Notes Section ################ -->
