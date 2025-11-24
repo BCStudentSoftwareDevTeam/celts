@@ -50,6 +50,7 @@ def setup():
                                   isPrerequisiteForProgram = 0,
                                   isTraining = 0,
                                   isService = 0,
+                                  isCanceled = 0,
                                   startDate =  "2021-12-12",
                                   recurringId = None,
                                   program= 5)
@@ -167,13 +168,15 @@ def testingProgram():
     username = "namet"
     adminName = "ramsayb2"
     programDict = getProgramTranscript(username)
-    emptyProgramDict = getProgramTranscript(adminName)
-    # check that bonners events are caught
+
+    # check that bonners events are included
     checkingProgram = Program.get_by_id(5)
 
-    assert not emptyProgramDict
     assert programDict
     assert checkingProgram in [t for t in programDict]
+
+    emptyProgramDict = getProgramTranscript(adminName)
+    assert not emptyProgramDict
 
 @pytest.mark.integration
 def testingTotalHours():
