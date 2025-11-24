@@ -784,7 +784,6 @@ def test_upcomingEvents():
         # user can mark interest for it
         programForInterest = Program.create(id = 13,
                                             programName = "BOO",
-                                             = False,
                                             isBonnerScholars = False,
                                             contactEmail = "test@email",
                                             contactName = "testName")
@@ -796,8 +795,7 @@ def test_upcomingEvents():
         programForBanning = Program.create(id = 15,
                                            programName = "BANNED",
                                            isBonnerScholars = False,
-                                           isBonnerScholars = False,
-                                           contactEmail = "test@email",
+                                           contactEmail = "test@email", 
                                            contactName = "testName")
         
         programForMultiple = Program.create(id = 16,
@@ -1323,7 +1321,6 @@ def test_inviteCohortsToEvent():
             testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
             programEvent = Program.create(id = 13,
                                         programName = "Bonner Scholars",
-                                         = False,
                                         isBonnerScholars = True,
                                         contactEmail = "test@email",
                                         contactName = "testName")
