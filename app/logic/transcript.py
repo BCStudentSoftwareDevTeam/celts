@@ -13,14 +13,15 @@ from app.models.event import Event
 
 def getProgramTranscript(username):
     """
-    Returns a dictionary with programs as keys and a list of service events and hours earned as values for the given user.
+    Returns a dictionary with programs as keys and a list of service or bonner events and hours earned as values for the given user.
     """
     # Add up hours earned in a term for each program they've participated in
 
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-                      .join(EventParticipant)
+                      .join(EventParticipant).switch()
+                      .join(Program)
                       .where(EventParticipant.user == username,
-                             Event.isService == True,
+                             Event.isService | Program.isBonnerScholars,
                              Event.deletionDate == None,
                              Event.isCanceled == False)
                       .group_by(Event.program, Event.term)
