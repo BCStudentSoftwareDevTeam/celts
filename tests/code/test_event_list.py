@@ -302,9 +302,11 @@ def test_getEngagementEvents():
 
 @pytest.mark.integration
 def test_getCeltsLabor(special_celtsLabor):
-    celtsLabor = special_celtsLabor
-    celtsLabor = [Event.get_by_id(11), Event.get_by_id(7), celtsLabor]
-    assert celtsLabor == getCeltsLabor(4)
+    expected = list(
+    Event.select()
+    .where(Event.term == 4, Event.deletionDate == None, Event.isLaborOnly == True)
+    .order_by(Event.startDate, Event.timeStart, Event.id))
+    assert expected == getCeltsLabor(4)
 
 @pytest.mark.integration
 def test_eventViewCount():
