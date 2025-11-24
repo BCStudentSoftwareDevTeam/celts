@@ -52,9 +52,9 @@ class User(baseModel):
     def hasCurrentCeltsLabor(self):
         if self._bsCache is None:
             from app.models.celtsLabor import CeltsLabor
-            self.hasCurrentCeltsLabor = CeltsLabor.select().where(CeltsLabor.user == self, CeltsLabor.term.isCurrent == True).exists()
-        return self.hasCurrentCeltsLabor
-
+            self._bsCache = CeltsLabor.select().where(CeltsLabor.user == self, CeltsLabor.term.isCurrent == True).exists()
+        return self._bsCache 
+ 
     @property
     def fullName(self):
         return f"{self.firstName} {self.lastName}"
