@@ -7,6 +7,7 @@ from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 app.env = os.environ.get('APP_ENV', 'production')
 load_config_files(app)
