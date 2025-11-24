@@ -40,7 +40,6 @@ def getActiveEventTab(programID=None, explicit_tab=None):
         program = Program.get_by_id(programID)
     except Program.DoesNotExist:
         return "celtsLabor"
-
     if getattr(program, "isBonnerScholars", False):
         return "bonnerScholarsEvents"
     else:
