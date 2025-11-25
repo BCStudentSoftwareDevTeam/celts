@@ -3,8 +3,6 @@ import { validateEmail } from "./emailValidation.mjs";
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
 
-  handleFileSelection("supervisorAttachment", true)
-
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
       let matches = $(this).val().match(/\d/g);
@@ -19,18 +17,21 @@ $(document).ready(function() {
       }
   })
 
-  handleFileSelection("supervisorAttachment", true, "preexistingFiles")
+  handleFileSelection("supervisorAttachment", true)
 
   function saveProposalData(status) {
+    let isValid = true;
     $("#proposalForm").find('[required]').each(function() {
       if (!$(this).val()) {
         this.setCustomValidity('Please fill out this field.')
         this.reportValidity()
-        return    
+        isValid = false;
+        return false;    
       } else {
         this.setCustomValidity('')
       }
     });
+    if (!isValid) return;
     if ($('#proposalExperienceType').val() == "Other Engagement") {
       var fileRowCount = $('#supervisorAttachmentContainer').children().length;
       if (fileRowCount == 0) {
