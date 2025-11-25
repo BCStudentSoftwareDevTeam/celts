@@ -15,7 +15,6 @@ class User(baseModel):
     isStaff = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
-    hasCurrentCeltsLabor = BooleanField(default=False)
     dietRestriction = TextField(null=True)
     minorInterest = BooleanField(null=True)
     hasGraduated = BooleanField(default=False)
