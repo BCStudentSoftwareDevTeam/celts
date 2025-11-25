@@ -82,7 +82,12 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term: Term = Term.get_by_id(currentTerm)
+    if isinstance(currentTerm, Term):
+        term = currentTerm
+    else:
+        term = Term.get_or_none(Term.id == currentTerm)
+        if term is None:
+            term = Term.get(Term.isCurrentTerm == True)
 
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     volunteerOpportunities = getVolunteerOpportunities(term)
