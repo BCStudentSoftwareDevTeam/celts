@@ -51,7 +51,6 @@ class User(baseModel):
     def hasCurrentCeltsLabor(self):
         if self._bsCache is None:
             from app.models.celtsLabor import CeltsLabor
-            from app.models.term import Term
             self._bsCache = CeltsLabor.select().where(CeltsLabor.user == self, CeltsLabor.term.isCurrent == True).exists()
         return self._bsCache 
  
