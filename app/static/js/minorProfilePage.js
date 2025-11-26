@@ -22,6 +22,17 @@ $(document).ready(function() {
   function saveProposalData(status) {
     let isValid = true;
     $("#proposalForm").find('[required]').each(function() {
+      if ($(this).is(':checkbox') || $(this).is(':radio')) {
+        let name = $(this).attr('name');
+        if ($(`input[name="${name}"]:checked`).length === 0) {
+          this.setCustomValidity('Please select at least one option.')
+          this.reportValidity()
+          isValid = false;
+          return false;
+        } else {
+          this.setCustomValidity('')
+        }
+      } else {}
       if (!$(this).val()) {
         this.setCustomValidity('Please fill out this field.')
         this.reportValidity()
