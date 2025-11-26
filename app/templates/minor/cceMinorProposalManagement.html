@@ -32,7 +32,7 @@
                                 <option value="Approve">Approve</option>
                             {% endif %}
                         {% endif %}                      
-                        <option value="Withdraw">Withdraw</option>
+                        <option value="withdraw">Withdraw</option>
                         {% if g.current_user.isCeltsAdmin == True %}
                             <option {{'disabled' if proposal.status != "Approved" else ''}} value="Complete">Mark as Completed</option>
                         {% endif %}

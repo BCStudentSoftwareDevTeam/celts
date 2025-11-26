@@ -165,7 +165,11 @@ def updateProposal(action, username, proposalId):
             return ""
 
         newStatus, message = actionMap[action]
-        changeProposalStatus(proposalId, newStatus)
+
+        if action == "withdraw":
+            removeProposal(proposalId)
+        else:
+            changeProposalStatus(proposalId, newStatus)
         flash(message, "success")
 
     except Exception as e:
