@@ -304,7 +304,7 @@ def getBonnerEvents(term):
         Event.select(Event, Program.id.alias("program_id"))
             .join(Program)
             .where(
-                Program.isBonnerScholars,
+                Program.isBonnerScholars, Event.isTraining == False, Event.isEngagement == False, Event.isService == False,
                 Event.term == term,
                 Event.deletionDate == None
             )
