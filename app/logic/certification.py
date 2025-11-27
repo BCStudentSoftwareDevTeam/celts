@@ -85,9 +85,9 @@ def getCertRequirementsWithCompletion(*, certification, username):
     """
     Differentiate between simple requirements and requirements completion checking.
     """
-    return getCertRequirements(certification, username)
+    return getCertRequirements(certification, username, reqCheck=True)
 
-def getCertRequirements(certification=None, username=None):
+def getCertRequirements(certification=None, username=None, reqCheck=False):
     """
     Return the requirements for all certifications, or for one if requested.
 
@@ -111,8 +111,7 @@ def getCertRequirements(certification=None, username=None):
                 .select(Certification, CertificationRequirement, completedCase.alias("completed"))
                 .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
                 .join(RequirementMatch, JOIN.LEFT_OUTER)
-                .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))
-                .where(EventParticipant.user.is_null(True) | (EventParticipant.user == username))
+                .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event) & (EventParticipant.user == username))
                 .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
@@ -149,11 +148,20 @@ def getCertRequirements(certification=None, username=None):
         uniqueCertification = []
         
         for cert in certificationList:
-            if certificationList[certificationIndex] not in validCertification:
-                validCertification.add(certificationList[certificationIndex])
-                uniqueCertification.append(certificationList[certificationIndex])
+            req = certificationList[certificationIndex]
+            print(req.id, req.completed, "nyeet")
+            if req not in validCertification:
+                validCertification.add(req)
+                uniqueCertification.append(req)
+            # Override incomplete requirement when a completed 'once' requirement is found when removing duplicates
+            elif reqCheck and req.frequency == "once" and req.completed: 
+                for i in range(len(uniqueCertification)):
+                    if uniqueCertification[i].id == req.id and not uniqueCertification[i].completed:
+                        uniqueCertification[i] = req
+                        validCertification.add(req)
             certificationIndex += 1
         certificationList = uniqueCertification
+        print("Final List:", certificationList[0].id, certificationList[0].completed)
         return certificationList
     certificationDict = {}
     for cert in reqList:
