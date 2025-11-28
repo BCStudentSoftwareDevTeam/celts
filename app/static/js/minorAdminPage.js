@@ -79,52 +79,60 @@ $('.remove_minor_candidate').on('click', function() {
         const cceChart = document.getElementById('cceChartGen');
         const maxValue = Math.max(...yValues.map(Number))+2;
         if (cceChart) {
-          new Chart(cceChart, {
-            type: "bar",
+          // new Chart(cceChart, {
+          //   type: "bar",
+          //   data: {
+          //     labels: xValues,
+          //     datasets: [{
+          //       label: "Summer Completed",
+          //       backgroundColor: barColors,
+          //       data: yValues
+          //     }]
+          //   },
+          //   options: {
+          //     scales:{
+          //       y: {
+          //         beginAtZero: true,
+          //         max: maxValue,
+          //         title:{
+          //           display:true,
+          //           text:'Number of Engagements'
+          //         },
+          //         ticks: {
+          //             stepSize: 1
+          //           }
+          //         },
+          //       x: {
+          //         title:{
+          //           display:true,
+          //         }
+          //       }
+          //     },
+          //     plugins: {
+          //       legend: {
+          //         display: false,
+          //       },
+          //       tooltip: {
+          //         callbacks: {
+          //           label: function(context) { 
+          //             const value = context.formattedValue;
+          //             const completed = barColors[context.dataIndex] === "green" ? "Yes" : "No";
+          //             return [
+          //               `Engagements: ${value}`,
+          //               `Summer Completed: ${completed}`
+          //              ];
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // });
+          new Chart (cceChart,{
+            type: "line",
             data: {
               labels: xValues,
-              datasets: [{
-                label: "Summer Completed",
-                backgroundColor: barColors,
-                data: yValues
-              }]
-            },
-            options: {
-              scales:{
-                y: {
-                  beginAtZero: true,
-                  max: maxValue,
-                  title:{
-                    display:true,
-                    text:'Number of Engagements'
-                  },
-                  ticks: {
-                      stepSize: 1
-                    }
-                  },
-                x: {
-                  title:{
-                    display:true,
-                  }
-                }
-              },
-              plugins: {
-                legend: {
-                  display: false,
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) { 
-                      const value = context.formattedValue;
-                      const completed = barColors[context.dataIndex] === "green" ? "Yes" : "No";
-                      return [
-                        `Engagements: ${value}`,
-                        `Summer Completed: ${completed}`
-                       ];
-                    }
-                  }
-                }
-              }
+              data
+
             }
           });
         }

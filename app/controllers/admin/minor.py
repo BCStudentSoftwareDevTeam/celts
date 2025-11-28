@@ -12,9 +12,10 @@ def cceMinorChart(username):
         abort(403)
     else:
         progressList = getMinorProgress()
+        print(progressList, "yeet")
         turnToChart = []
         for progress in progressList:
-            turnToChart.append({'name':progress["firstName"] + " " + progress["lastName"], "engagementCount" : progress['engagementCount'], "completeSummer": "Yes" if progress['hasSummer'] == "Complete" else "No"})
+            turnToChart.append({'name':progress["firstName"] + " " + progress["lastName"], "engagementCount" : progress['engagementCount'], "completeSummer": "Yes" if progress['hasSummer'] == "Complete" else "No", "termDescription": progress['engagementTerm']})
         return jsonify(turnToChart)
     
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
