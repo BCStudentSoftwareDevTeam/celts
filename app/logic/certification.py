@@ -149,7 +149,6 @@ def getCertRequirements(certification=None, username=None, reqCheck=False):
         
         for cert in certificationList:
             req = certificationList[certificationIndex]
-            print(req.id, req.completed, "nyeet")
             if req not in validCertification:
                 validCertification.add(req)
                 uniqueCertification.append(req)
@@ -161,7 +160,6 @@ def getCertRequirements(certification=None, username=None, reqCheck=False):
                         validCertification.add(req)
             certificationIndex += 1
         certificationList = uniqueCertification
-        print("Final List:", certificationList[0].id, certificationList[0].completed)
         return certificationList
     certificationDict = {}
     for cert in reqList:
