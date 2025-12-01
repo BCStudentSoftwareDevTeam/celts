@@ -1,6 +1,7 @@
 from app.models import *
 from app.models.term import Term
 from app.models.program import Program
+from app.models.training import Training
 from datetime import datetime
 
 class Event(baseModel):
@@ -13,6 +14,7 @@ class Event(baseModel):
     isFoodProvided = BooleanField(default=False)
     isLaborOnly = BooleanField(default=False)
     isTraining = BooleanField(default=False)
+    training = ForeignKeyField(Training, null=True)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     isEngagement = BooleanField(default=False)
