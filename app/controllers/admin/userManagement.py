@@ -14,6 +14,7 @@ from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.volunteers import setProgramManager
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
+from app.models.training import Training
 from app.models.user import User
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
@@ -139,3 +140,14 @@ def addNewTerm():
     addNextTerm()
     flash("New term added", "success")
     return ""
+
+@admin_bp.route('/admin/addTraining', methods = ['POST'])
+def addNewTraining():
+    trainingData = request.form
+    Training.create(
+        name=trainingData["name"],
+        description=trainingData["description"],
+        program=trainingData["programID"],
+        hasNoProgram=trainingData["hasNoProgram"]
+    )
+    return
