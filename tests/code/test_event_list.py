@@ -67,7 +67,6 @@ def test_getVolunteerOpportunities(training_events):
     training_events.term = 2
     training_events.isService = True
     training_events.deletionDate = None
-    training_events.program.isVolunteerOpportunities = True
     training_events.save()
     training_events.program.save()
 
@@ -166,14 +165,12 @@ def test_getTrainingEvents(training_events):
        
         testBonnerProgram = Program.create(programName = "Test Bonner",
                                            partner = None,
-                                           isVolunteerOpportunities = False,
                                            isBonnerScholars = True,
                                            contactName = "Jesus Christ",
                                            contactEmail = "christj@test.com",)
         
         testNotBonnerProgram = Program.create(programName = "Test Not Bonner",
                                               partner = None,
-                                              isVolunteerOpportunities = False,
                                               isBonnerScholars = False,
                                               contactName = "Jesus Christ",
                                               contactEmail = "christj@test.com")
