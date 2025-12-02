@@ -60,88 +60,126 @@ $('.remove_minor_candidate').on('click', function() {
   if (activeTab) {
       $('#studentTabs button[data-bs-target="#' + activeTab + '"]').tab('show');
   }
+  let barChart = null;
+  let lineChart = null;
   $("#cceMinor").on("click", function(){
     let username = $(this).data("username");
-    const xValues = [];
-    const yValues = [];
-    const barColors = [];
-
     $.ajax({
       type: 'GET',
       url: '/profile/' + username + '/cceMinorChart',
-      data: JSON,
-      success: function(responses) {
-        for (let i = 0; i <responses.length; i++){
-          yValues.push(responses[i].engagementCount);
-          xValues.push(responses[i].name);
-          barColors.push(responses[i].completeSummer === "Yes" ? "green" : "red");
-        }
-        const cceChart = document.getElementById('cceChartGen');
-        const maxValue = Math.max(...yValues.map(Number))+2;
-        if (cceChart) {
-          // new Chart(cceChart, {
-          //   type: "bar",
-          //   data: {
-          //     labels: xValues,
-          //     datasets: [{
-          //       label: "Summer Completed",
-          //       backgroundColor: barColors,
-          //       data: yValues
-          //     }]
-          //   },
-          //   options: {
-          //     scales:{
-          //       y: {
-          //         beginAtZero: true,
-          //         max: maxValue,
-          //         title:{
-          //           display:true,
-          //           text:'Number of Engagements'
-          //         },
-          //         ticks: {
-          //             stepSize: 1
-          //           }
-          //         },
-          //       x: {
-          //         title:{
-          //           display:true,
-          //         }
-          //       }
-          //     },
-          //     plugins: {
-          //       legend: {
-          //         display: false,
-          //       },
-          //       tooltip: {
-          //         callbacks: {
-          //           label: function(context) { 
-          //             const value = context.formattedValue;
-          //             const completed = barColors[context.dataIndex] === "green" ? "Yes" : "No";
-          //             return [
-          //               `Engagements: ${value}`,
-          //               `Summer Completed: ${completed}`
-          //              ];
-          //           }
-          //         }
-          //       }
-          //     }
-          //   }
-          // });
-          new Chart (cceChart,{
-            type: "line",
-            data: {
-              labels: xValues,
-              data
-
-            }
+      success: function (responses) {
+          const names = [];
+          const engagements = [];
+          const barColors = [];
+          responses.forEach(r => {
+              names.push(r.name);
+              engagements.push(r.engagementCount);
+              barColors.push(r.completeSummer === "Yes" ? "green" : "red");
           });
-        }
-      },
-      error: function(error) {
-        console.log("error: " + error);
+          const maxValue = Math.max(...engagements) + 2;
+          const cceBarChart = document.getElementById('cceChartByEngagement');
+          if (barChart) barChart.destroy();
+          barChart = new Chart(cceBarChart, {
+              type: "bar",
+              data: {
+                  labels: names,
+                  datasets: [{
+                      backgroundColor: barColors,
+                      data: engagements
+                  }]
+              },
+              options: {
+                  plugins: {
+                      legend: { display: false }
+                  },
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                          max: maxValue,
+                          ticks: { stepSize: 1 }
+                      }
+                  }
+              }
+          });
+          const termMap = {};
+          responses.forEach(r => {
+              if (!termMap[r.termDescription]) {
+                  termMap[r.termDescription] = {
+                      engagement: 0,
+                      students: []
+                  };
+              }
+              console.log(r.engagementCount);
+              termMap[r.termDescription].engagement += Number(r.engagementCount);
+              console.table(termMap);
+              termMap[r.termDescription].students.push(r.name);
+          });
+          const sortedTerms = Object.keys(termMap).sort();
+          const termEngagements = sortedTerms.map(t => termMap[t].engagement);
+          const termStudents = sortedTerms.map(t => termMap[t].students);
+          const maxEngagement = Math.max(...termEngagements) + 2;
+          const cceLineChart = document.getElementById("cceChartByTerm");
+          if (lineChart) lineChart.destroy();
+          lineChart = new Chart(cceLineChart, {
+              type: "line",
+              data: {
+                  labels: sortedTerms,
+                  datasets: [{
+                      label: "Engagement by Term",
+                      borderColor: "blue",
+                      fill: false,
+                      data: termEngagements
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  scales:{
+                      y: {
+                          beginAtZero: true,
+                          max: maxEngagement,
+                          ticks: { stepSize: 1 },
+                          title:{
+                          display: true,
+                          text: 'Engagement Count'
+                          }
+                      },
+                      x: {
+                        title:{
+                        display: true,
+                        text: 'Terms'
+                        }
+                      },
+                  },
+                  plugins: {
+                      tooltip: {
+                          callbacks: {
+                              label: function (context) {
+                                  console.table(context);
+                                  const idx = context.dataIndex;
+                                  const value = context.raw;
+                                  const students = termStudents[idx].join(", ");
+                                  return [
+                                      `Engagements: ${value}`,
+                                      `Students: ${students}`
+                                  ];
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+
+          $("#chartButton").off().on("click", function () {
+              $("#cceChartByEngagement").show();
+              $("#cceChartByTerm").hide();
+          });
+          $("#dataButton").off().on("click", function () {
+              $("#cceChartByEngagement").hide();
+              $("#cceChartByTerm").show();
+          });
       }
-    });
-  })
+  });
+  });
 
   // Download the chart as an image
   $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
