@@ -37,41 +37,37 @@ def updateEventParticipants(participantData):
         userObject = User.get_or_none(User.username==username)
         eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
         if userObject:
-            if participantData.get(f'checkbox_{username}'): #if the user is marked as present
-                inputHours = participantData.get(f'inputHours_{username}')
-                attended = participantData.get(f'checkbox_{username}') is not None
-                isLabor = bool(participantData.get(f'isLabor_{username}'))
-                isService = bool(participantData.get(f'isService_{username}'))
-                if isLabor and isService:
-                    isLabor = False
-                hoursEarned = float(inputHours) if inputHours else 0
-                if attended:
-                    if eventParticipant:
-                        ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned, 
-                                                EventParticipant.isLabor: isLabor,
-                                                    EventParticipant.isService: isService})
-                                        .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
-                                        .execute())
-                    else:
-                        EventParticipant.create(user=userObject, 
-                                                event=event, 
-                                                hoursEarned=hoursEarned,  
-                                                isLabor=isLabor, 
-                                                isService=isService)
+            inputHours = participantData.get(f'inputHours_{username}')
+            hoursEarned = float(inputHours) if inputHours else 0
+            attended = participantData.get(f'checkbox_{username}') is not None
+            isLabor = participantData.get(f'isLabor_{username}') == "on"
+            isService = participantData.get(f'isService_{username}') == "on"
+            if isLabor and isService:
+                isLabor = False
+            if attended:
+                if eventParticipant:
+                    ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned, 
+                                            EventParticipant.isLabor: isLabor,
+                                                EventParticipant.isService: isService})
+                                    .where(EventParticipant.event==event, EventParticipant.user==userObject))
+                                    .execute())
                 else:
-                    if eventParticipant:
-                        (
-                            EventParticipant.delete()
-                            .where(
-                                (EventParticipant.user == userObject) &
-                                (EventParticipant.event == event.id)
-                            )
-                            .execute()
-                        )
+                    EventParticipant.create(user=userObject, 
+                                            event=event, 
+                                            hoursEarned=hoursEarned,  
+                                            isLabor=isLabor, 
+                                            isService=isService)
             else:
-                ((EventParticipant.delete()
-                                  .where(EventParticipant.user==userObject.username, EventParticipant.event==event.id))
-                                  .execute())
+                if eventParticipant:
+                    (
+                        EventParticipant.delete()
+                        .where(
+                            (EventParticipant.user == userObject) &
+                            (EventParticipant.event == event)
+                        )
+                        .execute()
+                    )
+
         else:
             return False
     return True

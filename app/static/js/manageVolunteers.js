@@ -197,6 +197,11 @@ $(document).ready(function() {
       let row = $(this).closest("tr");
       let laborBox = row.find(".laborCheckbox");
       let serviceBox = row.find(".serviceCheckbox");
+      let attendance = row.find(".attendanceCheck");
+
+      if ($(this).prop("checked")) {
+        attendance.prop("checked", true);
+      }
 
       if ($(this).hasClass("laborCheckbox")) {
           if (laborBox.prop("checked")) {

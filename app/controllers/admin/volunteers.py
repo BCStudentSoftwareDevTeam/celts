@@ -67,6 +67,19 @@ def manageVolunteersPage(eventID):
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
         
         allRelevantUsers = list(set(participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData + eventVolunteerData)))
+        
+        # ----------- Ensuring that waitlist and RSVP won't be counted towards labor and service hours -----------
+        for record in eventVolunteerData:
+            record.isLabor = False
+            record.isService = False
+            record.hoursEarned = record.hoursEarned if hasattr(record, "hoursEarned") else 0
+        
+        for record in eventWaitlistData:
+            record.isLabor = False
+            record.isService = False
+            record.hoursEarned = 0
+        
+        
         # ----------- Get miscellaneous data -----------
 
         participationStatusForTrainings = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
