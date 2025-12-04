@@ -28,7 +28,7 @@ def getVolunteers(query):
 @admin_bp.route('/event/<eventID>/manage_volunteers', methods=['GET', 'POST'])
 def manageVolunteersPage(eventID):
     """
-    Controller that handles POST and GET requests regarding the Manage Volunteers page.
+    Controller that handles POST and GET requests regarding the Manage Participants page.
 
     POST: updates the event participants for a particular event by calling 
     updateEventParticipants on the form.

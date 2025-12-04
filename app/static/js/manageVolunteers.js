@@ -192,6 +192,22 @@ $(document).ready(function() {
     });
   }
   
+  // Mutually exclusive checkboxes for labor and service, only one can be checked at a time
+  $(".laborCheckbox, .serviceCheckbox").on("change", function () {
+      let row = $(this).closest("tr");
+      let laborBox = row.find(".laborCheckbox");
+      let serviceBox = row.find(".serviceCheckbox");
+
+      if ($(this).hasClass("laborCheckbox")) {
+          if (laborBox.prop("checked")) {
+              serviceBox.prop("checked", false);
+          }
+      } else if ($(this).hasClass("serviceCheckbox")) {
+          if (serviceBox.prop("checked")) {
+              laborBox.prop("checked", false);
+          }
+      }
+  });
 
   function handleBanned(username, eventId, index){
     $.ajax({

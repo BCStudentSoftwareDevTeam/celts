@@ -673,6 +673,8 @@ CREATE TABLE `eventparticipant` (
   `user_id` varchar(255) NOT NULL,
   `event_id` int NOT NULL,
   `hoursEarned` float NOT NULL,
+  `isLabor` tinyint(1) NOT NULL DEFAULT 0,
+  `isService` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `eventparticipant_user_id` (`user_id`),
   KEY `eventparticipant_event_id` (`event_id`),

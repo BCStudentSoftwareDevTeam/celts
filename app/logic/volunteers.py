@@ -39,13 +39,35 @@ def updateEventParticipants(participantData):
         if userObject:
             if participantData.get(f'checkbox_{username}'): #if the user is marked as present
                 inputHours = participantData.get(f'inputHours_{username}')
+                attended = participantData.get(f'checkbox_{username}') is not None
+                isLabor = bool(participantData.get(f'isLabor_{username}'))
+                isService = bool(participantData.get(f'isService_{username}'))
+                if isLabor and isService:
+                    isLabor = False
                 hoursEarned = float(inputHours) if inputHours else 0
-                if eventParticipant:
-                    ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned})
-                                      .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
-                                      .execute())
+                if attended:
+                    if eventParticipant:
+                        ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned, 
+                                                EventParticipant.isLabor: isLabor,
+                                                    EventParticipant.isService: isService})
+                                        .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
+                                        .execute())
+                    else:
+                        EventParticipant.create(user=userObject, 
+                                                event=event, 
+                                                hoursEarned=hoursEarned,  
+                                                isLabor=isLabor, 
+                                                isService=isService)
                 else:
-                    EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
+                    if eventParticipant:
+                        (
+                            EventParticipant.delete()
+                            .where(
+                                (EventParticipant.user == userObject) &
+                                (EventParticipant.event == event.id)
+                            )
+                            .execute()
+                        )
             else:
                 ((EventParticipant.delete()
                                   .where(EventParticipant.user==userObject.username, EventParticipant.event==event.id))

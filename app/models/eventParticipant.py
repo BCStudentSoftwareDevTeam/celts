@@ -6,6 +6,8 @@ class EventParticipant(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event, backref="participants")
     hoursEarned = FloatField(null = False, default = 0)
+    isLabor = BooleanField(default=False)
+    isService = BooleanField(default=False)
 
     # Add this property so that we can combine these objects with EventRsvp objects in one array
     @property

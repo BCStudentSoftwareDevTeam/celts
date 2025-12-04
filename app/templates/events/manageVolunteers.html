@@ -1,4 +1,4 @@
-{% set title = "Manage Volunteers" %}
+{% set title = "Manage Participants" %}
 {% set page_title = event.name %}
 {% set eventPast = event.isPastStart %}
 {% set tabName = 'manageVolunteers' %}
@@ -71,7 +71,8 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                
+                <th class="noSort">Labor</th>
+                <th class="noSort">Volunteer Service</th>
                 {% if event.isPastStart %}
                   <th class="noSort">Total Hours</th>
                   <th class="noSort">Attended</th>
@@ -107,6 +108,19 @@
                     </td>
                     <td>{{participant.user.email}}</td>
                     <td>{{participant.user.phoneNumber}}</td>
+                    <td style="text-align:center">
+                      <input type="checkbox"
+                            name="isLabor_{{ participant.user.username }}"
+                             class="laborCheckbox"
+                            {% if participant.isLabor %}checked{% endif %} />
+                    </td>
+
+                    <td style="text-align:center">
+                      <input type="checkbox"
+                            name="isService_{{ participant.user.username }}"
+                             class="serviceCheckbox"
+                            {% if participant.isService %}checked{% endif %} />
+                    </td>
                     {% if event.isPastStart %}
                       <td>
                         <input
