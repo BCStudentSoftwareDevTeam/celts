@@ -479,7 +479,7 @@ def test_hasCurrentCeltsLabor():
         pastTerm = Term.create(termName='Spring 2023', isCurrentTerm=False)
         # Create a CeltsLabor entry for the test user in the past term
         CeltsLabor.create(user=testUser, term=pastTerm, position='Past Position')
-        # Check if the user still has current Celts Labor, of not then False should be returned
+        # Check if the user still has current Celts Labor
         assert testUser.hasCurrentCeltsLabor is True
 
         # Create a new user without any Labor position
