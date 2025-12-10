@@ -32,15 +32,11 @@ def termsInTotal(username):
     '''
     currentTerm = g.current_term
     currentDesc = currentTerm.description
-    print("see", currentTerm.isSummer) 
     if currentTerm.isSummer:
         currentDesc = f"Fall {currentTerm.year}"
-        print("here1")
     user = User.select().where(User.username == username).get()
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     totalTerms = []
-    print("user level", user.rawClassLevel)
-    print("current desc", currentDesc)
     for level, name in enumerate(classLevel):
         if user.rawClassLevel == name:
             totalTermsCount = (level + 1) * 2
