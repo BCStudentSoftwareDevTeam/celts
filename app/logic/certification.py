@@ -31,12 +31,16 @@ def termsInTotal(username):
     the start term and populate from it with Fall-start alignment and special handling for NULL/Non-degree class level
     '''
     currentTerm = g.current_term
-    currentDesc = currentTerm.description 
+    currentDesc = currentTerm.description
+    print("see", currentTerm.isSummer) 
     if currentTerm.isSummer:
         currentDesc = f"Fall {currentTerm.year}"
+        print("here1")
     user = User.select().where(User.username == username).get()
     classLevel = ["Freshman", "Sophomore", "Junior", "Senior"]
     totalTerms = []
+    print("user level", user.rawClassLevel)
+    print("current desc", currentDesc)
     for level, name in enumerate(classLevel):
         if user.rawClassLevel == name:
             totalTermsCount = (level + 1) * 2
@@ -59,7 +63,7 @@ def termsInTotal(username):
     if user.rawClassLevel is None or user.rawClassLevel in ["NULL", "Graduating", "Non-Degree"]:
             totalTermsCount = 8 
             currentYear = currentTerm.year
-            currentSeason = "Fall" if "Fall" in currentTerm.description else "Spring"
+            currentSeason = "Fall" if "Fall" in currentDesc else "Spring"
             for a in range(totalTermsCount):
                 totalTerms.append(f"{currentSeason} {currentYear}")
                 if currentSeason == "Fall":
