@@ -19,45 +19,32 @@ $(document).ready(function() {
 
   handleFileSelection("supervisorAttachment", true)
 
-  function saveProposalData(status) {
-    let isValid = true;
-    $("#proposalForm").find('[required]').each(function() {
-      if ($(this).is(':checkbox') || $(this).is(':radio')) {
-        let name = $(this).attr('name');
-        if ($(`input[name="${name}"]:checked`).length === 0) {
-          this.setCustomValidity('Please select at least one option.')
-          this.reportValidity()
-          isValid = false;
-          return false;
-        } else {
-          this.setCustomValidity('')
-        }
-      } else {}
-      if (!$(this).val()) {
-        this.setCustomValidity('Please fill out this field.')
-        this.reportValidity()
-        isValid = false;
-        return false;    
-      } else {
-        this.setCustomValidity('')
-      }
-    });
-    if (!isValid) return;
+  $('.submit-proposal').on('click', function(e) {
+    e.preventDefault();
+    let status = $(this).data('status');
+    $('#statusField').val(status);
+    
+    if (!$('#proposalForm')[0].checkValidity()) {
+      $('#proposalForm')[0].reportValidity();
+      return;
+    }
+    
+    // file validation
     if ($('#proposalExperienceType').val() == "Other Engagement") {
       var fileRowCount = $('#supervisorAttachmentContainer').children().length;
       if (fileRowCount == 0) {
         $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
-        $('#supervisorAttachment')[0].reportValidity()        
-        return
+        $('#supervisorAttachment')[0].reportValidity();
+        return;
       } else {
-        $('#supervisorAttachment')[0].setCustomValidity(''); 
+        $('#supervisorAttachment')[0].setCustomValidity('');
       }
     }
-    var formData = new FormData($("#proposalForm")[0]);
-    formData.append("status", status);
-
-    var actionURL = $("#proposalForm").attr('action')
-    let username = $("#username").val()
+    
+    var formData = new FormData($('#proposalForm')[0]);
+    var actionURL = $('#proposalForm').attr('action');
+    let username = $("#username").val();
+    
     $.ajax({
       url: actionURL,
       type: 'POST',
@@ -65,23 +52,14 @@ $(document).ready(function() {
       processData: false,
       contentType: false,
       success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
+        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`;
       },
       error: function(xhr, status, error) {
         console.error('Error:', error);
       }
     });
-  }
-  
-  $('#saveAsDraftButton').on('click', function() {
-    saveProposalData("Draft")
-  })
-  $('#submitButton').on('click', function() {
-    saveProposalData("Submitted")
-  })
-  $('#saveAndApproveButton').on('click', function() {
-    saveProposalData("Approved")
-  })
+  });
+
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
     window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 
