@@ -115,6 +115,26 @@ $('.remove_minor_candidate').on('click', function() {
               termMap[r.termDescription].students.push(r.name);
           });
           const sortedTerms = Object.keys(termMap).sort();
+          const startTerm = Object.keys(sortedTerms)[0];
+          const [season, year] = startTerm.split(" ");
+          const endTerm = sortedTerms[sortedTerms.length -1];
+          console.log("end", endTerm);
+          console.log("nyeet", `${season} ${year}`);
+          
+          while (endTerm != `${season} ${year}`) {
+              if (season === "Spring") {
+                  sortedTerms.push(`Summer ${year}`);
+                  season = "Summer";
+              } else if (season === "Summer") {
+                  sortedTerms.push(`Fall ${year}`);
+                  season = "Fall";
+              } else if (season === "Fall") {
+                  sortedTerms.push(`Spring ${Number(year) + 1}`);
+                  season = "Spring";
+                  year = String(Number(year) + 1);
+              }
+          }
+          console.log(sortedTerms, `${season} ${year}`);
           const termEngagements = sortedTerms.map(t => termMap[t].engagement);
           const termStudents = sortedTerms.map(t => termMap[t].students);
           const maxEngagement = Math.max(...termEngagements) + 2;
@@ -168,7 +188,7 @@ $('.remove_minor_candidate').on('click', function() {
                   }
               }
           });
-
+          console.table(termMap);
           $("#chartButton").off().on("click", function () {
               $("#cceChartByEngagement").show();
               $("#cceChartByTerm").hide();
