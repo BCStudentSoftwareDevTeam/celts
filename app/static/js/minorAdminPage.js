@@ -68,143 +68,183 @@ $('.remove_minor_candidate').on('click', function() {
       type: 'GET',
       url: '/profile/' + username + '/cceMinorChart',
       success: function (responses) {
-          const names = [];
-          const engagements = [];
-          const barColors = [];
-          responses.forEach(r => {
-              names.push(r.name);
-              engagements.push(r.engagementCount);
-              barColors.push(r.completeSummer === "Yes" ? "green" : "red");
-          });
-          const maxValue = Math.max(...engagements) + 2;
-          const cceBarChart = document.getElementById('cceChartByEngagement');
-          if (barChart) barChart.destroy();
-          barChart = new Chart(cceBarChart, {
-              type: "bar",
-              data: {
-                  labels: names,
-                  datasets: [{
-                      backgroundColor: barColors,
-                      data: engagements
-                  }]
-              },
-              options: {
-                  plugins: {
-                      legend: { display: false }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true,
-                          max: maxValue,
-                          ticks: { stepSize: 1 }
+        const names = [];
+        const engagements = [];
+        const barColors = [];
+        responses.forEach(r => {
+            names.push(r.name);
+            engagements.push(r.engagementCount);
+            barColors.push(r.completeSummer === "Yes" ? "green" : "red");
+        });
+        
+        // Bar Chart
+        const maxBarValue = Math.max(...engagements) + 2;
+        const cceBarChart = document.getElementById('cceChartByEngagement');
+        if (barChart) barChart.destroy();
+        barChart = new Chart(cceBarChart, {
+          type: "bar",
+          data: {
+            labels: names,
+            datasets: [
+              {
+                data: engagements,
+                backgroundColor: barColors 
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  generateLabels: function () {
+                    return [
+                      {
+                        text: "Summer Incomplete",
+                        fillStyle: "red",
+                        strokeStyle: "red",
+                        lineWidth: 1
+                      },
+                      {
+                        text: "Summer Complete",
+                        fillStyle: "green",
+                        strokeStyle: "green",
+                        lineWidth: 1
                       }
+                    ];
                   }
+                }
               }
-          });
-          const termMap = {};
-          responses.forEach(r => {
-              if (!termMap[r.termDescription]) {
-                  termMap[r.termDescription] = {
-                      engagement: 0,
-                      students: []
-                  };
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: maxBarValue,
+                ticks: { stepSize: 1 }
               }
-              console.log(r.engagementCount);
-              termMap[r.termDescription].engagement += Number(r.engagementCount);
-              console.table(termMap);
-              termMap[r.termDescription].students.push(r.name);
-          });
-          const sortedTerms = Object.keys(termMap).sort();
-          const startTerm = Object.keys(sortedTerms)[0];
-          const [season, year] = startTerm.split(" ");
-          const endTerm = sortedTerms[sortedTerms.length -1];
-          console.log("end", endTerm);
-          console.log("nyeet", `${season} ${year}`);
-          
-          while (endTerm != `${season} ${year}`) {
-              if (season === "Spring") {
-                  sortedTerms.push(`Summer ${year}`);
-                  season = "Summer";
-              } else if (season === "Summer") {
-                  sortedTerms.push(`Fall ${year}`);
-                  season = "Fall";
-              } else if (season === "Fall") {
-                  sortedTerms.push(`Spring ${Number(year) + 1}`);
-                  season = "Spring";
-                  year = String(Number(year) + 1);
-              }
+            }
           }
-          console.log(sortedTerms, `${season} ${year}`);
-          const termEngagements = sortedTerms.map(t => termMap[t].engagement);
-          const termStudents = sortedTerms.map(t => termMap[t].students);
-          const maxEngagement = Math.max(...termEngagements) + 2;
-          const cceLineChart = document.getElementById("cceChartByTerm");
-          if (lineChart) lineChart.destroy();
-          lineChart = new Chart(cceLineChart, {
-              type: "line",
-              data: {
-                  labels: sortedTerms,
-                  datasets: [{
-                      label: "Engagement by Term",
-                      borderColor: "blue",
-                      fill: false,
-                      data: termEngagements
-                  }]
-              },
-              options: {
-                  responsive: true,
-                  scales:{
-                      y: {
-                          beginAtZero: true,
-                          max: maxEngagement,
-                          ticks: { stepSize: 1 },
-                          title:{
-                          display: true,
-                          text: 'Engagement Count'
-                          }
-                      },
-                      x: {
-                        title:{
-                        display: true,
-                        text: 'Terms'
-                        }
-                      },
-                  },
-                  plugins: {
-                      tooltip: {
-                          callbacks: {
-                              label: function (context) {
-                                  console.table(context);
-                                  const idx = context.dataIndex;
-                                  const value = context.raw;
-                                  const students = termStudents[idx].join(", ");
-                                  return [
-                                      `Engagements: ${value}`,
-                                      `Students: ${students}`
-                                  ];
-                              }
-                          }
-                      }
-                  }
-              }
-          });
-          console.table(termMap);
-          $("#chartButton").off().on("click", function () {
-              $("#cceChartByEngagement").show();
-              $("#cceChartByTerm").hide();
-          });
-          $("#dataButton").off().on("click", function () {
-              $("#cceChartByEngagement").hide();
-              $("#cceChartByTerm").show();
-          });
-      }
-  });
-  });
+        });
 
-  // Download the chart as an image
+        // Line Chart
+        const SEASONS = ["Spring", "Summer", "Fall"];
+        function parseTerm(term) {
+          const [season, year] = term.split(" ");
+          return { season, year: Number(year) };
+        }
+        function termToIndex({ season, year }) {
+          /**
+           * converts a term like {season: "Fall", year: 2023} to an index for easier sorting
+           * e.g., Spring 2023 -> 2023*3 + 0 = 6069
+           *       Summer 2023 -> 2023*3 + 1 = 6070
+           *       Fall 2023   -> 2023*3 + 2 = 6071
+           */            
+          return year * 3 + SEASONS.indexOf(season); 
+        }
+        function indexToTerm(idx) {
+          /**
+           * converts an index back to a term string
+           * e.g., 6069 -> Spring 2023
+           */
+          const year = Math.floor(idx / 3);
+          const season = SEASONS[idx % 3];
+          return `${season} ${year}`;
+        }
+        const termMap = {};
+        responses.forEach(r => {
+          if (!termMap[r.termDescription]) {
+            termMap[r.termDescription] = {
+              engagement: 0,
+              students: []
+            };
+          }
+          termMap[r.termDescription].engagement += Number(r.engagementCount);
+          termMap[r.termDescription].students.push(r.name);
+        });
+        const terms = Object.keys(termMap);
+        const indices = terms.map(t => termToIndex(parseTerm(t)));
+        const minIdx = Math.min(...indices);
+        const maxIdx = Math.max(...indices);
+        const labels = [];
+        for (let i = minIdx; i <= maxIdx; i++) {
+          labels.push(indexToTerm(i));
+        }
+        labels.forEach(t => {
+          if (!termMap[t]) {
+            termMap[t] = { engagement: 0, students: [] };
+          }
+        });
+        const termEngagements = labels.map(t => termMap[t].engagement);
+        const termStudents = labels.map(t => termMap[t].students);
+        const maxEngagement = Math.max(...termEngagements) + 2;
+        const cceLineChart = document.getElementById("cceChartByTerm");
+        if (lineChart) lineChart.destroy();
+
+        lineChart = new Chart(cceLineChart, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "Engagement by Term",
+              data: termEngagements,
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: maxEngagement,
+                ticks: { stepSize: 1 },
+                title: {
+                  display: true,
+                  text: "Engagement Count"
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: "Terms"
+                }
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const idx = context.dataIndex;
+                    return [
+                      `Engagements: ${context.raw}`,
+                      `Students: ${termStudents[idx].join(", ")}`
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        });
+        function showBarChart() {
+          $("#cceChartByEngagement").show();
+          $("#cceChartByTerm").hide();
+          setTimeout(() => barChart?.resize(), 0);
+        }
+        function showLineChart() {
+          $("#cceChartByEngagement").hide();
+          $("#cceChartByTerm").show();
+          setTimeout(() => lineChart?.resize(), 0);
+        }
+        $("#chartButton").off("click").on("click", showBarChart);
+        $("#lineButton").off("click").on("click", showLineChart);
+      }
+    });
+  });
   $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
     const element = $(".ccePrint")[0]; 
-
     html2canvas(element).then(canvas => {
       const downloadLink = document.createElement('a');
       downloadLink.href = canvas.toDataURL(); 
