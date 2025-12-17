@@ -31,8 +31,8 @@ $(document).ready(function() {
     
     // file validation
     if ($('#proposalExperienceType').val() == "Other Engagement") {
-      var fileRowCount = $('#supervisorAttachmentContainer').children().length;
-      if (fileRowCount == 0) {
+      var fileRowCount = $('#supervisorAttachmentContainer')[0].files;
+      if (fileRowCount.length == 0) {
         $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
         $('#supervisorAttachment')[0].reportValidity();
         return;
