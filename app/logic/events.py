@@ -304,7 +304,7 @@ def getBonnerEvents(term):
         Event.select(Event, Program.id.alias("program_id"))
             .join(Program)
             .where(
-                Program.isBonnerScholars, Event.isTraining == False, Event.isEngagement == False, Event.isService == False,
+                Program.isBonnerScholars,
                 Event.term == term,
                 Event.deletionDate == None
             )
@@ -318,7 +318,6 @@ def getCeltsLabor(term):
     Labor tab: events explicitly marked as Labor Only.
     """
     celtsLabor = list(Event.select()
-                            .join(Program, JOIN.LEFT_OUTER, on=(Event.program == Program.id))
                             .where(Event.term == term, Event.deletionDate == None, Event.isLaborOnly == True)
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
