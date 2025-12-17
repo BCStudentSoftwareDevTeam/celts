@@ -19,7 +19,7 @@ def test_activeEventTab():
                                     isBonnerScholars = False,
                                     contactEmail = "test@email",
                                     contactName = "testName")
-        assert getActiveEventTab(volunteerOpportunities.id) == "celtsLabor"
+        assert getActiveEventTab(volunteerOpportunities.id) == "volunteerOpportunities"
 
         bonnerScholars1 = Program.create(programName = "BS1",
                                          isBonnerScholars = True,
