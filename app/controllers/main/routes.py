@@ -70,6 +70,7 @@ def goToEventsList(programID):
     return {"activeTab": getActiveEventTab(programID)}
 
 @main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "volunteerOpportunities", 'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>/', methods=['GET'], defaults={'activeTab': "volunteerOpportunities", 'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
