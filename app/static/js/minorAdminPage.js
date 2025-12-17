@@ -1,4 +1,4 @@
-import searchUser from './searchUser.js'
+import searchUser from './searchUser.js';
 
 $(document).ready(function() {
   // Load flash message from sessionStorage, if any
@@ -68,68 +68,9 @@ $('.remove_minor_candidate').on('click', function() {
       type: 'GET',
       url: '/profile/' + username + '/cceMinorChart',
       success: function (responses) {
-        const names = [];
-        const engagements = [];
-        const barColors = [];
-        responses.forEach(r => {
-            names.push(r.name);
-            engagements.push(r.engagementCount);
-            barColors.push(r.completeSummer === "Yes" ? "green" : "red");
-        });
-        
-        // Bar Chart
-        const maxBarValue = Math.max(...engagements) + 2;
+        console.table(responses);
         const cceBarChart = document.getElementById('cceChartByEngagement');
-        if (barChart) barChart.destroy();
-        barChart = new Chart(cceBarChart, {
-          type: "bar",
-          data: {
-            labels: names,
-            datasets: [
-              {
-                data: engagements,
-                backgroundColor: barColors 
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: "top",
-                labels: {
-                  generateLabels: function () {
-                    return [
-                      {
-                        text: "Summer Incomplete",
-                        fillStyle: "red",
-                        strokeStyle: "red",
-                        lineWidth: 1
-                      },
-                      {
-                        text: "Summer Complete",
-                        fillStyle: "green",
-                        strokeStyle: "green",
-                        lineWidth: 1
-                      }
-                    ];
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: maxBarValue,
-                ticks: { stepSize: 1 }
-              }
-            }
-          }
-        });
 
-        // Line Chart
         const SEASONS = ["Spring", "Summer", "Fall"];
         function parseTerm(term) {
           const [season, year] = term.split(" ");
@@ -153,6 +94,7 @@ $('.remove_minor_candidate').on('click', function() {
           const season = SEASONS[idx % 3];
           return `${season} ${year}`;
         }
+
         const termMap = {};
         responses.forEach(r => {
           if (!termMap[r.termDescription]) {
@@ -164,6 +106,7 @@ $('.remove_minor_candidate').on('click', function() {
           termMap[r.termDescription].engagement += Number(r.engagementCount);
           termMap[r.termDescription].students.push(r.name);
         });
+
         const terms = Object.keys(termMap);
         const indices = terms.map(t => termToIndex(parseTerm(t)));
         const minIdx = Math.min(...indices);
@@ -177,12 +120,80 @@ $('.remove_minor_candidate').on('click', function() {
             termMap[t] = { engagement: 0, students: [] };
           }
         });
+
         const termEngagements = labels.map(t => termMap[t].engagement);
         const termStudents = labels.map(t => termMap[t].students);
         const maxEngagement = Math.max(...termEngagements) + 2;
         const cceLineChart = document.getElementById("cceChartByTerm");
-        if (lineChart) lineChart.destroy();
+        const completeByTerm = {};
+        const incompleteByTerm = {};
+        labels.forEach(t => {
+          completeByTerm[t] = 0;
+          incompleteByTerm[t] = 0;
+        });
 
+        responses.forEach(r => {
+          if (r.completeSummer === "Yes") {
+            completeByTerm[r.termDescription] += Number(r.engagementCount);
+          } else {
+            incompleteByTerm[r.termDescription] += Number(r.engagementCount);
+          }
+        });
+        const completeEngagements = labels.map(t => completeByTerm[t] || 0);
+        const incompleteEngagements = labels.map(t => incompleteByTerm[t] || 0);
+        
+        //Bar Chart
+        if (barChart) barChart.destroy();
+        barChart = new Chart(cceBarChart, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Summer Incomplete",
+                data: incompleteEngagements,
+                backgroundColor: "red",
+                stack: "summer"
+              },
+              {
+                label: "Summer Complete",
+                data: completeEngagements,
+                backgroundColor: "green",
+                stack: "summer"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "CCE Engagements by Term",
+                font: { size: 18 }
+              },
+              legend: {
+                display: true,
+                position: "top"
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                title: { display: true, text: "Terms" }
+              },
+              y: {
+                stacked: true,
+                beginAtZero: true,
+                max: maxEngagement,
+                ticks: { stepSize: 1 },
+                title: { display: true, text: "Engagement Count" }
+              }
+            }
+          }
+        });        
+        if (lineChart) lineChart.destroy();
+        //Line Chart
         lineChart = new Chart(cceLineChart, {
           type: "line",
           data: {
@@ -209,11 +220,18 @@ $('.remove_minor_candidate').on('click', function() {
               x: {
                 title: {
                   display: true,
-                  text: "Terms"
+                  text: "Terms",
                 }
               }
             },
             plugins: {
+              title:{
+                display: true,
+                text: "CCE Engagements Trends over the Terms",
+                font: {
+                  size: 18
+                }
+              },
               tooltip: {
                 callbacks: {
                   label: function (context) {
@@ -246,6 +264,7 @@ $('.remove_minor_candidate').on('click', function() {
   $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
     const element = $(".ccePrint")[0]; 
     html2canvas(element).then(canvas => {
+      console.log(canvas.getContext('2d'));
       const downloadLink = document.createElement('a');
       downloadLink.href = canvas.toDataURL(); 
       downloadLink.download = fileName; 
