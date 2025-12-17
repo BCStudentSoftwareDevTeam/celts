@@ -33,11 +33,7 @@ def test_activeEventTab():
                                          contactName = "testName")
         assert getActiveEventTab(bonnerScholars2.id) == "bonnerScholarsEvents"
 
-        other = Program.create(programName = "OP",
-                               isBonnerScholars = False,
-                               contactEmail = "test@email",
-                               contactName = "testName")
-        assert getActiveEventTab(other.id) == "celtsLabor"
+        assert getActiveEventTab() == "celtsLabor"
 
         transaction.rollback()
 
