@@ -73,21 +73,20 @@ def goToEventsList(programID):
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
-    currentTerm = g.current_term
-    if selectedTerm:
-        currentTerm = selectedTerm
-        
+
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select().order_by(Term.termOrder)
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    if isinstance(currentTerm, Term):
-        term = currentTerm
-    else:
-        term = Term.get_or_none(Term.id == currentTerm)
-        if term is None:
-            term = Term.get(Term.isCurrentTerm == True)
+    term = g.current_term
+    if selectedTerm:
+        term = selectedTerm
+        
+    # Make sure we have a Term object
+    term = Term.get_or_none(Term.id == term)
+    if term is None:
+        term = Term.get(Term.isCurrentTerm == True)
 
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     volunteerOpportunities = getVolunteerOpportunities(term)
