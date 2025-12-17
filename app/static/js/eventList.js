@@ -35,8 +35,10 @@ $(document).ready(function(){
     var tableRows = $(".showlist");
     if (isChecked) {
       tableRows.show();
+      $(".no-upcoming").hide()
     } else {
       tableRows.hide();
+      $(".no-upcoming").show()
     }
   }
 });

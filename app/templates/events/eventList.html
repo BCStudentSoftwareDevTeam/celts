@@ -158,7 +158,7 @@
       {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>
           {% set colspan_value = 5 if type == 'bonner' or type == 'volunteerOpportunities' else 6 %}
-          <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
+          <td colspan="{{colspan_value}}" class="p-3 no-upcoming">There are no upcoming events for this program</td>
         </tr>
       {% endif %}
      </tbody>
