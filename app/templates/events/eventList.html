@@ -27,9 +27,9 @@
       <div class="form-group">
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
-          {% endfor %}
-        </select>
+            <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+          {% endfor %}
+        </select>
       </div>
     </div>
     {% if user.isAdmin %}
@@ -50,27 +50,37 @@
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-2 mb-2" id="pills-tab" role="tablist">
   <li class="col-md-2 col-12 nav-item" role="presentation">
-    <button class="nav-link {{'active' if activeTab == 'studentLedEvents' else ''}}" id="studentLedEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
+    <button class="nav-link {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="volunteerOpportunities"
+    data-bs-toggle="pill" data-bs-target="#pills-volunteer-opportunities" type="button" role="tab" aria-controls="pills-volunteer-opportunities" aria-selected="true">Volunteer Opportunities</button>
   </li>
+
+  {% if trainingEvents and trainingEvents|length %}
   <li class="col-md-2 col-12 nav-item" role="presentation">
     <button class="nav-link {{'active' if activeTab == 'trainingEvents' else ''}}" id="trainingEvents"
     data-bs-toggle="pill" data-bs-target="#pills-training" type="button" role="tab" aria-controls="pills-training" aria-selected="false">Training</button>
   </li>
+  {% endif %}
+
+  {% if user.username or engagementEvents and engagementEvents|length %}
   <li class="col-md-2 col-12 nav-item" role="presentation">
     <button class="nav-link {{'active' if activeTab == 'engagementEvents' else ''}}" id="engagementEvents"
     data-bs-toggle="pill" data-bs-target="#pills-engagement" type="button" role="tab" aria-controls="pills-engagement" aria-selected="false">Education and Engagement</button>
-  </li>
-  {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isBonnerScholar %}
+   </li>
+   {% endif %}
+
+ {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isBonnerScholar %}
     <li class="col-md-2 col-12 nav-item" role="presentation">
       <button class="nav-link {{'active' if activeTab == 'bonnerScholarsEvents' else ''}}" id="bonnerScholarsEvents"
       data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
     </li>
     {% endif %}
-  <li class="col-md-2 col-12 nav-item" role="presentation">
-    <button class="nav-link {{'active' if activeTab == 'otherEvents' else ''}}" id="otherEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
-  </li>
+
+  {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.hasCurrentCeltsLabor %}
+    <li class="col-md-2 col-12 nav-item" role="presentation">
+      <button class="nav-link {{'active' if activeTab == 'celtsLabor' else ''}}" id="celtsLabor"
+      data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Celts Labor</button>
+    </li>
+    {% endif %}
   </ul>
 </div>
 
@@ -80,7 +90,7 @@
   <table class="table">
     <thead>
       <tr>
-        {% if type != "bonner" and type != "studentLed" %}
+        {% if type != "bonner" and type != "volunteerOpportunities" %}
         <th scope="col">Program</th>
         {% endif %}
         <th scope="col">Event Name</th>
@@ -98,7 +108,7 @@
           {% else %}
             <tr height = '50' class="">
           {% endif %}
-            {% if type != "bonner" and type != "studentLed" %}
+            {% if type != "bonner" and type != "volunteerOpportunities" %}
               <td class="text-dark">{{event.program.programName}}</td>
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
@@ -125,7 +135,7 @@
                 {% else %}
                   {% set isPastStart = "false" %}
                 {% endif %}
-                {% set defaultTemplate = "Test" %} {# The default template is set via the purpose column of the corresponding template #}
+                {% set defaultTemplate = "Test" %}
                 {% set btn_class = 'btn-secondary' if event.isPastStart or event.isCanceled else 'btn-primary' %}
                 {% set btn_text = 'Email' if event.isPastStart or event.isCanceled else 'Invite' %}
                 <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastStart }}, '{{defaultTemplate}}')">
@@ -147,25 +157,30 @@
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPastStart %}
         <tr>
-          {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
-          <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
+          {% set colspan_value = 5 if type == 'bonner' or type == 'volunteerOpportunities' else 6 %}
+          <td colspan="{{colspan_value}}" class="p-3 no-upcoming">There are no upcoming events for this program</td>
         </tr>
       {% endif %}
      </tbody>
    </table>
  </div>
-{% elif type != "studentLed" %}
-  <p>There are no events for this program</p>
+{% elif type != "volunteerOpportunities" %}
+    {% set typemap = {
+        'training': "training",
+        'education and engagement': "education and engagement",
+        'bonner': "Bonner Scholars",
+        'celtsLabor': "labor-only",
+    }
+    %}
+  <p class="m-2 fs-4">There are no {{typemap[type]}} events for this term.</p>
 {% endif %}
 {% endmacro %}
 
-<!-- #############  Student Led Services  ############# -->
-
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedEvents %}
+  <div class="tab-pane fade show {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="pills-volunteer-opportunities" role="tabpanel" aria-labelledby="pills-volunteer-opportunities-tab">
+    {% if volunteerOpportunities %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedEvents.items() %}
+      {% for program,events in volunteerOpportunities.items() %}
         <div class="accordion-item">
           <div class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button {{'show' if programID == program.id else 'collapsed'}}"
@@ -175,10 +190,10 @@
                     aria-expanded="true"
                     aria-controls="accordion__body_{{program}}">
                     {{program.programName}}
-                    {% if program.id not in countUpcomingStudentLedEvents%}
+                    {% if program.id not in countUpcomingVolunteerOpportunities%}
                       <span class="ms-auto fw-light fst-italic">0 upcoming events</span>
                     {% else %}
-                        <span class="ms-auto fw-light fst-italic">{{countUpcomingStudentLedEvents[program.id]}} upcoming event{% if countUpcomingStudentLedEvents[program.id] > 1 %}s{% endif %}</span>
+                        <span class="ms-auto fw-light fst-italic">{{countUpcomingVolunteerOpportunities[program.id]}} upcoming event{% if countUpcomingVolunteerOpportunities[program.id] > 1 %}s{% endif %}</span>
                     {% endif %}
 
             </button>
@@ -187,13 +202,13 @@
                 class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
-                {{createTable(events, "studentLed")}}
+                {{createTable(events, "volunteerOpportunities")}}
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
-    <tr> There are no events for this program </tr>
+        <p class="m-2 fs-4">There are no events that earn service for this term.</p>
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
@@ -205,8 +220,8 @@
   <div class="tab-pane {{'active' if activeTab == 'bonnerScholarsEvents' else ''}} fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerEvents, "bonner")}}
   </div>
-  <div class="tab-pane {{'active' if activeTab == 'otherEvents' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(otherEvents, "other")}}
+  <div class="tab-pane {{'active' if activeTab == 'celtsLabor' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+    {{createTable(celtsLabor, "celtsLabor")}}
   </div>
 </div>
 {% include 'events/emailModal.html' %}

@@ -275,7 +275,6 @@ def test_getStudentManagerForEvent():
         {
         "id":13,
         "programName":"testProgram",
-        "isStudentLed": False,
         "isBonnerScholars":False,
         }
         ]
@@ -456,4 +455,40 @@ def test_updateDietInfo():
         newContent = [list.dietRestriction for list in newDiet]
         assert newContent == ["Beef"]
 
+        transaction.rollback()
+@pytest.mark.integration
+# Test hasCurrentCeltsLabor property that checks if someone has current Celts Labor position
+def test_hasCurrentCeltsLabor():
+    from app.models.user import User
+    from app.models.term import Term
+    from app.models.celtsLabor import CeltsLabor
+
+    with mainDB.atomic() as transaction:
+        # Create a test user
+        testUser = User.create(username='testuser',
+                               firstName='Test',
+                               lastName='User',
+                               bnumber='B00000001',
+                               email='testuser@berea.edu',
+                               isStudent=True)
+        currentTerm = Term.create(termName='Fall 2023', isCurrentTerm=True)
+        CeltsLabor.create(user=testUser, term=currentTerm, position='Test Position')
+        # Check if the user has current Celts Labor
+        assert testUser.hasCurrentCeltsLabor is True
+
+        pastTerm = Term.create(termName='Spring 2023', isCurrentTerm=False)
+        # Create a CeltsLabor entry for the test user in the past term
+        CeltsLabor.create(user=testUser, term=pastTerm, position='Past Position')
+        # Check if the user still has current Celts Labor
+        assert testUser.hasCurrentCeltsLabor is True
+
+        # Create a new user without any Labor position
+        newUser = User.create(username='newuser',
+                                firstName='New',
+                                lastName='User',
+                                bnumber='B00000002',
+                                email='newuser@berea.edu',
+                                isStudent=True)
+        # Check if the new user has current Celts Labor
+        assert newUser.hasCurrentCeltsLabor is False
         transaction.rollback()
