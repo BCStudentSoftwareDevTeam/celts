@@ -27,6 +27,7 @@ class User(baseModel):
 
         self._pmCache = {}
         self._bsCache = None
+        self._laborCache = None
         self._isProgramManagerCache = None
     
     @property
@@ -47,7 +48,19 @@ class User(baseModel):
             self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
 
         return self._bsCache
-
+    
+    @property
+    def hasCurrentCeltsLabor(self):
+        if self._laborCache is None:
+            from app.models.celtsLabor import CeltsLabor
+            from app.models.term import Term
+            self._laborCache = (CeltsLabor.select()
+                                          .join(Term)
+                                          .where(CeltsLabor.user == self, 
+                                                 CeltsLabor.term.isCurrentTerm == True)
+                                          .exists())
+        return self._laborCache 
+ 
     @property
     def fullName(self):
         return f"{self.firstName} {self.lastName}"
