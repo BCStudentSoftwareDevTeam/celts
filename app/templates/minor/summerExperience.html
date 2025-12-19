@@ -170,10 +170,7 @@
                     <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
                       {% if not viewing %}
                           <input class="submit-proposal btn btn-primary" type="button" id="saveAsDraftButton" data-status="Draft" value="Save As Draft"/>
-                          <input class="submit-proposal btn btn-primary" type="button" id="submitButton" data-status="Submitted"  value="Submit"/> 
-                          {% if g.current_user.isCeltsAdmin and proposal %}
-                            <input class="btn btn-success" type="button" id="saveAndApproveButton" data-status="Submitted" value="Save and Approve"/> 
-                          {% endif %}
+                          <input class="submit-proposal btn btn-success" type="button" id="submitButton" data-status="Submitted"  value="Submit"/> 
                       {% endif %}
                     </div>
                   </div>
