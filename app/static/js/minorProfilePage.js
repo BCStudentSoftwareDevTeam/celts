@@ -26,18 +26,20 @@ $(document).ready(function() {
     
     if (!$('#proposalForm')[0].checkValidity()) {
       $('#proposalForm')[0].reportValidity();
+      $( '#proposalForm').submit()
       return;
     }
     
     // file validation
-    if ($('#proposalExperienceType').val() == "Other Engagement") {
-      var fileRowCount = $('#supervisorAttachmentContainer')[0].files;
-      if (fileRowCount.length == 0) {
-        $('#supervisorAttachment')[0].setCustomValidity('Please upload a file.');
-        $('#supervisorAttachment')[0].reportValidity();
+    if ($('#proposalExperienceType').val() === "Other Engagement") {
+      const fileInput = $('#supervisorAttachment')[0];
+      const files = fileInput.files;
+      if (!files || files.length === 0) {
+        fileInput.setCustomValidity('Please upload a file.');
+        fileInput.reportValidity();
         return;
       } else {
-        $('#supervisorAttachment')[0].setCustomValidity('');
+        fileInput.setCustomValidity('');
       }
     }
     
