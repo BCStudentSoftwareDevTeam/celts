@@ -75,6 +75,7 @@ function setViewForSingleOffering() {
 
 function setViewForSeries() {
   $(".startDatePicker").prop('required', false);
+  $(".startDatePicker").hide();
   $("#multipleOfferingTableDiv").removeClass('d-none');
   $("#eventLocation-main").show();
   $("#inputEventLocation-main").prop('required', false);
@@ -89,8 +90,8 @@ function displayNotification(message) {
   $('.invalidFeedback').text(message);
   $('.invalidFeedback').css('display', 'block');
   $('.invalidFeedback').on('animationend', function () {
-    $('.invalidFeedback').css('display', 'none');
-    $('#textNotifierPadding').removeClass('pt-5')
+  $('.invalidFeedback').css('display', 'none');
+  $('#textNotifierPadding').removeClass('pt-5');
   });
 }
 
@@ -205,11 +206,10 @@ $('#saveSeries').on('click', function(e) {
   enableLiveCustomValidityClearing([".multipleOfferingNameField"])
   let eventOfferings = $('#multipleOfferingSlots .eventOffering');
   let eventNameInputs = $('#multipleOfferingSlots .multipleOfferingNameField');
-  let eventLocationInput = $('')
+  let eventLocationInputs = $('#multipleOfferingSlots .multipleOfferingLocationField');
   let datePickerInputs = $('#multipleOfferingSlots .multipleOfferingDatePicker');
   let startTimeInputs = $('#multipleOfferingSlots .multipleOfferingStartTime');
   let endTimeInputs = $('#multipleOfferingSlots .multipleOfferingEndTime');
-  let locationInputs = $('#multipleOfferingSlots .multipleOfferingLocationField');
   let isRepeatingStatus = $("#checkIsRepeating").is(":checked");
   let startDateInput = $("#repeatingEventsStartDate");
   let endDateInput = $("#repeatingEventsEndDate");
@@ -238,6 +238,7 @@ $('#saveSeries').on('click', function(e) {
     
   } else {
     // Validate individual event offerings for non-repeating events
+
     // Check event name fields
     eventNameInputs.each((index, eventNameInput) => {
       if (eventNameInput.value.trim() === '') {
@@ -246,6 +247,18 @@ $('#saveSeries').on('click', function(e) {
         $(eventNameInput)[0].reportValidity();
       } else {
         $(eventNameInput)[0].setCustomValidity("");
+      }
+      });
+ 
+
+    // Check location fields
+    eventLocationInputs.each((index, eventLocationInput) => {
+      if (eventLocationInput.value.trim() === '') {
+        hasErrors = true;
+        $(eventLocationInput)[0].setCustomValidity("Please enter an event location");
+        $(eventLocationInput)[0].reportValidity();
+      } else {
+        $(eventLocationInput)[0].setCustomValidity("");
       }
     });
 
@@ -326,7 +339,7 @@ function updateEventNameField() {
 
   if (!isSeries) {
     // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
-    $('#inputEventName').val('')
+    $('#inputEventName').val('') // ERROR IS HERE! FINALLY FOUND IT!!
   }
   else {
     // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
@@ -640,7 +653,7 @@ $("#cancelEvent").on('click', function (event) {
       setViewForSeries();
       loadOfferingsToModal();
       $('#modalSeries').modal('show');
-
+      
       // Disable single event name and location fields
       $('#inputEventName').prop('readonly', true);
       $('#inputEventLocation-main').prop('readonly', true);
