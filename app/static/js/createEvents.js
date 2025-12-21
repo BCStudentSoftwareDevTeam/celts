@@ -64,13 +64,14 @@ function calculateRepeatingEventFrequency() {
 
 function setViewForSingleOffering() {
   $(".startDatePicker").prop('required', true);
+  $(".startDatePicker").show();
   $("#multipleOfferingTableDiv").addClass('d-none');
   $("#eventLocation-main").hide();
   $("#eventLocation-main").show();
   $("#inputEventLocation-main").prop('required', true);
   $('#eventTime, #eventDate').show();
-  $('#checkIsSeriesToggleContainer').removeClass('col-md-6')
-  $('#checkIsSeriesToggleContainer').addClass('col-md-12')
+  $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
+  $('#checkIsSeriesToggleContainer').addClass('col-md-6')
 }
 
 function setViewForSeries() {
@@ -117,12 +118,10 @@ function initializeFlatpickr(obj) {
   });
 }
 
-let eventSessionNum = 0;
 function createOfferingModalRow({ eventName = null, eventDate = null, startTime = null, endTime = null, eventLocation = null } = {}) {
   let clonedOffering = $("#multipleOfferingEvent").clone().removeClass('d-none').removeAttr("id");
-  const baseName = $('#inputEventName').val();
-  const fullName = baseName + ': session ' + (eventSessionNum + 1);
-  clonedOffering.find('.multipleOfferingNameField').val(fullName);
+  const Name = $('#inputEventName').val();
+  clonedOffering.find('.multipleOfferingNameField').val(Name);
 
 
   // insert values for the newly created row
@@ -132,7 +131,6 @@ function createOfferingModalRow({ eventName = null, eventDate = null, startTime 
   if (endTime) { clonedOffering.find('.multipleOfferingEndTime').val(endTime) }
   if (eventLocation) { clonedOffering.find('.multipleOfferingLocationField').val(eventLocation) }
 
-  eventSessionNum++;
   $("#multipleOfferingSlots").append(clonedOffering);
   pendingmultipleEvents.push(clonedOffering);
 
@@ -334,15 +332,8 @@ $('#saveSeries').on('click', function(e) {
 
 // Populate the Event Name field in the main page with the entered repeating events
 function updateEventNameField() {
-  let offerings = JSON.parse($("#seriesData").val())
   let isSeries = $("#checkIsRepeating").is(":checked")
-
-  if (!isSeries) {
-    // if not weeekly, add them to a set to remove duplicates, then put them in a string to populate the field
-    $('#inputEventName').val('') // ERROR IS HERE! FINALLY FOUND IT!!
-  }
-  else {
-    // if weekly, take the name of the first item (which is the same for all) and take the word 'week'
+  if (isSeries) {
     let offeringText = $("#repeatingEventsNamePicker").val()
     $('#inputEventName').val(offeringText)
   }
