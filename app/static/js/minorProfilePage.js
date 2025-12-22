@@ -95,6 +95,8 @@ $(document).ready(function() {
   // when they are hidden
   $("#yes300hours").on("click", function() {
     let hoursWeeksBoxes = $("#totalHours, #totalWeeks")
+    $("#totalWeeks").val(8);
+    $("#totalHours").val(300)
     hoursWeeksBoxes.prop('required', false); 
   })
 
