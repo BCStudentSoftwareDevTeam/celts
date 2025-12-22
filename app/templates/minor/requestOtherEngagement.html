@@ -106,6 +106,7 @@
           <div class="form-group">
               <label class="required form-label" for="experienceDescription"><strong>Experience Description</strong></label>
               <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription"
+              required value="{{ proposal.experienceDescription if proposal else '' }}"
                 {% if viewing %} disabled {% endif %}>{{ proposal.experienceDescription if proposal else '' }}</textarea>
           </div>
           

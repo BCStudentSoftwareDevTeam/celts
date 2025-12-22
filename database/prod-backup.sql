@@ -202,7 +202,7 @@ CREATE TABLE `cceminorproposal` (
   CONSTRAINT `cceminorproposal_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `user` (`username`),
   CONSTRAINT `cceminorproposal_ibfk_2` FOREIGN KEY (`term_id`) REFERENCES `term` (`id`),
   CONSTRAINT `cceminorproposal_ibfk_3` FOREIGN KEY (`createdBy_id`) REFERENCES `user` (`username`),
-  CONSTRAINT `cceminorproposal_chk_1` CHECK ((`status` in (_utf8mb4'Approved',_utf8mb4'Pending',_utf8mb4'Denied')))
+  CONSTRAINT `cceminorproposal_chk_1` CHECK ((`status` in (_utf8mb4'Approved',_utf8mb4'Pending',_utf8mb4'Denied',_utf8mb4'Submitted',_utf8mb4'Draft')))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

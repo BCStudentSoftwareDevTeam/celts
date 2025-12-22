@@ -26,23 +26,24 @@ $(document).ready(function() {
     
     if (!$('#proposalForm')[0].checkValidity()) {
       $('#proposalForm')[0].reportValidity();
-      $( '#proposalForm').submit()
+      const stats= $('#statusField').val();
+      console.log(stats)
+      const form = $('#proposalForm')[0];
+      if(stats ==="Submitted"){
+        const firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid && stats ==="Submitted") {
+        firstInvalid.scrollIntoView({
+          block: 'center' });
+          firstInvalid.focus();
+
+         }
+     
+      // $( '#proposalForm').submit()
       return;
-    }
-    
-    // file validation
-    if ($('#proposalExperienceType').val() === "Other Engagement") {
-      const fileInput = $('#supervisorAttachment')[0];
-      const files = fileInput.files;
-      if (!files || files.length === 0) {
-        fileInput.setCustomValidity('Please upload a file.');
-        fileInput.reportValidity();
-        return;
-      } else {
-        fileInput.setCustomValidity('');
       }
-    }
-    
+
+      
+    }    
     var formData = new FormData($('#proposalForm')[0]);
     var actionURL = $('#proposalForm').attr('action');
     let username = $("#username").val();
