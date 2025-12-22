@@ -277,6 +277,32 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
+def getpastVolunteerOpportunitiesCount(term, currentTime):
+    """
+        Return a count of all past events for each volunteer opportunities program.
+    """
+    
+    pastCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate < currentTime) |
+             ((Event.startDate == currentTime) & (Event.timeStart <= currentTime))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
+
+    programCountDict = {}
+    for programCount in pastCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
+
 def getTrainingEvents(term, user):
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
