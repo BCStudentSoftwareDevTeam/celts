@@ -175,29 +175,29 @@
   <p class="m-2 fs-4">There are no {{typemap[type]}} events for this term.</p>
 {% endif %}
 {% endmacro %}
-
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show {{'active' if activeTab == 'volunteerOpportunities' else ''}}" id="pills-volunteer-opportunities" role="tabpanel" aria-labelledby="pills-volunteer-opportunities-tab">
-    {% if volunteerOpportunities %}
-    <div class="accordion" id="categoryAccordion">
-      {% for program,events in volunteerOpportunities.items() %}
-        <div class="accordion-item">
-          <div class="accordion-header" id="accordion__header_{{program}}">
-            <button class="accordion-button {{'show' if programID == program.id else 'collapsed'}}"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
-                    aria-expanded="true"
-                    aria-controls="accordion__body_{{program}}">
-                    {{program.programName}}
-                    {% if program.id not in countUpcomingVolunteerOpportunities%}
-                      <span class="ms-auto fw-light fst-italic"> 0 upcoming events and {{countPastVolunteerOpportunities[program.id]}} past events</span>
-                    {% else %}
-                        <span class="ms-auto fw-light fst-italic">{{countUpcomingVolunteerOpportunities[program.id]}} upcoming event{% if countUpcomingVolunteerOpportunities[program.id] > 1 %}s{% endif %} and {{countPastVolunteerOpportunities[program.id]}} past event{% if countUpcomingVolunteerOpportunities[program.id] > 1 %}s{% endif %}s</span>
-                    {% endif %}
+  <div class="tab-pane fade show {{ 'active' if activeTab == 'volunteerOpportunities' else '' }}"
+       id="pills-volunteer-opportunities"
+       role="tabpanel"
+       aria-labelledby="pills-volunteer-opportunities-tab">
 
-            </button>
-          </div>
+    {% if volunteerOpportunities %}
+      <div class="accordion" id="categoryAccordion">
+        {% for program, events in volunteerOpportunities.items() %}
+          <div class="accordion-item">
+            <div class="accordion-header" id="accordion__header_{{ program }}">
+              <button class="accordion-button {{ 'show' if programID == program.id else 'collapsed' }}"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#accordion__body_{{ program }}_num_{{ loop.index }}"
+                      aria-expanded="true"
+                      aria-controls="accordion__body_{{ program }}">
+                {{ program.programName }}
+                {% set upcoming = countUpcomingVolunteerOpportunities.get(program.id, 0) %}
+                {% set past = countPastVolunteerOpportunities.get(program.id, 0) %}
+                  <span class="ms-auto fw-light fst-italic"> {{ upcoming }} upcoming event{% if upcoming != 1 %}s{% endif %} and {{ past }} past event{% if past != 1 %}s{% endif %} </span>
+              </button>
+            </div>
           <div id="accordion__body_{{program}}_num_{{ loop.index }}"
                 class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
                 aria-labelledby="accordion__header_{{program}}"
