@@ -87,6 +87,8 @@ function updateIndicatorCounts(isChecked){
     },
     success: function(eventsCount) {
       const volunteerOpportunitiesCount = Number(eventsCount.volunteerOpportunitiesCount);
+      const upcomingVolunteerCount = Number(eventsCount.countUpcomingVolunteerOpportunitiesCount);
+      const pastVolunteerCount = Number(eventsCount.countPastVolunteerOpportunitiesCount);
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
@@ -96,7 +98,26 @@ function updateIndicatorCounts(isChecked){
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
       // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-      volunteerOpportunitiesCount > 0 ? $("#volunteerOpportunities").html(`Volunteer Opportunities (${volunteerOpportunitiesCount})`) : $("#volunteerOpportunities").html(`Volunteer Opportunities`)
+
+      if (toggleStatus === "checked") {
+        // Toggle ON → show total (upcoming + past)
+        if (volunteerOpportunitiesCount > 0) {
+          $("#volunteerOpportunities").html(
+            `Volunteer Opportunities (${volunteerOpportunitiesCount})`
+          );
+        } else {
+          $("#volunteerOpportunities").html(`Volunteer Opportunities`);
+        }
+      } else {
+        // Toggle OFF → show upcoming only
+        if (upcomingVolunteerCount > 0) {
+          $("#volunteerOpportunities").html(
+            `Volunteer Opportunities (${upcomingVolunteerCount})`
+          );
+        } else {
+          $("#volunteerOpportunities").html(`Volunteer Opportunities`);
+        }
+      }
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)

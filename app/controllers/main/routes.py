@@ -110,6 +110,7 @@ def events(selectedTerm, activeTab, programID):
 
     # Get the count of all term events for each category to display in the event list page.
     volunteerOpportunitiesCount: int = len(studentEvents)
+    countUpcomingVolunteerOpportunitiesCount: int = len(countUpcomingVolunteerOpportunities)
     countPastVolunteerOpportunitiesCount: int = len(countPastVolunteerOpportunities)
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
@@ -136,6 +137,7 @@ def events(selectedTerm, activeTab, programID):
         return jsonify({
             "volunteerOpportunitiesCount": volunteerOpportunitiesCount,
             "countPastVolunteerOpportunitiesCount": countPastVolunteerOpportunitiesCount,
+            "countUpcomingVolunteerOpportunitiesCount": countUpcomingVolunteerOpportunitiesCount,
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
