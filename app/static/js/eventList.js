@@ -88,7 +88,6 @@ function updateIndicatorCounts(isChecked){
     success: function(eventsCount) {
       const volunteerOpportunitiesCount = Number(eventsCount.volunteerOpportunitiesCount);
       const upcomingVolunteerCount = Number(eventsCount.countUpcomingVolunteerOpportunitiesCount);
-      const pastVolunteerCount = Number(eventsCount.countPastVolunteerOpportunitiesCount);
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
@@ -96,11 +95,10 @@ function updateIndicatorCounts(isChecked){
       const toggleStatus = eventsCount.toggleStatus;
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
-
+      
       // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-
       if (toggleStatus === "checked") {
-        // Toggle ON → show total (upcoming + past)
+        // Toggle ON: show total (upcoming + past)
         if (volunteerOpportunitiesCount > 0) {
           $("#volunteerOpportunities").html(
             `Volunteer Opportunities (${volunteerOpportunitiesCount})`
@@ -109,7 +107,7 @@ function updateIndicatorCounts(isChecked){
           $("#volunteerOpportunities").html(`Volunteer Opportunities`);
         }
       } else {
-        // Toggle OFF → show upcoming only
+        // Toggle OFF: show upcoming only
         if (upcomingVolunteerCount > 0) {
           $("#volunteerOpportunities").html(
             `Volunteer Opportunities (${upcomingVolunteerCount})`
