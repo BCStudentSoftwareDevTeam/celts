@@ -178,7 +178,7 @@ def test_getPastVolunteerOpportunitiesCount():
         )
 
         # Past Volunteer Opportunity (same day, before test time)
-        pastSameDayEvent = Event.create(
+        Event.create(
             name="Test same-day past AGP event",
             term=currentTestTerm,
             description="Same day but earlier time.",
@@ -192,7 +192,7 @@ def test_getPastVolunteerOpportunitiesCount():
         )
 
         # Future Volunteer Opportunity (should NOT be counted)
-        futureAgpEvent = Event.create(
+        Event.create(
             name="Test future AGP event",
             term=currentTestTerm,
             description="Future volunteer opportunity.",
