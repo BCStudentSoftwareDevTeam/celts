@@ -66,8 +66,8 @@ function setViewForSingleOffering() {
   $(".startDatePicker").prop('required', true);
   $(".startDatePicker").show();
   $("#multipleOfferingTableDiv").addClass('d-none');
-  $("#eventLocation-main").hide();
   $("#eventLocation-main").show();
+  $("#inputEventLocation-main").attr('readonly', false);
   $("#inputEventLocation-main").prop('required', true);
   $('#eventTime, #eventDate').show();
   $('#checkIsSeriesToggleContainer').removeClass('col-md-12')
@@ -422,6 +422,10 @@ function loadRepeatingOfferingToModal(offering){
 function updateOfferingsTable() {
   let offerings = JSON.parse($("#seriesData").val())
   var offeringsTable = $("#offeringsTable");
+  
+  // Sorting the offerings by data and time in case user inputs in an unsorted manner
+  offerings.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate) || a.startTime.localeCompare(b.startTime));
+
   offeringsTable.find("tbody tr").remove(); // Clear existing rows
   offerings.forEach(function (offering) {
     //format to 12hr time for display
