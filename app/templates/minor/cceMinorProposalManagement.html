@@ -29,7 +29,7 @@
                             {% if proposal.isApproved %}
                                 <option value="Unapprove">Unapprove</option>
                             {% else %}
-                                <option value="Approve">Approve</option>
+                                <option {{'disabled' if proposal.status != "Submitted" else ''}} value="Approve">Approve</option>
                             {% endif %}
                         {% endif %}                      
                         <option value="withdraw">Withdraw</option>

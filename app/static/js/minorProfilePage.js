@@ -27,7 +27,6 @@ $(document).ready(function() {
     if (!$('#proposalForm')[0].checkValidity()) {
       $('#proposalForm')[0].reportValidity();
       const stats= $('#statusField').val();
-      console.log(stats)
       const form = $('#proposalForm')[0];
       if(stats ==="Submitted"){
         const firstInvalid = form.querySelector(':invalid');
