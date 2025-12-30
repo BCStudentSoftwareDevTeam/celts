@@ -35,8 +35,10 @@ $(document).ready(function(){
     var tableRows = $(".showlist");
     if (isChecked) {
       tableRows.show();
+      $(".no-upcoming").hide()
     } else {
       tableRows.hide();
+      $(".no-upcoming").show()
     }
   }
 });
@@ -84,21 +86,21 @@ function updateIndicatorCounts(isChecked){
       toggleState: isChecked ? "checked" : "unchecked",
     },
     success: function(eventsCount) {
-      const studentLedEventsCount = Number(eventsCount.studentLedEventsCount);
+      const volunteerOpportunitiesCount = Number(eventsCount.volunteerOpportunitiesCount);
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
-      const otherEventsCount = Number(eventsCount.otherEventsCount);
+      const celtsLaborCount = Number(eventsCount.celtsLaborCount);
       const toggleStatus = eventsCount.toggleStatus;
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
 
       // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student-Led Services (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student-Led Services`)
+      volunteerOpportunitiesCount > 0 ? $("#volunteerOpportunities").html(`Volunteer Opportunities (${volunteerOpportunitiesCount})`) : $("#volunteerOpportunities").html(`Volunteer Opportunities`)
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
-      otherEventsCount > 0 ? $("#otherEvents").html(`Other Events (${otherEventsCount})`) : $("#otherEvents").html(`Other Events`)
+      celtsLaborCount > 0 ? $("#celtsLabor").html(`Celts Labor (${celtsLaborCount})`) : $("#celtsLabor").html(`Celts Labor`)
     },
     error: function(request, status, error) {
       console.log(status,error);
