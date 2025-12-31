@@ -96,7 +96,11 @@ function updateIndicatorCounts(isChecked){
       
       $("#viewPastEventsToggle").prop(toggleStatus, true);
       
-      // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
+      // Update tab labels with event counts:
+      // - When toggle is ON, show total volunteer opportunities (upcoming + past)
+      // - When toggle is OFF, show upcoming volunteer opportunities only
+      // - For all tabs, show counts only if greater than zero; otherwise show the label without a count
+
       if (toggleStatus === "checked") {
         // Toggle ON: show total (upcoming + past)
         if (volunteerOpportunitiesCount > 0) {
