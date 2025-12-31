@@ -251,7 +251,7 @@ def getEngagementEvents(term):
                                  .execute())
     return engagementEvents
 
-def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
@@ -265,8 +265,8 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
             (Event.deletionDate.is_null(True)) &
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
-            ((Event.startDate > currentTime) |
-             ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime))) &
+            ((Event.startDate > currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
@@ -277,7 +277,7 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
-def getpastVolunteerOpportunitiesCount(term, currentTime):
+def getpastVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all past events for each volunteer opportunities program.
     """
@@ -291,8 +291,8 @@ def getpastVolunteerOpportunitiesCount(term, currentTime):
             (Event.deletionDate.is_null(True)) &
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
-            ((Event.startDate < currentTime) |
-             ((Event.startDate == currentTime) & (Event.timeStart <= currentTime))) &
+            ((Event.startDate < currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
