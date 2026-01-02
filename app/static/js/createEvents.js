@@ -818,6 +818,26 @@ function handleTimeFormatting(timeArray){
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
   
+  // Handle "None Required" checkbox behavior
+  $('#noTrainingRequired').on('change', function() {
+    if ($(this).is(':checked')) {
+      // Uncheck all training checkboxes when "None Required" is selected
+      $('.training-checkbox').prop('checked', false);
+    }
+  });
+
+  // Handle training checkbox behavior
+  $('.training-checkbox').on('change', function() {
+    if ($(this).is(':checked')) {
+      // Uncheck "None Required" when any training is selected
+      $('#noTrainingRequired').prop('checked', false);
+    } else {
+      // If no training checkboxes are checked, check "None Required"
+      if ($('.training-checkbox:checked').length === 0) {
+        $('#noTrainingRequired').prop('checked', true);
+      }
+    }
+  });
 });
 
 

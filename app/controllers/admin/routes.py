@@ -181,13 +181,14 @@ def createEvent(templateid, programid):
             if cohort:
                 bonnerCohorts[year] = cohort
                 
-            
+    trainingEvents = Event.select().where(Event.isTraining == True).order_by(Event.name)        
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
                            termList = selectSurroundingTerms(g.current_term, prevTerms=0),
                            requirements = requirements,
                            bonnerCohorts = bonnerCohorts,
+                           trainingEvents = trainingEvents,
                            isProgramManager = isProgramManager)
 
 
@@ -333,6 +334,7 @@ def eventDisplay(eventId):
     
     rule = request.url_rule
 
+    trainingEvents = Event.select().where(Event.isTraining == True).order_by(Event.name)
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
@@ -344,6 +346,7 @@ def eventDisplay(eventId):
                                 invitedYears = invitedYears, 
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
+                                trainingEvents = trainingEvents, 
                                 filepaths = filepaths)
     # Event View
     else:
