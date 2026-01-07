@@ -23,26 +23,30 @@ $(document).ready(function() {
     e.preventDefault();
     let status = $(this).data('status');
     $('#statusField').val(status);
-    
-    if (!$('#proposalForm')[0].checkValidity()) {
-      $('#proposalForm')[0].reportValidity();
-      const stats= $('#statusField').val();
-      const form = $('#proposalForm')[0];
-      if(stats ==="Submitted"){
-        const firstInvalid = form.querySelector(':invalid');
-      if (firstInvalid && stats ==="Submitted") {
-        firstInvalid.scrollIntoView({
+    const stats= $('#statusField').val();
+    const form = $('#proposalForm')[0];
+
+    if(stats ==="Submitted"){
+
+      const fileInput = $('#supervisorAttachment');
+      const filePath = fileInput.data('file-path');
+      const firstInvalid = form.querySelector(':invalid');
+      console.log(filePath,"filePath");
+
+      if (!filePath)
+          {
+          firstInvalid.scrollIntoView({
           block: 'center' });
           firstInvalid.focus();
+          return;
+        }
+      else{
+         $( '#proposalForm').submit()     
 
-         }
-     
-      // $( '#proposalForm').submit()
-      return;
       }
+       return;  
 
-      
-    }    
+    }
     var formData = new FormData($('#proposalForm')[0]);
     var actionURL = $('#proposalForm').attr('action');
     let username = $("#username").val();
