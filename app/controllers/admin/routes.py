@@ -71,20 +71,18 @@ def switchUser():
 
 @admin_bp.route('/eventTemplates')
 def templateSelect():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        allprograms = getAllowedPrograms(g.current_user)
-        visibleTemplates = getAllowedTemplates(g.current_user)
-        return render_template("/events/templateSelector.html",
-                                programs=allprograms,
-                                celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
-                                templates=visibleTemplates)
-    else:
+    programs = getAllowedPrograms(g.current_user)
+    if not programs:
         abort(403)
-
+    visibleTemplates = getAllowedTemplates(g.current_user)
+    return render_template("/events/templateSelector.html",
+                            programs=programs,
+                            celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
+                            templates=visibleTemplates)
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
+    if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
@@ -173,8 +171,6 @@ def createEvent(templateid, programid):
     preprocessEventData(eventData)
     isProgramManager = g.current_user.isProgramManagerFor(programid)
 
-    futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
-
     requirements, bonnerCohorts = [], []
     if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
@@ -189,7 +185,7 @@ def createEvent(templateid, programid):
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
-                           futureTerms = futureTerms,
+                           termList = selectSurroundingTerms(g.current_term, prevTerms=0),
                            requirements = requirements,
                            bonnerCohorts = bonnerCohorts,
                            isProgramManager = isProgramManager)
@@ -314,7 +310,6 @@ def eventDisplay(eventId):
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.program
-    futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
@@ -342,7 +337,7 @@ def eventDisplay(eventId):
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
                                 eventData = eventData,
-                                futureTerms = futureTerms,
+                                termList = Term.select().order_by(Term.termOrder),
                                 event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,

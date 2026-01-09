@@ -155,7 +155,7 @@
       <div class="form-group mb-4">
         <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
         <select class="form-select" name='term' id='inputEventTerm' required>
-          {% for term in futureTerms %}
+          {% for term in termList %}
           <option value='{{term}}' {{"selected" if term==eventData.term}}>{{term.description}}</option>
           {% endfor %}
         </select>
@@ -325,7 +325,7 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="button" class="btn btn-primary saveBtn" id="saveButton" value="Save" />
+        <input type="button" class="btn btn-primary" id="saveButton" value="Save" />
       </div>
     </div>
   </div>

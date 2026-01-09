@@ -218,13 +218,27 @@ function addRequirementsRowHandlers() {
     $(".frequency-select").change();
     // add this one after we trigger the first change event
     $(".frequency-select").change(function(e) {
-        enableSave();
     });
 
     // detect changes so we can enable saving
     $(".required-select").change(function(e) {
-        enableSave();
     });
+    $("#requirements input").on("input blur", function(e) {
+        if($(this).val() == "") {
+            this.setCustomValidity('Please enter a name.');
+            this.reportValidity();
+            $(".saveBtn").attr("disabled", "disabled");
+            $("#reqAdd").attr("disabled", "disabled");
+        } else {
+            $(".saveBtn").removeAttr("disabled");
+            $("#reqAdd").removeAttr("disabled");
+            this.setCustomValidity('');
+            this.reportValidity();
+            enableSave();
+        }
+    });
+
+    
 
     // handle invalid and valid entries
     $("#requirements input").keyup(function(e) {
