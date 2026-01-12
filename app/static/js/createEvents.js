@@ -448,12 +448,12 @@ function updateOfferingsTable() {
 
 //visual date formatting for multi-event table
 function formatDate(originalDate) {
-  var dateObj = new Date(originalDate);
-  // dateObj.setUTCHours(0, 0, 0, 0); // set the timezone
+  var dateObj = new Date(originalDate); // because there is no time in the string, Date assumes UTC
 
-  var month = dateObj.toLocaleString('default', { month: 'short' });
+  var month = dateObj.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
   var day = dateObj.getUTCDate();
   var year = dateObj.getUTCFullYear();
+
   return month + " " + day + ", " + year;
 }
 
