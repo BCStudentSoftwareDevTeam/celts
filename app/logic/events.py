@@ -118,8 +118,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     
     seriesId = calculateNewSeriesId()
 
-    # Create separate event data inheriting from the original eventData
-    seriesData = eventData.get('seriesData')
+    # Create separate event data for each event in the series, inheriting from the original eventData
+
+    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(f"{x['eventDate']} {x['startTime']}",'%Y-%m-%d %H:%M'))
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
