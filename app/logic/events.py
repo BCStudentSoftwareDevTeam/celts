@@ -129,7 +129,7 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
-                'location': eventData['location'],
+                'location': event['eventLocation'],
                 'seriesId': seriesId,
                 'isRepeating': bool(isRepeating), 
                 })
