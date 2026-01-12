@@ -368,40 +368,46 @@ def test_attemptSaveMultipleOfferings():
     validseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 2',
                             'eventDate': '2022-06-13', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a small room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     duplicatedseriesData = baseEventData.copy()
     duplicatedseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     
@@ -412,6 +418,9 @@ def test_attemptSaveMultipleOfferings():
         assert succeeded == True
         assert len(savedEvents) == 3
         assert len(failedSavedOfferings) == 0
+
+        assert savedEvents[0].location == 'a big room'
+        assert savedEvents[1].location == 'a small room'
 
         transaction.rollback()
         
