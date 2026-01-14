@@ -25,10 +25,41 @@ def manageMinor():
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
+    print(sustainedEngagement)
     declaredStudentsList = getDeclaredMinorStudents()
-    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])    
+    print("These are the declaredStudents", declaredStudentsList)
+    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])  
+      
+    declaredUsernames = {
+        s['username']
+        for s in declaredStudentsList
+        if s.get('declaredMinor')
+    }
+    
+    sustainedUsernames = {
+        s['username']
+        for s in sustainedEngagement
+    }
+    
+    # merging both lists 
+    cceMinorStudents = {}
+    # if they are in sustainedEngagement and have been declared
+    for student in sustainedEngagement:
+        cceMinorStudents[student['username']] = {
+            **student,
+            'isDeclaredMinor': student['username'] in declaredUsernames
+        }
+        
+    for student in declaredStudentsList:
+        if student['username'] not in sustainedUsernames:
+            cceMinorStudents[student['username']] = {
+                **student
+            }
+    cceMinorStudents = list(cceMinorStudents.values())
+
 
     return render_template('/admin/cceMinor.html',
+                            cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,
                             declaredStudentsList = declaredStudentsList,
                             interestedStudentEmailString = interestedStudentEmailString,
