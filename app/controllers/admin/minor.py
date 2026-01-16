@@ -53,7 +53,10 @@ def manageMinor():
     for student in declaredStudentsList:
         if student['username'] not in sustainedUsernames:
             cceMinorStudents[student['username']] = {
-                **student
+                **student,
+                'engagementCount': 0, 
+                'hasSummer': 'Incomplete',
+                'hasCCEMinorProposal': False
             }
     cceMinorStudents = list(cceMinorStudents.values())
 
