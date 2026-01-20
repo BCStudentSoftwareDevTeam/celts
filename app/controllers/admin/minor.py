@@ -25,9 +25,7 @@ def manageMinor():
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
-    print(sustainedEngagement)
     declaredStudentsList = getDeclaredMinorStudentsWithProgress()
-    print("These are the declaredStudents", declaredStudentsList)
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])  
       
     declaredUsernames = {
