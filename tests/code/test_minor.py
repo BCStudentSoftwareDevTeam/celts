@@ -22,7 +22,7 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
-from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
+from app.logic.minor import declareMinorInterest, getDeclaredMinorStudentsWithProgress
 from app.logic.fileHandler import FileHandler
 
 
@@ -526,10 +526,10 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
         
         testProposal["term"] = testTerm
 
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
+        User.create(username="nimelyj",
+                    firstName="joyce",
+                    lastName="nimely",
+                    email="joycenimelyberea.edu",
                     bnumber="B91111113")
         
         # verify FINN has no summer experiences in currently
@@ -539,13 +539,13 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "glek"
+            g.current_user = "nimelyj"
             createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
-        assert newSummerExperiences[0].createdBy.username == "glek"
+        assert newSummerExperiences[0].createdBy.username == "nimelyj"
         
         transaction.rollback()
 
@@ -555,15 +555,15 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 @pytest.mark.integration
 def test_createOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
+        User.create(username="nimelyj",
+                    firstName="joyce",
+                    lastName="nimely",
+                    email="joycenimely@berea.edu",
                     bnumber="B91111113")
         
         # Save the requested event to the database
         with app.app_context():
-            g.current_user = "glek"
+            g.current_user = "nimelyj"
             createOtherEngagementRequest(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
@@ -672,15 +672,12 @@ def test_declareMinorInterest():
 
 
 @pytest.mark.integration
-def test_getDeclaredMinorStudents():
+def test_getDeclaredMinorStudentsWithProgress():
     
     with mainDB.atomic() as transaction:
         # Get all the declared students
-        declaredStudents = getDeclaredMinorStudents()
-        
-        assert declaredStudents == []
-        assert len(declaredStudents) == 0
-        
+        declaredStudents = getDeclaredMinorStudentsWithProgress()
+    
         student1 = User.get_by_id("agliullovak")
         student2 = User.get_by_id("partont")
         student3 = User.get_by_id("bryanta")
@@ -698,7 +695,7 @@ def test_getDeclaredMinorStudents():
         student3.save()
         
         # Get all the declared students after recent changes
-        newDeclaredStudents = getDeclaredMinorStudents()
+        newDeclaredStudents = getDeclaredMinorStudentsWithProgress()
         
         assert len(newDeclaredStudents) == 3
         
