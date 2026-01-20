@@ -4,7 +4,7 @@ from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet, getDeclaredMinorStudents
+from app.logic.minor import getDeclaredMinorStudentsWithProgress, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet, getDeclaredMinorStudents
 
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
@@ -26,14 +26,13 @@ def manageMinor():
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
     print(sustainedEngagement)
-    declaredStudentsList = getDeclaredMinorStudents()
+    declaredStudentsList = getDeclaredMinorStudentsWithProgress()
     print("These are the declaredStudents", declaredStudentsList)
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])  
       
     declaredUsernames = {
         s['username']
         for s in declaredStudentsList
-        if s.get('declaredMinor')
     }
     
     sustainedUsernames = {
@@ -54,9 +53,7 @@ def manageMinor():
         if student['username'] not in sustainedUsernames:
             cceMinorStudents[student['username']] = {
                 **student,
-                'engagementCount': 0, 
-                'hasSummer': 'Incomplete',
-                'hasCCEMinorProposal': False
+                'isDeclaredMinor': True
             }
     cceMinorStudents = list(cceMinorStudents.values())
 
