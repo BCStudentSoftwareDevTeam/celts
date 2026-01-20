@@ -36,6 +36,18 @@ class User(baseModel):
         return "Graduated" if (self.hasGraduated) else self.rawClassLevel
 
     @property
+    def isAnAlum(self):
+        "function to determine if user is an alum"
+        alumLevels = ["Graduated", "Alum"]
+        return self.processedClassLevel in alumLevels
+    
+    @property 
+    def isNotEnrolled(self):
+        "function to determine if user is not enrolled, i.e. when the student is neither a freshman, sophomore, junior, or senior or has graduated"
+        notEnrolledLevels = ["Not Enrolled", "Graduated", "Alum"]
+        return self.processedClassLevel in notEnrolledLevels
+
+    @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
 
