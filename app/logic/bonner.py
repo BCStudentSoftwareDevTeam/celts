@@ -95,8 +95,8 @@ def makeBonnerXls(selectedYear, noOfYears=1):
                 else:
                     certRequirementDates[completedEvent[1]].append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
 
-        for key, value in certRequirementDates.items():
-            worksheet.write(row, key, ", ".join(sorted(value)))
+        for tableIndex, dates in certRequirementDates.items():
+            worksheet.write(row, tableIndex, ", ".join(sorted(dates)))
         row += 1
 
     workbook.close()
