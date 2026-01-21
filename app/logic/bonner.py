@@ -47,7 +47,6 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     bonnerEventsId = 1
     bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
     bonnerEventInfo = {bonnerEvent.id:(bonnerEvent.name, index + 4) for index, bonnerEvent in enumerate(bonnerEvents)}
-    allBonnerSpreadsheetPosition = 5
     currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
         worksheet.write(f"{currentLetter}1", bonnerEvent.name, bold)
@@ -86,19 +85,18 @@ def makeBonnerXls(selectedYear, noOfYears=1):
             .join(User, on=(EventParticipant.user == User.username))
             .where((CertificationRequirement.certification_id == bonnerEventsId) & (User.username == student.user.username))
         )
-        
-        allBonnerMeetingDates = []
+
+        certRequirementDates = {}
         for attendedEvent in bonnerEventsAttended:
             if bonnerEventInfo.get(attendedEvent.requirement.id):
                 completedEvent = bonnerEventInfo[attendedEvent.requirement.id]
-                worksheet.write(row, completedEvent[1], attendedEvent.event.startDate.strftime('%m/%d/%Y'))
-                if completedEvent[0] == "All Bonner Meeting":
-                    allBonnerSpreadsheetPosition = completedEvent[1]
-                    allBonnerMeetingDates.append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
-            else:
-                raise Exception("Untracked requirements found in attended events. Debug required.")
-        worksheet.write(row, allBonnerSpreadsheetPosition, ", ".join(sorted(allBonnerMeetingDates)))
+                if completedEvent[1] not in certRequirementDates:
+                    certRequirementDates[completedEvent[1]] = [attendedEvent.event.startDate.strftime('%m/%d/%Y')]
+                else:
+                    certRequirementDates[completedEvent[1]].append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
 
+        for key, value in certRequirementDates.items():
+            worksheet.write(row, key, ", ".join(sorted(value)))
         row += 1
 
     workbook.close()
