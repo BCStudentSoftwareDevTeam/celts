@@ -78,7 +78,7 @@ $(document).ready(function () {
 			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
 		})
 	}
-
+    $("#insuranceSelect").prop("checked", false);
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
