@@ -141,9 +141,8 @@
                 <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastStart }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>
-
-                <a class="btn btn-outline-secondary ms-2" href="eventTempletes "> <span class="bi bi-pencil-fill"> Edit Event</span> </a>
-
+                
+                <a class="btn btn-primary ms-2"href="/event/{{ event.id }}/edit"><span class="bi bi-pencil-fill"></span> Edit Event </a>
               </td>
               
             {% else %}
