@@ -15,7 +15,7 @@ from app.models.user import User
 from app.models.eventCohort import EventCohort
 from app.models.term import Term
 from app.logic.createLogs import createRsvpLog
-
+from app.models.certification import Certification
 def makeBonnerXls(selectedYear, noOfYears=1):
     """
     Create and save a BonnerStudents.xlsx file with all of the current and former bonner students.
@@ -44,8 +44,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
     worksheet.set_column('D:D', 20)
 
     # bonner event titles
-    bonnerEventsId = 1
-    bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==bonnerEventsId).order_by(CertificationRequirement.order.asc())
+    bonnerEvents = CertificationRequirement.select().where(CertificationRequirement.certification==Certification.BONNER).order_by(CertificationRequirement.order.asc())
     bonnerEventInfo = {bonnerEvent.id:(bonnerEvent.name, index + 4) for index, bonnerEvent in enumerate(bonnerEvents)}
     currentLetter = "E" # next column
     for bonnerEvent in bonnerEvents:
@@ -83,7 +82,7 @@ def makeBonnerXls(selectedYear, noOfYears=1):
             .join(EventParticipant, on=(RequirementMatch.event == EventParticipant.event))
             .join(CertificationRequirement, on=(RequirementMatch.requirement == CertificationRequirement.id))
             .join(User, on=(EventParticipant.user == User.username))
-            .where((CertificationRequirement.certification_id == bonnerEventsId) & (User.username == student.user.username))
+            .where((CertificationRequirement.certification_id == Certification.BONNER) & (User.username == student.user.username))
         )
 
         certRequirementDates = {}
@@ -91,9 +90,8 @@ def makeBonnerXls(selectedYear, noOfYears=1):
             if bonnerEventInfo.get(attendedEvent.requirement.id):
                 completedEvent = bonnerEventInfo[attendedEvent.requirement.id]
                 if completedEvent[1] not in certRequirementDates:
-                    certRequirementDates[completedEvent[1]] = [attendedEvent.event.startDate.strftime('%m/%d/%Y')]
-                else:
-                    certRequirementDates[completedEvent[1]].append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
+                    certRequirementDates[completedEvent[1]] = []
+                certRequirementDates[completedEvent[1]].append(attendedEvent.event.startDate.strftime('%m/%d/%Y'))
 
         for tableIndex, dates in certRequirementDates.items():
             worksheet.write(row, tableIndex, ", ".join(sorted(dates)))
