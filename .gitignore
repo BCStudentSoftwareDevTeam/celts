@@ -12,3 +12,5 @@ geckodriver.log
 .coverage
 cron.log
 .code-search
+
+.DS_Store
