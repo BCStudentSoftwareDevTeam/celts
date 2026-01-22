@@ -97,7 +97,10 @@ def getMinorProgress():
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
-            .where(CertificationRequirement.certification_id == Certification.CCE)
+            .where(
+                (CertificationRequirement.certification_id == Certification.CCE) &
+                (User.declaredMinor == True)
+            )
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(SQL("engagementCount").desc())
     )
@@ -319,6 +322,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                            "requirement": requirement.get(),
                                            "addedBy": currentUser,
                                         })
+        
         # Thrown if there are no available engagement requirements left. Handled elsewhere.
         except DoesNotExist as e:
             raise e 
@@ -329,6 +333,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                 IndividualRequirement.username == engagementData['username'],
                 IndividualRequirement.term == engagementData['term']
             ).execute()
+
     else:
         raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
@@ -424,6 +429,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
                                     "requirement": requirement.get(),
                                     "addedBy": currentUser,
                                 })
+ 
     return ""
 
 def getSummerExperience(username):
