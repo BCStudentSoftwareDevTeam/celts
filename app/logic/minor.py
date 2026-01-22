@@ -183,6 +183,10 @@ def declareMinorInterest(username):
         raise RuntimeError(f"Failed to declare interested student: {e}")
     
 def getDeclaredMinorStudentsWithProgress():
+    """
+    This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
+    It returns a list of dictionaries containing student information and their engagement details.
+    """
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     q = (

@@ -529,7 +529,7 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
         User.create(username="nimelyj",
                     firstName="joyce",
                     lastName="nimely",
-                    email="joycenimelyberea.edu",
+                    email="joycenimely@berea.edu",
                     bnumber="B91111113")
         
         # verify FINN has no summer experiences in currently
@@ -677,6 +677,8 @@ def test_getDeclaredMinorStudentsWithProgress():
     with mainDB.atomic() as transaction:
         # Get all the declared students
         declaredStudents = getDeclaredMinorStudentsWithProgress()
+        
+        assert len(declaredStudents) == 0
     
         student1 = User.get_by_id("agliullovak")
         student2 = User.get_by_id("partont")

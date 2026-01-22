@@ -4,7 +4,7 @@ from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getDeclaredMinorStudentsWithProgress, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet, getDeclaredMinorStudents
+from app.logic.minor import getDeclaredMinorStudentsWithProgress, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
 
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
