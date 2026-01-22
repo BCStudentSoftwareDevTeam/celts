@@ -299,13 +299,15 @@ def test_calculateRecurringEventFrequency():
 
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
-                 'endDate': parser.parse("03/11/2023")}
+                 'endDate': parser.parse("03/11/2023"),
+                 'location': "a big room"}
 
     # test correct response
     returnedEvents = getRepeatingEventsData(eventInfo)
-    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
-    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
-    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1, 'location': 'a big room'}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2, 'location': 'a big room'}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3, 'location': 'a big room'}
+
 
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
@@ -366,40 +368,46 @@ def test_attemptSaveMultipleOfferings():
     validseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 2',
                             'eventDate': '2022-06-13', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a small room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     duplicatedseriesData = baseEventData.copy()
     duplicatedseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     
@@ -410,6 +418,9 @@ def test_attemptSaveMultipleOfferings():
         assert succeeded == True
         assert len(savedEvents) == 3
         assert len(failedSavedOfferings) == 0
+
+        assert savedEvents[0].location == 'a big room'
+        assert savedEvents[1].location == 'a small room'
 
         transaction.rollback()
         

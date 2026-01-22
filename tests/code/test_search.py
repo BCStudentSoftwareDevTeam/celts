@@ -35,7 +35,7 @@ def test_searchUsers():
         searchResults = searchUsers('sa')
         assert len(searchResults) == 2
         assert searchResults['lamichhanes2'] == model_to_dict(User.get_by_id('lamichhanes2'))
-        assert searchResults["sawconc"] == model_to_dict(secondUser)
+        assert searchResults["sawconc"] == model_to_dict (User.get_by_id('sawconc'))
         assert '(555)555-5555' in searchResults["lamichhanes2"].values()
 
         transaction.rollback()
