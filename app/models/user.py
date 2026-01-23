@@ -40,10 +40,8 @@ class User(baseModel):
         return self.hasGraduated
     
     @property 
-    def isNotEnrolled(self):
-        "function to determine if user is not enrolled, i.e. when the student is neither a freshman, sophomore, junior, or senior or has graduated"
-        notEnrolledLevels = ["Not Enrolled", "Graduated", "Alum"]
-        return self.processedClassLevel in notEnrolledLevels
+    def isCurrentlyEnrolled(self):
+        return self.isStudent and not self.hasGraduated
 
     @property
     def isAdmin(self):
