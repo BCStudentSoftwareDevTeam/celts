@@ -538,3 +538,47 @@ def test_isCurrentlyEnrolled():
         assert fallGradUser.isCurrentlyEnrolled is False
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_isAlumni():
+    with mainDB.atomic() as transaction:
+        # User who has graduated
+        graduatedUser = User.create(
+            username="graduser",
+            firstName="Grad",
+            lastName="User",
+            bnumber="B10000001",
+            email="grad@berea.edu",
+            isStudent=False,
+            hasGraduated=True,
+            rawClassLevel="Graduated"
+        )
+        assert graduatedUser.isAlumni is True
+
+        # User marked as "Graduating" (Fall graduate)
+        graduatingUser = User.create(
+            username="graduatinguser",
+            firstName="Fall",
+            lastName="Grad",
+            bnumber="B10000002",
+            email="fallgrad@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel="Graduating"
+        )
+        assert graduatingUser.isAlumni is True
+
+        # Current senior graduating in spring
+        seniorUser = User.create(
+            username="senioruser",
+            firstName="Spring",
+            lastName="Senior",
+            bnumber="B10000003",
+            email="senior@berea.edu",
+            isStudent=True,
+            hasGraduated=False,
+            rawClassLevel="Senior"
+        )
+        assert seniorUser.isAlumni is False
+
+        transaction.rollback()
