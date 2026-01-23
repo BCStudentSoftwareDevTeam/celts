@@ -582,3 +582,60 @@ def test_isAlumni():
         assert seniorUser.isAlumni is False
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_processedClassLevel():
+    with mainDB.atomic() as transaction:
+        # Graduated user
+        graduatedUser = User.create(
+            username="procgrad",
+            firstName="Proc",
+            lastName="Grad",
+            bnumber="B10000007",
+            email="procgrad@berea.edu",
+            isStudent=False,
+            hasGraduated=True,
+            rawClassLevel="Graduated"
+        )
+        assert graduatedUser.processedClassLevel == "Alumni"
+
+        # Fall graduate marked as "Graduating"
+        graduatingUser = User.create(
+            username="procgraduating",
+            firstName="Proc",
+            lastName="Graduating",
+            bnumber="B10000008",
+            email="procgraduating@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel="Graduating"
+        )
+        assert graduatingUser.processedClassLevel == "Alumni"
+
+        # Current senior
+        seniorUser = User.create(
+            username="procsenior",
+            firstName="Proc",
+            lastName="Senior",
+            bnumber="B10000009",
+            email="procsenior@berea.edu",
+            isStudent=True,
+            hasGraduated=False,
+            rawClassLevel="Senior"
+        )
+        assert seniorUser.processedClassLevel == "Senior"
+
+        # Not enrolled user
+        notEnrolledUser = User.create(
+            username="procnotenrolled",
+            firstName="Proc",
+            lastName="None",
+            bnumber="B10000010",
+            email="procnone@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel=None
+        )
+        assert notEnrolledUser.processedClassLevel == "Not Enrolled"
+
+        transaction.rollback()
