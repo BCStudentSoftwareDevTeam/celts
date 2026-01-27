@@ -465,8 +465,12 @@ def test_getMinorProgress():
                                      "addedBy": "ramsayb2",
                                      "addedOn": "",
                                      }
+    
 
         IndividualRequirement.create(**khattsSustainedEngagement)
+        u = User.get_by_id("khatts")
+        u.declaredMinor = True
+        u.save()
         minorProgress = getMinorProgress()
         sreynitProgress = minorProgress[0]
         assert sreynitProgress['engagementCount'] == 1
@@ -673,32 +677,28 @@ def test_declareMinorInterest():
 
 @pytest.mark.integration
 def test_getDeclaredMinorStudentsWithProgress():
-    
     with mainDB.atomic() as transaction:
-        # Get all the declared students
-        declaredStudents = getDeclaredMinorStudentsWithProgress()
-        
-        assert len(declaredStudents) == 0
-    
-        student1 = User.get_by_id("agliullovak")
-        student2 = User.get_by_id("partont")
-        student3 = User.get_by_id("bryanta")
-        
-        assert student1.declaredMinor == False
-        assert student2.declaredMinor == False
-        assert student3.declaredMinor == False
-        
-        student1.declaredMinor = True
-        student2.declaredMinor = True
-        student3.declaredMinor = True
-        
-        student1.save()
-        student2.save()
-        student3.save()
-        
-        # Get all the declared students after recent changes
-        newDeclaredStudents = getDeclaredMinorStudentsWithProgress()
-        
-        assert len(newDeclaredStudents) == 3
-        
+        # Force known baseline for these users since users with individualrequirements with a declared status of True are returned
+        for username in ["agliullovak", "partont", "bryanta"]:
+            u = User.get_by_id(username)
+            u.declaredMinor = False
+            u.save()
+
+        before = getDeclaredMinorStudentsWithProgress()
+        before_usernames = {s["username"] for s in before}
+
+        # Now declare them
+        for username in ["agliullovak", "partont", "bryanta"]:
+            u = User.get_by_id(username)
+            u.declaredMinor = True
+            u.save()
+
+        after = getDeclaredMinorStudentsWithProgress()
+        after_usernames = {s["username"] for s in after}
+
+        # Assert THESE users were added 
+        for username in ["agliullovak", "partont", "bryanta"]:
+            assert username in after_usernames
+            assert username not in before_usernames
+
         transaction.rollback()

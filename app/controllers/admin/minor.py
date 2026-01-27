@@ -55,7 +55,6 @@ def manageMinor():
             }
     cceMinorStudents = list(cceMinorStudents.values())
 
-
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,

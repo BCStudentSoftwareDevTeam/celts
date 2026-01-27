@@ -205,7 +205,6 @@ def getDeclaredMinorStudentsWithProgress():
         .switch(User)
         .join(CCEMinorProposal, JOIN.LEFT_OUTER, on=(User.username == CCEMinorProposal.student))
         .where(
-            (User.isStudent == True) &
             (User.declaredMinor == True) &
             (
                 (CertificationRequirement.certification_id == Certification.CCE) |
