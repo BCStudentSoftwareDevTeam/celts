@@ -114,7 +114,7 @@ def test_getGraduationManagementUsers():
         BonnerCohort.create(year=2025, user=testUser1)
         BonnerCohort.create(year=2024, user=testUser2)
 
-        sustainedEngagement = {"username": testUser3,
+        sustainedEngagement = {"username": testUser3.username,
                                 "program": 2,
                                 "course": None,
                                 "description": None,
@@ -126,6 +126,8 @@ def test_getGraduationManagementUsers():
         
         IndividualRequirement.create(**sustainedEngagement)
 
+        testUser3.declaredMinor = True
+        testUser3.save()
         actualResult = getGraduationManagementUsers()
 
         # testUser4 is not a senior, graduating so they should not be shown.
