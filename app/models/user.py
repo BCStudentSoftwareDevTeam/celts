@@ -37,6 +37,7 @@ class User(baseModel):
 
     @property
     def isAlumni(self):
+        # in case you are wondering, "Graduating" means: graduation term has passed but hasGraduated may not yet be set
         return self.hasGraduated or self.rawClassLevel == "Graduating"
     
     @property 
