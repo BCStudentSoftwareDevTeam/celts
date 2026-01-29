@@ -30,6 +30,7 @@
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
             <th>Requested Other Engagement</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -56,6 +57,12 @@
             {% else %}
                 No
             {% endif %}
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm remove_minor_candidate" 
+                        id="{{student.username}}" 
+                        aria-label="remove minor candidate">Remove from Minor
+                </button>
             </td>
         </tr>
         {% endfor %}
