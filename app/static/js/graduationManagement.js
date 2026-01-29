@@ -46,6 +46,7 @@ $(document).ready(function() {
     function getRowStatus(row) {
         return $(row).data('status');
     }
+    
     function filterTable(dataField, expectedValue) {
         gradStudentsTable.rows().every(function() {
             const row = this.node();
