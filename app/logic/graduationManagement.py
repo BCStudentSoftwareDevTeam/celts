@@ -13,7 +13,7 @@ def getGraduationManagementUsers():
 
     eligibleUsers = (User.select(User.username, User.hasGraduated, User.rawClassLevel, User.firstName, User.lastName, BonnerCohort.year)
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
-                 .where((User.rawClassLevel == 'Senior') | (User.rawClassLevel == "Graduating") | (User.hasGraduated == True) | (User.rawClassLevel == "Alumni")))
+                 .where((User.rawClassLevel == 'Senior') | (User.rawClassLevel == "Graduating") | (User.hasGraduated == True) ))
 
     cceStudents = set([user["username"] for user in getMinorProgress()])
 
