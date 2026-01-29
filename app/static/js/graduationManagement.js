@@ -142,6 +142,10 @@ $(document).ready(function() {
                 if (hasGraduated) {
                     row.data('status', 'alumni');
                     $(`#${username}ClassLevel`).text("Alumni");
+                    if (!showGraduatedStudents()) {
+                        row.addClass('hidden');
+                        redrawTable();
+                    }
                 } else {
                     row.data('status', 'enrolled');
                     $(`#${username}ClassLevel`).text("Senior");
