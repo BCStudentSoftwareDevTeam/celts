@@ -97,16 +97,7 @@
       'id': 'interested',
       'label': 'Interested',
       'students': interestedStudentsList,
-      'emailString': interestedStudentEmailString,
       'actionLabel': 'Declare Student',
-      'alwaysShow': true
-    },
-    {
-      'id': 'declared',
-      'label': 'Declared',
-      'students': declaredStudentsList,
-      'emailString': declaredStudentEmailString,
-      'actionLabel': 'Move To Interested',
       'alwaysShow': true
     }
   ] %}
@@ -114,6 +105,13 @@
   {{ minorCandidatesTab(tabsInfo, defaultActiveTab=activeTab )}}
 </div>
 
+<input type="hidden"
+       id="interestedStudentEmails"
+       value="{{ interestedStudentEmailString }}">
+
+<input type="hidden"
+       id="declaredStudentEmails"
+       value="{{ declaredStudentEmailString }}">
 <!-- #################  Modal  ################# -->
 
 <div class="modal fade" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">
