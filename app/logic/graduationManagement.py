@@ -38,7 +38,7 @@ def setGraduatedStatus(username, status):
 
     status = int(status)
 
-    if status == 1:
+    if status:
         # Mark as alumni
         gradStudent.hasGraduated = True
         gradStudent.rawClassLevel = "Graduating"
