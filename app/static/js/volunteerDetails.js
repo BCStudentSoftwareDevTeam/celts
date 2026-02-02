@@ -78,7 +78,6 @@ $(document).ready(function () {
 			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
 		})
 	}
-
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
