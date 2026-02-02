@@ -255,7 +255,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
-        "rawClassLevel": "Senior",
+        "rawClassLevel": "Junior",
         "minorInterest": None,
     },
     {
@@ -1044,7 +1044,6 @@ individualReqs = [
 IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
 # This ensures every user with an individual requirement has declaredMinor set to True so that when our query runs it can find users with  a "declaredMinor = True"
 req_usernames = {r["username"] for r in individualReqs if r.get("username")}
-print("Users with individual requirements to update:", req_usernames)
 
 (User
  .update({User.declaredMinor: True})

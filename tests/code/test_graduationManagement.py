@@ -114,7 +114,7 @@ def test_getGraduationManagementUsers():
         BonnerCohort.create(year=2025, user=testUser1)
         BonnerCohort.create(year=2024, user=testUser2)
 
-        sustainedEngagement = {"username": testUser3.username,
+        sustainedEngagement = {"username": testUser3,
                                 "program": 2,
                                 "course": None,
                                 "description": None,
