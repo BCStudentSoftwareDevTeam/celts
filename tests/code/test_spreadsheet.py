@@ -155,15 +155,7 @@ def test_getRetentionRate(fixture_info):
 
     fall_term = getFallTerm("2023-2024-test")
     spring_term = getSpringTerm("2023-2024-test")
-    print("FALL TERM:", fall_term.id, fall_term.description)
-    print("SPRING TERM:", spring_term.id, spring_term.description)
-    print("FALL PARTICIPATION:", termParticipation(fall_term))
-    print("SPRING PARTICIPATION:", termParticipation(spring_term))
-
     columns, retention = getRetentionRate("2023-2024-test")
-
-    print("COLUMNS:", columns)
-    print("RETENTION:", retention)
 
     assert columns == ["Program", "Retention Rate"]
     assert sorted(retention) == [('Program1', '0.0%')]
