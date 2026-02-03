@@ -26,11 +26,6 @@ def fixture_info():
         program3 = Program.create(id=503, programName='Program3')
         program4 = Program.create(id=504, programName='Program4')
 
-        # event1 = Event.create(id=501, name='Event1', term=term1, program=program1)
-        # event2 = Event.create(id=502, name='Event2', term=term1, program=program2)
-        # event3 = Event.create(id=503, name='Event3', term=term1, program=program3)
-        # event4 = Event.create(id=504, name='Event4', term=term2, program=program4)
-
         event1 = Event.create(
             id=501,
             name='Event1',
