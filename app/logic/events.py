@@ -118,8 +118,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     
     seriesId = calculateNewSeriesId()
 
-    # Create separate event data inheriting from the original eventData
-    seriesData = eventData.get('seriesData')
+    # Create separate event data for each event in the series, inheriting from the original eventData
+
+    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(f"{x['eventDate']} {x['startTime']}",'%Y-%m-%d %H:%M'))
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -129,8 +130,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
+                'location': event['eventLocation'],
                 'seriesId': seriesId,
-                'isRepeating': bool(isRepeating)
+                'isRepeating': bool(isRepeating), 
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
@@ -484,7 +486,9 @@ def getRepeatingEventsData(eventData):
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
-              "week": counter+1}
+              "week": counter+1,
+              'location': eventData['location']
+            }
             for counter in range(0, ((eventData['endDate']-eventData['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
