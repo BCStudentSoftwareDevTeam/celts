@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getVolunteerOpportunities, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingVolunteerOpportunitiesCount, getpastVolunteerOpportunitiesCount
+from app.logic.events import getVolunteerOpportunities, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingVolunteerOpportunitiesCount, getPastVolunteerOpportunitiesCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -206,14 +206,14 @@ def test_getPastVolunteerOpportunitiesCount():
         )
 
         # Verify two past AGP events
-        pastVolunteerOpportunities = getpastVolunteerOpportunitiesCount(
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
             currentTestTerm, testDate
         )
         assert pastVolunteerOpportunities == {3: 2}
 
         # Cancel one past event → should reduce count
         Event.update(isCanceled=True).where(Event.id == pastAgpEvent.id).execute()
-        pastVolunteerOpportunities = getpastVolunteerOpportunitiesCount(
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
             currentTestTerm, testDate
         )
         assert pastVolunteerOpportunities == {3: 1}
@@ -232,7 +232,7 @@ def test_getPastVolunteerOpportunitiesCount():
             program=2
         )
 
-        pastVolunteerOpportunities = getpastVolunteerOpportunitiesCount(
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
             currentTestTerm, testDate
         )
         assert pastVolunteerOpportunities == {2: 1, 3: 1}
