@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents, getpastVolunteerOpportunitiesCount
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents, getPastVolunteerOpportunitiesCount
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -92,7 +92,7 @@ def events(selectedTerm, activeTab, programID):
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     volunteerOpportunities = getVolunteerOpportunities(term)
     countUpcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(term, currentTime)
-    countPastVolunteerOpportunities = getpastVolunteerOpportunitiesCount(term, currentTime)
+    countPastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)

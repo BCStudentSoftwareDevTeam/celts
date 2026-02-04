@@ -277,7 +277,7 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
-def getpastVolunteerOpportunitiesCount(term, currentDate):
+def getPastVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all past events for each volunteer opportunities program.
     """
