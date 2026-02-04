@@ -424,10 +424,12 @@
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
                   </td>
-                  <td>
+                  <tr>
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
+                      <button type="button" class="btn btn-sm btn-danger editNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Edit</button>
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
+                      <button type="button" class="btn btn-sm btn-danger editNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Edit</button>
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% endif %}
                   </td>

@@ -229,7 +229,18 @@ $(document).ready(function(){
       }
     });
   });
-
+    $(".editNoteButton").click(function() {
+    let username = $(this).data('username')
+    let noteid = $(this).data('noteid')
+    $.ajax({
+      method: "POST",
+      url:  "/" + username + "/editNote",
+      data: {"id": noteid},
+      success: function(response) {
+        reloadWithAccordion("notes")
+      }
+    });
+  });
   /*
     * Background Check Functionality
     */
