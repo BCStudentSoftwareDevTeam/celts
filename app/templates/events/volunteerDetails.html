@@ -62,7 +62,7 @@
       {% if p in rsvp and not event.isRsvpRequired %}
       {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
       {% endif %}
-      {% if p in rsvp %}
+      {% if p in rsvp and event.isRsvpRequired %}
           {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
       {% endif %}
       {% if p in attended%}
