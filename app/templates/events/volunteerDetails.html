@@ -56,9 +56,12 @@
     </tr>
 {% endmacro %}
 
-{% macro printParticipants(type, attended, rsvp, waitlist, invited) %}
-    {% set combinedParticipants = attended + rsvp + waitlist + invited %}
+{% macro printParticipants(type, attended, rsvp, waitlist) %}
+    {% set combinedParticipants = attended + rsvp + waitlist %}
     {% for p in combinedParticipants | unique %}
+      {% if p in rsvp and not event.isRsvpRequired %}
+      {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
+      {% endif %}
       {% if p in rsvp %}
           {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
       {% endif %}
@@ -67,9 +70,6 @@
       {% endif %}
       {% if p in waitlist %}
           {{createTable(p, 'waitlist') if type == 'table' else createCard(p, 'waitlist') }}
-      {% endif %}
-      {% if p in invited %}
-          {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
       {% endif %}
     {% endfor %}
 {% endmacro %}
@@ -85,7 +85,7 @@
 
 {{super()}}
 
-{% if attendedUser or waitlistUser or rsvpUser or invitedUser %}
+{% if attendedUser or waitlistUser or rsvpUser %}
     <div class="container d-none d-print-block always-print">
       <h3 style="text-align: center; width:180%;">
           {{event.name}} on {{event.startDate.strftime('%m/%d/%Y')}}
@@ -97,7 +97,7 @@
       <div class="row">
         <div class="col">
           <label><b>Volunteer Groups:</b></label><br>
-          {% if rsvpUser %}
+          {% if rsvpUser and event.isRsvpRequired %}
              {{createCheckbox('rsvp')}}
           {% endif %}
           {% if waitlistUser %}
@@ -106,7 +106,7 @@
           {% if attendedUser %}
             {{createCheckbox('attended')}}
           {% endif %}
-            {% if invitedUser %}
+            {% if rsvpUser and not event.isRsvpRequired %}
             {{createCheckbox('invited')}}
           {% endif %}
         </div>
@@ -154,7 +154,7 @@
     <hr>
     <div class="d-print-block" id="volunteerInformationCardToPrint">
       <div class="row sort-here">
-        {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser, invitedUser) }}
+        {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
       </div>
     </div>
 
@@ -171,7 +171,7 @@
         </tr>
       </thead>
       <tbody>
-        {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser, invitedUser) }}
+        {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
       </tbody>
     </table>
 {% else %}
