@@ -188,7 +188,7 @@ def declareMinorInterest(username):
 def getDeclaredMinorStudentsWithProgress():
     """
     This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
-    It returns a list of dictionaries containing student information and their engagement details.
+    It returns a list of dictionaries containing student information and their engagement details and adds students who have no requirements but have declared the minor with 0 engagements.
     """
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
