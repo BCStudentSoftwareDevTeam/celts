@@ -193,8 +193,8 @@ def sortParticipantsByStatus(event):
         # if rsvp is required for the event, grab all volunteers that are in the waitlist
         eventWaitlistData = [volunteer for volunteer in (eventParticipants + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
         
-        # put the rest of the users that are not on the waitlist into the volunteer data
-        eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
+        # put all participants and non-waitlisted RSVPs into the volunteer data
+        eventVolunteerData = [volunteer for volunteer in (eventParticipants + eventNonAttendedData) if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
     
     return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants
