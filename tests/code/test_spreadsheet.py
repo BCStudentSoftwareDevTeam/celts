@@ -4,7 +4,6 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
-
 from app.logic.volunteerSpreadsheet import *
 from app.models.program import Program
 from app.models.event import Event
@@ -153,8 +152,8 @@ def test_termParticipation(fixture_info):
 def test_getRetentionRate(fixture_info):
     #Takes an academic year and returns how many people were retained across terms by percentage for each program.
 
-    fall_term = getFallTerm("2023-2024-test")
-    spring_term = getSpringTerm("2023-2024-test")
+    fallTerm = getFallTerm("2023-2024-test")
+    springTerm = getSpringTerm("2023-2024-test")
     columns, retention = getRetentionRate("2023-2024-test")
 
     assert columns == ["Program", "Retention Rate"]
@@ -320,7 +319,7 @@ def test_volunteerMajorAndClass(fixture_info):
     assert list(rows) == [("Senior", 1)]
 
     # Add a new user and make them participate in a service event in 2023-2024-test
-    new_user = User.create(
+    newUser = User.create(
         username="solijonovam",
         email="solijonovam@berea.edu",
         firstName="Madinabonu",
@@ -330,7 +329,7 @@ def test_volunteerMajorAndClass(fixture_info):
     )
 
     EventParticipant.create(
-        user=new_user,
+        user=newUser,
         event=fixture_info["event1"],
         hoursEarned=2
     )
@@ -548,34 +547,34 @@ def test_getAllTermData(fixture_info):
     data = rows_as_dicts(columns, rows)
 
     # John in Event1
-    john_event1 = [
+    johnEvent1= [
         r for r in data
         if r["Event Name"] == "Event1" and r["Student Email"] == "doej@berea.edu"
     ]
-    assert len(john_event1) == 1
-    assert john_event1[0]["Program Name"] == "Program1"
-    assert john_event1[0]["Hours Earned"] == 5
+    assert len(johnEvent1) == 1
+    assert johnEvent1[0]["Program Name"] == "Program1"
+    assert johnEvent1[0]["Hours Earned"] == 5
 
     # Jane in Event1
-    jane_event1 = [
+    janeEvent1 = [
         r for r in data
         if r["Event Name"] == "Event1" and r["Student Email"] == "doej2@berea.edu"
     ]
-    assert len(jane_event1) == 1
-    assert jane_event1[0]["Program Name"] == "Program1"
-    assert jane_event1[0]["Hours Earned"] == 3
+    assert len(janeEvent1) == 1
+    assert janeEvent1[0]["Program Name"] == "Program1"
+    assert janeEvent1[0]["Hours Earned"] == 3
 
     # TERM 2 should include Event4 participation for Bob
     columns, rows = getAllTermData(fixture_info["term2"])
     data = rows_as_dicts(columns, rows)
 
-    bob_event4 = [
+    bobEvent4 = [
         r for r in data
         if r["Event Name"] == "Event4" and r["Student Email"] == "builderb@berea.edu"
     ]
-    assert len(bob_event4) == 1
-    assert bob_event4[0]["Program Name"] == "Program4"
-    assert bob_event4[0]["Hours Earned"] == 0
+    assert len(bobEvent4) == 1
+    assert bobEvent4[0]["Program Name"] == "Program4"
+    assert bobEvent4[0]["Hours Earned"] == 0
 
     # Add Bob to Event2 (term1) with 0 hours, should show up in term1 data
     EventParticipant.create(
@@ -594,13 +593,13 @@ def test_getAllTermData(fixture_info):
     columns, rows = getAllTermData(fixture_info["term1"])
     data = rows_as_dicts(columns, rows)
 
-    bob_event2 = [
+    bobEvent2 = [
         r for r in data
         if r["Event Name"] == "Event2" and r["Student Email"] == "builderb@berea.edu"
     ]
-    assert len(bob_event2) == 1
-    assert bob_event2[0]["Program Name"] == "Program2"
-    assert bob_event2[0]["Hours Earned"] == 0
+    assert len(bobEvent2) == 1
+    assert bobEvent2[0]["Program Name"] == "Program2"
+    assert bobEvent2[0]["Hours Earned"] == 0
 
     # Create two more Program2 events in term1 and add John to both
     testEvent = Event.create(
@@ -628,12 +627,12 @@ def test_getAllTermData(fixture_info):
     columns, rows = getAllTermData(fixture_info["term1"])
     data = rows_as_dicts(columns, rows)
 
-    john_program2_events = [
+    johnProgram2Events= [
         r for r in data
         if r["Student Email"] == "doej@berea.edu" and r["Program Name"] == "Program2"
     ]
-    event_names = sorted([r["Event Name"] for r in john_program2_events])
-    assert event_names == ["Event2", "Test Event", "Test Event 2"]
+    eventNames = sorted([r["Event Name"] for r in johnProgram2Events])
+    assert eventNames == ["Event2", "Test Event", "Test Event 2"]
 
 @pytest.mark.integration
 def test_getUniqueVolunteers(fixture_info):
