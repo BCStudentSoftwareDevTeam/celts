@@ -9,8 +9,8 @@ from app.logic.minor import getMinorProgress
 def getGraduationManagementUsers():
     """
     Function to fetch all senior students along with their CCE Minor Progress and Bonner Status 
+    "Graduating" means: graduation term has passed but hasGraduated may not yet be set
     """
-    # in case you are wondering, "Graduating" means: graduation term has passed but hasGraduated may not yet be set
 
     eligibleUsers = (User.select(User.username, User.hasGraduated, User.rawClassLevel, User.firstName, User.lastName, BonnerCohort.year)
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
