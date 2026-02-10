@@ -12,7 +12,6 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
 
-
 ### READ ME FIRST! #################################################################
 #
 # It's very important that we understand the distinction between volunteers earning
