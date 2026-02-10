@@ -341,8 +341,8 @@
                       <h6>{{bgType.description}}</h6>
                       <ul class="mb-0" id="bgHistory{{bgType.id}}">
                          {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                            <li class="d-flex align-items-center justify-content-between">
-                              <span>
+                            <li class="d-flex align-items-center">
+                              <span class="me-2">
                                 {{ bgStatus.backgroundCheckStatus }}:
                                 {{ bgStatus.dateCompleted.strftime("%m/%d/%Y") }}
                               </span>
