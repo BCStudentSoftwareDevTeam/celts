@@ -1,10 +1,8 @@
-from importlib.abc import ResourceReader
 from os import major
 import xlsxwriter
 from peewee import fn, Case, JOIN, SQL, Select
 from collections import defaultdict
 from datetime import date, datetime,time
-
 from app import app
 from app.models import mainDB
 from app.models.eventParticipant import EventParticipant

@@ -152,8 +152,6 @@ def test_termParticipation(fixture_info):
 def test_getRetentionRate(fixture_info):
     #Takes an academic year and returns how many people were retained across terms by percentage for each program.
 
-    fallTerm = getFallTerm("2023-2024-test")
-    springTerm = getSpringTerm("2023-2024-test")
     columns, retention = getRetentionRate("2023-2024-test")
 
     assert columns == ["Program", "Retention Rate"]
@@ -166,7 +164,7 @@ def test_getRetentionRate(fixture_info):
     springEvent = Event.create(
         name="Spring2021Event",
         program=fixture_info["program1"],
-        term=fixture_info["term3"],   # the spring term from the fixture
+        term=fixture_info["term3"],  
         startDate=date(2024, 2, 1),
         isCanceled=False,
         deletionDate=None,
