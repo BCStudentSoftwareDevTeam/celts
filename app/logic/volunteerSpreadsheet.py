@@ -1,6 +1,5 @@
-from importlib.abc import ResourceReader
 from os import major
-import xlsxwriter
+import xlsxwriter 
 from peewee import fn, Case, JOIN, SQL, Select
 from collections import defaultdict
 from datetime import date, datetime,time
@@ -12,6 +11,7 @@ from app.models.user import User
 from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
+
 
 ### READ ME FIRST! #################################################################
 #
