@@ -15,18 +15,17 @@ def fixture_info():
         user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", rawClassLevel="Junior")
         user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", rawClassLevel="Senior")
 
-        term1 = Term.create(id=500, description='Fall 2023', academicYear='2023-2024-test')
-        term2 = Term.create(id=600, description='Fall 2024', academicYear='2024-2025-test')
-        term3 = Term.create(id=700, description='Spring 2024', academicYear='2023-2024-test')
-        term4 = Term.create(id=800, description='Spring 2025', academicYear='2024-2025-test')
+        term1 = Term.create(description='Fall 2023', academicYear='2023-2024-test')
+        term2 = Term.create(description='Fall 2024', academicYear='2024-2025-test')
+        term3 = Term.create(description='Spring 2024', academicYear='2023-2024-test')
+        term4 = Term.create(description='Spring 2025', academicYear='2024-2025-test')
 
-        program1 = Program.create(id=501, programName='Program1')
-        program2 = Program.create(id=502, programName='Program2')
-        program3 = Program.create(id=503, programName='Program3')
-        program4 = Program.create(id=504, programName='Program4')
+        program1 = Program.create(programName='Program1')
+        program2 = Program.create(programName='Program2')
+        program3 = Program.create(programName='Program3')
+        program4 = Program.create(programName='Program4')
 
         event1 = Event.create(
-            id=501,
             name='Event1',
             term=term1,
             program=program1,
@@ -36,7 +35,6 @@ def fixture_info():
             isService=True
         )
         event2 = Event.create(
-            id=502,
             name='Event2',
             term=term1,
             program=program2,
@@ -46,7 +44,6 @@ def fixture_info():
             isService=True
         )
         event3 = Event.create(
-            id=503,
             name='Event3',
             term=term1,
             program=program3,
@@ -56,7 +53,6 @@ def fixture_info():
             isService=True
         )
         event4 = Event.create(
-            id=504,
             name='Event4',
             term=term2,
             program=program4,
@@ -318,7 +314,7 @@ def test_volunteerMajorAndClass(fixture_info):
 
     # Add a new user and make them participate in a service event in 2023-2024-test
     newUser = User.create(
-        username="solijonovam",
+        username="solijonovam_test",
         email="solijonovam@berea.edu",
         firstName="Madinabonu",
         lastName="Solijonova",
