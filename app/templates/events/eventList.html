@@ -113,7 +113,7 @@
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
               {% set link_class = 'link-secondary' if event.isPastStart else 'link-primary' %}
-                <td><a href="/event/{{event.id}}/edit" class="{{link_class}}">{{event.name}}</a></td>
+                <td><a href="/event/{{event.id}}/view" class="{{link_class}}">{{event.name}}</a></td>
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
@@ -141,12 +141,14 @@
                 <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastStart }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>
-                
-                <a class="btn btn-primary ms-2"href="/event/{{ event.id }}/edit"><span class="bi bi-pencil-fill"></span> Edit Event </a>
-              </td>
-              
+                <a class="btn {{btn_class}} ms-2" href="/event/{{ event.id }}/view"><span class="bi bi-pencil-fill"></span> Edit Event</a>
+              </td>  
             {% else %}
               <td>
+              {% if user.isProgramManagerFor(event.program) %}
+                {% set btn_class = 'btn-secondary' if event.isPastStart or event.isCanceled else 'btn-primary' %}
+                <a class="btn {{btn_class}}" href="/event/{{ event.id }}/view"><span class="bi bi-pencil-fill"></span> Edit Event</a>
+              {% endif %}
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
               {% elif (not event.isPastStart) and (event.isRsvpRequired) and (not event.isCanceled) %}
