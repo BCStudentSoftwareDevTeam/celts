@@ -21,6 +21,19 @@ $(document).ready(function () {
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
 	})
+	$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+		if (settings.nTable.id !== 'volunteerInformationTableToPrint') {
+			return true;
+		}
+
+		const status = data[3].toLowerCase(); // Volunteer Status column
+
+		if (status === 'attended' && !$('#attendedSelect').is(':checked')) return false;
+		if (status === 'rsvp' && !$('#rsvpSelect').is(':checked')) return false;
+		if (status === 'waitlist' && !$('#waitlistSelect').is(':checked')) return false;
+
+		return true;
+	});
 	function hideDuplicateVolunteers() {
 		let allEntries = $(".volunteerInfoEntries")
 		let shownUsers = []
