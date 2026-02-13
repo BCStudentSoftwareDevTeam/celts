@@ -6,7 +6,7 @@ from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.logic.minor import getMinorProgress
 
-def getGraduationManagementUsers():
+def getGraduationManagementUsers(alwaysShowGraduatedStudents=False):
     """
     Function to fetch all senior students along with their CCE Minor Progress and Bonner Status 
     """
@@ -15,7 +15,7 @@ def getGraduationManagementUsers():
                  .join(BonnerCohort, JOIN.LEFT_OUTER, on=(BonnerCohort.user == User.username))
                  .where((User.rawClassLevel == 'Senior') | (User.rawClassLevel == "Graduating") | (User.hasGraduated == True)))
 
-    cceStudents = set([user["username"] for user in getMinorProgress()])
+    cceStudents = set([user["username"] for user in getMinorProgress(alwaysShowGraduatedStudents)])
 
     graduationManagementUsers = []
     for user in eligibleUsers:
@@ -39,4 +39,13 @@ def setGraduatedStatus(username, status):
     gradStudent.hasGraduated = int(status)
 
     gradStudent.save()
- 
+
+def updateHideGraduatedStudents(username, checked):
+    user = User.get(User.username == username)
+    
+    # it is necessary we cast this to an int instead of a bool because the
+    # status is passed as a string and if we cast it to a bool it will always be True
+    user.hideGraduatedStudents = int(checked)
+
+    user.save()
+

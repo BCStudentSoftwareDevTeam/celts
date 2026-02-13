@@ -144,7 +144,7 @@ $(document).ready(function(e) {
   })
 
   $("#courseInstructor").on('input', function() {
-      searchUser("courseInstructor", createNewRow, true, null, "instructor");
+      searchUser("courseInstructor", createNewRow, false, true, null, "instructor");
   });
 
   $("#courseInstructor").popover({

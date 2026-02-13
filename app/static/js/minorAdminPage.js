@@ -146,6 +146,6 @@ $("#addInterestedStudentsModal").on("shown.bs.modal", function() {
 });
 
 $("#addStudentInput").on("input", function() {
-searchUser("addStudentInput", callback, true, "addInterestedStudentsModal");
+searchUser("addStudentInput", callback, false, true, "addInterestedStudentsModal");
 });
 

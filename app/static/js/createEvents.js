@@ -861,7 +861,7 @@ $("#cancelEvent").on('click', function (event) {
   }
 
   $("#eventFacilitator").on('input', function () {
-    searchUser("eventFacilitator", callback, true, undefined, "instructor");
+    searchUser("eventFacilitator", callback, false, true, undefined, "instructor");
   });
 
   $("#facilitatorTable").on("click", "#remove", function () {

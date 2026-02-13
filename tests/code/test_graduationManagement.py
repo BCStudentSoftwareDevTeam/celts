@@ -1,7 +1,9 @@
 import pytest
+from flask import g
 
-from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers
-
+from app import app
+from app.logic.graduationManagement import setGraduatedStatus, getGraduationManagementUsers, updateHideGraduatedStudents
+from app.logic.utils import getHideGraduatedStudentsWhereClause 
 from app.models import mainDB
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -126,7 +128,7 @@ def test_getGraduationManagementUsers():
         
         IndividualRequirement.create(**sustainedEngagement)
 
-        actualResult = getGraduationManagementUsers()
+        actualResult = getGraduationManagementUsers(True)
 
         # testUser4 is not a senior, graduating so they should not be shown.
         assert len(actualResult) == 4
@@ -157,4 +159,16 @@ def test_getGraduationManagementUsers():
 
         assert expectedResult == actualResult
  
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_updateHideGraduatedStudents():
+    with mainDB.atomic() as transaction:
+        updateHideGraduatedStudents("ramsayb2", True)
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getHideGraduatedStudentsWhereClause():
+    with mainDB.atomic() as transaction:
+        getHideGraduatedStudentsWhereClause("ramsayb2")
         transaction.rollback()

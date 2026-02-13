@@ -29,13 +29,13 @@ function callbackProgramManager(selected, action = 'add') {
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
-      searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "celtsLinkAdmin")
+      searchUser("searchCeltsAdminInput", callbackAdmin, false, false, null, "celtsLinkAdmin")
   });
   $("#searchCeltsStudentStaffInput").on("input", function(){
-      searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+      searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, false, null, "student")
   });
   $("#searchProgramManagersInput").on("input", function() {
-      searchUser("searchProgramManagersInput", callbackProgramManager, true, "parentManager", "all");
+      searchUser("searchProgramManagersInput", callbackProgramManager, false, true, "parentManager", "all");
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();

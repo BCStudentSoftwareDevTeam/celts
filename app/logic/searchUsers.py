@@ -1,6 +1,7 @@
 from playhouse.shortcuts import model_to_dict
+from flask import g
 from app.models.user import User
-def searchUsers(query, category=None):
+def searchUsers(query, category=None, alwaysShowGraduatedStudents=False):
     '''
         Search the User table based on the search query and category
 
@@ -10,6 +11,12 @@ def searchUsers(query, category=None):
     splitSearch = query.strip().split()
     firstName = splitSearch[0] + "%"
     lastName = " ".join(splitSearch[1:]) +"%"
+
+    excludeGraduatedStudentsWhere = True
+    # this is necessary if they just recently changed this and it hasn't updated yet, maybe?
+    currentUser = User.get(username=g.current_user)
+    if (currentUser.hideGraduatedStudents) and (not alwaysShowGraduatedStudents):
+        excludeGraduatedStudentsWhere = (User.hasGraduated == False)
 
     if len(splitSearch) == 1: # search for query in first OR last name
         searchWhere = (User.firstName ** firstName | User.lastName ** firstName | User.username ** splitSearch)
@@ -30,6 +37,6 @@ def searchUsers(query, category=None):
         userWhere = (User.isStudent)
 
     # Combine into query
-    searchResults = User.select().where(searchWhere, userWhere)
+    searchResults = User.select().where(searchWhere, userWhere, excludeGraduatedStudentsWhere)
 
     return { user.username : model_to_dict(user) for user in searchResults }

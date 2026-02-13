@@ -4,7 +4,7 @@ function callback(selected) {
 }
 $(document).ready(function() {
   $("#searchStudentsInput").on("input", function() {
-    searchUser("searchStudentsInput", callback);
+    searchUser("searchStudentsInput", callback, true);
   });
   
   $("#searchIcon").click(function (e) {
