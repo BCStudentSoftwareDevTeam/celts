@@ -53,14 +53,14 @@ $(document).ready(function () {
 		$(".displayCheckbox").each(function () {
 			let checkboxId = this.id;
 			if ($('#' + checkboxId).is(':checked')) {
-				$("." + checkboxId).show()
+				$("#volunteerInformationCardToPrint ." + checkboxId).show();
 			} else {
-				$("." + checkboxId).hide()
+				$("#volunteerInformationCardToPrint ." + checkboxId).hide();
 			}
-		})
+			});
 		hideDuplicateVolunteers()
-
 	}
+	
 	function sortVolunteers() {
 		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
 		let entriesTable = sortedTable.find(".volunteerInfoEntries");
