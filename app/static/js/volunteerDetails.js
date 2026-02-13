@@ -78,10 +78,10 @@ $(document).ready(function () {
 			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
 		})
 	}
+	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
 	volunteerInfoTable.on('draw.dt', function (){
 		getCheckBoxes()
 		stripeVolunteerInfoTable()
