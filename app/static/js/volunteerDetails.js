@@ -85,12 +85,6 @@ $(document).ready(function () {
 		entriesCards.appendTo(sortedCards);
 	};
 
-	function stripeVolunteerInfoTable() {
-		$('#volunteerInformationTableToPrint .volunteerInfoEntries').removeClass('custom-odd custom-even')
-		$('#volunteerInformationTableToPrint .volunteerInfoEntries:visible').each(function (i,e) {
-			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
-		})
-	}
 	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
