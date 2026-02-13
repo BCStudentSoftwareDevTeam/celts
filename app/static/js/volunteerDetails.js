@@ -47,7 +47,6 @@ $(document).ready(function () {
 				}
 			}
 		}
-		stripeVolunteerInfoTable()
 	}
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
@@ -91,9 +90,7 @@ $(document).ready(function () {
 	sortVolunteers()
 	volunteerInfoTable.on('draw.dt', function (){
 		getCheckBoxes()
-		stripeVolunteerInfoTable()
 	});
-	stripeVolunteerInfoTable()
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}
