@@ -85,7 +85,7 @@ $(document).ready(function () {
 		entriesCards.appendTo(sortedCards);
 	};
 
-	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
+	var volunteerInfoTable = $('#volunteerInformationTableToPrint').DataTable({pageLength: 10,order: [[0, 'asc']]});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
