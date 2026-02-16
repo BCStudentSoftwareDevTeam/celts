@@ -41,10 +41,10 @@ $(document).ready(function () {
         let currentEntry = $(this);
         let user = currentEntry.data("user");
 			if (currentEntry.is(":visible")) {
-				if (shownUsers.includes(currentEntry.data("user"))) {
+				if (shownUsers.includes(user)) {
 					currentEntry.hide()
 				} else {
-					shownUsers.push(currentEntry.data("user"))
+					shownUsers.push(user);
 				}
 			}
 		});
