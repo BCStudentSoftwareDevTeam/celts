@@ -35,10 +35,11 @@ $(document).ready(function () {
 		return true;
 	});
 	function hideDuplicateVolunteers() {
-		let allEntries = $(".volunteerInfoEntries")
-		let shownUsers = []
-		for (let i = 0; i < allEntries.length; i++) {
-			let currentEntry = $(allEntries[i])
+		let allEntries = $("#volunteerInformationCardToPrint .volunteerInfoEntries");
+		let shownUsers = [];
+		allEntries.each(function () {
+        let currentEntry = $(this);
+        let user = currentEntry.data("user");
 			if (currentEntry.is(":visible")) {
 				if (shownUsers.includes(currentEntry.data("user"))) {
 					currentEntry.hide()
@@ -46,7 +47,7 @@ $(document).ready(function () {
 					shownUsers.push(currentEntry.data("user"))
 				}
 			}
-		}
+		});
 	}
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
