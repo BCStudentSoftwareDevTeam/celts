@@ -88,9 +88,6 @@ $(document).ready(function () {
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-	volunteerInfoTable.on('draw.dt', function (){
-		getCheckBoxes()
-	});
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}
