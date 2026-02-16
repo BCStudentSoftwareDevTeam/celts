@@ -25,13 +25,10 @@ $(document).ready(function () {
 		if (settings.nTable.id !== 'volunteerInformationTableToPrint') {
 			return true;
 		}
-
-		const status = data[3].toLowerCase(); // Volunteer Status column
-
+		const status = data[3].toLowerCase(); 
 		if (status === 'attended' && !$('#attendedSelect').is(':checked')) return false;
 		if (status === 'rsvp' && !$('#rsvpSelect').is(':checked')) return false;
 		if (status === 'waitlist' && !$('#waitlistSelect').is(':checked')) return false;
-
 		return true;
 	});
 	function hideDuplicateVolunteers() {
@@ -59,6 +56,8 @@ $(document).ready(function () {
 			}
 			});
 		hideDuplicateVolunteers()
+		volunteerInfoTable.page('first').draw(false);
+
 	}
 	
 	function sortVolunteers() {
@@ -66,17 +65,6 @@ $(document).ready(function () {
 		let entriesTable = sortedTable.find(".volunteerInfoEntries");
 	
 		entriesTable.sort(function (a, b) {
-			let textA = a.getElementsByClassName('nameSelect')[0].innerText
-			let textB = b.getElementsByClassName('nameSelect')[0].innerText
-			return textA.localeCompare(textB);
-		});
-	
-		entriesTable.appendTo(sortedTable);
-
-		let sortedCards = $("#volunteerInformationCardToPrint .sort-here");
-		let entriesCards = sortedCards.find(".volunteerInfoEntries");
-	
-		entriesCards.sort(function (a, b) {
 			let textA = a.getElementsByClassName('nameSelect')[0].innerText
 			let textB = b.getElementsByClassName('nameSelect')[0].innerText
 			return textA.localeCompare(textB);
