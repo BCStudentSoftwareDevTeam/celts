@@ -1,11 +1,12 @@
 import pytest
-import datetime
+from datetime import date
 from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
-
 from app.logic.volunteerSpreadsheet import *
+from app.models.program import Program
+from app.models.event import Event
 
 @pytest.fixture
 def fixture_info():
@@ -14,20 +15,53 @@ def fixture_info():
         user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", rawClassLevel="Junior")
         user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", rawClassLevel="Senior")
 
-        term1 = Term.create(id=500, description='Fall 2023', academicYear='2023-2024')
-        term2 = Term.create(id=600, description='Fall 2024', academicYear='2024-2025')
-        term3 = Term.create(id=700, description='Spring 2024', academicYear='2023-2024')
-        term4 = Term.create(id=800, description='Spring 2025', academicYear='2024-2025')
+        term1 = Term.create(description='Fall 2023', academicYear='2023-2024-test')
+        term2 = Term.create(description='Fall 2024', academicYear='2024-2025-test')
+        term3 = Term.create(description='Spring 2024', academicYear='2023-2024-test')
+        term4 = Term.create(description='Spring 2025', academicYear='2024-2025-test')
 
-        program1 = Program.create(id=501, programName='Program1')
-        program2 = Program.create(id=502, programName='Program2')
-        program3 = Program.create(id=503, programName='Program3')
-        program4 = Program.create(id=504, programName='Program4')
+        program1 = Program.create(programName='Program1')
+        program2 = Program.create(programName='Program2')
+        program3 = Program.create(programName='Program3')
+        program4 = Program.create(programName='Program4')
 
-        event1 = Event.create(id=501, name='Event1', term=term1, program=program1)
-        event2 = Event.create(id=502, name='Event2', term=term1, program=program2)
-        event3 = Event.create(id=503, name='Event3', term=term1, program=program3)
-        event4 = Event.create(id=504, name='Event4', term=term2, program=program4)
+        event1 = Event.create(
+            name='Event1',
+            term=term1,
+            program=program1,
+            startDate=date(2023, 9, 1),
+            isCanceled=False,
+            deletionDate=None,
+            isService=True
+        )
+        event2 = Event.create(
+            name='Event2',
+            term=term1,
+            program=program2,
+            startDate=date(2023, 9, 10),
+            isCanceled=False,
+            deletionDate=None,
+            isService=True
+        )
+        event3 = Event.create(
+            name='Event3',
+            term=term1,
+            program=program3,
+            startDate=date(2023, 10, 1),
+            isCanceled=False,
+            deletionDate=None,
+            isService=True
+        )
+        event4 = Event.create(
+            name='Event4',
+            term=term2,
+            program=program4,
+            startDate=date(2024, 9, 1),
+            isCanceled=False,
+            deletionDate=None,
+            isService=True
+        )
+
 
         eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
         eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
@@ -39,10 +73,12 @@ def fixture_info():
             'user3': user3,
             'term1': term1,
             'term2': term2,
+            'term3': term3,
+            'term4': term4,
             'program1': program1,
             'program2': program2,
             'program3': program3,
-            'program3': program3,
+            'program4': program4,
             'event1': event1,
             'event2': event2,
             'event3': event3,
@@ -55,11 +91,13 @@ def fixture_info():
         transaction.rollback()
 
 
+@pytest.mark.integration
 def test_createSpreadsheet(fixture_info):
-    fixtureData = fixture_info
-    createSpreadsheet("2023-2024")
-    createSpreadsheet("2024-2025")
+    createSpreadsheet("2023-2024-test")
+    createSpreadsheet("2024-2025-test")
 
+
+@pytest.mark.unit 
 def test_calculateRetentionRate():
     # Takes 2 dictionaries, a fall and spring dictionary and see who has returned in the spring from the fall term
     fallDict = ({'Adopt-a-Grandparent': ['curiem'], 'CELTS-Sponsored Event': [None]})
@@ -72,6 +110,8 @@ def test_calculateRetentionRate():
     springDict = ({'Hunger Initiatives': ['einsteina', 'lintelmannaders', 'doej', 'ayisie']})
     assert calculateRetentionRate(fallDict, springDict) == {'Hunger Initiatives': 0.75}
 
+
+@pytest.mark.unit
 def test_removeNullParticipants():
     #Removes empty elements fromm a list
     testInputList = ['khatts']
@@ -79,291 +119,569 @@ def test_removeNullParticipants():
     testInputList = ['khatts', '', 'ayisie']
     assert removeNullParticipants(testInputList) == ['khatts', 'ayisie']
 
+
+@pytest.mark.integration
 def test_termParticipation(fixture_info):
     # Checks who all participated in any given program for an even. NONE will be the result if there was an event for a program without and participants.
-    assert termParticipation(fixture_info['term1']) == {'Program1': ['doej', 'doej2'], 
-                                                        'Program2': [None], 'Program3': [None] }
+    assert termParticipation(fixture_info['term1']) == {'Program1': ['doej', 'doej2']}
     assert termParticipation(fixture_info['term2']) == {'Program4': ['builderb']}
 
-    EventParticipant.create(user = 'builderb',
+    EventParticipant.create(user = fixture_info['user3'],
                             event = fixture_info['event1'],
                             hoursEarned = 1)
-    termParticipationResult = termParticipation('Fall 2023')
+    termParticipationResult = termParticipation(fixture_info["term1"])
     for participantList in termParticipationResult.values():
         participantList.sort()
-    assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2'], 'Program2': [None], 'Program3': [None]}
+    assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2']}
 
-    EventParticipant.create(user = 'builderb',
+    EventParticipant.create(user = fixture_info['user3'],
                             event = fixture_info['event2'],
                             hoursEarned = 1)
-    termParticipationResult = termParticipation('Fall 2023')
+    termParticipationResult = termParticipation(fixture_info["term1"])
     for participantList in termParticipationResult.values():
         participantList.sort()
-    assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2'], 'Program2': ['builderb'], 'Program3': [None]}
+    assert termParticipationResult == {'Program1': ['builderb', 'doej', 'doej2'], 
+                                       'Program2': ['builderb']}
 
+
+@pytest.mark.integration
 def test_getRetentionRate(fixture_info):
     #Takes an academic year and returns how many people were retained across terms by percentage for each program.
-    assert sorted(getRetentionRate("2023-2024")) == [('Program1', '0.0%'), 
-                                                        ('Program2', '0.0%'),
-                                                        ('Program3', '0.0%')]
-    assert sorted(getRetentionRate("2024-2025")) == [('Program4', '0.0%')]
 
-    testTerm = Term.create(id=501, description='Spring 2024', academicYear='2023-2024')
-    springEvent = Event.create(name = "Spring2021Event", 
-                                program=  fixture_info['program1'], 
-                                term = testTerm)
-    
-    EventParticipant.create(user='doej',
+    columns, retention = getRetentionRate("2023-2024-test")
+
+    assert columns == ["Program", "Retention Rate"]
+    assert sorted(retention) == [('Program1', '0.0%')]
+
+    columns, retention = getRetentionRate("2024-2025-test")
+    assert columns == ["Program", "Retention Rate"]
+    assert sorted(retention) == [('Program4', '0.0%')]
+
+    springEvent = Event.create(
+        name="Spring2021Event",
+        program=fixture_info["program1"],
+        term=fixture_info["term3"],  
+        startDate=date(2024, 2, 1),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+
+    EventParticipant.create(user=fixture_info['user1'],
                             event=springEvent,
                             hoursEarned=1)
     
     # Check for john doe participating in both semesters
-    assert sorted(getRetentionRate("2023-2024")) == [('Program1', '50.0%'), 
-                                                        ('Program2', '0.0%'),
-                                                        ('Program3', '0.0%')]
-    
-    EventParticipant.create(user='doej2',
+    columns, retention = getRetentionRate("2023-2024-test")
+    assert columns == ["Program", "Retention Rate"]
+    assert sorted(retention) == [("Program1", "50.0%")]
+
+    # Jane Doe also participates in spring so 2 of 2 retained = 100%
+    EventParticipant.create(user=fixture_info['user2'],
                             event=springEvent,
                             hoursEarned=1)
     
-    # Checks for all previous participants in both semesters  
-    assert sorted(getRetentionRate("2023-2024")) == [('Program1', '100.0%'), 
-                                                        ('Program2', '0.0%'),
-                                                        ('Program3', '0.0%')]
+    columns, retention = getRetentionRate("2023-2024-test")
+    assert columns == ["Program", "Retention Rate"]
+    assert sorted(retention) == [("Program1", "100.0%")]
 
-def test_repeatVolunteers(fixture_info):
-    #repeat volunteers people who participated in more than one event
-    testEvent = Event.create(name="Test Event",
-                                term=fixture_info["term1"],
-                                program=fixture_info['program1'])
-    EventParticipant.create(user='doej',
-                            event=testEvent,
-                            hoursEarned=1)
-    
-    assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 2)]
-    assert list(repeatVolunteers("2024-2025")) == []
 
-    testEvent2 = Event.create(name="Spring2021Event",
-                                term=fixture_info["term1"],
-                                program=fixture_info['program1'])
-    
-    EventParticipant.create(user = 'doej', event = testEvent2, hoursEarned=0)
-    
-    # Check for separate events
-    assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 3)]
+@pytest.mark.integration
+def test_repeatParticipants(fixture_info):
+    # repeatParticipants  people who have more than 1 EventParticipant row in the academic year
 
-    testEvent2 = Event.create(name="Spring2021Event",
-                                term=fixture_info["term1"],
-                                program=fixture_info['program2'])
-    EventParticipant.create(user='doej', 
-                            event=testEvent2,
-                            hoursEarned=1)
-    
-    # Check for event from a seprate events and programs
-    assert sorted(list(repeatVolunteers("2023-2024"))) == [('John Doe', 4)]
+    # Add a second participation for John Doe in the same academic year as term1
+    testEvent = Event.create(
+        name="Test Event",
+        term=fixture_info["term1"],
+        program=fixture_info["program1"],
+        startDate=date(2023, 11, 1),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=testEvent,
+        hoursEarned=1
+    )
 
-def test_repeatVolunteersPerProgram(fixture_info):
-    # Find people who have participated in two events of the same program
-    assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [] 
-    
-    testEvent3 = Event.create(name="Test Event",
-                                term=fixture_info['term1'], 
-                                program=fixture_info['program1'])
-    EventParticipant.create(user='doej',
-                            event=testEvent3,
-                            hoursEarned=1)
-    
-    assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [('John Doe', 'Program1', 2)] 
-    assert sorted(list(repeatVolunteersPerProgram("2024-2025"))) == [] 
+    columns, rows = repeatParticipants("2023-2024-test")
+    assert columns == ["Number of Events", "Full Name", "Email", "B-Number"]
+    assert list(rows) == [(2, "John Doe", "doej@berea.edu", "B774377")]
 
-    testEvent4 = Event.create(name="Test Event 2",
-                                term=fixture_info['term1'], 
-                                program=fixture_info['program1'])
-    EventParticipant2 = EventParticipant.create(user='doej',
-                                                event=testEvent4,
-                                                hoursEarned=1)
-    
-    assert sorted(list(repeatVolunteersPerProgram("2023-2024"))) == [('John Doe', 'Program1', 3)]
+    columns, rows = repeatParticipants("2024-2025-test")
+    assert columns == ["Number of Events", "Full Name", "Email", "B-Number"]
+    assert list(rows) == []
 
-def test_volunteerMajorAndClass(fixture_info): 
-    # Gets the list of majors or the class levels of volunteers
-    assert list(volunteerMajorAndClass("2023-2024", User.major)) == list([('Biology', 1), ('Graphics Design', 1)])
-    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel)) == [('Junior', 1), ('Sophomore', 1)]
-    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel, True)) == [('Sophomore', 1), ('Junior', 1)]
+    # Add a third participation for John Doe (another separate event)
+    testEvent2 = Event.create(
+        name="Test Event 2",
+        term=fixture_info["term1"],
+        program=fixture_info["program2"],
+        startDate=date(2023, 11, 2),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=testEvent2,
+        hoursEarned=0
+    )
 
-    assert list(volunteerMajorAndClass("2024-2025", User.major)) == list([('Construction', 1)])
-    assert list(volunteerMajorAndClass("2024-2025", User.rawClassLevel)) == [('Senior', 1)]
-    assert list(volunteerMajorAndClass("2024-2025", User.rawClassLevel, True)) == [('Senior', 1)]
+    columns, rows = repeatParticipants("2023-2024-test")
+    assert list(rows) == [(3, "John Doe", "doej@berea.edu", "B774377")]
 
-    User.create(username = 'solijonovam',
-                email = 'solijonovam@berea.edu',
-                firstName = 'Madinabonu',
-                lastName  = 'Solijonova',
-                major = 'Agriculture',
-                rawClassLevel = 'Sophomore')
-    EventParticipant.create(user = 'solijonovam',
-                            event = fixture_info['event1'],
-                            hoursEarned = 2)
-    EventParticipant.create(event=fixture_info['event1'],
-                            user=fixture_info['user3'],
-                            hoursEarned=3)
 
-    # Checks for event participants changes 
-    assert list(volunteerMajorAndClass("2023-2024", User.major)) == [('Agriculture', 1), ('Biology', 1), ('Construction', 1), ('Graphics Design', 1)]
-    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel)) == [('Junior', 1), ('Senior', 1), ('Sophomore', 2)]
-    assert list(volunteerMajorAndClass("2023-2024", User.rawClassLevel, True)) == [('Sophomore', 2), ('Junior', 1), ('Senior', 1)]
 
-def test_volunteerHoursByProgram(fixture_info):
-    # Gets the list of volunteer hours per program as a tuple
-    assert list(volunteerHoursByProgram("2023-2024")) == [('Program1', 8.0)]
-    assert list(volunteerHoursByProgram("2024-2025")) == [('Program4', 0.0)]
-    
-    EventParticipant.create(event=fixture_info["event1"], 
-                            user=fixture_info["user3"], 
-                            hoursEarned=10)
+@pytest.mark.integration
+def test_repeatParticipantsPerProgram(fixture_info):
+    # repeatParticipantsPerProgram = people who participated in more than 1 event of the same program
 
-    # Check for newly added participant
-    assert list(volunteerHoursByProgram("2023-2024")) == [('Program1', 18.0)]
+    columns, rows = repeatParticipantsPerProgram("2023-2024-test")
+    assert columns == ["Volunteer", "Program Name", "Event Count"]
+    assert list(rows) == []
 
-def test_onlyCompletedAllVolunteer(fixture_info): 
-    # This function returns a list of usernames and fullnames for people who have only completed all volunteer training in a particular academic year.
-    assert list(onlyCompletedAllVolunteer("2023-2024")) == []
+    # Add second event for Program1 for John Doe
+    testEvent3 = Event.create(
+        name="Test Event",
+        term=fixture_info['term1'],
+        program=fixture_info['program1'],
+        startDate=date(2023, 11, 5),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
 
-    allVolunteerEvent = Event.create(name="All Volunteer Training",
-                                term=fixture_info['term1'],
-                                program=fixture_info['program1'],
-                                isTraining=1,
-                                isAllVolunteerTraining=1)
-    EventParticipant.create(user = 'builderb', # Not participated in event
-                            event = allVolunteerEvent, # Added to all volunteer training event
-                            hoursEarned = 1)
+    EventParticipant.create(
+        user=fixture_info['user1'],
+        event=testEvent3,
+        hoursEarned=1
+    )
 
-    assert list(onlyCompletedAllVolunteer("2023-2024")) == [('builderb', 'Bob Builder')]
-    assert list(onlyCompletedAllVolunteer("2024-2025")) == []
+    columns, rows = repeatParticipantsPerProgram("2023-2024-test")
+    assert list(rows) == [("John Doe", "Program1", 2)]
 
-    testEvent = Event.create(name="Test Event",
-                                program=fixture_info['program1'],
-                                term=fixture_info['term1'])
-    EventParticipant.create(user = 'builderb', # Only participated in all volunteer event
-                            event = testEvent,
-                            hoursEarned = 1)
+    # Add third event for same program
+    testEvent4 = Event.create(
+        name="Test Event 2",
+        term=fixture_info['term1'],
+        program=fixture_info['program1'],
+        startDate=date(2023, 11, 6),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
 
-    # Checks whether participant is removed from the list 
-    assert list(onlyCompletedAllVolunteer("2023-2024")) == []
+    EventParticipant.create(
+        user=fixture_info['user1'],
+        event=testEvent4,
+        hoursEarned=1
+    )
 
+    columns, rows = repeatParticipantsPerProgram("2023-2024-test")
+    assert list(rows) == [("John Doe", "Program1", 3)]
+
+
+@pytest.mark.integration
+def test_volunteerMajorAndClass(fixture_info):
+    # volunteerMajorAndClass now returns (columns, rows)
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.major)
+    assert columns == ["Major", "Count"]
+    assert list(rows) == [("Biology", 1), ("Graphics Design", 1)]
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.rawClassLevel)
+    assert columns == ["Major", "Count"]
+    assert list(rows) == [("Junior", 1), ("Sophomore", 1)]
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.rawClassLevel, True)
+    assert columns == ["Class Level", "Count"]
+    assert list(rows) == [("Sophomore", 1), ("Junior", 1)]
+
+    columns, rows = volunteerMajorAndClass("2024-2025-test", User.major)
+    assert columns == ["Major", "Count"]
+    assert list(rows) == [("Construction", 1)]
+
+    columns, rows = volunteerMajorAndClass("2024-2025-test", User.rawClassLevel)
+    assert columns == ["Major", "Count"]
+    assert list(rows) == [("Senior", 1)]
+
+    columns, rows = volunteerMajorAndClass("2024-2025-test", User.rawClassLevel, True)
+    assert columns == ["Class Level", "Count"]
+    assert list(rows) == [("Senior", 1)]
+
+    # Add a new user and make them participate in a service event in 2023-2024-test
+    newUser = User.create(
+        username="solijonovam_test",
+        email="solijonovam@berea.edu",
+        firstName="Madinabonu",
+        lastName="Solijonova",
+        major="Agriculture",
+        rawClassLevel="Sophomore"
+    )
+
+    EventParticipant.create(
+        user=newUser,
+        event=fixture_info["event1"],
+        hoursEarned=2
+    )
+
+    # Add user3 to the same event so Construction major becomes part of 2023-2024-test service participants too
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=fixture_info["event1"],
+        hoursEarned=3
+    )
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.major)
+    assert columns == ["Major", "Count"]
+    assert list(rows) == [("Agriculture", 1), ("Biology", 1), ("Construction", 1), ("Graphics Design", 1)]
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.rawClassLevel)
+    assert columns == ["Major", "Count"]
+    assert sorted(list(rows)) == sorted([("Junior", 1), ("Senior", 1), ("Sophomore", 2)])
+
+    columns, rows = volunteerMajorAndClass("2023-2024-test", User.rawClassLevel, True)
+    assert columns == ["Class Level", "Count"]
+    assert list(rows) == [("Sophomore", 2), ("Junior", 1), ("Senior", 1)]
+
+
+
+@pytest.mark.integration
+def test_totalHoursByProgram(fixture_info):
+    # totalHoursByProgram returns (columns, rows)
+    # columns = ["Program", "Service Hours", "Training Hours", "Other Hours"]
+
+    columns, rows = totalHoursByProgram("2023-2024-test")
+    assert columns == ["Program", "Service Hours", "Training Hours", "Other Hours"]
+    assert list(rows) == [("Program1", 8.0, 0.0, 0.0)]
+
+    columns, rows = totalHoursByProgram("2024-2025-test")
+    assert columns == ["Program", "Service Hours", "Training Hours", "Other Hours"]
+    assert list(rows) == [("Program4", 0.0, 0.0, 0.0)]
+
+    # Add more service hours in Program1 in 2023-2024-test
+    EventParticipant.create(
+        event=fixture_info["event1"],
+        user=fixture_info["user3"],
+        hoursEarned=10
+    )
+
+    columns, rows = totalHoursByProgram("2023-2024-test")
+    assert list(rows) == [("Program1", 18.0, 0.0, 0.0)]
+
+
+@pytest.mark.integration
+def test_onlyCompletedAllVolunteer(fixture_info):
+    # onlyCompletedAllVolunteer returns (columns, rows)
+
+    columns, rows = onlyCompletedAllVolunteer("2023-2024-test")
+    assert columns == ["Full Name", "Email", "B-Number"]
+    assert list(rows) == []
+
+    allVolunteerEvent = Event.create(
+        name="All Volunteer Training",
+        term=fixture_info["term1"],
+        program=fixture_info["program1"],
+        startDate=date(2023, 9, 20),
+        isCanceled=False,
+        deletionDate=None,
+        isService=False,
+        isTraining=True,
+        isAllVolunteerTraining=True
+    )
+
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=allVolunteerEvent,
+        hoursEarned=1
+    )
+
+    columns, rows = onlyCompletedAllVolunteer("2023-2024-test")
+    assert list(rows) == [("Bob Builder", "builderb@berea.edu", "B00700932")]
+
+    columns, rows = onlyCompletedAllVolunteer("2024-2025-test")
+    assert list(rows) == []
+
+    # Now Bob participates in a service event too, so he should be removed
+    testEvent = Event.create(
+        name="Test Service Event",
+        program=fixture_info["program1"],
+        term=fixture_info["term1"],
+        startDate=date(2023, 9, 21),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=testEvent,
+        hoursEarned=1
+    )
+
+    columns, rows = onlyCompletedAllVolunteer("2023-2024-test")
+    assert list(rows) == []
+
+
+@pytest.mark.integration
 def test_volunteerProgramHours(fixture_info):
-    # Returns list of (program, username, hours) for each program
-    assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 5.0), ('Program1', 'doej2', 3.0)]
-    assert sorted(list(volunteerProgramHours("2024-2025"))) == [('Program4', 'builderb', 0.0)]
+    # volunteerProgramHours returns (columns, rows)
+    columns, rows = volunteerProgramHours("2023-2024-test")
+    assert columns == ["Program Name", "Volunteer Hours", "Volunteer Name", "Volunteer Email", "Volunteer B-Number"]
+    assert sorted(list(rows)) == sorted([
+        ("Program1", 5.0, "John Doe", "doej@berea.edu", "B774377"),
+        ("Program1", 3.0, "Jane Doe", "doej2@berea.edu", "B888828"),
+    ])
 
-    EventParticipant.create(user = 'doej',
-                            event = fixture_info['event2'],
-                            hoursEarned = 1)
-    
-    # Test for changes between fixture and new event 
-    assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 5.0), ('Program1', 'doej2', 3.0), ('Program2', 'doej', 1.0)]
-    
-    testEvent = Event.create(name="Test Event",
-                                program=fixture_info['program1'],
-                                term=fixture_info['term1'])
-    EventParticipant.create(user = 'doej',
-                            event = testEvent,
-                            hoursEarned = 2)
-    
-    # Test with additional event creation
-    assert sorted(list(volunteerProgramHours("2023-2024"))) == [('Program1', 'doej', 7.0), ('Program1', 'doej2', 3.0), ('Program2', 'doej', 1.0)]
+    columns, rows = volunteerProgramHours("2024-2025-test")
+    assert columns == ["Program Name", "Volunteer Hours", "Volunteer Name", "Volunteer Email", "Volunteer B-Number"]
+    assert list(rows) == [
+        ("Program4", 0.0, "Bob Builder", "builderb@berea.edu", "B00700932")
+    ]
 
-def test_totalVolunteerHours(fixture_info):
-    #Returns the total amount of volunteer hours in the database
-    assert list(totalVolunteerHours("2023-2024")) == [(8.0,)]
-    assert list(totalVolunteerHours("2024-2025")) == [(0.0,)]
+    # Add John to event2 (Program2) for 1 hour
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=fixture_info["event2"],
+        hoursEarned=1
+    )
 
-    #hoursEarned is set to 0 (none)
-    EventParticipant.create(user = 'builderb',
-                            event = fixture_info['event3'],
-                            hoursEarned = 0)
-    assert list(totalVolunteerHours("2023-2024")) == [(8.0,)] 
-    assert list(totalVolunteerHours("2024-2025")) == [(0.0,)] #tests for hoursEarned to be 0 (should pass)
-    #assert list(totalVolunteerHours("2024-2025")) == [(None,)] #tests for hoursEarned to be None (should fail)
+    columns, rows = volunteerProgramHours("2023-2024-test")
+    assert sorted(list(rows)) == sorted([
+        ("Program1", 5.0, "John Doe", "doej@berea.edu", "B774377"),
+        ("Program1", 3.0, "Jane Doe", "doej2@berea.edu", "B888828"),
+        ("Program2", 1.0, "John Doe", "doej@berea.edu", "B774377"),
+    ])
 
-        
-    # Adding 1 volunteer hour to one event
-    EventParticipant.create(user = 'builderb',
-                            event = fixture_info['event2'],
-                            hoursEarned = 1)
-    
-    # Checking that the total volunteer hours has increased by 1
-    assert list(totalVolunteerHours("2023-2024")) == [(9.0,)]
-    EventParticipant.create(user = 'doej',
-                            event = fixture_info['event1'],
-                            hoursEarned = 3)
-    
-    # Checking increase by multiple hours
-    assert list(totalVolunteerHours("2023-2024")) == [(12.0,)]
+    # Add another Program1 event for John for 2 hours (so Program1 John becomes 7 total)
+    testEvent = Event.create(
+        name="Extra Program1 Event",
+        program=fixture_info["program1"],
+        term=fixture_info["term1"],
+        startDate=date(2023, 11, 10),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
 
-def test_getVolunteerProgramEventByTerm(fixture_info):
-# Returns a list for every eventparticipant entry for (full name, username, program, and event) for a given term
-    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == ([('John Doe', 'doej', 'Program1', 'Event1'), 
-                                                                                            ('Jane Doe', 'doej2', 'Program1', 'Event1')])
-    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term2']))) == ([('Bob Builder', 'builderb', 'Program4', 'Event4')])
-    
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=testEvent,
+        hoursEarned=2
+    )
 
-    EventParticipant.create(user = 'builderb', event = fixture_info['event2'], hoursEarned=0)
-    
-    # Checks for additional volunteer participants
-    assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1'])))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
-                                                                                                    ('Jane Doe', 'doej2', 'Program1', 'Event1'),
-                                                                                                    ('John Doe', 'doej', 'Program1', 'Event1')]
-    
-    testEvent = Event.create(name="Test Event",
-                                term= fixture_info['term1'],
-                                program = fixture_info['program2'])
-    testEvent2 = Event.create(name = "Test Event 2",
-                                term = fixture_info['term1'],
-                                program=fixture_info['program2'])
-    EventParticipant.create(user='doej',
-                            event=testEvent, hoursEarned=0)
-    EventParticipant.create(user='doej',
-                            event=testEvent2, hoursEarned=0)
-    
-    # Checks for repeated volunteers 
-    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1']))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
-                                                                                            ('John Doe', 'doej', 'Program1', 'Event1'),
-                                                                                            ('John Doe', 'doej', 'Program2', 'Test Event'),
-                                                                                            ('John Doe', 'doej', 'Program2', 'Test Event 2'),
-                                                                                            ('Jane Doe', 'doej2', 'Program1', 'Event1')]
-    
-    assert sorted(list(getVolunteerProgramEventByTerm(Term.get_by_id(fixture_info['term1'])))) == [('Bob Builder', 'builderb', 'Program2', 'Event2'),
-                                                                                                    ('Jane Doe', 'doej2', 'Program1', 'Event1'),
-                                                                                                    ('John Doe', 'doej', 'Program1', 'Event1'),
-                                                                                                    ('John Doe', 'doej', 'Program2', 'Test Event'),
-                                                                                                    ('John Doe', 'doej', 'Program2', 'Test Event 2')]
+    columns, rows = volunteerProgramHours("2023-2024-test")
+    assert sorted(list(rows)) == sorted([
+        ("Program1", 7.0, "John Doe", "doej@berea.edu", "B774377"),
+        ("Program1", 3.0, "Jane Doe", "doej2@berea.edu", "B888828"),
+        ("Program2", 1.0, "John Doe", "doej@berea.edu", "B774377"),
+    ])
 
+
+@pytest.mark.integration
+def test_totalHours(fixture_info):
+    # totalHours returns (columns, rows)
+    columns, rows = totalHours("2023-2024-test")
+    assert columns == ["Total Service Hours", "Total Training Hours", "Other Participation Hours"]
+    assert list(rows) == [(8.0, 0.0, 0.0)]
+
+    columns, rows = totalHours("2024-2025-test")
+    assert columns == ["Total Service Hours", "Total Training Hours", "Other Participation Hours"]
+    assert list(rows) == [(0.0, 0.0, 0.0)]
+
+    # Add a participant with 0 hours (should not change totals)
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=fixture_info["event3"],
+        hoursEarned=0
+    )
+
+    columns, rows = totalHours("2023-2024-test")
+    assert list(rows) == [(8.0, 0.0, 0.0)]
+
+    columns, rows = totalHours("2024-2025-test")
+    assert list(rows) == [(0.0, 0.0, 0.0)]
+
+    # Add 1 volunteer hour to event2 (service event in 2023-2024-test)
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=fixture_info["event2"],
+        hoursEarned=1
+    )
+
+    columns, rows = totalHours("2023-2024-test")
+    assert list(rows) == [(9.0, 0.0, 0.0)]
+
+    # Add 3 more service hours to event1 for user1
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=fixture_info["event1"],
+        hoursEarned=3
+    )
+
+    columns, rows = totalHours("2023-2024-test")
+    assert list(rows) == [(12.0, 0.0, 0.0)]
+
+
+@pytest.mark.integration
+def test_getAllTermData(fixture_info):
+    # getAllTermData(term) returns (columns, rows)
+
+    def rows_as_dicts(columns, rows):
+        dict_list = []
+        for row in rows:
+            dict_list.append(dict(zip(columns, row)))
+        return dict_list
+
+    # TERM 1 should include Event1 participation for John + Jane
+    columns, rows = getAllTermData(fixture_info["term1"])
+    data = rows_as_dicts(columns, rows)
+
+    # John in Event1
+    johnEvent1= [
+        r for r in data
+        if r["Event Name"] == "Event1" and r["Student Email"] == "doej@berea.edu"
+    ]
+    assert len(johnEvent1) == 1
+    assert johnEvent1[0]["Program Name"] == "Program1"
+    assert johnEvent1[0]["Hours Earned"] == 5
+
+    # Jane in Event1
+    janeEvent1 = [
+        r for r in data
+        if r["Event Name"] == "Event1" and r["Student Email"] == "doej2@berea.edu"
+    ]
+    assert len(janeEvent1) == 1
+    assert janeEvent1[0]["Program Name"] == "Program1"
+    assert janeEvent1[0]["Hours Earned"] == 3
+
+    # TERM 2 should include Event4 participation for Bob
+    columns, rows = getAllTermData(fixture_info["term2"])
+    data = rows_as_dicts(columns, rows)
+
+    bobEvent4 = [
+        r for r in data
+        if r["Event Name"] == "Event4" and r["Student Email"] == "builderb@berea.edu"
+    ]
+    assert len(bobEvent4) == 1
+    assert bobEvent4[0]["Program Name"] == "Program4"
+    assert bobEvent4[0]["Hours Earned"] == 0
+
+    # Add Bob to Event2 (term1) with 0 hours, should show up in term1 data
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=fixture_info["event2"],
+        hoursEarned=0
+    )
+
+    # Also add John to Event2 so he appears under Program2
+    EventParticipant.create(
+        user=fixture_info["user1"],
+        event=fixture_info["event2"],
+        hoursEarned=0
+    )
+
+    columns, rows = getAllTermData(fixture_info["term1"])
+    data = rows_as_dicts(columns, rows)
+
+    bobEvent2 = [
+        r for r in data
+        if r["Event Name"] == "Event2" and r["Student Email"] == "builderb@berea.edu"
+    ]
+    assert len(bobEvent2) == 1
+    assert bobEvent2[0]["Program Name"] == "Program2"
+    assert bobEvent2[0]["Hours Earned"] == 0
+
+    # Create two more Program2 events in term1 and add John to both
+    testEvent = Event.create(
+        name="Test Event",
+        term=fixture_info["term1"],
+        program=fixture_info["program2"],
+        startDate=date(2023, 11, 20),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+    testEvent2 = Event.create(
+        name="Test Event 2",
+        term=fixture_info["term1"],
+        program=fixture_info["program2"],
+        startDate=date(2023, 11, 21),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+
+    EventParticipant.create(user=fixture_info["user1"], event=testEvent, hoursEarned=0)
+    EventParticipant.create(user=fixture_info["user1"], event=testEvent2, hoursEarned=0)
+
+    columns, rows = getAllTermData(fixture_info["term1"])
+    data = rows_as_dicts(columns, rows)
+
+    johnProgram2Events= [
+        r for r in data
+        if r["Student Email"] == "doej@berea.edu" and r["Program Name"] == "Program2"
+    ]
+    eventNames = sorted([r["Event Name"] for r in johnProgram2Events])
+    assert eventNames == ["Event2", "Test Event", "Test Event 2"]
+
+@pytest.mark.integration
 def test_getUniqueVolunteers(fixture_info):
-    # Returns a list of everyone who has volunteered.
-    assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('doej', 'John Doe', 'B774377'),
-                                                                ('doej2', 'Jane Doe', 'B888828'),]
-    assert list(getUniqueVolunteers("2024-2025")) == [('builderb', 'Bob Builder', 'B00700932')]
-    
-    EventParticipant.create(user = 'builderb', event = fixture_info['event1'], hoursEarned=0)
-    
-    # Checks for new event participants
-    assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('builderb', 'Bob Builder', 'B00700932'),
-                                                                ('doej', 'John Doe', 'B774377'),
-                                                                ('doej2', 'Jane Doe', 'B888828')]
-    
+    columns, rows = getUniqueVolunteers("2023-2024-test")
+    assert columns == ["Full Name", "Email", "B-Number"]
+    assert sorted(list(rows)) == sorted([
+        ("John Doe", "doej@berea.edu", "B774377"),
+        ("Jane Doe", "doej2@berea.edu", "B888828"),
+    ])
+
+    columns, rows = getUniqueVolunteers("2024-2025-test")
+    assert list(rows) == [
+        ("Bob Builder", "builderb@berea.edu", "B00700932")
+    ]
+
+    # Add Bob to a 2023-2024 service event so he becomes a unique volunteer for that year too
+    EventParticipant.create(
+        user=fixture_info["user3"],
+        event=fixture_info["event1"],
+        hoursEarned=0
+    )
+
+    columns, rows = getUniqueVolunteers("2023-2024-test")
+    assert sorted(list(rows)) == sorted([
+        ("Bob Builder", "builderb@berea.edu", "B00700932"),
+        ("John Doe", "doej@berea.edu", "B774377"),
+        ("Jane Doe", "doej2@berea.edu", "B888828"),
+    ])
+
+    # Add a new user + a service participation in term1
     User.create(username="testt", firstName="Test", lastName="Tester", bnumber="B55555")
-    testEvent = Event.create(name="Test Event",
-                                term = fixture_info['term1'],
-                                program = fixture_info['program1'])
-    EventParticipant.create(user = 'testt',    
-                            event = testEvent,
-                            hoursEarned = 1)
-    
-    # Check for additional user
-    assert sorted(list(getUniqueVolunteers("2023-2024"))) == [('builderb', 'Bob Builder', 'B00700932'),
-                                                                ('doej', 'John Doe', 'B774377'),
-                                                                ('doej2', 'Jane Doe', 'B888828'),
-                                                                ('testt', 'Test Tester', 'B55555')]
+
+    testEvent = Event.create(
+        name="Test Event",
+        term=fixture_info["term1"],
+        program=fixture_info["program1"],
+        startDate=date(2023, 12, 1),
+        isCanceled=False,
+        deletionDate=None,
+        isService=True
+    )
+
+    EventParticipant.create(
+        user="testt",
+        event=testEvent,
+        hoursEarned=1
+    )
+
+    columns, rows = getUniqueVolunteers("2023-2024-test")
+    assert sorted(list(rows)) == sorted([
+        ("Bob Builder", "builderb@berea.edu", "B00700932"),
+        ("John Doe", "doej@berea.edu", "B774377"),
+        ("Jane Doe", "doej2@berea.edu", "B888828"),
+        ("Test Tester", "testt@berea.edu", "B55555"),
+    ])
+
 
 
