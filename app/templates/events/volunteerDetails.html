@@ -69,7 +69,7 @@
           {{createTable(p, 'attended') if type == 'table' else createCard(p, 'attended') }}
       {% endif %}
       {% if p in waitlist %}
-          {{createTable(p, 'waitlist') if type == 'table' else createCard(p, 'waitlist') }}
+          {{createTable(p, 'waitlisted') if type == 'table' else createCard(p, 'waitlisted') }}
       {% endif %}
     {% endfor %}
 {% endmacro %}
