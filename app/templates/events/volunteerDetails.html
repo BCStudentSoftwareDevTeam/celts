@@ -75,7 +75,13 @@
 {% endmacro %}
 
 {% macro createCheckbox(checkboxName) %}
-    {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' if checkboxName == 'attended' else 'Invited' %}
+    {%- set labelMap = {
+        'rsvp': 'RSVP',
+        'waitlist': 'Waitlisted',
+        'attended': 'Attended',
+        'invited': 'Invited'
+    } -%}
+    {% set labelText = labelMap.get(checkboxName, 'Invited') %}
     <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
     <label for="{{checkboxName}}Select">{{labelText}}</label><br>
 {% endmacro %}
