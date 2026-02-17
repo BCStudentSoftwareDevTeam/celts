@@ -28,26 +28,12 @@ def getGraduationManagementUsers():
     return graduationManagementUsers
 
 def setGraduatedStatus(username, status):
-    """
-    Update a student's graduation status.
-    "Graduating" means: graduation term has passed but hasGraduated may not yet be set. Graduating students are treated as alumni once their graduation term has passed
-    """
     gradStudent = User.get(User.username == username)
 
     # it is necessary we cast this to an int instead of a bool because the
     # status is passed as a string and if we cast it to a bool it will always be True
 
-    status = int(status)
-
-    if status:
-        # Mark as alumni
-        gradStudent.hasGraduated = True
-        gradStudent.rawClassLevel = "Graduating"
-    else:
-        # Revert to currently enrolled senior
-        gradStudent.hasGraduated = False
-        gradStudent.rawClassLevel = "Senior"
-
+    gradStudent.hasGraduated = int(status)
     gradStudent.save()
 
  

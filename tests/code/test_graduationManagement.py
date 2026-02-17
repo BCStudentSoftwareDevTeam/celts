@@ -33,7 +33,7 @@ def test_setGraduationStatus():
             bnumber="B00888888",
             email="gradtoggle@berea.edu",
             isStudent=True,
-            rawClassLevel="Senior",
+            rawClassLevel="Junior",
             hasGraduated=False
         )
 
@@ -42,7 +42,7 @@ def test_setGraduationStatus():
         user = User.get_by_id("gradtoggle")
 
         assert user.hasGraduated is True
-        assert user.rawClassLevel == "Graduating"
+        assert user.rawClassLevel == "Junior"
         assert user.processedClassLevel == "Alumni"
 
         # Unmark as graduated
@@ -50,8 +50,8 @@ def test_setGraduationStatus():
         user = User.get_by_id("gradtoggle")
 
         assert user.hasGraduated is False
-        assert user.rawClassLevel == "Senior"
-        assert user.processedClassLevel == "Senior"
+        assert user.rawClassLevel == "Junior"
+        assert user.processedClassLevel == "Junior"
 
         transaction.rollback()
 
