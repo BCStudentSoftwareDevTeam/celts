@@ -191,6 +191,9 @@ $(document).ready(function(){
 
     $("#addBonnerNoteButton").click(function() {
         bonnerNoteOn()
+        $("#addNoteTextArea").val('')                   // clear the text
+        $("#notesSaveButton").data('mode', 'add')       // set mode to add
+        $("#notesSaveButton").data('noteid', null)      // clear any stored noteid
         $("#noteModal").modal("toggle");
     });
 
@@ -199,6 +202,17 @@ $(document).ready(function(){
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
     let isBonner = $("#bonnerInput").is(":checked")
+    let mode = $("#notesSaveButton").data('mode')
+    let noteid = $("#notesSaveButton").data('noteid')
+
+    // If we're editing, delete the old note first
+    if (mode === 'edit') {
+        $.ajax({
+            method: "POST",
+            url: "/" + username + "/deleteNote",
+            data: { "id": noteid }
+        })
+    }
     $.ajax({
       method: "POST",
       url:  "/profile/addNote",
@@ -229,9 +243,30 @@ $(document).ready(function(){
       }
     });
   });
-    $(".editNoteButton").click(function() {
-    let username = $(this).data('username')
+  $(".editNoteButton").click(function() {
+    console.log("joyce", this)
+    let noteText = $(this).data('notetext')
+    let visibility = $(this).data('visibility')
+    let isBonner = $(this).data('bonner')
     let noteid = $(this).data('noteid')
+    
+    // Pre-fill the modal with the existing note data
+    $("#addNoteTextArea").val(noteText)
+    $("#noteDropdown").val(visibility)
+
+    // Show/hide bonner fields based on note type
+    if (isBonner === 'yes') {
+        bonnerNoteOn()
+    } else {
+        bonnerNoteOff()
+    }
+    // Save the noteid so the form knows which note to delete later
+    $("#notesSaveButton").data('noteid', $(this).data('noteid'))
+    $("#notesSaveButton").data('mode', 'edit')
+
+    // Open the modal
+    $("#noteModal").modal("toggle")
+});
     $.ajax({
       method: "POST",
       url:  "/" + username + "/editNote",
@@ -366,8 +401,8 @@ $(document).ready(function(){
       typingTimer = setTimeout(saveDiet, saveInterval);
     });
   });
+ // end document.ready()
 
-}); // end document.ready()
 
 // Update program manager status
 function updateManagers(el, volunteerUsername ) {

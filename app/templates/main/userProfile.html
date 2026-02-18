@@ -423,14 +423,13 @@
                     {% else %}
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
-                  </td>
-                  <tr>
+                  <td>
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                      <button type="button" class="btn btn-sm btn-danger editNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Edit</button>
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                     <button type="button" class="btn btn-sm btn-primary editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
+                     <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
-                      <button type="button" class="btn btn-sm btn-danger editNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Edit</button>
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                      <button type="button" class="btn btn-sm btn-primary" disabled>Edit</button>
+                      <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
                     {% endif %}
                   </td>
                 </tr>
@@ -565,7 +564,7 @@
             <div class="form-group input-group-x form-outline ui-widget">
               <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
             </div>
-          </div>
+          </div> 
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
