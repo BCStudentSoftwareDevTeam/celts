@@ -150,6 +150,8 @@ $(document).ready(function() {
                 } else {
                     row.data('status', 'enrolled');
                     $(`#${username}ClassLevel`).text("Senior");
+                    row.removeClass('hidden');
+                    redrawTable();
                 }
             },
             error: function(status, error) {
