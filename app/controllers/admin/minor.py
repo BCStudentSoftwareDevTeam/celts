@@ -20,45 +20,27 @@ def manageMinor():
                  
         return redirect(url_for("admin.manageMinor"))
 
-
-
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
-    declaredStudentsList = getDeclaredMinorStudentsWithProgress()
-    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])  
-      
-    declaredUsernames = {
-        s['username']
-        for s in declaredStudentsList
-    }
-    
-    sustainedUsernames = {
-        s['username']
-        for s in sustainedEngagement
-    }
-    
-    # merging both lists 
-    cceMinorStudents = {}
-    # if they are in sustainedEngagement and have been declared
-    for student in sustainedEngagement:
-        cceMinorStudents[student['username']] = {
+    declaredStudentsDict = getDeclaredMinorStudentsWithProgress()
+    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsDict])  
+          
+    declaredStudentsSet = {student['username'] for student in declaredStudentsDict}
+    cceMinorStudents = {
+        student['username'] : {
             **student,
-            'isDeclaredMinor': student['username'] in declaredUsernames
-        }
-        
-    for student in declaredStudentsList:
-        if student['username'] not in sustainedUsernames:
-            cceMinorStudents[student['username']] = {
-                **student,
-                'isDeclaredMinor': True
-            }
+            'isDeclaredMinor': student['username'] in declaredStudentsSet
+        } 
+        for student in declaredStudentsDict + sustainedEngagement
+    }
+
     cceMinorStudents = list(cceMinorStudents.values())
 
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,
-                            declaredStudentsList = declaredStudentsList,
+                            declaredStudentsList = list(declaredStudentsDict),
                             interestedStudentEmailString = interestedStudentEmailString,
                             declaredStudentEmailString = declaredStudentEmailString,
                             sustainedEngagement = sustainedEngagement,
