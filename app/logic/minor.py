@@ -192,33 +192,43 @@ def getDeclaredMinorStudentsWithProgress():
     """
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
+    # this returns the count of distinct engagements that have a certification requirement id.
+    # this is important because our join clause specifically joins individualrequirements with the certifications that match to CCE
+    # while leaving the rest as null
+    cceEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CertificationRequirement.id.is_null(False), IndividualRequirement.id)],
+                None
+            )
+        )
+    ).alias("allEngagementCount")
+
     q = (
         User
         .select(
             User,
-            fn.COUNT(fn.DISTINCT(IndividualRequirement.id)).alias("rawEngagementCount"),
+            cceEngagementCount,
             fn.COALESCE(fn.SUM(fn.DISTINCT(summerCase)), 0).alias("summerCount"),
             fn.IF(fn.COUNT(fn.DISTINCT(CCEMinorProposal.id)) > 0, True, False).alias("hasCCEMinorProposal"),
         )
         .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-        .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
+        .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(
+            (IndividualRequirement.requirement_id == CertificationRequirement.id) &
+            (CertificationRequirement.certification_id == Certification.CCE)    # only cce minor certs are populated with non-null
+            ))
         .switch(User)
         .join(CCEMinorProposal, JOIN.LEFT_OUTER, on=(User.username == CCEMinorProposal.student))
-        .where(
-            (User.declaredMinor == True) &
-            (
-                (CertificationRequirement.certification_id == Certification.CCE) |
-                (CertificationRequirement.id.is_null(True))
-            )
-        )
-        .group_by(User.firstName, User.lastName, User.username)
-        .order_by(SQL("rawEngagementCount").desc())
+        .where((User.declaredMinor == True))
+        .group_by(User.username)
+        .order_by(SQL("allEngagementCount").desc())
     )
 
     result = []
     for s in q:
      
-        engagementCount = int(s.rawEngagementCount) - int(s.summerCount or 0)
+        engagementCount = int(s.allEngagementCount or 0) - int(s.summerCount or 0)
 
         result.append({
             "firstName": s.firstName,
