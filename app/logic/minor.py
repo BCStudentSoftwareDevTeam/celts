@@ -190,7 +190,15 @@ def getDeclaredMinorStudentsWithProgress():
     This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
     It returns a list of dictionaries containing student information and their engagement details and adds students who have no requirements but have declared the minor with 0 engagements.
     """
-    summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
+    summerEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CCEMinorProposal.proposalType == "Summer Experience", CCEMinorProposal.id)],
+                None
+            )
+        )
+    ).alias("summerEngagementCount")
 
     # this returns the count of distinct engagements that have a certification requirement id.
     # this is important because our join clause specifically joins individualrequirements with the certifications that match to CCE
@@ -210,7 +218,7 @@ def getDeclaredMinorStudentsWithProgress():
         .select(
             User,
             cceEngagementCount,
-            fn.COALESCE(fn.SUM(fn.DISTINCT(summerCase)), 0).alias("summerCount"),
+            summerEngagementCount,
             fn.IF(fn.COUNT(fn.DISTINCT(CCEMinorProposal.id)) > 0, True, False).alias("hasCCEMinorProposal"),
         )
         .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
@@ -228,7 +236,7 @@ def getDeclaredMinorStudentsWithProgress():
     result = []
     for s in q:
      
-        engagementCount = int(s.allEngagementCount or 0) - int(s.summerCount or 0)
+        engagementCount = int(s.allEngagementCount or 0) - int(s.summerEngagementCount or 0)
 
         result.append({
             "firstName": s.firstName,
@@ -239,7 +247,7 @@ def getDeclaredMinorStudentsWithProgress():
             "hasGraduated": s.hasGraduated,
             "engagementCount": engagementCount,
             "hasCCEMinorProposal": bool(s.hasCCEMinorProposal),
-            "hasSummer": "Completed" if (s.summerCount and int(s.summerCount) > 0) else "Incomplete",
+            "hasSummer": "Completed" if (s.summerEngagementCount and int(s.summerEngagementCount) > 0) else "Incomplete",
         })
 
     return result
