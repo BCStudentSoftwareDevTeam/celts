@@ -53,13 +53,28 @@ def addBnumberAsParticipant(bnumber, eventId):
         userStatus = "already signed in"
 
     else:
+        # If the event has already started, record as an EventParticipant (attendance).
+        # If the event is in the future, create an EventRsvp so RSVP lists remain consistent
+        # with templates that expect RSVP objects (which have `rsvpTime`).
         userStatus = "success"
-        # We are not using addPersonToEvent to do this because 
-        # that function checks if the event is in the past, but
-        # someone could start signing people up via the kiosk
-        # before an event has started
-        totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.create (user=kioskUser, event=event, hoursEarned=totalHours)
+        if event.isPastStart:
+            totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+            EventParticipant.create(user=kioskUser, event=event, hoursEarned=totalHours)
+        else:
+            # create RSVP if one doesn't already exist
+            if not checkUserRsvp(kioskUser, event):
+                currentRsvp = getEventRsvpCountsForTerm(event.term)
+                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else False
+                EventRsvp.create(user=kioskUser, event=event, rsvpWaitlist=waitlist)
+                targetList = "the waitlist" if waitlist else "the RSVP list"
+                try:
+                    if g.current_user.username == kioskUser.username:
+                        createRsvpLog(event.id, f"{kioskUser.fullName} joined {targetList}.")
+                    else:
+                        createRsvpLog(event.id, f"Added {kioskUser.fullName} to {targetList}.")
+                except Exception:
+                    # logging should not break kiosk flow
+                    pass
 
     return kioskUser, userStatus
 
