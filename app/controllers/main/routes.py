@@ -493,9 +493,7 @@ def volunteerRegister():
     program = event.program
     user = g.current_user
 
-    isAdded = checkUserRsvp(user, event)
     isEligible = isEligibleForProgram(program, user)
-    listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
     if isEligible:
@@ -506,7 +504,6 @@ def volunteerRegister():
             flash(f"RSVP Failed due to an unknown error.", "danger")
     else:
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
-
 
     if 'from' in request.form:
         if request.form['from'] == 'ajax':
