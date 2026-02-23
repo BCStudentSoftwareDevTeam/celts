@@ -53,28 +53,30 @@ def addBnumberAsParticipant(bnumber, eventId):
         userStatus = "already signed in"
 
     else:
-        # If the event has already started, record as an EventParticipant (attendance).
-        # If the event is in the future, create an EventRsvp so RSVP lists remain consistent
-        # with templates that expect RSVP objects (which have `rsvpTime`).
+        # Non-RSVP and RSVP event handling
         userStatus = "success"
-        if event.isPastStart:
+        if event.isRsvpRequired:
+            # RSVP event: standard logic (RSVP before event, attend after)
+            if event.isPastStart:
+                totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+                EventParticipant.create(user=kioskUser, event=event, hoursEarned=totalHours)
+            else:
+                if not checkUserRsvp(kioskUser, event):
+                    currentRsvp = getEventRsvpCountsForTerm(event.term)
+                    waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else False
+                    EventRsvp.create(user=kioskUser, event=event, rsvpWaitlist=waitlist)
+                    targetList = "the waitlist" if waitlist else "the RSVP list"
+                    try:
+                        if g.current_user.username == kioskUser.username:
+                            createRsvpLog(event.id, f"{kioskUser.fullName} joined {targetList}.")
+                        else:
+                            createRsvpLog(event.id, f"Added {kioskUser.fullName} to {targetList}.")
+                    except Exception:
+                        pass
+        else:
+            # Non-RSVP event: scanner entry ALWAYS marks as attended regardless of timing
             totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
             EventParticipant.create(user=kioskUser, event=event, hoursEarned=totalHours)
-        else:
-            # create RSVP if one doesn't already exist
-            if not checkUserRsvp(kioskUser, event):
-                currentRsvp = getEventRsvpCountsForTerm(event.term)
-                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else False
-                EventRsvp.create(user=kioskUser, event=event, rsvpWaitlist=waitlist)
-                targetList = "the waitlist" if waitlist else "the RSVP list"
-                try:
-                    if g.current_user.username == kioskUser.username:
-                        createRsvpLog(event.id, f"{kioskUser.fullName} joined {targetList}.")
-                    else:
-                        createRsvpLog(event.id, f"Added {kioskUser.fullName} to {targetList}.")
-                except Exception:
-                    # logging should not break kiosk flow
-                    pass
 
     return kioskUser, userStatus
 
@@ -95,22 +97,34 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-        if event.isPastStart:
-            if not volunteerExists:
-                # We duplicate these two lines in addBnumberAsParticipant
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+        
+        if event.isRsvpRequired:
+            # RSVP event logic
+            if event.isPastStart:
+                if not volunteerExists:
+                    eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                    EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+            else:
+                if not rsvpExists:
+                    currentRsvp = getEventRsvpCountsForTerm(event.term)
+                    waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
+                    EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+                    targetList = "the waitlist" if waitlist else "the RSVP list"
+                    if g.current_user.username == user.username:
+                        createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
+                    else:
+                        createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
         else:
-            if not rsvpExists:
-                currentRsvp = getEventRsvpCountsForTerm(event.term)
-                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
-                EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
-
-                targetList = "the waitlist" if waitlist else "the RSVP list"
-                if g.current_user.username == user.username:
-                    createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
-                else:
-                    createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
+            # Non-RSVP event logic
+            if event.isPastStart:
+                # After event: create EventParticipant (attended)
+                if not volunteerExists:
+                    eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                    EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+            else:
+                # Before event: create EventRsvp (invited status)
+                if not rsvpExists:
+                    EventRsvp.create(user = user, event = event, rsvpWaitlist = False)
 
         if volunteerExists or rsvpExists:
             return "already in"
