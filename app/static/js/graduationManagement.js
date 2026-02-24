@@ -18,8 +18,7 @@ $(document).ready(function() {
         return true;
     });
 
-    $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
-    $('.graduated-checkbox').change(checkboxClickHandler);
+    $(document).on('change', '.graduated-checkbox', checkboxClickHandler);
 
     initializePage()
 
@@ -123,9 +122,7 @@ $(document).ready(function() {
     }
     
     function redrawTable() {
-        gradStudentsTable.draw(); 
-        $('.graduated-checkbox').not('.hasHandler').change(checkboxClickHandler);
-        $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
+        gradStudentsTable.draw();
     }
 
     function checkboxClickHandler() {
