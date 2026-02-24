@@ -134,22 +134,22 @@ $(document).ready(function() {
             data: {status: hasGraduated ? 1 : 0},
             url: `/${username}/setGraduationStatus`,
             success: function(response) {
-                initializePage()
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
                 const row = $(`tr[data-username="${username}"]`);
+                var currentPage = gradStudentsTable.page();
                 if (hasGraduated) {
                     row.data('status', 'alumni');
                     $(`#${username}ClassLevel`).text("Alumni");
                     if (!showGraduatedStudents()) {
                         row.addClass('hidden');
-                        redrawTable();
                     }
                 } else {
                     row.data('status', 'enrolled');
                     $(`#${username}ClassLevel`).text("Senior");
                     row.removeClass('hidden');
-                    redrawTable();
                 }
+                gradStudentsTable.draw();
+                gradStudentsTable.page(currentPage).draw(false);
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);
