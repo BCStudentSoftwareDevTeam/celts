@@ -295,6 +295,7 @@ def createSpreadsheet(academicYear):
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
+    makeDataXls("Labor Attendance By Term", laborAttendanceByTerm(academicYear), workbook, sheetDesc="Labor students and the number of labor meetings attended for each term in the academic year.")
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
