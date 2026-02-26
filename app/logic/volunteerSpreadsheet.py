@@ -238,7 +238,7 @@ def laborAttendanceByTerm(academicYear):
     )
     .where(Event.isLaborOnly == True)
     .group_by(EventParticipant.user_id, Term.description)
-    .order_by(User.lastName, Term.description)
+    .order_by(User.lastName, User.firstName, Term.description)
     )
 
     columns = ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
