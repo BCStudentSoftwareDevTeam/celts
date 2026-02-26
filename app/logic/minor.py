@@ -185,7 +185,7 @@ def declareMinorInterest(username):
     except Exception as e:
         raise RuntimeError(f"Failed to declare interested student: {e}")
     
-def getDeclaredMinorStudentsWithProgress():
+def getDeclaredMinorStudents():
     """
     This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
     It returns a list of dictionaries containing student information and their engagement details and adds students who have no requirements but have declared the minor with 0 engagements.
@@ -251,16 +251,6 @@ def getDeclaredMinorStudentsWithProgress():
         })
 
     return result
-    
-def getDeclaredMinorStudents():
-    """
-    Get a list of the students who have declared minor
-    """
-    declaredStudents = User.select().where(User.isStudent & User.declaredMinor)
-
-    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
-
-    return interestedStudentList
     
 def getCourseInformation(id):
     """

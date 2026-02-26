@@ -4,7 +4,7 @@ from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getDeclaredMinorStudentsWithProgress, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
+from app.logic.minor import getDeclaredMinorStudents, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
 
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
@@ -23,7 +23,7 @@ def manageMinor():
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
-    declaredStudentsDict = getDeclaredMinorStudentsWithProgress()
+    declaredStudentsDict = getDeclaredMinorStudents()
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsDict])  
           
     declaredStudentsSet = {student['username'] for student in declaredStudentsDict}

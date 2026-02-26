@@ -22,7 +22,7 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.minor import createOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, createSummerExperience, removeProposal
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getEngagementTotal, getCCEMinorProposals
-from app.logic.minor import declareMinorInterest, getDeclaredMinorStudentsWithProgress
+from app.logic.minor import declareMinorInterest, getDeclaredMinorStudents
 from app.logic.fileHandler import FileHandler
 
 
@@ -676,7 +676,7 @@ def test_declareMinorInterest():
 
 
 @pytest.mark.integration
-def test_getDeclaredMinorStudentsWithProgress():
+def test_getDeclaredMinorStudents():
     with mainDB.atomic() as transaction:
         # Force known baseline for these users since users with individualrequirements with a declared status of True are returned
         for username in ["agliullovak", "partont", "bryanta"]:
@@ -684,7 +684,7 @@ def test_getDeclaredMinorStudentsWithProgress():
             u.declaredMinor = False
             u.save()
 
-        before = getDeclaredMinorStudentsWithProgress()
+        before = getDeclaredMinorStudents()
         before_usernames = {s["username"] for s in before}
 
         # Now declare them
@@ -693,7 +693,7 @@ def test_getDeclaredMinorStudentsWithProgress():
             u.declaredMinor = True
             u.save()
 
-        after = getDeclaredMinorStudentsWithProgress()
+        after = getDeclaredMinorStudents()
         after_usernames = {s["username"] for s in after}
 
         # Assert THESE users were added 
