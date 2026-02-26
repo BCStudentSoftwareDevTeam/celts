@@ -232,12 +232,12 @@ def laborAttendanceByTerm(academicYear):
     query = (base.select(
         fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'), 
         User.bnumber, 
-        fn.CONCAT(User.username, '@berea.edu').alias('email'),
+        fn.CONCAT(EventParticipant.user_id, '@berea.edu').alias('email'),
         Term.description, 
         fn.COUNT(EventParticipant.event_id).alias('meetingsAttended'), 
     )
     .where(Event.isLaborOnly == True)
-    .group_by(User.username, Term.description)
+    .group_by(EventParticipant.user_id, Term.description)
     .order_by(User.lastName, Term.description)
     )
 
