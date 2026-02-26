@@ -243,8 +243,6 @@ def laborAttendanceByTerm(academicYear):
 
     columns = ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
     results = list(query.tuples())
-    print("Row count:", len(results))
-    print("Results:", results)
     # return (columns,query.tuples())
     return (columns, results)
 
