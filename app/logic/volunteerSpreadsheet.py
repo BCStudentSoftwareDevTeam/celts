@@ -234,7 +234,7 @@ def laborAttendanceByTerm(academicYear):
         User.bnumber, 
         fn.CONCAT(EventParticipant.user_id, '@berea.edu').alias('email'),
         Term.description, 
-        fn.COUNT(EventParticipant.event_id).alias('meetingsAttended'), 
+        fn.COUNT(EventParticipant.event_id.distinct()).alias('meetingsAttended'), 
     )
     .where(Event.isLaborOnly == True)
     .group_by(EventParticipant.user_id, Term.description)
