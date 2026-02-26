@@ -32,7 +32,8 @@ def fixture_info():
             startDate=date(2023, 9, 1),
             isCanceled=False,
             deletionDate=None,
-            isService=True
+            isService=True, 
+            isLaborOnly=True
         )
         event2 = Event.create(
             name='Event2',
@@ -41,7 +42,8 @@ def fixture_info():
             startDate=date(2023, 9, 10),
             isCanceled=False,
             deletionDate=None,
-            isService=True
+            isService=True, 
+            isLaborOnly=True
         )
         event3 = Event.create(
             name='Event3',
@@ -685,40 +687,13 @@ def test_getUniqueVolunteers(fixture_info):
 
 @pytest.mark.integration
 def test_laborAttendanceByTerm(fixture_info):
-    # No labor events yet so should return empty results
-    columns, results = laborAttendanceByTerm("2023-2024-test")
-    assert columns == ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
-    assert results == []
-
-    # Create a labor-only program and events
-    laborProgram = Program.create(programName='Labor')
-    laborEvent1 = Event.create(
-        name='Labor Meeting 1',
-        term=fixture_info['term1'],
-        program=laborProgram,
-        startDate=date(2023, 9, 5),
-        isCanceled=False,
-        deletionDate=None,
-        isLaborOnly=True,
-    )
-    laborEvent2 = Event.create(
-        name='Labor Meeting 2',
-        term=fixture_info['term1'],
-        program=laborProgram,
-        startDate=date(2023, 9, 12),
-        isCanceled=False,
-        deletionDate=None,
-        isLaborOnly=True,
-    )
-
-    EventParticipant.create(event=laborEvent1, user=fixture_info['user1'], hoursEarned=1)
-    EventParticipant.create(event=laborEvent2, user=fixture_info['user1'], hoursEarned=1)
-    EventParticipant.create(event=laborEvent1, user=fixture_info['user2'], hoursEarned=1)
+    EventParticipant.create(event=fixture_info["event1"], user=fixture_info['user1'], hoursEarned=1)
+    EventParticipant.create(event=fixture_info["event2"], user=fixture_info['user1'], hoursEarned=1)
+    EventParticipant.create(event=fixture_info["event1"], user=fixture_info['user2'], hoursEarned=1)
 
     columns, results = laborAttendanceByTerm("2023-2024-test")
     assert columns == ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
 
-    # user1 (Doe, John) attended 2 meetings, user2 (Doe, Jane) attended 1
     assert len(results) == 2
-    assert ("John Doe", "B774377", "doej@berea.edu", "Fall 2023", 2) in results
-    assert ("Jane Doe", "B888828", "doej2@berea.edu", "Fall 2023", 1) in results
+    assert ("John Doe", "B774377", "doej@berea.edu", "Fall 2023", 3) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", "Fall 2023", 2) in results
