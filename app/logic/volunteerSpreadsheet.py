@@ -225,57 +225,6 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
-def getLaborMeetingAttendance(academicYear, toDateOnly=True):
-    """
-    This sheet tracks labor students attendance of labor meetings during academic year
-    """
-    columns = [
-        "Student First Name",
-        "Student Last Name",
-        "Student Email",
-        "Student B-Number",
-        "Program Name",
-        "Event Name",
-        "Term",
-        "Event Date",
-    ]
-
-    laborMeeting = (
-        fn.LOWER(Event.name).contains("labor meeting") |
-        fn.LOWER(fn.COALESCE(Event.description, "")).contains("labor meeting")
-    )
-
-    query = (EventParticipant
-             .select(
-                 User.firstName,
-                 User.lastName,
-                 fn.CONCAT(User.username, '@berea.edu').alias("email"),
-                 User.bnumber,
-                 Program.programName,
-                 Event.name,
-                 Term.description.alias("termDesc"),
-                 Event.startDate,
-             )
-             .join(User)
-             .switch(EventParticipant)
-             .join(Event)
-             .join(Program, JOIN.LEFT_OUTER)
-             .switch(Event)
-             .join(Term)
-             .where(
-                 Term.academicYear == academicYear,
-                 Event.deletionDate == None,
-                 Event.isCanceled == False,
-                 Event.isLaborOnly == True,
-                 laborMeeting,
-             )
-             .order_by(Term.termOrder, Event.startDate, Event.name, User.lastName, User.firstName))
-
-    if toDateOnly:
-        query = query.where(Event.startDate <= date.today())
-
-    return (columns, query.tuples())
-
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataTuples) = sheetData
@@ -321,7 +270,6 @@ def createSpreadsheet(academicYear):
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-    makeDataXls("Labor Meetings", getLaborMeetingAttendance(academicYear, toDateOnly=True), workbook, sheetDesc=f"Attendees for labor meetings during {academicYear}.")
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
