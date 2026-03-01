@@ -5,7 +5,7 @@ from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist, SQL
 import xlsxwriter
 
-from app.models import mainDB
+from app.models import app
 from app.models.user import User
 from app.models.term import Term
 from app.models.event import Event
@@ -341,45 +341,56 @@ def createOtherEngagement(username, request):
         addFile.saveFiles(parentEvent=proposalObject)
 
 def updateOtherEngagementRequest(proposalID, request):
-        attachment = request.files.get("attachmentObject")
+    """
+    Update an existing CCEMinorProposal entry based off of the form data
+    """
+    attachment = request.files.get("attachmentObject")
+    proposalObject = CCEMinorProposal.get_by_id(proposalID)
+    if attachment:
+        existingAttachment = AttachmentUpload.get(proposal=proposalID)
+        FileHandler(proposalId=proposalID).deleteFile(existingAttachment.id)
+        addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
+        addFile.saveFiles(parentEvent=proposalObject)
 
-        with mainDB.atomic():
-            # Get proposal safely
-            proposalObject = CCEMinorProposal.get_by_id(proposalID)
+    CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
 
-            # ---- HANDLE ATTACHMENT SAFELY ----
-            if attachment:
-                existingAttachment = (
-                    AttachmentUpload
-                    .select()
-                    .where(AttachmentUpload.proposal == proposalID)
-                    .first()
-                )
+        # with mainDB.atomic():
+        #     # Get proposal safely
+        #     proposalObject = CCEMinorProposal.get_by_id(proposalID)
 
-                if existingAttachment:
-                    deleteFile = FileHandler(proposalId=proposalID)
-                    deleteFile.deleteFile(existingAttachment.id)
+        #     # ---- HANDLE ATTACHMENT SAFELY ----
+        #     if attachment:
+        #         existingAttachment = (
+        #             AttachmentUpload
+        #             .select()
+        #             .where(AttachmentUpload.proposal == proposalID)
+        #             .first()
+        #         )
 
-                addFile = FileHandler(
-                    getFilesFromRequest(request),
-                    proposalId=proposalID
-                )
-                addFile.saveFiles(parentEvent=proposalObject)
+        #         if existingAttachment:
+        #             deleteFile = FileHandler(proposalId=proposalID)
+        #             deleteFile.deleteFile(existingAttachment.id)
 
-            # ---- CLEAN FORM DATA ----
-            update_data = dict(request.form)
+        #         addFile = FileHandler(
+        #             getFilesFromRequest(request),
+        #             proposalId=proposalID
+        #         )
+        #         addFile.saveFiles(parentEvent=proposalObject)
 
-            # remove fields that are not DB columns
-            update_data.pop("contentArea", None)
-            update_data.pop("attachmentObject", None)
+        #     # ---- CLEAN FORM DATA ----
+        #     update_data = dict(request.form)
 
-            # ---- UPDATE PROPOSAL ----
-            (
-                CCEMinorProposal
-                .update(**update_data)
-                .where(CCEMinorProposal.id == proposalID)
-                .execute()
-            )
+        #     # remove fields that are not DB columns
+        #     update_data.pop("contentArea", None)
+        #     update_data.pop("attachmentObject", None)
+
+        #     # ---- UPDATE PROPOSAL ----
+        #     (
+        #         CCEMinorProposal
+        #         .update(**update_data)
+        #         .where(CCEMinorProposal.id == proposalID)
+        #         .execute()
+        #     )
                 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
