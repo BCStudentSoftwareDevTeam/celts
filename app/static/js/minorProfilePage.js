@@ -21,33 +21,24 @@ $(document).ready(function() {
 
   $('.submit-proposal').on('click', function(e) {
     e.preventDefault();
-    let status = $(this).data('status');
-    $('#statusField').val(status);
-    const stats= $('#statusField').val();
-    const form = $('#proposalForm')[0];
-
-    if(stats ==="Submitted"){
-
-      const fileInput = $('#supervisorAttachment');
-      const filePath = fileInput.data('file-path');
-      const firstInvalid = form.querySelector(':invalid');
-      console.log(filePath,"filePath");
-
-      if (!filePath)
-          {
-          firstInvalid.scrollIntoView({
-          block: 'center' });
-          firstInvalid.focus();
-          return;
-        }
-      else{
-         $( '#proposalForm').submit()     
-
-      }
-       return;  
-
+    const status = $(this).data('status');
+    const proposal = $('#proposalForm')[0];
+    const experienceType = $('#proposalExperienceType').val()
+    let customVailidity = null;
+    
+    if (experienceType === "Other Engagement"){
+      customVailidity = validateFileUpload()
+    } else {
+      customVailidity = validateContentAreas()
     }
+    
+    if (!customVailidity || !proposal.checkValidity()){
+      proposal.reportValidity()
+      return
+    }
+
     var formData = new FormData($('#proposalForm')[0]);
+    formData.set('status', status)
     var actionURL = $('#proposalForm').attr('action');
     let username = $("#username").val();
     
@@ -194,6 +185,33 @@ function showEngagementInformation(engagementInfoDict) {
       msgFlash("Error displaying information!", "danger")
     }
   });
+}
+
+function validateContentAreas(){
+  // custom validation for contentAreas checkboxes (summer exp)
+  const contentAreaCheckboxes = $('input[name="contentArea"]')
+  contentAreaCheckboxes[0].setCustomValidity('')
+  const isChecked = (contentAreaCheckboxes.filter(':checked').length) > 0;
+  if (!isChecked){
+    contentAreaCheckboxes[0].setCustomValidity('Select at least one option')
+    contentAreaCheckboxes[0].reportValidity()
+    return false;
+  }
+  return true;
+}
+
+function validateFileUpload() {
+  const fileInput = $('#supervisorAttachment')[0];
+  const files = fileInput.files;
+
+  if (!files || files.length === 0) {
+    fileInput.setCustomValidity('Please upload a file.');
+    fileInput.reportValidity();
+    return false;
+  }
+
+  fileInput.setCustomValidity('');
+  return true;
 }
 
 function toggleEngagementCredit(isChecked, engagementData, checkbox){
