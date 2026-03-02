@@ -344,11 +344,13 @@ def updateOtherEngagementRequest(proposalID, request):
     """
     Update an existing CCEMinorProposal entry based off of the form data
     """
-    attachment = request.files.get("attachmentObject")
+    newAttachment = request.files.get("attachmentObject")
+    previousAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
     proposalObject = CCEMinorProposal.get_by_id(proposalID)
-    if attachment:
-        existingAttachment = AttachmentUpload.get(proposal=proposalID)
-        FileHandler(proposalId=proposalID).deleteFile(existingAttachment.id)
+
+    if newAttachment:
+        if previousAttachment:
+            FileHandler(proposalId=proposalID).deleteFile(previousAttachment.id)
         addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
         addFile.saveFiles(parentEvent=proposalObject)
 

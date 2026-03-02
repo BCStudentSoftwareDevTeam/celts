@@ -18,7 +18,6 @@ $(document).ready(function() {
   })
 
   handleFileSelection("supervisorAttachment", true)
-
   $('.submit-proposal').on('click', function(e) {
     e.preventDefault();
     const status = $(this).data('status');
@@ -28,6 +27,7 @@ $(document).ready(function() {
     
     if (experienceType === "Other Engagement"){
       customVailidity = validateFileUpload()
+      console.log(customVailidity)
     } else {
       customVailidity = validateContentAreas()
     }
@@ -89,8 +89,6 @@ $(document).ready(function() {
   // when they are hidden
   $("#yes300hours").on("click", function() {
     let hoursWeeksBoxes = $("#totalHours, #totalWeeks")
-    $("#totalWeeks").val(8);
-    $("#totalHours").val(300)
     hoursWeeksBoxes.prop('required', false); 
   })
 
@@ -201,16 +199,20 @@ function validateContentAreas(){
 }
 
 function validateFileUpload() {
-  const fileInput = $('#supervisorAttachment')[0];
-  const files = fileInput.files;
+  const input = $('#supervisorAttachment');
+  const fileInput = input[0];
 
-  if (!files || files.length === 0) {
+  fileInput.setCustomValidity('');
+
+  const hasNewFile = fileInput.files && fileInput.files.length > 0;
+  const hasExistingFile = $('#supervisorAttachmentContainer [id^="attachedFilesRow"]').length > 0;
+
+  console.log(hasNewFile, hasExistingFile)
+  if (!hasNewFile && !hasExistingFile) {
     fileInput.setCustomValidity('Please upload a file.');
-    fileInput.reportValidity();
     return false;
   }
 
-  fileInput.setCustomValidity('');
   return true;
 }
 
