@@ -355,44 +355,6 @@ def updateOtherEngagementRequest(proposalID, request):
         addFile.saveFiles(parentEvent=proposalObject)
 
     CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
-
-        # with mainDB.atomic():
-        #     # Get proposal safely
-        #     proposalObject = CCEMinorProposal.get_by_id(proposalID)
-
-        #     # ---- HANDLE ATTACHMENT SAFELY ----
-        #     if attachment:
-        #         existingAttachment = (
-        #             AttachmentUpload
-        #             .select()
-        #             .where(AttachmentUpload.proposal == proposalID)
-        #             .first()
-        #         )
-
-        #         if existingAttachment:
-        #             deleteFile = FileHandler(proposalId=proposalID)
-        #             deleteFile.deleteFile(existingAttachment.id)
-
-        #         addFile = FileHandler(
-        #             getFilesFromRequest(request),
-        #             proposalId=proposalID
-        #         )
-        #         addFile.saveFiles(parentEvent=proposalObject)
-
-        #     # ---- CLEAN FORM DATA ----
-        #     update_data = dict(request.form)
-
-        #     # remove fields that are not DB columns
-        #     update_data.pop("contentArea", None)
-        #     update_data.pop("attachmentObject", None)
-
-        #     # ---- UPDATE PROPOSAL ----
-        #     (
-        #         CCEMinorProposal
-        #         .update(**update_data)
-        #         .where(CCEMinorProposal.id == proposalID)
-        #         .execute()
-        #     )
                 
 def saveSummerExperience(username, summerExperience, currentUser):
     """

@@ -51,7 +51,7 @@ def createOtherEngagementRequest(username):
     if request.method == "POST":
         createOtherEngagement(username, request)
         flash("Proposal successfully created.", "success")
-        return redirect(url_for('minor.viewCceMinor', username=username))
+        return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
     
     return render_template("minor/requestOtherEngagement.html",
                             editable = True,
@@ -107,7 +107,8 @@ def editOrViewProposal(proposalID: int):
     else:
         updateSummerExperience(proposalID, request.form)
  
-    return redirect(url_for('minor.viewCceMinor', username=proposal.student))
+    flash("Proposal updated", "success")
+    return redirect(url_for('minor.viewCceMinor', username=proposal.student, tab='manageProposals'))
 
 @minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
 def createSummerExperienceRequest(username):
@@ -121,7 +122,7 @@ def createSummerExperienceRequest(username):
     if request.method == "POST":
         createSummerExperience(username, request.form)
         flash("Proposal successfully created.", "success")
-        return redirect(url_for('minor.viewCceMinor', username=username))
+        return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
     
     summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)
 
