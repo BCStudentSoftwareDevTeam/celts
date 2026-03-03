@@ -119,8 +119,8 @@
             <div class="col-2 col-xl-1 col-12 text-sm-center">
             </div>
             <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
-              <input class="btn btn-primary submit-proposal" type="submit" id="saveAsDraftButton" data-status="Draft" value="Save As Draft" {% if viewing %} style="display: none;" {% endif %}/>
-              <input class="btn btn-success submit-proposal" type="submit" id="submitButton" data-status="Submitted" value="Submit" {% if viewing %} style="display: none;" {% endif %}/>                 
+              <button class="btn btn-primary submit-proposal" type="submit" name="status" value="Draft" id="saveAsDraftButton" {% if viewing %} style="display: none;" {% endif %}> Save as Draft </button>
+              <button class="btn btn-success submit-proposal" type="submit" name="status" value="Submitted" id="submitButton" {% if viewing %} style="display: none;" {% endif %}> Submit </button>                 
             </div>
               
           </div>

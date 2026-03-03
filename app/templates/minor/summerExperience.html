@@ -20,7 +20,6 @@
     {% set viewing = not editable and proposal %}
     <div name="Community-Engaged Summer Experience" class="pt-4">
       <form id='proposalForm' enctype="multipart/form-data" role='form' action="{{postRoute}}" method="POST">
-        <input type="hidden" name="status" id="statusField">
         <div class='row'>
             <div class="container">
                 <div class='form-group mb-4 text-center'>
@@ -169,8 +168,8 @@
                     </div>
                     <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
                       {% if not viewing %}
-                          <input class="submit-proposal btn btn-primary" type="button" id="saveAsDraftButton" data-status="Draft" value="Save As Draft"/>
-                          <input class="submit-proposal btn btn-success" type="button" id="submitButton" data-status="Submitted"  value="Submit"/> 
+                          <button class="submit-proposal btn btn-primary" type="submit" id="saveAsDraftButton" name="status" value="Draft"> Save As Draft </button>
+                          <button class="submit-proposal btn btn-success" type="submit" id="submitButton" name="status" value="Submitted"> Submit </button>
                       {% endif %}
                     </div>
                   </div>

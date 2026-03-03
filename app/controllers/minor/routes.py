@@ -27,13 +27,11 @@ from app.logic.minor import (
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
     """
-        Load minor management page with community engagements and summer experience
+    Load minor management page with community engagements and summer experience
     """
-
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
 
     activeTab = request.args.get("tab", "sustainedCommunityEngagements")
-
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             proposalList = getCCEMinorProposals(username),
@@ -44,16 +42,15 @@ def viewCceMinor(username):
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
 def createOtherEngagementRequest(username):
     """
-        Load minor management page with community engagements and summer experience
+    Load minor management page with community engagements and summer experience
     """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
     
-
     # once we submit the form for creation
     if request.method == "POST":
         createOtherEngagement(username, request)
-
+        flash("Proposal successfully created.", "success")
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
@@ -123,6 +120,7 @@ def createSummerExperienceRequest(username):
     # once we submit the form for creation
     if request.method == "POST":
         createSummerExperience(username, request.form)
+        flash("Proposal successfully created.", "success")
         return redirect(url_for('minor.viewCceMinor', username=username))
     
     summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)

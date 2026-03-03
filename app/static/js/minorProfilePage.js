@@ -18,45 +18,20 @@ $(document).ready(function() {
   })
 
   handleFileSelection("supervisorAttachment", true)
+
   $('.submit-proposal').on('click', function(e) {
-    e.preventDefault();
-    const status = $(this).data('status');
     const proposal = $('#proposalForm')[0];
     const experienceType = $('#proposalExperienceType').val()
-    let customVailidity = null;
-    
-    if (experienceType === "Other Engagement"){
-      customVailidity = validateFileUpload()
-      console.log(customVailidity)
-    } else {
-      customVailidity = validateContentAreas()
-    }
-    
-    if (!customVailidity || !proposal.checkValidity()){
-      proposal.reportValidity()
-      return
-    }
 
-    var formData = new FormData($('#proposalForm')[0]);
-    formData.set('status', status)
-    var actionURL = $('#proposalForm').attr('action');
-    let username = $("#username").val();
+    let customValidity = experienceType === "Other Engagement"
+      ? validateFileUpload()
+      : validateContentAreas();
     
-    $.ajax({
-      url: actionURL,
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`;
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  });
-
+    if (!customValidity || !proposal.checkValidity()){
+      e.preventDefault();
+      proposal.reportValidity();
+    }});
+    
   $('#exitButton').on('click', function() {
     let username = $("#username").val()
     window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 

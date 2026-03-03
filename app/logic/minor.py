@@ -325,7 +325,7 @@ def getCommunityEngagementByTerm(username):
 
 def createOtherEngagement(username, request):
     """
-        Create a CCEMinorProposal entry based off of the form data
+    Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
 
