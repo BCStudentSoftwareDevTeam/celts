@@ -24,7 +24,7 @@ $(document).ready(function() {
     const experienceType = $('#proposalExperienceType').val()
 
     let customValidity = experienceType === "Other Engagement"
-      ? validateFileUpload()
+      ? true
       : validateContentAreas();
     
     if (!customValidity || !proposal.checkValidity()){

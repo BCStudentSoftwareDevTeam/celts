@@ -73,7 +73,7 @@
           {% include "minor/supervisorInformation.html" %} 
   
           <div class="form-group">
-              <label class="required mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
+              <label class="mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
               <input class="form-control" id="supervisorAttachment" name="attachmentObject" data-file-name="{{attachmentFileName}}" data-file-path='{{attachmentFilePath}}' type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" 
                 {% if viewing %} disabled {% endif %}/>
               

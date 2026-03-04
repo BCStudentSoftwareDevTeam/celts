@@ -272,7 +272,7 @@ function generateFileRowHTML(trashNum, iconClass, fileName, filePath=null, showT
         `<a id='attachedFile${trashNum}' data-filename='${fileName}' href='/${filePath}' target='_blank' class='fileName col-auto pt-2' data-toggle='tooltip' data-placement='top' title='${fileName}'>${fileName}</a>`
         : `<div id='attachedFile${trashNum}' data-filename='${fileName}' class='fileName col-auto pt-2'>${fileName}</div>`
       }
-      <div ${showTrash ? 'hidden' : ''} class='col' style='text-align:right'>
+      <div ${showTrash ? '' : 'hidden'} class='col' style='text-align:right'>
         <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash${trashNum}' data-filenum='${trashNum}'>
           <span class='bi bi-trash fs-6'></span>
         </div>
