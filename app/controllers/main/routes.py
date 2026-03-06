@@ -493,23 +493,17 @@ def volunteerRegister():
     program = event.program
     user = g.current_user
 
-    isAdded = checkUserRsvp(user, event)
     isEligible = isEligibleForProgram(program, user)
-    listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
     if isEligible:
         personAdded = addPersonToEvent(user, event)
-        if personAdded and listOfRequirements:
-            reqListToString = ', '.join(listOfRequirements)
-            flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
-        elif personAdded:
+        if personAdded:
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")
     else:
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
-
 
     if 'from' in request.form:
         if request.form['from'] == 'ajax':
