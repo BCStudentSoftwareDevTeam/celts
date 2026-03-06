@@ -954,7 +954,7 @@ CREATE TABLE `note` (
   `id` int NOT NULL AUTO_INCREMENT,
   `createdBy_id` varchar(255) NOT NULL,
   `createdOn` datetime NOT NULL,
-  `noteContent` varchar(255) NOT NULL,
+  `noteContent` TEXT NOT NULL,
   `isPrivate` tinyint(1) NOT NULL,
   `noteType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
