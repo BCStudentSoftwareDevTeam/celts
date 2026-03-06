@@ -191,9 +191,9 @@ $(document).ready(function(){
 
     $("#addBonnerNoteButton").click(function() {
         bonnerNoteOn()
-        $("#addNoteTextArea").val('')                   // clear the text
-        $("#notesSaveButton").data('mode', 'add')       // set mode to add
-        $("#notesSaveButton").data('noteid', null)      // clear any stored noteid
+        $("#addNoteTextArea").val('')                   
+        $("#notesSaveButton").data('mode', 'add')       
+        $("#notesSaveButton").data('noteid', null)      
         $("#noteModal").modal("toggle");
     });
 
@@ -244,27 +244,26 @@ $(document).ready(function(){
     });
   });
   $(".editNoteButton").click(function() {
-    console.log("joyce", this)
     let noteText = $(this).data('notetext')
     let visibility = $(this).data('visibility')
     let isBonner = $(this).data('bonner')
     let noteid = $(this).data('noteid')
     
-    // Pre-fill the modal with the existing note data
+    
     $("#addNoteTextArea").val(noteText)
     $("#noteDropdown").val(visibility)
 
-    // Show/hide bonner fields based on note type
+   
     if (isBonner === 'yes') {
         bonnerNoteOn()
     } else {
         bonnerNoteOff()
     }
-    // Save the noteid so the form knows which note to delete later
+    
     $("#notesSaveButton").data('noteid', $(this).data('noteid'))
     $("#notesSaveButton").data('mode', 'edit')
 
-    // Open the modal
+   
     $("#noteModal").modal("toggle")
 });
     $.ajax({
