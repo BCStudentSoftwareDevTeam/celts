@@ -423,12 +423,12 @@
                     {% else %}
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
-                  <td>
+                  <td class ="text-nowrap">
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                     <button type="button" class="btn btn-sm btn-primary editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
+                     <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
-                      <button type="button" class="btn btn-sm btn-primary" disabled>Edit</button>
+                      <button type="button" class="btn btn-sm btn-primary me-1" disabled>Edit</button>
                       <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
                     {% endif %}
                   </td>
