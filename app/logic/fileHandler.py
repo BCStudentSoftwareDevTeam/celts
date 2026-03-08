@@ -58,26 +58,23 @@ class FileHandler:
 
             if self.eventId:
                 attachmentName = str(parentEvent.id) + "/" + file.filename
-                isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
-                                                                AttachmentUpload.fileName == attachmentName).exists()
-                if not isFileInEvent:
-                    AttachmentUpload.create(event=self.eventId, fileName=attachmentName)
-                    if parentEvent and parentEvent.id == self.eventId:
-                        saveFileToFilesystem = attachmentName
+                fileObject, created = AttachmentUpload.get_or_create(
+                    event_id = self.eventId,
+                    fileName = attachmentName
+                )
+
+                if created and parentEvent and parentEvent.id == self.eventId:
+                    saveFileToFilesystem = attachmentName
 
             elif self.courseId or self.proposalId:
                 recordId = self.courseId if self.courseId else self.proposalId
                 fieldName = 'course' if self.courseId else 'proposal'
-                
-                fileExists = AttachmentUpload.select().where(
-                    getattr(AttachmentUpload, fieldName) == recordId,
-                    AttachmentUpload.fileName == file.filename
-                ).exists()
-                
-                if not fileExists:
-                    create_data = {fieldName: recordId, 'fileName': file.filename}
-                    AttachmentUpload.create(**create_data)
-                    saveFileToFilesystem = file.filename
+                fileData = {
+                    fieldName: recordId,
+                    "fileName": file.filename
+                }
+                fileObject, created = AttachmentUpload.get_or_create(**fileData)
+                saveFileToFilesystem = file.filename if created else None
 
             elif self.programId:
 
