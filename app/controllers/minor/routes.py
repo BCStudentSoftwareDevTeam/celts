@@ -41,9 +41,6 @@ def viewCceMinor(username):
     
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
 def createOtherEngagementRequest(username):
-    """
-    Load minor management page with community engagements and summer experience
-    """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
     
@@ -112,9 +109,6 @@ def editOrViewProposal(proposalID: int):
 
 @minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
 def createSummerExperienceRequest(username):
-    """
-        Load minor management page with community engagements and summer experience
-    """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
     
@@ -134,9 +128,6 @@ def createSummerExperienceRequest(username):
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
-    """
-        For a particular engagement activity (program or course), get the participation history or course information respectively.
-    """
     if type == "program":
         information = getProgramEngagementHistory(id, username, term)
     else:
