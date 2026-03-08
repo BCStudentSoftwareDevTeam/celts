@@ -173,24 +173,6 @@ function validateContentAreas(){
   return true;
 }
 
-function validateFileUpload() {
-  const input = $('#supervisorAttachment');
-  const fileInput = input[0];
-
-  fileInput.setCustomValidity('');
-
-  const hasNewFile = fileInput.files && fileInput.files.length > 0;
-  const hasExistingFile = $('#supervisorAttachmentContainer [id^="attachedFilesRow"]').length > 0;
-
-  console.log(hasNewFile, hasExistingFile)
-  if (!hasNewFile && !hasExistingFile) {
-    fileInput.setCustomValidity('Please upload a file.');
-    return false;
-  }
-
-  return true;
-}
-
 function toggleEngagementCredit(isChecked, engagementData, checkbox){
     engagementData['username'] = $("#username").val();
 
