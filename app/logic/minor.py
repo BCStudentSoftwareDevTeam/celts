@@ -91,14 +91,20 @@ def getMinorProgress():
     summerCase = Case(None, [(CCEMinorProposal.proposalType == "Summer Experience", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
-                                                                    fn.SUM(summerCase).alias('hasSummer'),
-                                                                    fn.IF(fn.COUNT(CCEMinorProposal.id) > 0, True, False).alias('hasCCEMinorProposal'))
-            .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
+        User.select(
+            User, 
+            IndividualRequirement, 
+            Term, 
+            IndividualRequirement.term_id, 
+            fn.COUNT(IndividualRequirement.id).alias('engagementCount'), 
+            fn.SUM(summerCase).alias('hasSummer'),
+            fn.IF(fn.COUNT(CCEMinorProposal.id) > 0, True, False).alias('hasCCEMinorProposal'))
+            .join(IndividualRequirement, on=(User.username == IndividualRequirement.username_id))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
-            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
+            .join(Term, on=(IndividualRequirement.term_id == Term.id))
+            .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student_id))
             .where(CertificationRequirement.certification_id == Certification.CCE)
-            .group_by(User.firstName, User.lastName, User.username)
+            .group_by(User.username, IndividualRequirement.term_id, Term.id)
             .order_by(SQL("engagementCount").desc())
     )
     engagedStudentsList = [{'firstName': student.firstName,
@@ -108,7 +114,8 @@ def getMinorProgress():
                             'hasGraduated': student.hasGraduated, 
                             'engagementCount': student.engagementCount - student.hasSummer,
                             'hasCCEMinorProposal': student.hasCCEMinorProposal,
-                            'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
+                            'hasSummer': "Completed" if student.hasSummer else "Incomplete",
+                            'engagementTerm': student.individualrequirement.term.description} for student in engagedStudentsWithCount]
     return engagedStudentsList
 
 def getMinorSpreadsheet():
