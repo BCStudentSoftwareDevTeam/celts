@@ -323,7 +323,6 @@ def eventDisplay(eventId):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event_id == eventId,
         ))

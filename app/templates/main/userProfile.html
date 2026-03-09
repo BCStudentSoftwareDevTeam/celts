@@ -5,6 +5,7 @@
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -26,7 +27,9 @@
     {% if volunteer.major -%}
     <div>{{volunteer.major}}</div>
     {% endif %}
-    <div>{{volunteer.processedClassLevel}}</div>
+    {% if volunteer.classLevel %}
+    <div>{{volunteer.classLevel}} </div>
+    {% endif %}
     {% if volunteer.cpoNumber %}
       <div>
       {{volunteer.cpoNumber}}
@@ -460,14 +463,15 @@
 <!-- ################# Bonner Scholar ################ -->
   {% set canViewBonner = (g.current_user.isCeltsAdmin or g.current_user == volunteer) %}
   {% if volunteer.isBonnerScholar and canViewBonner %}
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingEight">
-      {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Bonner Program</button>
-    </h3>
-    {% set show = "show" if visibleAccordion == "bonner" else "" %}
-    <div id="collapseEight" class="accordion-collapse collapse {{show}}" aria-labelledby="headingEight" data-bs-parent="#userProfile">
-      <div class="accordion-body container">
+  <div id="bonnerStudent" data-username="{{volunteer.isStudent}}">
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingEight">
+        {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Bonner Program</button>
+      </h3>
+      {% set show = "show" if visibleAccordion == "bonner" else "" %}
+      <div id="collapseEight" class="accordion-collapse collapse {{show}}" aria-labelledby="headingEight" data-bs-parent="#userProfile">
+        <div class="accordion-body container">
           <div class="row">
             <div class="col-md-6">
             {# Bonner Events #}
@@ -507,13 +511,60 @@
               <h5>Requirement Progress</h5>
               <ul>
               {% for req in bonnerRequirements %}
-                <li>{{req.name}}
-                {% if req.completed %}
-                  <span class="bi bi-check fs-3 text-success"></span>
+                <li>
+                <span>
+                  {{req.name}}
+                  {% if req.frequency == "term"%}
+                    {% set attendedCount = req.attendedTerms %}
+                    <span>({{attendedCount}}/{{req.totalTerms}})</span> 
+                  {% elif req.frequency == "twice" %}
+                    <span>({{req.attendedTerms}}/2)</span> 
+                  {% elif req.completed == True and req.frequency == "once" %}
+                      <span>(1/1)</span> 
+                  {% elif req.completed == False and req.frequency == "once" %}
+                      <span>(0/1)</span> 
+                  {% elif req.frequency == "annual" %}
+                      <span>({{req.attendedAnnual}}/{{req.totalAnnual}})</span>
+                  {% endif %}
+                </span>
+                {% set popover_text = "" %}
+                {% if req.frequency == "term" %}
+                  {% if req.attendedDescriptions|length > 0 or req.missedDescriptions|length > 0 %}
+                    {% if req.attendedDescriptions|length > 0 %}
+                      {% set popover_text = popover_text ~ "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
+                    {% else %}
+                      {% set popover_text = popover_text ~ "Attended: None<br>" %}
+                    {% endif %}
+                    {% if req.missedDescriptions|length > 0 %}
+                      {% set popover_text = popover_text ~ "<br>Missed:<br>" ~ (req.missedDescriptions | join(', ')) %}
+                    {% else %}
+                      {% set popover_text = popover_text ~ "<br>Missed: None" %}
+                    {% endif %}
+                  {% endif %}
+                {% elif req.frequency == "once" and req.completed %}
+                  {% set popover_text = "Attended: " ~ (req.attendedTerm) %}
+                {% elif req.frequency == "twice"%}
+                  {% set popover_text = "Attended: " ~ (req.attendedDescriptions | join(', ')) %}
+                {% elif req.frequency == "annual" %}
+                  {% if req.attendedDescriptions|length > 0 %}
+                    {% set popover_text = "Attended: <br>" ~ (req.attendedDescriptions | join(', ')) %}
+                  {% endif %}
                 {% else %}
-                  <span class="bi bi-x fs-3"></span>
+                  {% set popover_text = "You haven’t attended any event(s) yet." %}
                 {% endif %}
+                <a
+                  href="#"
+                  type="button"
+                  class="bonnerCheckmark btn btn-link btn-sm"
+                  data-bs-container="body"
+                  data-bs-toggle="popover"
+                  data-bs-placement="right"
+                  data-bs-content="{{ popover_text | e }}"
+                >
+                  View
+                </a>   
                 </li>
+                </br>
               {% endfor %}
               </ul>
             </div>
@@ -521,6 +572,7 @@
         </div>
       </div>
     </div>
+  </div>
   {% endif %}
 <!-- ################# Bonner Scholar ################ -->
 

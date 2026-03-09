@@ -221,9 +221,7 @@ def viewUsersProfile(username):
                                      "onTranscript": onTranscript}),
 
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
-
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))

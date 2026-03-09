@@ -126,8 +126,8 @@ def test_courseManagement():
         assert importedCourse in getImportedCourses(termId)
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
 
-
         transaction.rollback()
+        
 @pytest.mark.integration
 def test_withdrawProposal():
     '''creates a test course with all foreign key fields. tests if they can

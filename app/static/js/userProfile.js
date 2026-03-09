@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-   $("#checkDietRestriction").on("change",  function() {
+  $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
@@ -35,7 +35,6 @@ $(document).ready(function(){
     });
   })
 
-  $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -216,6 +215,8 @@ $(document).ready(function(){
       }
     });
   });
+  });
+
 
   $(".deleteNoteButton").click(function() {
     let username = $(this).data('username')
@@ -307,17 +308,27 @@ $(document).ready(function(){
     })
   });
 
-  // Popover functionality
-  var requiredTraining = $(".trainingPopover");
-  requiredTraining.popover({
-      trigger: "hover",
-      sanitize: false,
-      html: true,
-      content: function() {
-          return $(this).attr('data-content');
-      }
+  $(function () {
+    $('.trainingPopover').each(function () {
+      new bootstrap.Popover(this, {
+        trigger: 'hover focus',
+        html: true,
+        sanitize: false,
+        placement: 'right',
+      });
+    });
   });
- 
+  $(function () {
+    $('.bonnerCheckmark').each(function () {
+      new bootstrap.Popover(this, {
+        trigger: 'hover focus',
+        html: true,
+        sanitize: false,
+        placement: 'right',
+      });
+    });
+  });
+
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   // Dietary Restrictions
@@ -355,8 +366,10 @@ $(document).ready(function(){
       typingTimer = setTimeout(saveDiet, saveInterval);
     });
   });
-
-}); // end document.ready()
+  const bonnerStudent = $("#bonnerStudent").data('username')
+  if (bonnerStudent === "False"){
+    $("#bonnerStudent").prop("hidden", true)
+  }; // end document.ready()
 
 // Update program manager status
 function updateManagers(el, volunteerUsername ) {
@@ -387,3 +400,4 @@ function updateManagers(el, volunteerUsername ) {
       }
   })
 }
+
