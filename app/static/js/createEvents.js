@@ -686,6 +686,7 @@ $("#cancelEvent").on('click', function (event) {
     if ($(this).is(':checked')) {
       $("#repeatingEventsNamePicker").val($("#inputEventName").val());
       $("#repeatingEventsLocationPicker").val($("#inputEventLocation-main").val());
+      $("#repeatingEventsStartDate").val($("#startDatePicker-mainOnly").val());
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
       $("#multipleOfferingSlots").children().remove();
