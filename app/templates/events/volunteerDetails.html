@@ -57,6 +57,7 @@
 {% endmacro %}
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
+    {% set seen = [] %}
     {% set combinedParticipants = attended + rsvp + waitlist %}
     {% for p in combinedParticipants | unique %}
       {% if p in rsvp and not event.isRsvpRequired %}
