@@ -235,6 +235,13 @@ $(document).ready(function(){
   });
 
   $(".deleteNoteButton").click(function() {
+    $("#confirmDeleteNote").data('username', $(this).data('username'))
+    $("#confirmDeleteNote").data('noteid', $(this).data('noteid'))
+    $("#deleteNoteWarning").modal("show")
+  
+  });
+
+  $("#confirmDeleteNote").click(function() { 
     let username = $(this).data('username')
     let noteid = $(this).data('noteid')
     $.ajax({
@@ -242,10 +249,12 @@ $(document).ready(function(){
       url:  "/" + username + "/deleteNote",
       data: {"id": noteid},
       success: function(response) {
+         msgFlash("Successfully deleted note", "success", 1300, true)
         reloadWithAccordion("notes")
       }
     });
   });
+  
   $(".editNoteButton").click(function() {
     let noteText = $(this).data('notetext')
     let visibility = $(this).data('visibility')

@@ -597,6 +597,28 @@
 </div>
 <!-- ################# Add Notes Modal ################ -->
 
+
+<!-- ################# Delete Note Warning Modal ################ -->
+<div class="modal fade" id="deleteNoteWarning" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This action is irreversible.</p>
+                <p>By deleting this note, all information regarding this note will be removed.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteNote">Delete Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ################# Delete Note Warning Modal ################ -->
+
 <!-- ################# Ban or Unban Modal ################ -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">
