@@ -494,7 +494,19 @@
               {% if bonnerNotes|length %}
               <dl class="bonnerNotes">
                 {% for row in profileNotes|selectattr("isBonnerNote") %}
-                    <dt>{{row.note.noteContent}}</dd>
+                    <dt>{{row.note.noteContent}}
+                      <span class="float-end">
+                        <i class="bi bi-pencil text-primary editNoteButton me-2" 
+                          data-notetext="{{row.note.noteContent}}"
+                          data-visibility="{{row.note.visibility}}"
+                          data-bonner="yes"
+                          data-noteid="{{row.note.id}}"
+                          data-username="{{volunteer.username}}"
+                          style="cursor:pointer"></i>
+                       <i class="bi bi-trash text-danger deleteNoteButton"
+                          data-noteid="{{row.note.id}}"
+                          data-username="{{volunteer.username}}"
+                          style="cursor:pointer"></i>
                     <dd class='text-muted'>{{row.note.createdBy.fullName}} <span class="float-end">{{row.note.createdOn.strftime('%m/%d/%Y')}}</span></dt>
                 {% endfor %}
               </dl>
