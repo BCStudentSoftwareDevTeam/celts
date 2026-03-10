@@ -176,6 +176,9 @@ $(document).ready(function(){
 
     $("#addNoteButton").click(function() {
         bonnerNoteOff()
+        $("#addNoteTextArea").val('')
+        $("#notesSaveButton").data('mode', 'add') 
+        $("#notesSaveButton").data('noteid', null) 
         $("#noteModal").modal("toggle")
     });
 
