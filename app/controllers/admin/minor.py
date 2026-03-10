@@ -22,7 +22,6 @@ def manageMinor():
 
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
-    sustainedEngagement = getMinorProgress()
     declaredStudentsDict = getDeclaredMinorStudents()
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsDict])  
           
@@ -32,10 +31,8 @@ def manageMinor():
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,
-                            declaredStudentsList = list(declaredStudentsDict),
                             interestedStudentEmailString = interestedStudentEmailString,
                             declaredStudentEmailString = declaredStudentEmailString,
-                            sustainedEngagement = sustainedEngagement,
                             )
 
 @admin_bp.route("/admin/cceMinor/download")

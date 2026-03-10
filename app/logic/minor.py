@@ -228,7 +228,10 @@ def getDeclaredMinorStudents():
             ))
         .switch(User)
         .join(CCEMinorProposal, JOIN.LEFT_OUTER, on=(User.username == CCEMinorProposal.student))
-        .where((User.declaredMinor == True))
+        .where(
+            (User.declaredMinor == True) & 
+            (User.isStudent == True)
+            )
         .group_by(User.username)
         .order_by(SQL("allEngagementCount").desc())
     )
