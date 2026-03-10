@@ -26,16 +26,8 @@ def manageMinor():
     declaredStudentsDict = getDeclaredMinorStudents()
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsDict])  
           
-    declaredStudentsSet = {student['username'] for student in declaredStudentsDict}
-    cceMinorStudents = {
-        student['username'] : {
-            **student,
-            'isDeclaredMinor': student['username'] in declaredStudentsSet
-        } 
-        for student in declaredStudentsDict + sustainedEngagement
-    }
+    cceMinorStudents = declaredStudentsDict
 
-    cceMinorStudents = list(cceMinorStudents.values())
 
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
