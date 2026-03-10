@@ -236,7 +236,6 @@ def getDeclaredMinorStudents():
     result = []
     for s in q:
         engagementCount = int(s.allEngagementCount or 0)
-
         result.append({
             "firstName": s.firstName,
             "lastName": s.lastName,
