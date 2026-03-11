@@ -364,16 +364,6 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     return eventsList
 
-def excludeLaborMeeting():
-    eventName = fn.LOWER(Event.name)
-    eventDescription = fn.LOWER(Event.description)
-
-    return (
-        eventName.contains("labor meeting") |
-        eventName.contains("celts labor meeting") |
-        eventDescription.contains("labor meeting")
-    )
-
 def getParticipatedEventsForUser(user):
     """
         Get all the events a user has participated in.
@@ -383,18 +373,20 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    excLaborMeeting = excludeLaborMeeting()
+    eventName = fn.LOWER(Event.name)
+    checkIfLaborMeeting = eventName.contains("labor meeting")
+
     participatedEvents = (Event.select(Event, Program.programName)
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, ~((Event.isLaborOnly == True) & excLaborMeeting), ~((Event.isTraining == True) & excLaborMeeting))
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, checkIfLaborMeeting)
                                .order_by(Event.startDate, Event.name))
 
     allVolunteer = (Event.select(Event, "")
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
-                                EventParticipant.user == user, ~((Event.isLaborOnly == True) & excLaborMeeting), ~((Event.isTraining == True) & excLaborMeeting)))
+                                EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
 
