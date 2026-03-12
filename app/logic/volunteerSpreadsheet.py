@@ -225,25 +225,6 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
-def laborAttendanceByTerm(academicYear):
-    """Get labor students and their meeting attendance count for each term"""
-    base = getBaseQuery(academicYear)
-
-    query = (base.select(
-        fn.CONCAT(User.firstName, ' ', User.lastNAme).alias('fullName'), 
-        User.bnumber, 
-        User.email, 
-        Term.description, 
-        fn.COUNT(EventParticipant.event_id).alias('meetingsAttended'), 
-    )
-    .where(Event.isLaborOnly == True)
-    .group_by(User.username, Term.description)
-    .order_by(User.lastName, Term.description)
-    )
-
-    columns = ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
-    return (query.tuples())
-    
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataTuples) = sheetData
