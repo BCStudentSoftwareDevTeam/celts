@@ -76,13 +76,7 @@
 {% endmacro %}
 
 {% macro createCheckbox(checkboxName) %}
-    {%- set labelMap = {
-        'rsvp': 'RSVP',
-        'waitlist': 'Waitlisted',
-        'attended': 'Attended',
-        'invited': 'Invited'
-    } -%}
-    {% set labelText = labelMap.get(checkboxName, 'Invited') %}
+  {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
     <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
     <label for="{{checkboxName}}Select">{{labelText}}</label><br>
 {% endmacro %}
@@ -109,9 +103,6 @@
           {% endif %}
           {% if waitlistUser %}
             {{createCheckbox('waitlist')}}
-          {% endif %}
-          {% if attendedUser %}
-            {{createCheckbox('attended')}}
           {% endif %}
             {% if rsvpUser and not event.isRsvpRequired %}
             {{createCheckbox('invited')}}
@@ -161,7 +152,7 @@
     <hr>
     <div class="d-print-block" id="volunteerInformationCardToPrint">
       <div class="row sort-here">
-        {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
+        {{ printParticipants('card', rsvpUser, waitlistUser) }}
       </div>
     </div>
 
