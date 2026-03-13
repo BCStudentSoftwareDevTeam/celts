@@ -133,6 +133,8 @@ def test_getGraduationManagementUsers():
         
         IndividualRequirement.create(**sustainedEngagement)
 
+        testUser3.declaredMinor = True
+        testUser3.save()
         actualResult = getGraduationManagementUsers()
 
         # testUser4 is not a senior, graduating so they should not be shown.
