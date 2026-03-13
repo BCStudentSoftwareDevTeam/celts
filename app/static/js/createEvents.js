@@ -687,6 +687,8 @@ $("#cancelEvent").on('click', function (event) {
       $("#repeatingEventsNamePicker").val($("#inputEventName").val());
       $("#repeatingEventsLocationPicker").val($("#inputEventLocation-main").val());
       $("#repeatingEventsStartDate").val($("#startDatePicker-mainOnly").val());
+      $("#repeatingEventsStartTime").val($("#startTime-main").val());
+      $("#repeatingEventsEndTime").val($("#endTime-main").val());
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
       $("#multipleOfferingSlots").children().remove();
@@ -879,8 +881,3 @@ $("#cancelEvent").on('click', function (event) {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
   });
-
-
-
-
-
