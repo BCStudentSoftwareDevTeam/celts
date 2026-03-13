@@ -119,8 +119,8 @@ def volunteerDetailsPage(eventID):
     
     return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
-                            attendedUser = attendedUser,
                             rsvpUser = rsvpUser,
+                            attendedUser = attendedUser,
                             event = event)
 
 
