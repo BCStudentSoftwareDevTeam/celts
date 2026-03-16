@@ -228,11 +228,10 @@ function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectConta
       let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
       let trashNum = ($(objectContainerId+ " .row").length)
       let iconClass = getIconClass(file)
-      let fileHTML = generateFileRowHTML(trashNum, iconClass, fileName)
-      if (existingFile) {
-        let viewing = $("#isViewing").val()
-        fileHTML = generateFileRowHTML(trashNum, iconClass, existingFile.name, existingFile.path, viewing)
-      }
+      let viewing = !(Boolean($("#isViewing").val()))
+      let fileHTML = existingFile
+        ? generateFileRowHTML(trashNum, iconClass, existingFile.name, existingFile.path, showTrash=viewing)
+        : generateFileRowHTML(trashNum, iconClass, fileName)
       var fullTrashId = "#trash" + trashNum
       if (single) {
         $(objectContainerId).html(fileHTML)

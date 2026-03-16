@@ -18,6 +18,18 @@ $(document).ready(function() {
   })
 
   handleFileSelection("supervisorAttachment", true)
+  
+  $('.bi-trash').on('click', function () {
+    $('#deleteAttachmentFlag').val('true');
+    $('#supervisorAttachment').val('');
+  });
+
+  $('#supervisorAttachment').on('change', function () {
+    // if a new attachment is uploaded after a previously deleted one, we want to reset the hidden delete input field
+    if ($(this).val()) {
+      $('#deleteAttachmentFlag').val('false');
+    }
+  });
 
   $('.submit-proposal').on('click', function(e) {
     const proposal = $('#proposalForm')[0];
@@ -170,24 +182,6 @@ function validateContentAreas(){
     contentAreaCheckboxes[0].reportValidity()
     return false;
   }
-  return true;
-}
-
-function validateFileUpload() {
-  const input = $('#supervisorAttachment');
-  const fileInput = input[0];
-
-  fileInput.setCustomValidity('');
-
-  const hasNewFile = fileInput.files && fileInput.files.length > 0;
-  const hasExistingFile = $('#supervisorAttachmentContainer [id^="attachedFilesRow"]').length > 0;
-
-  console.log(hasNewFile, hasExistingFile)
-  if (!hasNewFile && !hasExistingFile) {
-    fileInput.setCustomValidity('Please upload a file.');
-    return false;
-  }
-
   return true;
 }
 

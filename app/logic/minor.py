@@ -410,14 +410,21 @@ def updateOtherEngagementRequest(proposalID, request):
     newAttachment = request.files.get("attachmentObject")
     previousAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
     proposalObject = CCEMinorProposal.get_by_id(proposalID)
-
-    if newAttachment:
+    deleteAttachment = request.form.get("deleteAttachment") == "true"
+    
+    if deleteAttachment:
+        if not previousAttachment:
+            raise AssertionError("deleteAttachment flag is set but no attachment exists in the database.")
+        FileHandler(proposalId=proposalID).deleteFile(previousAttachment.id)
+    elif newAttachment and newAttachment.filename:
         if previousAttachment:
             FileHandler(proposalId=proposalID).deleteFile(previousAttachment.id)
         addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
         addFile.saveFiles(parentEvent=proposalObject)
 
-    CCEMinorProposal.update(**request.form).where(CCEMinorProposal.id == proposalID).execute()
+    formData = request.form.copy()
+    formData.pop("deleteAttachment", None)
+    CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
                 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
