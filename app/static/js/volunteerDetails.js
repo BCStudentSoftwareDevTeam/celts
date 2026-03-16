@@ -21,33 +21,45 @@ $(document).ready(function () {
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
 	})
+	$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+		if (settings.nTable.id !== 'volunteerInformationTableToPrint') {
+			return true;
+		}
+		const status = data[3].toLowerCase(); 
+		if (status === 'attended' && !$('#attendedSelect').is(':checked')) return false;
+		if (status === 'rsvp' && !$('#rsvpSelect').is(':checked')) return false;
+		if (status === 'waitlist' && !$('#waitlistSelect').is(':checked')) return false;
+		return true;
+	});
 	function hideDuplicateVolunteers() {
-		let allEntries = $(".volunteerInfoEntries")
-		let shownUsers = []
-		for (let i = 0; i < allEntries.length; i++) {
-			let currentEntry = $(allEntries[i])
+		let allEntries = $("#volunteerInformationCardToPrint .volunteerInfoEntries");
+		let shownUsers = [];
+		allEntries.each(function () {
+        let currentEntry = $(this);
+        let user = currentEntry.data("user");
 			if (currentEntry.is(":visible")) {
-				if (shownUsers.includes(currentEntry.data("user"))) {
+				if (shownUsers.includes(user)) {
 					currentEntry.hide()
 				} else {
-					shownUsers.push(currentEntry.data("user"))
+					shownUsers.push(user);
 				}
 			}
-		}
-		stripeVolunteerInfoTable()
+		});
 	}
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
 			let checkboxId = this.id;
 			if ($('#' + checkboxId).is(':checked')) {
-				$("." + checkboxId).show()
+				$("#volunteerInformationCardToPrint ." + checkboxId).show();
 			} else {
-				$("." + checkboxId).hide()
+				$("#volunteerInformationCardToPrint ." + checkboxId).hide();
 			}
-		})
+			});
 		hideDuplicateVolunteers()
+		volunteerInfoTable.page('first').draw(false);
 
 	}
+	
 	function sortVolunteers() {
 		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
 		let entriesTable = sortedTable.find(".volunteerInfoEntries");
@@ -58,35 +70,13 @@ $(document).ready(function () {
 			return textA.localeCompare(textB);
 		});
 	
-		entriesTable.appendTo(sortedTable);
-
-		let sortedCards = $("#volunteerInformationCardToPrint .sort-here");
-		let entriesCards = sortedCards.find(".volunteerInfoEntries");
-	
-		entriesCards.sort(function (a, b) {
-			let textA = a.getElementsByClassName('nameSelect')[0].innerText
-			let textB = b.getElementsByClassName('nameSelect')[0].innerText
-			return textA.localeCompare(textB);
-		});
-	
 		entriesCards.appendTo(sortedCards);
 	};
 
-	function stripeVolunteerInfoTable() {
-		$('#volunteerInformationTableToPrint .volunteerInfoEntries').removeClass('custom-odd custom-even')
-		$('#volunteerInformationTableToPrint .volunteerInfoEntries:visible').each(function (i,e) {
-			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
-		})
-	}
+	var volunteerInfoTable = $('#volunteerInformationTableToPrint').DataTable({pageLength: 10,order: [[0, 'asc']]});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
-	volunteerInfoTable.on('draw.dt', function (){
-		getCheckBoxes()
-		stripeVolunteerInfoTable()
-	});
-	stripeVolunteerInfoTable()
 	for(let i = 0; i < users.length; i++){
 		$('#volunteerUsernames').append(`<input type="hidden" name="username" value=${users[i]}>`)
 	}

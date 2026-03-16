@@ -495,8 +495,12 @@ def test_getMinorProgress():
                                      "addedBy": "ramsayb2",
                                      "addedOn": "",
                                      }
+    
 
         IndividualRequirement.create(**khattsSustainedEngagement)
+        u = User.get_by_id("khatts")
+        u.declaredMinor = True
+        u.save()
         minorProgress = getMinorProgress()
         sreynitProgress = minorProgress[0]
         assert sreynitProgress['engagementCount'] == 1
@@ -565,10 +569,10 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
         
         testProposal.form["term"] = testTerm
 
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
+        User.create(username="nimelyj",
+                    firstName="joyce",
+                    lastName="nimely",
+                    email="joycenimely@berea.edu",
                     bnumber="B91111113")
         
         # verify FINN has no summer experiences in currently
@@ -578,13 +582,13 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 
         # create the summer experience with the test data and verify FINN has a new entry
         with app.app_context():
-            g.current_user = "glek"
-            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal.form))
+            g.current_user = "nimelyj"
+            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
-        assert newSummerExperiences[0].createdBy.username == "glek"
+        assert newSummerExperiences[0].createdBy.username == "nimelyj"
         
         transaction.rollback()
 
@@ -594,16 +598,16 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 @pytest.mark.integration
 def test_createOtherEngagement(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
+        User.create(username="nimelyj",
+                    firstName="joyce",
+                    lastName="nimely",
+                    email="joycenimely@berea.edu",
                     bnumber="B91111113")
         
         # Save the requested event to the database
         with app.app_context():
-            g.current_user = "glek"
-            createOtherEngagement(testUser.username, testProposal)
+            g.current_user = "nimelyj"
+            createOtherEngagementRequest(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
         initialOtherExperiences = CCEMinorProposal.select().where(CCEMinorProposal.proposalType == 'Other Engagement', CCEMinorProposal.student == testUser.username)
@@ -830,33 +834,28 @@ def test_declareMinorInterest():
 
 @pytest.mark.integration
 def test_getDeclaredMinorStudents():
-    
     with mainDB.atomic() as transaction:
-        # Get all the declared students
-        declaredStudents = getDeclaredMinorStudents()
-        
-        assert declaredStudents == []
-        assert len(declaredStudents) == 0
-        
-        student1 = User.get_by_id("agliullovak")
-        student2 = User.get_by_id("partont")
-        student3 = User.get_by_id("bryanta")
-        
-        assert student1.declaredMinor == False
-        assert student2.declaredMinor == False
-        assert student3.declaredMinor == False
-        
-        student1.declaredMinor = True
-        student2.declaredMinor = True
-        student3.declaredMinor = True
-        
-        student1.save()
-        student2.save()
-        student3.save()
-        
-        # Get all the declared students after recent changes
-        newDeclaredStudents = getDeclaredMinorStudents()
-        
-        assert len(newDeclaredStudents) == 3
-        
+        # Force known baseline for these users since users with individualrequirements with a declared status of True are returned
+        for username in ["agliullovak", "partont", "bryanta"]:
+            u = User.get_by_id(username)
+            u.declaredMinor = False
+            u.save()
+
+        before = getDeclaredMinorStudents()
+        before_usernames = {s["username"] for s in before}
+
+        # Now declare them
+        for username in ["agliullovak", "partont", "bryanta"]:
+            u = User.get_by_id(username)
+            u.declaredMinor = True
+            u.save()
+
+        after = getDeclaredMinorStudents()
+        after_usernames = {s["username"] for s in after}
+
+        # Assert THESE users were added 
+        for username in ["agliullovak", "partont", "bryanta"]:
+            assert username in after_usernames
+            assert username not in before_usernames
+
         transaction.rollback()

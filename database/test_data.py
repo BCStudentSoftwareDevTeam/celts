@@ -244,6 +244,21 @@ users = [
         "minorInterest": None,
     },
     {
+        "username" : "glek",
+        "bnumber" : "B00792345",
+        "email": "glek@berea.edu",
+        "phoneNumber": "(555)579-5555",
+        "firstName" : "Kafui",
+        "lastName" : "Gle",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Junior",
+        "minorInterest": None,
+    },
+    {
         "username" : "michels",
         "bnumber" : "B00781963",
         "email": "michels@berea.edu",
@@ -1027,7 +1042,14 @@ individualReqs = [
 ]
 
 IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
+# This ensures every user with an individual requirement has declaredMinor set to True so that when our query runs it can find users with  a "declaredMinor = True"
+req_usernames = {r["username"] for r in individualReqs if r.get("username")}
 
+(User
+ .update({User.declaredMinor: True})
+ .where(User.username.in_(req_usernames))
+ .execute()
+)
 
 courseInstructorRecords = [
     {

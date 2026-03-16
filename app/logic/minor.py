@@ -90,7 +90,10 @@ def getMinorProgress():
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student))
-            .where(CertificationRequirement.certification_id == Certification.CCE)
+            .where(
+                (CertificationRequirement.certification_id == Certification.CCE) &
+                (User.declaredMinor == True)
+            )
             .group_by(User.firstName, User.lastName, User.username)
             .order_by(SQL("engagementCount").desc())
     )
@@ -177,13 +180,71 @@ def declareMinorInterest(username):
     
 def getDeclaredMinorStudents():
     """
-    Get a list of the students who have declared minor
+    This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
+    It returns a list of dictionaries containing student information and their engagement details and adds students who have no requirements but have declared the minor with 0 engagements.
     """
-    declaredStudents = User.select().where(User.isStudent & User.declaredMinor)
+    summerEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CCEMinorProposal.proposalType == "Summer Experience", CCEMinorProposal.id)],
+                None
+            )
+        )
+    ).alias("summerEngagementCount")
 
-    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
+    # this returns the count of distinct engagements that have a certification requirement id.
+    # this is important because our join clause specifically joins individualrequirements with the certifications that match to CCE
+    # while leaving the rest as null
+    cceEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CertificationRequirement.id.is_null(False), IndividualRequirement.id)],
+                None
+            )
+        )
+    ).alias("allEngagementCount")
 
-    return interestedStudentList
+    q = (
+        User
+        .select(
+            User,
+            cceEngagementCount,
+            summerEngagementCount,
+            fn.IF(fn.COUNT(fn.DISTINCT(CCEMinorProposal.id)) > 0, True, False).alias("hasCCEMinorProposal"),
+        )
+        .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
+        .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(
+            (IndividualRequirement.requirement_id == CertificationRequirement.id) &
+            (CertificationRequirement.certification_id == Certification.CCE)    # only cce minor certs are populated with non-null
+            ))
+        .switch(User)
+        .join(CCEMinorProposal, JOIN.LEFT_OUTER, on=(User.username == CCEMinorProposal.student))
+        .where(
+            (User.declaredMinor == True) & 
+            (User.isStudent == True)
+            )
+        .group_by(User.username)
+        .order_by(SQL("allEngagementCount").desc())
+    )
+
+    result = []
+    for s in q:
+        engagementCount = int(s.allEngagementCount or 0)
+        result.append({
+            "firstName": s.firstName,
+            "lastName": s.lastName,
+            "username": s.username,
+            "B-Number": s.bnumber,
+            "email": s.email,
+            "hasGraduated": s.hasGraduated,
+            "engagementCount": engagementCount,
+            "hasCCEMinorProposal": bool(s.hasCCEMinorProposal),
+            "hasSummer": "Completed" if (s.summerEngagementCount and int(s.summerEngagementCount) > 0) else "Incomplete",
+        })
+
+    return result
     
 def getCourseInformation(id):
     """
@@ -262,6 +323,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                            "requirement": requirement.get(),
                                            "addedBy": currentUser,
                                         })
+        
         # Thrown if there are no available engagement requirements left. Handled elsewhere.
         except DoesNotExist as e:
             raise e 
@@ -272,6 +334,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                 IndividualRequirement.username == engagementData['username'],
                 IndividualRequirement.term == engagementData['term']
             ).execute()
+
     else:
         raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
@@ -385,6 +448,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
                                     "requirement": requirement.get(),
                                     "addedBy": currentUser,
                                 })
+ 
     return ""
 
 def getSummerExperience(username):
