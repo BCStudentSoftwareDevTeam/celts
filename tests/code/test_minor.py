@@ -57,6 +57,20 @@ def testUser(request):
     newUser.delete_instance()
 
 @pytest.fixture
+def testCourse(testUser):
+    newCourse = Course.create(courseName="test get course information",
+                                    courseAbbreviation="TGCI",
+                                    sectionDesignation="something",
+                                    courseCredit=1.0,
+                                    term=3,
+                                    status=1,
+                                    createdBy=testUser.username,
+                                    serviceLearningDesignatedSections = "",
+                                    previouslyApprovedDescription="")
+    yield newCourse
+    newCourse.delete_instance()
+
+@pytest.fixture
 def testTerm(request):
     """Fixture to create a term."""
     params = getattr(request, "param", {})
@@ -121,24 +135,11 @@ def testProposal(request):
     return mockRequestProposalObject
 
 @pytest.mark.integration
-def test_getCourseInformation(testUser):
-    with mainDB.atomic() as transaction:
-        testCourse = Course.create(courseName="test get course information",
-                                   courseAbbreviation="TGCI",
-                                   sectionDesignation="something",
-                                   courseCredit=1.0,
-                                   term=3,
-                                   status=1,
-                                   createdBy=testUser.username,
-                                   serviceLearningDesignatedSections = "",
-                                   previouslyApprovedDescription="")
-        
+def test_getCourseInformation(testUser, testCourse):
+    with mainDB.atomic() as transaction:        
         testCourseInstructor = CourseInstructor.create(course=testCourse.id, user=testUser.username)
-        
         courseInformation = getCourseInformation(testCourse.id)
-
         testCourseDict = model_to_dict(testCourse)
-
         manualCourseInformation = {"instructors":[testCourseInstructor.user.firstName + " " + testCourseInstructor.user.lastName], "course": testCourseDict}
 
         assert manualCourseInformation == courseInformation
@@ -244,7 +245,7 @@ def test_getCCEMinorProposals(testUser, testProposal):
 
 
 @pytest.mark.integration
-def test_getCommunityEngagementByTerm(testUser):
+def test_getCommunityEngagementByTerm(testUser, testCourse):
     with mainDB.atomic() as transaction:
         testingServiceEvent = Event.create(name = "Testing event",
                                     term = 1, # Fall 2020
@@ -258,16 +259,6 @@ def test_getCommunityEngagementByTerm(testUser):
                                     startDate = "2021-12-12",
                                     isCanceled = False,
                                     program = 1)        
-        
-        testCourse = Course.create(courseName="test get course information",
-                                   courseAbbreviation="TGCI",
-                                   sectionDesignation="something",
-                                   courseCredit=1.0,
-                                   term=3, # Summer 2021
-                                   status=1,
-                                   createdBy="bledsoef",
-                                   serviceLearningDesignatedSections = "",
-                                   previouslyApprovedDescription="")
  
         # add the testUser as a participant in the course and event
         EventParticipant.create(user = testUser , event = testingServiceEvent.id)
@@ -302,16 +293,6 @@ def test_getCommunityEngagementByTerm(testUser):
                                     startDate = "2021-1-1",
                                     isCanceled = False,
                                     program = 2)
-        
-        testCourse = Course.create(courseName="test get course information",
-                                courseAbbreviation="TGCI",
-                                sectionDesignation="something",
-                                courseCredit=1.0,
-                                term=3,
-                                status=1,
-                                createdBy="bledsoef",
-                                serviceLearningDesignatedSections = "",
-                                previouslyApprovedDescription="")
         
         # add the testUser as a participant in the course and event
         EventParticipant.create(user = testUser , event = testingNonServiceEvent.id)
