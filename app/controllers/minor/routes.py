@@ -70,9 +70,9 @@ def editOrViewProposal(proposalID: int):
     
     editProposal = 'view' not in request.path
 
-    # if proposal is approved, only admins can edit, but not if the admin is the student
+    # if proposal is approved or completed, only admins can edit, but not if the admin is the student
     if proposal.isApproved and editProposal:
-        if g.current_user.username == proposal.student or not g.current_user.isAdmin:
+        if g.current_user.username == proposal.student.username or not g.current_user.isAdmin:
             return abort(403)
     
     attachmentObject = AttachmentUpload.get_or_none(proposal=proposalID)
@@ -91,7 +91,7 @@ def editOrViewProposal(proposalID: int):
                                 editable = editProposal,
                                 selectedTerm = selectedTerm,
                                 contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
-                                selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' else True),
+                                selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' not in request.path else True),
                                 user = User.get_by_id(proposal.student),
                                 postRoute = f"/cceMinor/editSummerExperience/{proposal.id}" if "SummerExperience" in request.path else f"/cceMinor/editOtherEngagement/{proposal.id}",
                                 proposal = proposal,

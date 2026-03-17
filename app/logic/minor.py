@@ -397,11 +397,10 @@ def createOtherEngagement(username, request):
                                               student = user,
                                               **request.form
                             )
-    proposalObject = CCEMinorProposal.get_by_id(createdProposal)
     attachment = request.files.get("attachmentObject")
     if attachment:
         addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
-        addFile.saveFiles(parentEvent=proposalObject)
+        addFile.saveFiles()
 
 def updateOtherEngagementRequest(proposalID, request):
     """

@@ -590,7 +590,7 @@ def test_createOtherEngagement(testUser, testProposal):
 def test_updateOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
         with app.app_context():
-            g.current_user = "glek"
+            g.current_user = testUser.username
             createOtherEngagement(testUser.username, testProposal)
             createdOtherEngagementRequest = CCEMinorProposal.select().where(
                                                                 CCEMinorProposal.student == testUser, 
