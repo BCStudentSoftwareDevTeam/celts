@@ -5,7 +5,7 @@ from peewee import *
 from flask import g
 from collections import OrderedDict
 from playhouse.shortcuts import model_to_dict
-from werkzeug.datastructures import ImmutableMultiDict, FileStorage
+from werkzeug.datastructures import FileStorage, MultiDict
 from types import SimpleNamespace
 from app import app
 
@@ -76,47 +76,48 @@ def testProposal(request):
     """Fixture to create form data for CCEMinorProposals."""
     params = getattr(request, "param", {})
     proposalType = params.get("proposalType", "summerExperience")
+
     if proposalType == "summerExperience":
-        defaultProposal = {
-            "term": params.get("term", 3),
-            "roleDescription": params.get("roleDescription", "Assistant to Finn"),
-            "experienceType": params.get("experienceType", "Internship"),
-            "contentArea": params.get("contentArea", ["Power and inequality", "Civic literacy"]),
-            "orgName": params.get("orgName", "Finn's Org"),
-            "orgAddress":  params.get("orgAddress", "Finn's House"),
-            "orgPhone": params.get("orgPhone", "513-384-FINN"),
-            "orgWebsite": params.get("orgWebsite" ,"www.finn.com"),
-            "supervisorName": params.get("supervisorName", "Kafui Gle"),
-            "supervisorPhone": params.get("supervisorPhone", "513-226-GLEK"),
-            "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
-            'totalHours': params.get("totalHours", 300),
-            'totalWeeks': params.get("totalWeeks", 10),
-            'status': params.get("status", 'Draft'), 
-        }
+        defaultProposal = MultiDict([
+            ("term", params.get("term", 3)),
+            ("roleDescription", params.get("roleDescription", "Assistant to Finn")),
+            ("experienceType", params.get("experienceType", "Internship")),
+            ("contentAreas", params.get("contentAreas", "Power and inequality")),
+            ("orgName", params.get("orgName", "Finn's Org")),
+            ("orgAddress", params.get("orgAddress", "Finn's House")),
+            ("orgPhone", params.get("orgPhone", "513-384-FINN")),
+            ("orgWebsite", params.get("orgWebsite", "www.finn.com")),
+            ("supervisorName", params.get("supervisorName", "Kafui Gle")),
+            ("supervisorPhone", params.get("supervisorPhone", "513-226-GLEK")),
+            ("supervisorEmail", params.get("supervisorEmail", "kafuigle.com")),
+            ("totalHours", params.get("totalHours", 300)),
+            ("totalWeeks", params.get("totalWeeks", 10)),
+            ("status", params.get("status", "Draft")),
+        ])
     else:
-        defaultProposal = {
-            "term": params.get("term", 3),
-            "experienceName": params.get("experienceName", "Assistant to Finn"),
-            "orgName": params.get("orgName", "Finn's Org"),
-            "orgAddress":  params.get("orgAddress", "Finn's House"),
-            "orgPhone": params.get("orgPhone", "513-384-FINN"),
-            "orgWebsite": params.get("orgWebsite" ,"www.finn.com"),
-            "supervisorName": params.get("supervisorName", "Kafui Gle"),
-            "supervisorPhone": params.get("supervisorPhone", "513-226-GLEK"),
-            "supervisorEmail": params.get("supervisorEmail", "kafuigle.com"),
-            'totalHours': params.get("totalHours", 300),
-            'totalWeeks': params.get("totalWeeks", 10),
-            'experienceDescription': params.get("experienceDescription", "Working day and night to make sure Finn's needs are met"),
-            'status': params.get("status", 'Draft'), 
-        }
+        defaultProposal = MultiDict([
+            ("term", params.get("term", 3)),
+            ("experienceName", params.get("experienceName", "Assistant to Finn")),
+            ("orgName", params.get("orgName", "Finn's Org")),
+            ("orgAddress", params.get("orgAddress", "Finn's House")),
+            ("orgPhone", params.get("orgPhone", "513-384-FINN")),
+            ("orgWebsite", params.get("orgWebsite", "www.finn.com")),
+            ("supervisorName", params.get("supervisorName", "Kafui Gle")),
+            ("supervisorPhone", params.get("supervisorPhone", "513-226-GLEK")),
+            ("supervisorEmail", params.get("supervisorEmail", "kafuigle.com")),
+            ("totalHours", params.get("totalHours", 300)),
+            ("totalWeeks", params.get("totalWeeks", 10)),
+            ("experienceDescription", params.get("experienceDescription", "Working day and night to make sure Finn's needs are met")),
+            ("status", params.get("status", "Draft")),
+        ])
+
     mockRequestProposalObject = SimpleNamespace(
         form=defaultProposal,
         files=SimpleNamespace(
             getlist=lambda key: [],
             get=lambda key: None
-        )
+        ),
     )
-
     # override default values with those put in the parameters.
     return mockRequestProposalObject
 
@@ -224,7 +225,7 @@ def test_getCCEMinorProposals(testUser, testProposal):
 
         with app.app_context():
             g.current_user = testUser.username
-            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal.form))
+            createSummerExperience(testUser.username, testProposal.form)
 
         assert len(getCCEMinorProposals(testUser.username)) == 2
         
@@ -510,7 +511,7 @@ def test_getMinorProgress():
         # add a summer engagement and requested engagement to Sreynit's progress
 
 
-        khattsSummerExperience = ImmutableMultiDict({
+        khattsSummerExperience = MultiDict({
             "term": 3,
             "roleDescription": "Assistant to Finn",
             "experienceType": "Internship",
@@ -565,30 +566,21 @@ def test_getMinorProgress():
 @pytest.mark.integration
 def test_createSummerExperience(testUser, testTerm, testProposal):
     with mainDB.atomic() as transaction:
-        # create testing objects
-        
         testProposal.form["term"] = testTerm
-
-        User.create(username="nimelyj",
-                    firstName="joyce",
-                    lastName="nimely",
-                    email="joycenimely@berea.edu",
-                    bnumber="B91111113")
         
-        # verify FINN has no summer experiences in currently
+        # verify user has no summer experiences in currently
         initialSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
-
         assert len(initialSummerExperiences) == 0
 
-        # create the summer experience with the test data and verify FINN has a new entry
+        # create the summer experience with the test data and verify user has a new entry
         with app.app_context():
-            g.current_user = "nimelyj"
-            createSummerExperience(testUser.username, ImmutableMultiDict(testProposal))
+            g.current_user = testUser.username
+            createSummerExperience(testUser.username, testProposal)
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
 
-        assert newSummerExperiences[0].createdBy.username == "nimelyj"
+        assert newSummerExperiences[0].createdBy.username == testUser.username
         
         transaction.rollback()
 
@@ -598,15 +590,8 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
 @pytest.mark.integration
 def test_createOtherEngagement(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        User.create(username="nimelyj",
-                    firstName="joyce",
-                    lastName="nimely",
-                    email="joycenimely@berea.edu",
-                    bnumber="B91111113")
-        
-        # Save the requested event to the database
         with app.app_context():
-            g.current_user = "nimelyj"
+            g.current_user = testUser.username
             createOtherEngagement(testUser.username, testProposal)
 
         # Get the actual saved request from the database (the most recent one)
@@ -627,20 +612,11 @@ def test_createOtherEngagement(testUser, testProposal):
 @pytest.mark.integration
 def test_updateOtherEngagementRequest(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        user = testUser
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
-                    bnumber="B91111113")
-        
-        # Save the requested event to the database
-        createdOtherEngagementRequest = None
         with app.app_context():
             g.current_user = "glek"
-            createOtherEngagement(user.username, testProposal)
+            createOtherEngagement(testUser.username, testProposal)
             createdOtherEngagementRequest = CCEMinorProposal.select().where(
-                                                                CCEMinorProposal.student == user, 
+                                                                CCEMinorProposal.student == testUser, 
                                                                 CCEMinorProposal.proposalType == "Other Engagement"
                                                                 ).get()
         proposalID = createdOtherEngagementRequest.id
@@ -730,18 +706,10 @@ def test_removeProposal(testProposal, testUser):
 @pytest.mark.integration
 def test_updateSummerExperience(testUser, testProposal):
     with mainDB.atomic() as transaction:
-        user = testUser
-        User.create(username="glek",
-                    firstName="kafui",
-                    lastName="gle",
-                    email="kaf@berea.edu",
-                    bnumber="B91111113")
-        
-        # Save the requested event to the database
         createdSummerExperience = None
         with app.app_context():
-            g.current_user = "glek"
-            createdSummerExperience = createSummerExperience(user.username, ImmutableMultiDict(testProposal.form))
+            g.current_user = testUser.username
+            createdSummerExperience = createSummerExperience(testUser.username, testProposal)
 
         proposalID = createdSummerExperience.id
 
@@ -752,7 +720,7 @@ def test_updateSummerExperience(testUser, testProposal):
         testProposal.form["totalHours"] = 201
         testProposal.form["experienceHoursOver300"] = ""    # adding this because the updateSummerExperience tries to pop this key
 
-        updateSummerExperience(proposalID, ImmutableMultiDict(testProposal.form))
+        updateSummerExperience(proposalID, testProposal.form)
 
         updatedProposal = CCEMinorProposal.get_by_id(proposalID)
         
