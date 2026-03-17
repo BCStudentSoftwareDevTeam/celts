@@ -82,7 +82,6 @@ def testProposal(request):
             ("term", params.get("term", 3)),
             ("roleDescription", params.get("roleDescription", "Assistant to Finn")),
             ("experienceType", params.get("experienceType", "Internship")),
-            ("contentAreas", params.get("contentAreas", "Power and inequality")),
             ("orgName", params.get("orgName", "Finn's Org")),
             ("orgAddress", params.get("orgAddress", "Finn's House")),
             ("orgPhone", params.get("orgPhone", "513-384-FINN")),
@@ -204,7 +203,6 @@ def test_getProgramEngagementHistory(testUser):
     {"proposalType": "otherEngagement"},
 ], indirect=True)
 def test_getCCEMinorProposals(testUser, testProposal):
-
     with mainDB.atomic() as transaction:
 
         assert getCCEMinorProposals(testUser.username) == []
@@ -221,7 +219,7 @@ def test_getCCEMinorProposals(testUser, testProposal):
 
         testProposal.form["roleDescription"] = "Assistant to Finn"
         testProposal.form["experienceType"] = "Internship"
-        testProposal.form["contentArea"] = ["Power and inequality", "Civic literacy"]
+        testProposal.form.setlist("contentArea", ["Power and inequality", "Civic literacy"])
 
         with app.app_context():
             g.current_user = testUser.username
@@ -243,14 +241,11 @@ def test_getCCEMinorProposals(testUser, testProposal):
         assert otherExperienceCount == 1
 
         transaction.rollback()
-    
 
 
 @pytest.mark.integration
 def test_getCommunityEngagementByTerm(testUser):
     with mainDB.atomic() as transaction:
-        # create testing objects   
-
         testingServiceEvent = Event.create(name = "Testing event",
                                     term = 1, # Fall 2020
                                     description = "This Service Event is Created to be tested.",
@@ -575,7 +570,8 @@ def test_createSummerExperience(testUser, testTerm, testProposal):
         # create the summer experience with the test data and verify user has a new entry
         with app.app_context():
             g.current_user = testUser.username
-            createSummerExperience(testUser.username, testProposal)
+            testProposal.form.setlist("contentArea", ["Power and inequality", "Civic literacy"])
+            createSummerExperience(testUser.username, testProposal.form)
 
         newSummerExperiences = list(CCEMinorProposal.select().where(CCEMinorProposal.student == testUser.username, CCEMinorProposal.proposalType == 'Summer Experience'))
         assert len(newSummerExperiences) == 1
@@ -709,8 +705,8 @@ def test_updateSummerExperience(testUser, testProposal):
         createdSummerExperience = None
         with app.app_context():
             g.current_user = testUser.username
-            createdSummerExperience = createSummerExperience(testUser.username, testProposal)
-
+            testProposal.form.setlist("contentArea", ["Power and inequality", "Civic literacy"])
+            createdSummerExperience = createSummerExperience(testUser.username, testProposal.form)
         proposalID = createdSummerExperience.id
 
         assert createdSummerExperience.totalHours == 301
