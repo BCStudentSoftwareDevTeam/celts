@@ -687,13 +687,14 @@ def test_getUniqueVolunteers(fixture_info):
 
 @pytest.mark.integration
 def test_laborAttendanceByTerm(fixture_info):
-    EventParticipant.create(event=fixture_info["event1"], user=fixture_info['user1'], hoursEarned=1)
     EventParticipant.create(event=fixture_info["event2"], user=fixture_info['user1'], hoursEarned=1)
-    EventParticipant.create(event=fixture_info["event1"], user=fixture_info['user2'], hoursEarned=1)
+    EventParticipant.create(event=fixture_info["event2"], user=fixture_info['user2'], hoursEarned=1)
+    EventParticipant.create(event=fixture_info["event1"], user=fixture_info['user3'], hoursEarned=1)
 
     columns, results = laborAttendanceByTerm("2023-2024-test")
     assert columns == ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
 
-    assert len(results) == 2
-    assert ("John Doe", "B774377", "doej@berea.edu", "Fall 2023", 3) in results
+    assert len(results) == 3
+    assert ("John Doe", "B774377", "doej@berea.edu", "Fall 2023", 2) in results
     assert ("Jane Doe", "B888828", "doej2@berea.edu", "Fall 2023", 2) in results
+    assert ("Bob Builder", "B00700932", "builderb@berea.edu", "Fall 2023", 1) in results
