@@ -281,6 +281,10 @@ def laborAttendanceByTerm(academicYear):
         .group_by(User.id, Term.description)
         .order_by(User.lastName, User.firstName, Term.description)
     )
+    
+    columns = ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
+    results = list(query.tuples())
+    return (columns, results)
 
 
 
