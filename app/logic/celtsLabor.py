@@ -45,15 +45,28 @@ def updateCeltsLaborFromLsf():
                          'wls': 'WLS Lvl',
                          'termName': 'Term Name'}]}
     """
-    laborDict = getCeltsLaborFromLsf()
+    # laborDict = getCeltsLaborFromLsf()
+    laborDict = {
+        'B00774270': [
+            {
+                'jobType': 'Primary',
+                'laborEnd': '2025-12-13',
+                'laborStart': '2025-08-19',
+                'positionTitle': 'Hispanic Outreach Associate',
+                'termCode': 202400,
+                'termName': 'Fall 2024',
+                'wls': '4'
+            }            
+        ]
+    }
     
     studentLaborDict = {}
     for key, value in laborDict.items(): 
         try: 
-            username = User.get(bnumber = key)
-            # All term codes for summer end with 13 and all term codes for an academic year end in 00 and those are the only terms we want to record.
-            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13"]])
-        except DoesNotExist: 
+            username = User.get(bnumber=key)
+            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13","11"]])
+        except DoesNotExist:
+            print(f"No user found for bnumber: {key}")  # debug
             pass
 
     refreshCeltsLaborRecords(studentLaborDict)
@@ -109,10 +122,15 @@ def refreshCeltsLaborRecords(laborDict):
                                        "term": laborTerm,
                                        "isAcademicYear": isAcademicYear})    
                 except DoesNotExist:
+                    print(f"No term found for: '{term}'")  # debug
                     pass
-                    
-    CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
-    CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
+
+    print("FINAL DATA:", celtsLabor)  # should NOT be empty
+    
+    # CeltsLabor.delete().where(CeltsLabor.user << [entry['user'] for entry in celtsLabor]).execute()
+    CeltsLabor.insert_many(celtsLabor).execute()  # fixed
+    # CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
+    print("FINAL DATA:", celtsLabor)
     
 def getCeltsLaborHistory(volunteer):
     
