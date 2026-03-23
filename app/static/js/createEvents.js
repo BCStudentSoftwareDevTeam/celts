@@ -753,8 +753,10 @@ $("#cancelEvent").on('click', function (event) {
   $(".addMultipleOfferingEvent").click(function () {
     // Get the current value from the main location input
     let mainLocation = $("#inputEventLocation-main").val();
-    createOfferingModalRow({ eventLocation: mainLocation });
-  });
+    let existingRows = $("#multipleOfferingSlots .eventOffering").length;
+    let mainDate = existingRows === 0 ? $("#startDatePicker-mainOnly").val() : null;
+    createOfferingModalRow({ eventLocation: mainLocation, eventDate: mainDate });
+});
 
   var minDate = new Date('10/25/1999')
   $("#startDatePicker-main").datepicker("option", "minDate", minDate)
