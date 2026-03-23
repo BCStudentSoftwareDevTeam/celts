@@ -58,25 +58,31 @@
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
     {% set seen = [] %}
-    {% set combinedParticipants = attended + rsvp + waitlist %}
-        {% for p in combinedParticipants | unique %}
-      {% if p in rsvp and not event.isRsvpRequired %}
-      {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
-      {% endif %}
-      {% if p in rsvp and event.isRsvpRequired %}
-          {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
-      {% endif %}
-      {% if p in attended%}
-          {{createTable(p, 'attended') if type == 'table' else createCard(p, 'attended') }}
-      {% endif %}
-      {% if p in waitlist %}
-          {{createTable(p, 'waitlisted') if type == 'table' else createCard(p, 'waitlisted') }}
-      {% endif %}
+    {% for p in combinedParticipants %}
+        {% set username = p.user.username %}
+        {% if username not in seen %}
+            {% set _ = seen.append(username) %}
+            {% set status = none %}
+            {% if p in attended %}
+                {% set status = 'attended'%}
+            {% elif p in rsvp and event.isRsvpRequired %}
+                {% set status = 'rsvp'%}
+            {% elif p in waitlist %}
+                {% set status = 'waitlist'%}
+            {% endif %}
+            {% if status %}
+                {% if type == 'card' %}
+                    {{ createCard(p, status) }}
+                {% elif type == 'table' %}
+                    {{ createTable(p, status) }}
+                {% endif %}
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endmacro %}
 
 {% macro createCheckbox(checkboxName) %}
-  {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
+    {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
     <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
     <label for="{{checkboxName}}Select">{{labelText}}</label><br>
 {% endmacro %}
@@ -152,7 +158,7 @@
     <hr>
     <div class="d-print-block" id="volunteerInformationCardToPrint">
       <div class="row sort-here">
-        {{ printParticipants('card', rsvpUser, waitlistUser) }}
+        {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
       </div>
     </div>
 
