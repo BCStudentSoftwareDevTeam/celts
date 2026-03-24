@@ -1,4 +1,5 @@
 from os import major
+from openpyxl import workbook
 import xlsxwriter 
 from peewee import fn, Case, JOIN, SQL, Select
 from collections import defaultdict
@@ -226,14 +227,13 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
-def laborAttendanceByTerm(academicYear): 
-    laborQuery = (
+def laborAttendanceByTerm(term):
+    laborQuery = ( #so that all Celts Labor students appear even if they didn't attend anything 
         CeltsLabor
         .select(
             fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
             User.bnumber,
             fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            Term.description,
             fn.COUNT(EventParticipant.event_id).alias('meetingsAttended')
         )
         .join(User)
@@ -248,29 +248,21 @@ def laborAttendanceByTerm(academicYear):
             JOIN.LEFT_OUTER,
             on=(
                 (EventParticipant.event == Event.id) &
+                (Event.term == term) &
                 (Event.isLaborOnly == True) &
                 (Event.deletionDate.is_null()) &
                 (Event.isCanceled == False)
             )
         )
-        .join(
-            Term,
-            JOIN.LEFT_OUTER,
-            on=(
-                (Event.term == Term.id) &
-                (Term.academicYear == academicYear)
-            )
-        )
-        .group_by(CeltsLabor.user, Term.description)
+        .group_by(CeltsLabor.user)
     )
 
-    nonLaborQuery = (
+    nonLaborQuery = ( #so that non-labor attendees who are not in CeltsLabor also appear 
         EventParticipant
         .select(
             fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
             User.bnumber,
             fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            Term.description,
             fn.COUNT(EventParticipant.event_id).alias('meetingsAttended')
         )
         .join(User)
@@ -279,23 +271,25 @@ def laborAttendanceByTerm(academicYear):
             Event,
             on=(
                 (EventParticipant.event == Event.id) &
+                (Event.term == term) &
                 (Event.isLaborOnly == True) &
                 (Event.deletionDate.is_null()) &
                 (Event.isCanceled == False)
             )
         )
-        .join(Term, on=(Event.term == Term.id))
-        .where(
-            Term.academicYear == academicYear,
-            User.username.not_in(CeltsLabor.select(CeltsLabor.user_id))
+        .join(
+            CeltsLabor,
+            JOIN.LEFT_OUTER,
+            on=(EventParticipant.user == CeltsLabor.user)
         )
-        .group_by(EventParticipant.user, Term.description)
+        .where(CeltsLabor.user.is_null())
+        .group_by(EventParticipant.user)
     )
 
-    query = laborQuery.union(nonLaborQuery)
-    columns = ("Full Name", "B-Number", "Email", "Term", "Meetings Attended")
+    query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
+    columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
 
-    return (columns, query.tuples())
+    return (columns, query.tuples()) 
 
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
@@ -343,8 +337,12 @@ def createSpreadsheet(academicYear):
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-    makeDataXls("Labor Attendance By Term", laborAttendanceByTerm(academicYear), workbook, sheetDesc="Reports the number of labor-only events attended per term for each labor student, including those with zero attendance, and non-labor attendees.")
-
+    
+    fallTerm = getFallTerm(academicYear)
+    springTerm = getSpringTerm(academicYear)
+    makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
     makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
