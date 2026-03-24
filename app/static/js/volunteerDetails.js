@@ -28,6 +28,7 @@ $(document).ready(function () {
 		const status = data[3].toLowerCase(); 
 		if (status === 'attended' && !$('#attendedSelect').is(':checked')) return false;
 		if (status === 'rsvp' && !$('#rsvpSelect').is(':checked')) return false;
+		if (status === 'invited' && !$('#invitedSelect').is(':checked')) return false;
 		if (status === 'waitlist' && !$('#waitlistSelect').is(':checked')) return false;
 		return true;
 	});
