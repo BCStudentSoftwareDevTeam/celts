@@ -268,7 +268,7 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
             ((Event.startDate > currentDate) |
-             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate))) &
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate.time()))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
@@ -294,7 +294,7 @@ def getPastVolunteerOpportunitiesCount(term, currentDate):
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
             ((Event.startDate < currentDate) |
-             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate))) &
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate.time()))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
