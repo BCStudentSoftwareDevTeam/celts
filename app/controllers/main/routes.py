@@ -393,6 +393,7 @@ def addNote():
         flash("Failed to add profile note", "danger")
         return "Failed to add profile note", 500
 
+    
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):
     """
