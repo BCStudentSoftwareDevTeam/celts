@@ -94,7 +94,7 @@ function updateIndicatorCounts(isChecked){
       const celtsLaborCount = Number(eventsCount.celtsLaborCount);
       const toggleStatus = eventsCount.toggleStatus;
       
-      $("#viewPastEventsToggle").prop(toggleStatus, true);
+      $("#viewPastEventsToggle").prop("checked", toggleStatus === "checked");
       
       // Update tab labels with event counts:
       // - When toggle is ON, show total volunteer opportunities (upcoming + past)
