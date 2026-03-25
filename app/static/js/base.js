@@ -205,70 +205,101 @@ function handleFileSelection(fileInputId, single=false){
   var attachedObjectContainerId = fileInputId + "Container"
   $(fileBoxId).after(`<div id="`+attachedObjectContainerId+`" class="py-0 px-0"></div>`)
   var objectContainerId = "#" + attachedObjectContainerId
-  $(fileBoxId).on('change', function() {
-    const selectedFiles = $(fileBoxId).prop('files');
-    for (let i = 0; i < selectedFiles.length; i++){
-      const file = selectedFiles[i];
-      if (hasUniqueFileName(file.name)){
-        let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
-        let fileExtension = file.name.split(".").pop();
-        let iconClass = '';
-        switch(fileExtension) {
-          case 'jpg': 
-          case 'png':
-          case 'jpeg':
-            iconClass = "bi-file-image";
-            break
-          case 'pdf':
-            iconClass = 'bi-filetype-pdf';
-            break
-          case 'docx':
-            iconClass = 'bi-filetype-docx';
-            break
-          case 'xlsx':
-            iconClass = 'bi-filetype-xlsx';
-            break
-          default:
-            iconClass = 'bi-file-earmark-arrow-up';
-        }
-        let trashNum = ($(objectContainerId+ " .row").length)
-        var fullTrashId = "#trash" + trashNum
-        let fileHTML = " \
-              <div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
-                <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-                <div id='attachedFile" + trashNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
-                <div class='col' style='text-align:right'> \
-                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
-                    <span class='bi bi-trash fs-6'></span>\
-                  </div>\
-                </div> \
-              </div>"
-        if (single) {
-          $(objectContainerId).html(fileHTML)
-        }
-        else {
-          $(objectContainerId).append(fileHTML)
-        }
-        $(fullTrashId).data("file", file);
-        $(fullTrashId).data("file-container-id", attachedObjectContainerId);
-        $(fullTrashId).on("click", function() {
-          let elementFileNum = $(this).data('filenum');
-          let attachedObjectContainerId = $(this).data('file-container-id');
-          $("#"+ attachedObjectContainerId + " #attachedFilesRow" + elementFileNum).remove();
-          $(fileBoxId).prop('files', getSelectedFiles());
-        })
-        $(fileBoxId).data("file-num", $(fileBoxId).data("file-num") + 1)
+
+  // if we have files that are already saved we can get their information from here
+  let filePath = $(fileBoxId).data("file-path")
+  let fileName = $(fileBoxId).data("file-name")
+
+  let existingFile = {
+    name: fileName,
+    path: filePath
+  }
+  if (filePath && fileName) {
+    populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single, existingFile)
+  }
+  $(fileBoxId).on('change', () => populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single));
+}
+
+function populateSelectedFiles(fileBoxId, attachedObjectContainerId, objectContainerId, single, existingFile=null) {
+  const selectedFiles = existingFile ? [existingFile] : $(fileBoxId).prop('files');
+  for (let i = 0; i < selectedFiles.length; i++){
+    const file = selectedFiles[i];
+    if (hasUniqueFileName(file.name)){
+      let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
+      let trashNum = ($(objectContainerId+ " .row").length)
+      let iconClass = getIconClass(file)
+      let viewing = !(Boolean($("#isViewing").val()))
+      let fileHTML = existingFile
+        ? generateFileRowHTML(trashNum, iconClass, existingFile.name, existingFile.path, showTrash=viewing)
+        : generateFileRowHTML(trashNum, iconClass, fileName)
+      var fullTrashId = "#trash" + trashNum
+      if (single) {
+        $(objectContainerId).html(fileHTML)
+      }
+      else {
+        $(objectContainerId).append(fileHTML)
+      }
+      $(fullTrashId).data("file", file);
+      $(fullTrashId).data("file-container-id", attachedObjectContainerId);
+      $(fullTrashId).on("click", function() {
+        let elementFileNum = $(this).data('filenum');
+        let attachedObjectContainerId = $(this).data('file-container-id');
+        $("#"+ attachedObjectContainerId + " #attachedFilesRow" + elementFileNum).remove();
+        $(fileBoxId).prop('files', getSelectedFiles());
+      })
+      $(fileBoxId).data("file-num", $(fileBoxId).data("file-num") + 1)
+    }
+    else{
+      if (single){
+        $(objectContainerId).html(fileHTML)
       }
       else{
-        if (single){
-          $(objectContainerId).html(fileHTML)
-        }
-        else{
-          msgToast("File with filename '" + file.name + "' has already been added to this event")
-        }
+        msgToast("File with filename '" + file.name + "' has already been added to this event")
       }
     }
+  }
+  if (!existingFile) {
     $(fileBoxId).prop('files', getSelectedFiles());
-  });
+  }
+}
 
+function generateFileRowHTML(trashNum, iconClass, fileName, filePath=null, showTrash=true) {
+  return `
+    <div class='border row p-0 m-0' id='attachedFilesRow${trashNum}'>
+      <i class='col-auto fs-3 px-3 bi ${iconClass}'></i>
+      ${filePath != null ?
+        `<a id='attachedFile${trashNum}' data-filename='${fileName}' href='/${filePath}' target='_blank' class='fileName col-auto pt-2' data-toggle='tooltip' data-placement='top' title='${fileName}'>${fileName}</a>`
+        : `<div id='attachedFile${trashNum}' data-filename='${fileName}' class='fileName col-auto pt-2'>${fileName}</div>`
+      }
+      <div ${showTrash ? '' : 'hidden'} class='col' style='text-align:right'>
+        <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash${trashNum}' data-filenum='${trashNum}'>
+          <span class='bi bi-trash fs-6'></span>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function getIconClass(file) {
+  let iconClass = '';
+  let fileExtension = file.name.split(".").pop();
+  switch(fileExtension) {
+    case 'jpg': 
+    case 'png':
+    case 'jpeg':
+      iconClass = "bi-file-image";
+      break
+    case 'pdf':
+      iconClass = 'bi-filetype-pdf';
+      break
+    case 'docx':
+      iconClass = 'bi-filetype-docx';
+      break
+    case 'xlsx':
+      iconClass = 'bi-filetype-xlsx';
+      break
+    default:
+      iconClass = 'bi-file-earmark-arrow-up';
+  }
+  return iconClass
 }
