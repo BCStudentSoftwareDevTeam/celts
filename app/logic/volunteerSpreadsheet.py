@@ -233,7 +233,7 @@ def laborAttendanceByTerm(term):
             fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
             User.bnumber,
             fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            fn.COUNT(Event.id).alias('meetingsAttended')
+            fn.COUNT(fn.DISTINCT(Event.id)).alias('meetingsAttended')
         )
         .join(User)
         .switch(CeltsLabor)
@@ -252,6 +252,9 @@ def laborAttendanceByTerm(term):
                 (Event.deletionDate.is_null()) &
                 (Event.isCanceled == False)
             )
+        )
+        .where(
+            (CeltsLabor.term == term)
         )
         .group_by(CeltsLabor.user)
     )
@@ -279,7 +282,8 @@ def laborAttendanceByTerm(term):
         .join(
             CeltsLabor,
             JOIN.LEFT_OUTER,
-            on=(EventParticipant.user == CeltsLabor.user)
+            on=(EventParticipant.user == CeltsLabor.user) &
+                (CeltsLabor.term == term) 
         )
         .where(CeltsLabor.user.is_null())
         .group_by(EventParticipant.user)
