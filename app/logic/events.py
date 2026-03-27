@@ -253,7 +253,7 @@ def getEngagementEvents(term):
                                  .execute())
     return engagementEvents
 
-def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
@@ -267,8 +267,8 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
             (Event.deletionDate.is_null(True)) &
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
-            ((Event.startDate > currentTime) |
-             ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime))) &
+            ((Event.startDate > currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate.time()))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
@@ -276,6 +276,32 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
 
     programCountDict = {}
     for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
+
+def getPastVolunteerOpportunitiesCount(term, currentDate):
+    """
+        Return a count of all past events for each volunteer opportunities program.
+    """
+    
+    pastCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate < currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate.time()))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
+
+    programCountDict = {}
+    for programCount in pastCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
