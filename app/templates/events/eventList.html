@@ -129,7 +129,7 @@
                 <td class="text-dark">{{event.location}}</td>
               {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
-              <td td style="white-space: nowrap;">
+              <td style="white-space: nowrap;">
                 {% if event.isPastStart %}
                   {% set isPastStart = "true" %}
                 {% else %}
