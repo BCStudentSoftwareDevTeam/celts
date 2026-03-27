@@ -405,8 +405,7 @@ function loadOfferingsToModal() {
 
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
-  var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
-  
+  var eventDate = offering.date || offering.eventDate;  
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
@@ -751,7 +750,7 @@ $("#cancelEvent").on('click', function (event) {
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(function () {
-    // Get the current value from the main location input
+    // Get the current value from the main location input and the date input
     let mainLocation = $("#inputEventLocation-main").val();
     let existingRows = $("#multipleOfferingSlots .eventOffering").length;
     let mainDate = existingRows === 0 ? $("#startDatePicker-mainOnly").val() : null;
