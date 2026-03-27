@@ -405,7 +405,7 @@ function loadOfferingsToModal() {
 
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
-  var eventDate = offering.date || offering.eventDate;  
+  var eventDate = formatDate(offering.date || offering.eventDate);  
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
