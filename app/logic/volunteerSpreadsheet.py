@@ -265,7 +265,7 @@ def laborAttendanceByTerm(term):
             fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
             User.bnumber,
             fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            fn.COUNT(EventParticipant.event_id).alias('meetingsAttended')
+            fn.COUNT(fn.DISTINCT(EventParticipant.event_id)).alias('meetingsAttended')
         )
         .join(User)
         .switch(EventParticipant)
