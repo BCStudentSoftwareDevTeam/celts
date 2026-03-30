@@ -109,6 +109,29 @@
             </div>
           {% endif %}
         {% endfor %}
+
+        {% if zeroHourEvents %}
+          {% set ns = namespace(filtered=[]) %}
+          {% for event in zeroHourEvents %}
+            {% if event.program.programName != "Bonner Scholars" %}
+              {% set _ = ns.filtered.append(event) %}
+            {% endif %}
+          {% endfor %}
+
+          {% if ns.filtered %}
+            <div class="mb-4 p-3" style="page-break-inside: avoid;">
+              <h6 class="fw-bold" style="color: #005c90">Events with No Hours Earned</h6>
+              {% for event in ns.filtered %}
+                <div class="mb-2">
+                  <small class="text-muted">
+                    {{ event.term.description }} — {{ event.name }} - 0 hour(s)
+                  </small>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endif %}
+
       {% else %}
         <div class="text-center py-4">
           <h6 class="text-muted">No Volunteer Record</h6>
