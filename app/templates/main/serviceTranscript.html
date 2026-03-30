@@ -126,6 +126,10 @@
                   <small class="text-muted">
                     {{ event.term.description }} — {{ event.name }} - 0 hour(s)
                   </small>
+                  {% if event.program.programName != "CELTS Sponsored Events" %}
+                    <p class="text-muted small mb-2">{{ event.program.description }}</p>
+                    <a class="d-print-none small" href="{{ event.program.url }}" target="_blank">More Information</a>
+                  {% endif %}
                 </div>
               {% endfor %}
             </div>
