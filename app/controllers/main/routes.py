@@ -546,9 +546,11 @@ def serviceTranscript(username):
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
+    zeroHourEvents = getZeroHourEvents(username)
     startDate = getStartYear(username)
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
+                            zeroHourEvents = zeroHourEvents,
                             slCourses = slCourses.objects(),
                             totalHours = totalHours,
                             startDate = startDate,
