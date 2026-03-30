@@ -42,6 +42,24 @@ def getProgramTranscript(username):
             
     return dict(transcriptData)
 
+def getZeroHourEvents(username):
+    """
+    Returns a list of events with zero hours earned for the given user,
+    excluding deleted and canceled events.
+    """
+    zeroHourEvents = (Event.select(Event, Program, Term)
+                      .join(EventParticipant)
+                      .switch(Event)
+                      .join(Program)
+                      .switch(Event)
+                      .join(Term)
+                      .where(EventParticipant.user == username,
+                             EventParticipant.hoursEarned == 0,
+                             Event.deletionDate == None,
+                             Event.isCanceled == False))
+    
+    return list(zeroHourEvents)
+
 def getSlCourseTranscript(username):
     """
     Returns a SLCourse query object containing all the training events for
