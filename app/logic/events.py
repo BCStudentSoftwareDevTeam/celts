@@ -119,7 +119,6 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data for each event in the series, inheriting from the original eventData
-    print("seriesData received:", eventData.get('seriesData'))
     seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
  # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
