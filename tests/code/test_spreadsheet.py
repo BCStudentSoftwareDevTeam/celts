@@ -65,10 +65,10 @@ def fixture_info():
             isService=True
         )
 
-        labor1 = CeltsLabor.create(user=user1, term=term1, positionTitle="test position 1")
-        labor2 = CeltsLabor.create(user=user2, term=term1, positionTitle="test position 2")
-        labor3 = CeltsLabor.create(user=user1, term=term2, positionTitle="test position 3")
-        labor4 = CeltsLabor.create(user=user2, term=term2, positionTitle="test position 4")
+        labor1 = CeltsLabor.create(user=user1, term=term1, positionTitle="test position 1", isAcademicYear=True)
+        labor2 = CeltsLabor.create(user=user2, term=term1, positionTitle="test position 2", isAcademicYear=True)
+        labor3 = CeltsLabor.create(user=user1, term=term2, positionTitle="test position 3", isAcademicYear=True)
+        labor4 = CeltsLabor.create(user=user2, term=term2, positionTitle="test position 4", isAcademicYear=True)
 
         eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
         eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
@@ -699,13 +699,20 @@ def test_laborAttendanceByTerm(fixture_info):
     columns, results = laborAttendanceByTerm(fixture_info['term1'])
     results = list(results)
 
-    assert columns == ["Full Name", "B-Number", "Email", "Meetings Attended"]
+    assert columns == ("Full Name", "B-Number", "Email", "Meetings Attended")
 
     assert len(results) == 2
     assert ("John Doe", "B774377", "doej@berea.edu", 1) in results
     assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
 
     columns, results = laborAttendanceByTerm(fixture_info['term2'])
+    results = list(results)
+
+    assert len(results) == 2
+    assert ("John Doe", "B774377", "doej@berea.edu", 0) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 0) in results
+
+    columns, results = laborAttendanceByTerm(fixture_info['term3'])
     results = list(results)
 
     assert len(results) == 2
