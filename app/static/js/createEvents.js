@@ -405,8 +405,7 @@ function loadOfferingsToModal() {
 
 function loadRepeatingOfferingToModal(offering){
   var seriesTable = $("#generatedEventsTable");
-  var eventDate = new Date(offering.date || offering.eventDate).toLocaleDateString();
-  
+  var eventDate = formatDate(offering.date || offering.eventDate);  
 
   seriesTable.append(
     "<tr class='eventOffering'>" +
@@ -686,6 +685,9 @@ $("#cancelEvent").on('click', function (event) {
     if ($(this).is(':checked')) {
       $("#repeatingEventsNamePicker").val($("#inputEventName").val());
       $("#repeatingEventsLocationPicker").val($("#inputEventLocation-main").val());
+      $("#repeatingEventsStartDate").val($("#startDatePicker-mainOnly").val());
+      $("#repeatingEventsStartTime").val($("#startTime-main").val());
+      $("#repeatingEventsEndTime").val($("#endTime-main").val());
       $('.addMultipleOfferingEvent').hide();
       $("#repeatingEventsDiv").removeClass('d-none');
       $("#multipleOfferingSlots").children().remove();
@@ -748,10 +750,14 @@ $("#cancelEvent").on('click', function (event) {
   /*cloning the div with ID multipleOfferingEvent and cloning, changing the ID of each clone going up by 1. This also changes 
   the ID of the deleteMultipleOffering so that when the trash icon is clicked, that specific row will be deleted*/
   $(".addMultipleOfferingEvent").click(function () {
-    // Get the current value from the main location input
+    // Get the current value from the main location input and the date input
     let mainLocation = $("#inputEventLocation-main").val();
-    createOfferingModalRow({ eventLocation: mainLocation });
-  });
+    let existingRows = $("#multipleOfferingSlots .eventOffering").length;
+    let mainDate = existingRows === 0 ? $("#startDatePicker-mainOnly").val() : null;
+    let mainTime = $("#startTime-main").val();
+    let endTime = $("#endTime-main").val();
+    createOfferingModalRow({ eventLocation: mainLocation, eventDate: mainDate, startTime: mainTime, endTime: endTime });
+});
 
   var minDate = new Date('10/25/1999')
   $("#startDatePicker-main").datepicker("option", "minDate", minDate)
@@ -878,8 +884,3 @@ $("#cancelEvent").on('click', function (event) {
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
   });
-
-
-
-
-
