@@ -45,20 +45,20 @@ def updateCeltsLaborFromLsf():
                          'wls': 'WLS Lvl',
                          'termName': 'Term Name'}]}
     """
-    # laborDict = getCeltsLaborFromLsf()
-    laborDict = {
-        'B00774270': [
-            {
-                'jobType': 'Primary',
-                'laborEnd': '2025-12-13',
-                'laborStart': '2025-08-19',
-                'positionTitle': 'Hispanic Outreach Associate',
-                'termCode': 202400,
-                'termName': 'Fall 2024',
-                'wls': '4'
-            }            
-        ]
-    }
+    laborDict = getCeltsLaborFromLsf()
+    # laborDict = {
+    #     'B00774270': [
+    #         {
+    #             'jobType': 'Primary',
+    #             'laborEnd': '2025-12-13',
+    #             'laborStart': '2025-08-19',
+    #             'positionTitle': 'Hispanic Outreach Associate',
+    #             'termCode': 202400,
+    #             'termName': 'Fall 2024',
+    #             'wls': '4'
+    #         }            
+    #     ]
+    # }
     
     studentLaborDict = {}
     for key, value in laborDict.items(): 
@@ -132,17 +132,53 @@ def refreshCeltsLaborRecords(laborDict):
     # CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
     print("FINAL DATA:", celtsLabor)
     
+# def getCeltsLaborHistory(volunteer):
+    
+#     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+#                                               Term.description, 
+#                                               Term.academicYear, 
+#                                               Term.isSummer)
+#                                       .join(Term, on=(CeltsLabor.term == Term.id))
+#                                       .where(CeltsLabor.user == volunteer))
+                                     
+    
+#     laborHistoryDict= {}
+#     for position in laborHistoryList: 
+#         laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
+
+#     return laborHistoryDict
+# def getCeltsLaborHistory(volunteer):
+    
+#     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+#                                               Term.description, 
+#                                               Term.academicYear, 
+#                                               Term.isSummer)
+#                                       .join(Term, on=(CeltsLabor.term == Term.id))
+#                                       .where(CeltsLabor.user == volunteer)
+#                                       .group_by(CeltsLabor.positionTitle,
+#                                                 Term.description,
+#                                                 Term.academicYear,
+#                                                 Term.isSummer)
+#                                                 .namedtuples())
+    
+#     laborHistoryDict= {}
+#     for position in laborHistoryList: 
+#         laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
+
+#     return laborHistoryDict
 def getCeltsLaborHistory(volunteer):
     
     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+                                              CeltsLabor.isAcademicYear,
                                               Term.description, 
                                               Term.academicYear, 
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
-                                      .where(CeltsLabor.user == volunteer))
+                                      .where(CeltsLabor.user == volunteer)
+                                      .namedtuples())
     
-    laborHistoryDict= {}
+    laborHistoryDict = {}
     for position in laborHistoryList: 
-        laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
+        laborHistoryDict[position.positionTitle] = position.description if position.isSummer else position.academicYear
 
     return laborHistoryDict
