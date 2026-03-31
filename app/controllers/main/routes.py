@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents, getPastVolunteerOpportunitiesCount
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -92,6 +92,7 @@ def events(selectedTerm, activeTab, programID):
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     volunteerOpportunities = getVolunteerOpportunities(term)
     countUpcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(term, currentTime)
+    countPastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
@@ -109,6 +110,8 @@ def events(selectedTerm, activeTab, programID):
 
     # Get the count of all term events for each category to display in the event list page.
     volunteerOpportunitiesCount: int = len(studentEvents)
+    countUpcomingVolunteerOpportunitiesCount: int = len(countUpcomingVolunteerOpportunities)
+    countPastVolunteerOpportunitiesCount: int = len(countPastVolunteerOpportunities)
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
@@ -133,6 +136,8 @@ def events(selectedTerm, activeTab, programID):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             "volunteerOpportunitiesCount": volunteerOpportunitiesCount,
+            "countPastVolunteerOpportunitiesCount": countPastVolunteerOpportunitiesCount,
+            "countUpcomingVolunteerOpportunitiesCount": countUpcomingVolunteerOpportunitiesCount,
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
@@ -155,6 +160,7 @@ def events(selectedTerm, activeTab, programID):
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
                             countUpcomingVolunteerOpportunities = countUpcomingVolunteerOpportunities,
+                            countPastVolunteerOpportunities = countPastVolunteerOpportunities,
                             toggleState = toggleState,
                             )
 
