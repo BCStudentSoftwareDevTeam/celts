@@ -241,7 +241,7 @@ def laborAttendanceByTerm(term):
     CLTerm = Term.alias()
     laborMembers = (
         CeltsLabor
-        .select(CeltsLabor.user_id)
+        .select(fn.DISTINCT(CeltsLabor.user_id))
         .join(CLTerm, on=(CeltsLabor.term == CLTerm.id))
         .where(
             (CeltsLabor.term == term) |
