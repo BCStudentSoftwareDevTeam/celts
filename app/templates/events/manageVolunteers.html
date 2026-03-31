@@ -239,7 +239,11 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#non-attended-collapse">
-          RSVP, Invited, and Waitlist
+          {% if event.isRsvpRequired %}
+            RSVP and Waitlist
+          {% else %}
+            Invited and Waitlist
+          {% endif %}
         </button>
       </h2>
       <div class="accordion-collapse collapse" id="non-attended-collapse">
