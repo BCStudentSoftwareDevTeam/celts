@@ -227,73 +227,50 @@ def calculateRetentionRate(fallDict, springDict):
     return retentionDict
 
 def laborAttendanceByTerm(term):
-    laborQuery = ( #so that all Celts Labor students appear even if they didn't attend anything 
+    fullName = fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName')
+    email = fn.CONCAT(User.username, '@berea.edu').alias('email')
+    meetingsAttended = fn.COUNT(fn.DISTINCT(Event.id)).alias('meetingsAttended')
+
+    validEvent = (
+        (EventParticipant.event == Event.id) &
+        (Event.term == term) &
+        (Event.isLaborOnly == True) &
+        (Event.deletionDate.is_null()) &
+        (Event.isCanceled == False))
+
+    CLTerm = Term.alias()
+    laborMembers = (
         CeltsLabor
-        .select(
-            fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
-            User.bnumber,
-            fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            fn.COUNT(fn.DISTINCT(Event.id)).alias('meetingsAttended')
-        )
+        .select(CeltsLabor.user_id)
+        .join(CLTerm, on=(CeltsLabor.term == CLTerm.id))
+        .where(
+            (CeltsLabor.term == term) |
+            ((CLTerm.academicYear == term.academicYear) & (CeltsLabor.isAcademicYear == True))
+        ))
+
+    laborQuery = (
+        CeltsLabor
+        .select(fullName, User.bnumber, email, meetingsAttended)
         .join(User)
         .switch(CeltsLabor)
-        .join(
-            EventParticipant,
-            JOIN.LEFT_OUTER,
-            on=(CeltsLabor.user == EventParticipant.user)
-        )
-        .join(
-            Event,
-            JOIN.LEFT_OUTER,
-            on=(
-                (EventParticipant.event == Event.id) &
-                (Event.term == term) &
-                (Event.isLaborOnly == True) &
-                (Event.deletionDate.is_null()) &
-                (Event.isCanceled == False)
-            )
-        )
-        .where(
-            (CeltsLabor.term == term)
-        )
-        .group_by(CeltsLabor.user)
-    )
+        .join(EventParticipant, JOIN.LEFT_OUTER, on=(CeltsLabor.user == EventParticipant.user))
+        .join(Event, JOIN.LEFT_OUTER,on=validEvent)
+        .where(CeltsLabor.user.in_(laborMembers))
+        .group_by(CeltsLabor.user))
 
-    nonLaborQuery = ( #so that non-labor attendees who are not in CeltsLabor also appear 
+    nonLaborQuery = (
         EventParticipant
-        .select(
-            fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName'),
-            User.bnumber,
-            fn.CONCAT(User.username, '@berea.edu').alias('email'),
-            fn.COUNT(fn.DISTINCT(EventParticipant.event_id)).alias('meetingsAttended')
-        )
+        .select(fullName, User.bnumber, email, meetingsAttended)
         .join(User)
         .switch(EventParticipant)
-        .join(
-            Event,
-            on=(
-                (EventParticipant.event == Event.id) &
-                (Event.term == term) &
-                (Event.isLaborOnly == True) &
-                (Event.deletionDate.is_null()) &
-                (Event.isCanceled == False)
-            )
-        )
-        .join(
-            CeltsLabor,
-            JOIN.LEFT_OUTER,
-            on=(EventParticipant.user == CeltsLabor.user) &
-                (CeltsLabor.term == term) 
-        )
-        .where(CeltsLabor.user.is_null())
-        .group_by(EventParticipant.user)
-    )
+        .join(Event,on=validEvent)
+        .where(EventParticipant.user.not_in(laborMembers))
+        .group_by(EventParticipant.user))
 
     query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
     columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
 
-    return (columns, query.tuples()) 
-
+    return (columns, query.tuples())
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
