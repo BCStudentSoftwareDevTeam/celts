@@ -208,6 +208,32 @@ def termParticipation(term):
 
     return dict(programParticipationDict)
 
+def graduatingSeniorsVolunteerHours(academicYear):
+    columns = ["Full Name", "Email", "B-Number", "Unique Volunteer Semesters", "Total Volunteer Hours"]
+
+    currentSeniors = (EventParticipant
+                    .select(EventParticipant.user_id)
+                    .join(User).switch(EventParticipant)
+                    .join(Event)
+                    .join(Term)
+                    .where(Term.academicYear == academicYear, User.rawClassLevel.in_(["Senior", "Graduating"]), Event.isService == True,
+                            Event.deletionDate == None, Event.isCanceled == False))
+
+    query = (EventParticipant
+            .select(fn.CONCAT(User.firstName, ' ', User.lastName),
+                    fn.CONCAT(User.username, '@berea.edu'),
+                    User.bnumber,
+                    fn.COUNT(fn.DISTINCT(Event.term)).alias("semester_count"),
+                    fn.SUM(EventParticipant.hoursEarned).alias("total_hours"))
+            .join(User).switch(EventParticipant)
+            .join(Event)
+            .where(Event.isService == True, Event.deletionDate == None, Event.isCanceled == False, EventParticipant.user_id.in_(currentSeniors))
+            .group_by(User.bnumber)
+            .having(fn.COUNT(fn.DISTINCT(Event.term)) >= 4)
+            .order_by(SQL("semester_count").desc()))
+
+    return (columns, query.tuples())
+
 
 def removeNullParticipants(participantList):
     return list(filter(lambda participant: participant, participantList))
@@ -273,6 +299,7 @@ def createSpreadsheet(academicYear):
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
+    makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
