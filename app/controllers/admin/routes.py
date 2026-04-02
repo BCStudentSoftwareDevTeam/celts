@@ -195,7 +195,30 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        # Existing RSVP-specific log entries
+        event_logs = list(EventRsvpLog.select(EventRsvpLog, User)
+                                    .join(User, on=(EventRsvpLog.createdBy == User.username))
+                                    .where(EventRsvpLog.event_id == eventId))
+
+        # Include invited users from EventRsvp so the log display reflects invitations too
+        invited_rsvps = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event == eventId)
+
+        from collections import namedtuple
+        LogEntry = namedtuple('LogEntry', ['createdOn', 'createdBy', 'rsvpLogContent'])
+
+        allLogs = []
+        allLogs.extend(event_logs)
+
+        for rsvp in invited_rsvps:
+            # Provide an explicit invitation action for EventRsvp records
+            allLogs.append(LogEntry(
+                createdOn=rsvp.rsvpTime,
+                createdBy=rsvp.user,
+                rsvpLogContent=f"Invited {rsvp.user.fullName} to event"
+            ))
+
+        allLogs.sort(key=lambda entry: entry.createdOn, reverse=True)
+
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
