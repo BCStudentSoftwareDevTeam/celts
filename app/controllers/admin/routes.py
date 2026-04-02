@@ -33,7 +33,7 @@ from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId, inviteCohortsToEvent, updateEventCohorts
-from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
+from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp, getTargetList
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
@@ -209,13 +209,15 @@ def rsvpLogDisplay(eventId):
         allLogs = []
         allLogs.extend(event_logs)
 
-        for rsvp in invited_rsvps:
-            # Provide an explicit invitation action for EventRsvp records
-            allLogs.append(LogEntry(
-                createdOn=rsvp.rsvpTime,
-                createdBy=rsvp.user,
-                rsvpLogContent=f"Invited {rsvp.user.fullName} to event"
-            ))
+        # Only add invitation logs for non-RSVP events, as for RSVP events, EventRsvp represents RSVPs, not invitations
+        if not event.isRsvpRequired:
+            for rsvp in invited_rsvps:
+                # Provide an explicit invitation action for EventRsvp records
+                allLogs.append(LogEntry(
+                    createdOn=rsvp.rsvpTime,
+                    createdBy=rsvp.user,
+                    rsvpLogContent=f"Invited {rsvp.user.fullName} to {getTargetList(event)}"
+                ))
 
         allLogs.sort(key=lambda entry: entry.createdOn, reverse=True)
 

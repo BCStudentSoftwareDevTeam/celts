@@ -65,7 +65,7 @@ def addBnumberAsParticipant(bnumber, eventId):
                     currentRsvp = getEventRsvpCountsForTerm(event.term)
                     waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else False
                     EventRsvp.create(user=kioskUser, event=event, rsvpWaitlist=waitlist)
-                    targetList = "the waitlist" if waitlist else "the RSVP list"
+                    targetList = getTargetList(event, waitlist)
                     try:
                         if g.current_user.username == kioskUser.username:
                             createRsvpLog(event.id, f"{kioskUser.fullName} joined {targetList}.")
@@ -85,6 +85,9 @@ def checkUserRsvp(user,  event):
 
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
+
+def getTargetList(event, waitlist=False):
+    return "the waitlist" if waitlist else "the Invited list" if not event.isRsvpRequired else "the RSVP list"
 
 def addPersonToEvent(user, event):
     """
