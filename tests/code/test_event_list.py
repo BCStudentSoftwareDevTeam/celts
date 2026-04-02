@@ -77,7 +77,7 @@ def test_getVolunteerOpportunities(training_events):
 @pytest.mark.integration
 def test_getUpcomingVolunteerOpportunitiesCount():
     with mainDB.atomic() as transaction: 
-        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("08/01/2021 05:00","%m/%d/%Y %H:%M")
         currentTestTerm = Term.get_by_id(5)
 
         # In case any events are put in term 5 in testData, put them into the past.

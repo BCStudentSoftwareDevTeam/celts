@@ -772,7 +772,7 @@ def test_deleteEvent():
 @pytest.mark.integration
 def test_upcomingEvents():
     with mainDB.atomic() as transaction:
-        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("08/01/2021 05:00","%m/%d/%Y %H:%M")
         dayBeforeTestDate = testDate - timedelta(days=1)
 
         # Create a user to run the tests with
@@ -1329,7 +1329,7 @@ def test_inviteCohortsToEvent():
         with app.app_context():
             g.current_user = "heggens"
             
-            testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
+            testDate = datetime.strptime("08/01/2025 05:00","%m/%d/%Y %H:%M")
             programEvent = Program.create(id = 13,
                                         programName = "Bonner Scholars",
                                         isBonnerScholars = True,
@@ -1362,7 +1362,7 @@ def test_updateEventCohorts():
         with app.app_context():
             g.current_user = "heggens"
             
-            testDate = datetime.strptime("2025-10-01 05:00","%Y-%m-%d %H:%M")
+            testDate = datetime.strptime("10/01/2025 05:00","%m/%d/%Y %H:%M")
             programEvent = Program.create(id = 13,
                                           programName = "Bonner Scholars",
                                           isBonnerScholars = True,
