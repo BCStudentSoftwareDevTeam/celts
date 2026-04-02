@@ -56,7 +56,8 @@ def getZeroHourEvents(username):
                       .where(EventParticipant.user == username,
                              EventParticipant.hoursEarned == 0,
                              Event.deletionDate == None,
-                             Event.isCanceled == False))
+                             Event.isCanceled == False)
+                      .order_by(Event.term))
     
     return list(zeroHourEvents)
 
