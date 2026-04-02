@@ -58,6 +58,7 @@
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
     {% set seen = [] %}
+    {% set combinedParticipants = attended + rsvp + waitlist %}
     {% for p in combinedParticipants %}
         {% set username = p.user.username %}
         {% if username not in seen %}
@@ -65,7 +66,7 @@
             {% set status = none %}
             {% if p in attended %}
                 {% set status = 'attended'%}
-            {% elif p in rsvp and event.isRsvpRequired %}
+            {% elif p in rsvp %}
                 {% set status = 'rsvp'%}
             {% elif p in waitlist %}
                 {% set status = 'waitlist'%}
