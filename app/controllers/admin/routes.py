@@ -216,7 +216,7 @@ def rsvpLogDisplay(eventId):
                 allLogs.append(LogEntry(
                     createdOn=rsvp.rsvpTime,
                     createdBy=rsvp.user,
-                    rsvpLogContent=f"Invited {rsvp.user.fullName} to {getTargetList(event)}"
+                    rsvpLogContent=f"Added {rsvp.user.fullName} to {getTargetList(event)}"
                 ))
 
         allLogs.sort(key=lambda entry: entry.createdOn, reverse=True)
