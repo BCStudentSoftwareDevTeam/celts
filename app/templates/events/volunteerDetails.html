@@ -60,16 +60,13 @@
     {% set seen = [] %}
     {% set combinedParticipants = attended + rsvp + waitlist %}
     {% for p in combinedParticipants | unique %}
-      {% if p in rsvp and not event.isRsvpRequired %}
-      {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
-      {% endif %}
-      {% if p in rsvp and event.isRsvpRequired %}
-          {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
-      {% endif %}
-      {% if p in attended%}
+      {% if p in attended %}
           {{createTable(p, 'attended') if type == 'table' else createCard(p, 'attended') }}
-      {% endif %}
-      {% if p in waitlist %}
+      {% elif p in rsvp and not event.isRsvpRequired %}
+      {{createTable(p, 'invited') if type == 'table' else createCard(p, 'invited') }}
+      {% elif p in rsvp and event.isRsvpRequired %}
+          {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
+      {% elif p in waitlist %}
           {{createTable(p, 'waitlisted') if type == 'table' else createCard(p, 'waitlisted') }}
       {% endif %}
     {% endfor %}

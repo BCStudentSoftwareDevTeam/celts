@@ -113,9 +113,10 @@ def volunteerDetailsPage(eventID):
                                                 .where(EventParticipant.event==event))
     
     
-    waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
-    rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
     attendedUser = list(set([obj for obj in eventParticipantData if not obj.rsvpWaitlist]))
+    attendedUserIds = {obj.user.id for obj in attendedUser}
+    waitlistUser = [obj for obj in eventRsvpData if obj.rsvpWaitlist and obj.user.id not in attendedUserIds]
+    rsvpUser = [obj for obj in eventRsvpData if not obj.rsvpWaitlist and obj.user.id not in attendedUserIds]
     
     return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
