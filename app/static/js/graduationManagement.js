@@ -136,7 +136,6 @@ $(document).ready(function() {
             success: function(response) {
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
                 const row = $(`tr[data-username="${username}"]`);
-                var currentPage = gradStudentsTable.page();
                 if (hasGraduated) {
                     row.data('status', 'alumni');
                     $(`#${username}ClassLevel`).text("Alumni");
@@ -148,8 +147,7 @@ $(document).ready(function() {
                     $(`#${username}ClassLevel`).text("Senior");
                     row.removeClass('hidden');
                 }
-                gradStudentsTable.draw();
-                gradStudentsTable.page(currentPage).draw(false);
+                gradStudentsTable.draw(false);
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);
