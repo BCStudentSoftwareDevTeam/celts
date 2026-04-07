@@ -119,8 +119,8 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data for each event in the series, inheriting from the original eventData
-
-    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(f"{x['eventDate']} {x['startTime']}",'%Y-%m-%d %H:%M'))
+    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
+ # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -175,7 +175,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     if attachmentFiles:
         for event in events:
             addFile = FileHandler(attachmentFiles, eventId=event.id)
-            addFile.saveFiles(saveOriginalFile=events[0])
+            addFile.saveFiles(parentEvent=events[0])
     return events, ""
 
 
@@ -253,7 +253,7 @@ def getEngagementEvents(term):
                                  .execute())
     return engagementEvents
 
-def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
@@ -267,8 +267,8 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
             (Event.deletionDate.is_null(True)) &
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
-            ((Event.startDate > currentTime) |
-             ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime))) &
+            ((Event.startDate > currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate.time()))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
@@ -276,6 +276,32 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
 
     programCountDict = {}
     for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
+
+def getPastVolunteerOpportunitiesCount(term, currentDate):
+    """
+        Return a count of all past events for each volunteer opportunities program.
+    """
+    
+    pastCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate < currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate.time()))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
+
+    programCountDict = {}
+    for programCount in pastCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
