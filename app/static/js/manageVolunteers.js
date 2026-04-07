@@ -160,7 +160,6 @@ $(document).ready(function() {
     });
   });
 
-
 $(".attendanceCheck").on("change", function() {
     // find checkbox/hours row
     let $row = $(this).closest("tr");
