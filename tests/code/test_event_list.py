@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getVolunteerOpportunities, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingVolunteerOpportunitiesCount
+from app.logic.events import getVolunteerOpportunities, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingVolunteerOpportunitiesCount, getPastVolunteerOpportunitiesCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -77,7 +77,7 @@ def test_getVolunteerOpportunities(training_events):
 @pytest.mark.integration
 def test_getUpcomingVolunteerOpportunitiesCount():
     with mainDB.atomic() as transaction: 
-        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("08/01/2021 05:00","%m/%d/%Y %H:%M")
         currentTestTerm = Term.get_by_id(5)
 
         # In case any events are put in term 5 in testData, put them into the past.
@@ -151,6 +151,91 @@ def test_getUpcomingVolunteerOpportunitiesCount():
         
         upcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(currentTestTerm, testDate)
         assert upcomingVolunteerOpportunities == {2:1, 3:1}
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getPastVolunteerOpportunitiesCount():
+    with mainDB.atomic() as transaction:
+        testDate = datetime.strptime("2021-08-01 05:00", "%Y-%m-%d %H:%M")
+        currentTestTerm = Term.get_by_id(5)
+
+        # Move any existing term-5 events into the future
+        Event.update(startDate=date(2021, 8, 5)).where(Event.term_id == 5).execute()
+
+        # Past Volunteer Opportunity (AGP)
+        pastAgpEvent = Event.create(
+            name="Test past AGP event",
+            term=currentTestTerm,
+            description="Past volunteer opportunity (AGP).",
+            timeStart="03:00:00",
+            timeEnd="04:00:00",
+            location="Mars",
+            isTraining=False,
+            isService=True,
+            startDate="2021-07-31",
+            program=3
+        )
+
+        # Past Volunteer Opportunity (same day, before test time)
+        Event.create(
+            name="Test same-day past AGP event",
+            term=currentTestTerm,
+            description="Same day but earlier time.",
+            timeStart="04:00:00",
+            timeEnd="04:30:00",
+            location="Venus",
+            isTraining=False,
+            isService=True,
+            startDate="2021-08-01",
+            program=3
+        )
+
+        # Future Volunteer Opportunity (should NOT be counted)
+        Event.create(
+            name="Test future AGP event",
+            term=currentTestTerm,
+            description="Future volunteer opportunity.",
+            timeStart="06:00:00",
+            timeEnd="07:00:00",
+            location="Moon",
+            isTraining=False,
+            isService=True,
+            startDate="2021-08-02",
+            program=3
+        )
+
+        # Verify two past AGP events
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {3: 2}
+
+        # Cancel one past event → should reduce count
+        Event.update(isCanceled=True).where(Event.id == pastAgpEvent.id).execute()
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {3: 1}
+
+        # Create past event for another program (Buddies)
+        pastBuddiesEvent = Event.create(
+            name="Test past Buddies event",
+            term=currentTestTerm,
+            description="Past volunteer opportunity (Buddies).",
+            timeStart="02:00:00",
+            timeEnd="03:00:00",
+            location="Earth",
+            isTraining=False,
+            isService=True,
+            startDate="2021-07-30",
+            program=2
+        )
+
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {2: 1, 3: 1}
 
         transaction.rollback()
 
