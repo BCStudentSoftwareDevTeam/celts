@@ -107,6 +107,10 @@ def addPersonToEvent(user, event):
                 if not volunteerExists:
                     eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                     EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+                    # try:
+                        createRsvpLog(event.id, f"Marked {user.fullName} as attended.")
+                    except Exception:
+                        pass
             else:
                 if not rsvpExists:
                     currentRsvp = getEventRsvpCountsForTerm(event.term)
@@ -124,6 +128,10 @@ def addPersonToEvent(user, event):
                 if not volunteerExists:
                     eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                     EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+                    try:
+                        createRsvpLog(event.id, f"Marked {user.fullName} as attended.")
+                    except Exception:
+                        pass
             else:
                 # Before event: create EventRsvp (invited status)
                 if not rsvpExists:
