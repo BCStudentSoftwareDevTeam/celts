@@ -107,7 +107,7 @@ def addPersonToEvent(user, event):
                 if not volunteerExists:
                     eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                     EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
-                    # try:
+                    try:
                         createRsvpLog(event.id, f"Marked {user.fullName} as attended.")
                     except Exception:
                         pass
