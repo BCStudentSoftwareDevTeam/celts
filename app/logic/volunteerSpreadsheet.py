@@ -212,25 +212,32 @@ def graduatingSeniorsVolunteerHours(academicYear):
     columns = ["Full Name", "Email", "B-Number", "Unique Volunteer Semesters", "Total Volunteer Hours"]
 
     currentSeniors = (EventParticipant
-                    .select(EventParticipant.user_id)
-                    .join(User).switch(EventParticipant)
-                    .join(Event)
-                    .join(Term)
-                    .where(Term.academicYear == academicYear, User.rawClassLevel.in_(["Senior", "Graduating"]), Event.isService == True,
-                            Event.deletionDate == None, Event.isCanceled == False))
+                     .select(EventParticipant.user_id)
+                     .join(User).switch(EventParticipant)
+                     .join(Event)
+                     .join(Term)
+                     .where(Term.academicYear == academicYear,
+                            User.rawClassLevel.in_(["Senior", "Graduating"]),
+                            Event.isService == True,
+                            Event.deletionDate == None,
+                            Event.isCanceled == False)
+                     .tuples())
 
     query = (EventParticipant
-            .select(fn.CONCAT(User.firstName, ' ', User.lastName),
-                    fn.CONCAT(User.username, '@berea.edu'),
-                    User.bnumber,
-                    fn.COUNT(fn.DISTINCT(Event.term)).alias("semester_count"),
-                    fn.SUM(EventParticipant.hoursEarned).alias("total_hours"))
-            .join(User).switch(EventParticipant)
-            .join(Event)
-            .where(Event.isService == True, Event.deletionDate == None, Event.isCanceled == False, EventParticipant.user_id.in_(currentSeniors))
-            .group_by(User.bnumber)
-            .having(fn.COUNT(fn.DISTINCT(Event.term)) >= 4)
-            .order_by(SQL("semester_count").desc()))
+             .select(fn.CONCAT(User.firstName, ' ', User.lastName),
+                     fn.CONCAT(User.username, '@berea.edu'),
+                     User.bnumber,
+                     fn.COUNT(fn.DISTINCT(Event.term)).alias("semester_count"),
+                     fn.SUM(EventParticipant.hoursEarned).alias("total_hours"))
+             .join(User).switch(EventParticipant)
+             .join(Event)
+             .where(Event.isService == True,
+                    Event.deletionDate == None,
+                    Event.isCanceled == False,
+                    EventParticipant.user_id.in_(currentSeniors))
+             .group_by(User.bnumber)
+             .having(fn.COUNT(fn.DISTINCT(Event.term)) >= 4)
+             .order_by(SQL("semester_count").desc()))
 
     return (columns, query.tuples())
 
