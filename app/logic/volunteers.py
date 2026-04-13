@@ -6,7 +6,7 @@ from app.models.program import Program
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
-from app.logic.createLogs import createActivityLog
+from app.logic.createLogs import createActivityLog, createRsvpLog
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -46,6 +46,10 @@ def updateEventParticipants(participantData):
                                       .execute())
                 else:
                     EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
+                    try:
+                        createRsvpLog(event.id, f"Marked {userObject.fullName} as attended.")
+                    except Exception:
+                        pass
             else:
                 ((EventParticipant.delete()
                                   .where(EventParticipant.user==userObject.username, EventParticipant.event==event.id))
