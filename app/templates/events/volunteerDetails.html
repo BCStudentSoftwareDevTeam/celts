@@ -59,7 +59,6 @@
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
     {% set seen = [] %}
     {% set combinedParticipants = attended + rsvp + waitlist %}
-<<<<<<< HEAD
     {% for p in combinedParticipants | unique %}
       {% if p in attended %}
           {{createTable(p, 'attended') if type == 'table' else createCard(p, 'attended') }}
@@ -70,28 +69,7 @@
       {% elif p in waitlist %}
           {{createTable(p, 'waitlisted') if type == 'table' else createCard(p, 'waitlisted') }}
       {% endif %}
-=======
-    {% for p in combinedParticipants %}
-        {% set username = p.user.username %}
-        {% if username not in seen %}
-            {% set _ = seen.append(username) %}
-            {% set status = none %}
-            {% if p in attended %}
-                {% set status = 'attended'%}
-            {% elif p in rsvp %}
-                {% set status = 'rsvp'%}
-            {% elif p in waitlist %}
-                {% set status = 'waitlist'%}
-            {% endif %}
-            {% if status %}
-                {% if type == 'card' %}
-                    {{ createCard(p, status) }}
-                {% elif type == 'table' %}
-                    {{ createTable(p, status) }}
-                {% endif %}
-            {% endif %}
-        {% endif %}
->>>>>>> 00969230e5d6ad117348383fe467c68ae96700f3
+
     {% endfor %}
 {% endmacro %}
 
