@@ -122,7 +122,7 @@ $(document).ready(function() {
     }
     
     function redrawTable() {
-        gradStudentsTable.draw();  
+        gradStudentsTable.draw();
     }
 
     function checkboxClickHandler() {
