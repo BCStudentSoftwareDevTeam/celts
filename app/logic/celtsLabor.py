@@ -7,23 +7,23 @@ from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
 from app.models.term import Term
 
-def getCeltsLaborFromLsf():
-    """
-        Make a call to the LSF endpoint which returns all CELTS student labor records. 
+# def getCeltsLaborFromLsf():
+#     """
+#         Make a call to the LSF endpoint which returns all CELTS student labor records. 
 
-        The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
+#         The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
 
-    """
-    try: 
-        lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
-        response = requests.get(lsfUrl)
-        return response.json()
-    except json.decoder.JSONDecodeError: 
-        print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
-        return {}
-    except KeyError as e: 
-        print(f'Make sure you have "lsf_url" set in your local-override config file.')
-        raise(e)
+#     """
+#     try: 
+#         lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
+#         response = requests.get(lsfUrl)
+#         return response.json()
+#     except json.decoder.JSONDecodeError: 
+#         print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
+#         return {}
+#     except KeyError as e: 
+#         print(f'Make sure you have "lsf_url" set in your local-override config file.')
+#         raise(e)
 
 def updateCeltsLaborFromLsf():
     """
@@ -45,28 +45,28 @@ def updateCeltsLaborFromLsf():
                          'wls': 'WLS Lvl',
                          'termName': 'Term Name'}]}
     """
-    laborDict = getCeltsLaborFromLsf()
-    # laborDict = {
-    #     'B00774270': [
-    #         {
-    #             'jobType': 'Primary',
-    #             'laborEnd': '2025-12-13',
-    #             'laborStart': '2025-08-19',
-    #             'positionTitle': 'Hispanic Outreach Associate',
-    #             'termCode': 202400,
-    #             'termName': 'Fall 2024',
-    #             'wls': '4'
-    #         }            
-    #     ]
-    # }
+    # laborDict = getCeltsLaborFromLsf()
+
+    laborDict = { 'B00794020': [
+            {
+                'jobType': 'Primary',
+                'laborEnd': '2025-12-13',
+                'laborStart': '2025-08-19',
+                'positionTitle': 'Hispanic Outreach Associate',
+                'termCode': 202400,
+                'termName': 'Fall 2024',
+                'wls': '4'
+            }            
+        ]
+    }
     
     studentLaborDict = {}
     for key, value in laborDict.items(): 
         try: 
-            username = User.get(bnumber=key)
-            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13","11"]])
-        except DoesNotExist:
-            print(f"No user found for bnumber: {key}")  # debug
+            username = User.get(bnumber = key)
+            # All term codes for summer end with 13 and all term codes for an academic year end in 00 and those are the only terms we want to record.
+            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","11","13"]])
+        except DoesNotExist: 
             pass
 
     refreshCeltsLaborRecords(studentLaborDict)
@@ -122,63 +122,24 @@ def refreshCeltsLaborRecords(laborDict):
                                        "term": laborTerm,
                                        "isAcademicYear": isAcademicYear})    
                 except DoesNotExist:
-                    print(f"No term found for: '{term}'")  # debug
                     pass
 
-    print("FINAL DATA:", celtsLabor)  # should NOT be empty
-    
-    # CeltsLabor.delete().where(CeltsLabor.user << [entry['user'] for entry in celtsLabor]).execute()
-    CeltsLabor.insert_many(celtsLabor).execute()  # fixed
-    # CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
+    print("FINAL DATA:", celtsLabor)            
+    if CeltsLabor:
+        CeltsLabor.insert_many(celtsLabor).on_conflict_ignore().execute()
     print("FINAL DATA:", celtsLabor)
     
-# def getCeltsLaborHistory(volunteer):
-    
-#     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
-#                                               Term.description, 
-#                                               Term.academicYear, 
-#                                               Term.isSummer)
-#                                       .join(Term, on=(CeltsLabor.term == Term.id))
-#                                       .where(CeltsLabor.user == volunteer))
-                                     
-    
-#     laborHistoryDict= {}
-#     for position in laborHistoryList: 
-#         laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
-
-#     return laborHistoryDict
-# def getCeltsLaborHistory(volunteer):
-    
-#     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
-#                                               Term.description, 
-#                                               Term.academicYear, 
-#                                               Term.isSummer)
-#                                       .join(Term, on=(CeltsLabor.term == Term.id))
-#                                       .where(CeltsLabor.user == volunteer)
-#                                       .group_by(CeltsLabor.positionTitle,
-#                                                 Term.description,
-#                                                 Term.academicYear,
-#                                                 Term.isSummer)
-#                                                 .namedtuples())
-    
-#     laborHistoryDict= {}
-#     for position in laborHistoryList: 
-#         laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
-
-#     return laborHistoryDict
 def getCeltsLaborHistory(volunteer):
     
     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
-                                              CeltsLabor.isAcademicYear,
                                               Term.description, 
                                               Term.academicYear, 
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
-                                      .where(CeltsLabor.user == volunteer)
-                                      .namedtuples())
+                                      .where(CeltsLabor.user == volunteer))
     
-    laborHistoryDict = {}
+    laborHistoryDict= {}
     for position in laborHistoryList: 
-        laborHistoryDict[position.positionTitle] = position.description if position.isSummer else position.academicYear
+        laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
 
     return laborHistoryDict
