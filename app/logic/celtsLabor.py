@@ -7,23 +7,23 @@ from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
 from app.models.term import Term
 
-# def getCeltsLaborFromLsf():
-#     """
-#         Make a call to the LSF endpoint which returns all CELTS student labor records. 
+def getCeltsLaborFromLsf():
+    """
+        Make a call to the LSF endpoint which returns all CELTS student labor records. 
 
-#         The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
+        The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
 
-#     """
-#     try: 
-#         lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
-#         response = requests.get(lsfUrl)
-#         return response.json()
-#     except json.decoder.JSONDecodeError: 
-#         print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
-#         return {}
-#     except KeyError as e: 
-#         print(f'Make sure you have "lsf_url" set in your local-override config file.')
-#         raise(e)
+    """
+    try: 
+        lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
+        response = requests.get(lsfUrl)
+        return response.json()
+    except json.decoder.JSONDecodeError: 
+        print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
+        return {}
+    except KeyError as e: 
+        print(f'Make sure you have "lsf_url" set in your local-override config file.')
+        raise(e)
 
 def updateCeltsLaborFromLsf():
     """
@@ -46,8 +46,20 @@ def updateCeltsLaborFromLsf():
                          'termName': 'Term Name'}]}
     """
     # laborDict = getCeltsLaborFromLsf()
-
+    # print("your the badest:", laborDict)  
+    # print("panorama:", type(laborDict))        
     laborDict = { 'B00794020': [
+            {
+                'jobType': 'Primary',
+                'laborEnd': '2025-12-13',
+                'laborStart': '2025-08-19',
+                'positionTitle': 'Hispanic Outreach Associate',
+                'termCode': 202400,
+                'termName': 'Fall 2024',
+                'wls': '4'
+            }            
+        ],
+        'b00815939': [
             {
                 'jobType': 'Primary',
                 'laborEnd': '2025-12-13',
@@ -64,10 +76,17 @@ def updateCeltsLaborFromLsf():
     for key, value in laborDict.items(): 
         try: 
             username = User.get(bnumber = key)
+            print(f"found user: {username} for key: {key}")
             # All term codes for summer end with 13 and all term codes for an academic year end in 00 and those are the only terms we want to record.
-            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","11","13"]])
+            filtered = [p for p in value if str(p["termCode"])[-2:] in ["00","11"]]
+            print(f"filterd positions: {filtered}")
+            studentLaborDict[username] = collapsePositions(filtered)
         except DoesNotExist: 
-            pass
+            print(f"user not found for bnumber: {key}")
+
+        print ("final labordict:", studentLaborDict)
+
+   
 
     refreshCeltsLaborRecords(studentLaborDict)
 
@@ -125,7 +144,7 @@ def refreshCeltsLaborRecords(laborDict):
                     pass
 
     print("FINAL DATA:", celtsLabor)            
-    if CeltsLabor:
+    if celtsLabor:
         CeltsLabor.insert_many(celtsLabor).on_conflict_ignore().execute()
     print("FINAL DATA:", celtsLabor)
     

@@ -23,7 +23,7 @@ ldap:
     user: "BPLP"
     password: "OVERRIDE"
 
-lsf_url: "http://172.18.0.2:8080"
+lsf_url: "http://172.19.0.2:5001"
   
 files:
   base_path: 'app/static/files'
