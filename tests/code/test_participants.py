@@ -13,7 +13,7 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.participants import getTargetList, unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
 from app.models.eventRsvp import EventRsvp
 
 
@@ -141,6 +141,28 @@ def test_addPersonToEvent():
             assert addWaitlist == True
             assert len(rsvpWaitlist) == 1
             assert len(rsvpNoWaitlist) == 1
+        
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getTargetList():
+    with mainDB.atomic() as transaction:
+        current_term = Term.get(Term.isCurrentTerm == True)
+        
+        # Test case 1: waitlist=True should always return "the waitlist"
+        event_rsvp = Event.create(term=current_term, program=9, isRsvpRequired=True)
+        assert getTargetList(event_rsvp, waitlist=True) == "the waitlist"
+        
+        event_invited = Event.create(term=current_term, program=9, isRsvpRequired=False)
+        assert getTargetList(event_invited, waitlist=True) == "the waitlist"
+        
+        # Test case 2: waitlist=False and isRsvpRequired=False should return "the Invited list"
+        assert event_invited.isRsvpRequired == False  # Ensure the event has RSVP not required
+        assert getTargetList(event_invited, waitlist=False) == "the Invited list"
+        
+        # Test case 3: waitlist=False and isRsvpRequired=True should return "the RSVP list"
+        assert event_rsvp.isRsvpRequired == True  # Ensure the event has RSVP required
+        assert getTargetList(event_rsvp, waitlist=False) == "the RSVP list"
         
         transaction.rollback()
 
