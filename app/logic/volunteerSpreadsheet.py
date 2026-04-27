@@ -251,7 +251,6 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
-
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataTuples) = sheetData
