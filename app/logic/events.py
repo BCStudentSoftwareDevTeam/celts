@@ -409,12 +409,8 @@ def getParticipatedEventsForUser(user):
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
-    for v in allVolunteer:
-        print("SSSSSS", v)
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType).order_by(union.c.startDate, union.c.name).execute())
-    for events in unionParticipationWithVolunteer:
-        print(events.__dict__, "lele")
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
