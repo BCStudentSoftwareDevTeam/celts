@@ -51,15 +51,16 @@ $(document).ready(function () {
 			let checkboxId = this.id;
 			if ($('#' + checkboxId).is(':checked')) {
 				$("#volunteerInformationCardToPrint ." + checkboxId).show();
+				$("#volunteerInformationTableToPrint ." + checkboxId).show();
 			} else {
 				$("#volunteerInformationCardToPrint ." + checkboxId).hide();
+				$("#volunteerInformationTableToPrint ." + checkboxId).hide();
 			}
-			});
+		});
 		hideDuplicateVolunteers()
 		volunteerInfoTable.page('first').draw(false);
 
 	}
-	
 	function sortVolunteers() {
 		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
 		let entriesTable = sortedTable.find(".volunteerInfoEntries");
@@ -72,7 +73,6 @@ $(document).ready(function () {
 	
 		entriesCards.appendTo(sortedCards);
 	};
-
 	var volunteerInfoTable = $('#volunteerInformationTableToPrint').DataTable({pageLength: 10,order: [[0, 'asc']]});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
