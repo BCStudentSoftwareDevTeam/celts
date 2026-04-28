@@ -47,12 +47,19 @@ def getBaseQuery(academicYear):
 def getUniqueVolunteers(academicYear):
     base = getBaseQuery(academicYear)
 
-    columns = ["Full Name", "Email", "B-Number"]
-    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'), fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"), User.bnumber)
-                 .where(Event.isService == True)).alias('subq')
-    query = Select().from_(subquery).select(subquery.c.fullname, fn.CONCAT(subquery.c.user_id,'@berea.edu'), subquery.c.bnumber)
+    columns = ["Full Name", "Email", "B-Number", "Term"]
+    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'),
+                            fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
+                            User.bnumber,
+                            Term.description.alias("term"))
+                    .where(Event.isService == True)).alias('subq')
 
-    return (columns,query.tuples().execute(mainDB))
+    query = Select().from_(subquery).select(subquery.c.fullname, 
+                                            fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
+                                            subquery.c.bnumber,
+                                            subquery.c.term)
+
+    return (columns, query.tuples().execute(mainDB))
 
 
 def volunteerProgramHours(academicYear):
@@ -303,7 +310,7 @@ def createSpreadsheet(academicYear):
     makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
     makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
     makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
-    makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
+    makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event per term during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
     makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
