@@ -5,6 +5,15 @@ $(document).ready(function () {
     }).get();
 	users = new Set(users);
 	users = [... users]
+
+	const columnMap = {
+		phoneSelect: 1,
+		emailSelect: 2,
+		statusSelect: 3,
+		dietRestrictionSelect: 4,
+		emergencyContactSelect: 5,
+		insuranceSelect: 6,
+	};
 	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint_wrapper").toggle()
