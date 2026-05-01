@@ -73,17 +73,19 @@ $(document).ready(function () {
     }
 
 	function sortVolunteers() {
-		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
-		let entriesTable = sortedTable.find(".volunteerInfoEntries");
-	
-		entriesTable.sort(function (a, b) {
-			let textA = a.getElementsByClassName('nameSelect')[0].innerText
-			let textB = b.getElementsByClassName('nameSelect')[0].innerText
-			return textA.localeCompare(textB);
-		});
-	
-		entriesCards.appendTo(sortedCards);
-	};
+        let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
+        let entriesTable = sortedTable.find(".volunteerInfoEntries");
+   
+        entriesTable.sort(function (a, b) {
+            let textA = a.getElementsByClassName('nameSelect')[0].innerText
+            let textB = b.getElementsByClassName('nameSelect')[0].innerText
+            return textA.localeCompare(textB);
+        });
+        let sortedCards = $("#volunteerInformationCardToPrint .sort-here");
+        let entriesCards = sortedCards.find(".volunteerInfoEntries");
+        entriesCards.appendTo(sortedCards);
+    };
+
 	var volunteerInfoTable = $('#volunteerInformationTableToPrint').DataTable({pageLength: 10,order: [[0, 'asc']]});
 	getCheckBoxes()
 	hideDuplicateVolunteers()
