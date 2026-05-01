@@ -58,19 +58,7 @@ def updateCeltsLaborFromLsf():
                 'termName': 'Fall 2024',
                 'wls': '4'
             }            
-        ],
-        'b00815939': [
-            {
-                'jobType': 'Primary',
-                'laborEnd': '2025-12-13',
-                'laborStart': '2025-08-19',
-                'positionTitle': 'Hispanic Outreach Associate',
-                'termCode': 202400,
-                'termName': 'Fall 2024',
-                'wls': '4'
-            }            
-        ]
-    }
+        ]    }
     
     studentLaborDict = {}
     for key, value in laborDict.items(): 
