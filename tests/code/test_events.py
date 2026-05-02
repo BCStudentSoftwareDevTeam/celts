@@ -1085,6 +1085,21 @@ def test_getParticipatedEventsForUser_participated_types():
             program=program
         )
 
+        allVolunteerTrainingEvent = Event.create(
+            name="All Volunteer Training",
+            term=2,
+            description="All volunteer training event",
+            timeStart="18:00:00",
+            timeEnd="21:00:00",
+            location="The moon",
+            startDate="2021-12-15",
+            isAllVolunteerTraining=True,
+            isLaborOnly=False,
+            isService=False,
+            program=program
+        )
+
+        EventParticipant.create(user=user, event=allVolunteerTrainingEvent)
         EventParticipant.create(user=user, event=laborEvent)
         EventParticipant.create(user=user, event=volunteerEvent)
         EventParticipant.create(user=user, event=laborVolunteerEvent)
@@ -1098,6 +1113,7 @@ def test_getParticipatedEventsForUser_participated_types():
         assert participatedTypes["Labor shift"] == "Labor"
         assert participatedTypes["Volunteer event"] == "Volunteer"
         assert participatedTypes["Labor volunteer event"] == "Labor & Volunteer"
+        assert participatedTypes["All Volunteer Training"] == "Volunteer"
 
         transaction.rollback()
 
