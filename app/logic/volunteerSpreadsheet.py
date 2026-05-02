@@ -5,6 +5,7 @@ from collections import defaultdict
 from datetime import date, datetime,time
 from app import app
 from app.models import mainDB
+from app.models.celtsLabor import CeltsLabor
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.program import Program
@@ -225,6 +226,52 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
+def laborAttendanceByTerm(term):
+    fullName = fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName')
+    email = fn.CONCAT(User.username, '@berea.edu').alias('email')
+    meetingsAttended = fn.COUNT(fn.DISTINCT(Event.id)).alias('meetingsAttended')
+
+    validEvent = (
+        (EventParticipant.event == Event.id) &
+        (Event.term == term) &
+        (Event.isLaborOnly == True) &
+        (Event.deletionDate.is_null()) &
+        (Event.isCanceled == False))
+
+    CLTerm = Term.alias()
+    laborMembers = (
+        CeltsLabor
+        .select(fn.DISTINCT(CeltsLabor.user_id))
+        .join(CLTerm, on=(CeltsLabor.term == CLTerm.id))
+        .where(
+            (CeltsLabor.term == term) |
+            ((CLTerm.academicYear == term.academicYear) & (CeltsLabor.isAcademicYear == True))
+        ))
+
+    laborQuery = (
+        CeltsLabor
+        .select(fullName, User.bnumber, email, meetingsAttended)
+        .join(User)
+        .switch(CeltsLabor)
+        .join(EventParticipant, JOIN.LEFT_OUTER, on=(CeltsLabor.user == EventParticipant.user))
+        .join(Event, JOIN.LEFT_OUTER,on=validEvent)
+        .where(CeltsLabor.user.in_(laborMembers))
+        .group_by(CeltsLabor.user))
+
+    nonLaborQuery = (
+        EventParticipant
+        .select(fullName, User.bnumber, email, meetingsAttended)
+        .join(User)
+        .switch(EventParticipant)
+        .join(Event,on=validEvent)
+        .where(EventParticipant.user.not_in(laborMembers))
+        .group_by(EventParticipant.user))
+
+    query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
+    columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
+
+    return (columns, query.tuples())
+
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataTuples) = sheetData
@@ -270,9 +317,12 @@ def createSpreadsheet(academicYear):
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-
+    
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
+    makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    
     makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
     makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
 

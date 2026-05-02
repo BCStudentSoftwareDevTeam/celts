@@ -4,6 +4,7 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
+from app.models.celtsLabor import CeltsLabor
 from app.logic.volunteerSpreadsheet import *
 from app.models.program import Program
 from app.models.event import Event
@@ -32,7 +33,8 @@ def fixture_info():
             startDate=date(2023, 9, 1),
             isCanceled=False,
             deletionDate=None,
-            isService=True
+            isService=True,
+            isLaborOnly=True
         )
         event2 = Event.create(
             name='Event2',
@@ -41,7 +43,8 @@ def fixture_info():
             startDate=date(2023, 9, 10),
             isCanceled=False,
             deletionDate=None,
-            isService=True
+            isService=True,
+            isLaborOnly=True
         )
         event3 = Event.create(
             name='Event3',
@@ -62,6 +65,10 @@ def fixture_info():
             isService=True
         )
 
+        labor1 = CeltsLabor.create(user=user1, term=term1, positionTitle="test position 1", isAcademicYear=True)
+        labor2 = CeltsLabor.create(user=user2, term=term1, positionTitle="test position 2", isAcademicYear=True)
+        labor3 = CeltsLabor.create(user=user1, term=term2, positionTitle="test position 3", isAcademicYear=True)
+        labor4 = CeltsLabor.create(user=user2, term=term2, positionTitle="test position 4", isAcademicYear=True)
 
         eventparticipant1 = EventParticipant.create(event=event1, user=user1, hoursEarned=5)
         eventparticipant2 = EventParticipant.create(event=event1, user=user2, hoursEarned=3)
@@ -86,6 +93,10 @@ def fixture_info():
             'eventparticipant1': eventparticipant1,
             'eventparticipant2': eventparticipant2,
             'eventparticipant4': eventparticipant4,
+            'labor1': labor1,
+            'labor2': labor2,
+            'labor3': labor3,
+            'labor4': labor4
         }
 
         transaction.rollback()
@@ -683,5 +694,53 @@ def test_getUniqueVolunteers(fixture_info):
         ("Test Tester", "testt@berea.edu", "B55555"),
     ])
 
+@pytest.mark.integration
+def test_laborAttendanceByTerm(fixture_info):
+    columns, results = laborAttendanceByTerm(fixture_info['term1'])
+    results = list(results)
 
+    assert columns == ("Full Name", "B-Number", "Email", "Meetings Attended")
 
+    assert len(results) == 2
+    assert ("John Doe", "B774377", "doej@berea.edu", 1) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
+
+    columns, results = laborAttendanceByTerm(fixture_info['term2'])
+    results = list(results)
+
+    assert len(results) == 2
+    assert ("John Doe", "B774377", "doej@berea.edu", 0) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 0) in results
+
+    columns, results = laborAttendanceByTerm(fixture_info['term3'])
+    results = list(results)
+
+    assert len(results) == 2
+    assert ("John Doe", "B774377", "doej@berea.edu", 0) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 0) in results
+
+    EventParticipant.create(event=fixture_info['event2'], user=fixture_info['user1'], hoursEarned=1)
+
+    columns, results = laborAttendanceByTerm(fixture_info['term1'])
+    results = list(results)
+
+    assert len(results) == 2
+    assert ("John Doe", "B774377", "doej@berea.edu", 2) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
+
+    EventParticipant.create(event=fixture_info['event1'], user=fixture_info['user3'], hoursEarned=1)
+
+    columns, results = laborAttendanceByTerm(fixture_info['term1'])
+    results = list(results)
+
+    assert len(results) == 3
+    assert ("John Doe", "B774377", "doej@berea.edu", 2) in results
+    assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
+    assert ("Bob Builder", "B00700932", "builderb@berea.edu", 1) in results
+
+    EventParticipant.create(event=fixture_info['event3'], user=fixture_info['user1'], hoursEarned=2)
+
+    columns, results = laborAttendanceByTerm(fixture_info['term1'])
+    results = list(results)
+
+    assert ("John Doe", "B774377", "doej@berea.edu", 2) in results
