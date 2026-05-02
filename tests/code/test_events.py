@@ -1024,7 +1024,7 @@ def test_calculateNewSeriesId():
     assert calculateNewSeriesId() == maxSeriesId
 
 @pytest.mark.integration
-def test_getParticipatedEventsForUser_participated_types():
+def test_getParticipatedEventsForUser_participatedTypes():
     with mainDB.atomic() as transaction:
         user = User.create(
             username='usrtst2',
