@@ -224,11 +224,7 @@ def graduatingSeniorsVolunteerHours(academicYear):
                      .join(Event)
                      .join(Term)
                      .where(Term.academicYear == academicYear,
-                            User.rawClassLevel.in_(["Senior", "Graduating"]),
-                            Event.isService == True,
-                            Event.deletionDate == None,
-                            Event.isCanceled == False)
-                     .tuples())
+                            User.rawClassLevel.in_(["Senior", "Graduating"])))
 
     query = (EventParticipant
              .select(fn.CONCAT(User.firstName, ' ', User.lastName),
