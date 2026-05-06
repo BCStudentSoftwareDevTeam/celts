@@ -372,17 +372,12 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     assert columns == ["Full Name", "Email", "B-Number", "Unique Volunteer Semesters", "Total Volunteer Hours"]
     assert list(rows) == []
 
-    # Create all terms with -test suffix so we don't touch real data
-    term_bob_current = Term.create(description='Fall 2024 Test', academicYear='2024-2025-test')
     term5 = Term.create(description='Fall 2021 Test', academicYear='2021-2022-test')
     term6 = Term.create(description='Spring 2022 Test', academicYear='2021-2022-test')
     term7 = Term.create(description='Fall 2022 Test', academicYear='2022-2023-test')
 
     program5 = Program.create(programName='Program5')
 
-    # Bob needs a service event in 2024-2025-test so currentSeniors subquery finds him
-    eventBobCurrent = Event.create(name='EventBobCurrent', term=term_bob_current, program=program5,
-                                   startDate=date(2024, 9, 1), isCanceled=False, deletionDate=None, isService=True)
     event5 = Event.create(name='Event5', term=term5, program=program5, startDate=date(2021, 9, 1),
                           isCanceled=False, deletionDate=None, isService=True)
     event6 = Event.create(name='Event6', term=term6, program=program5, startDate=date(2022, 2, 1),
@@ -390,23 +385,33 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     event7 = Event.create(name='Event7', term=term7, program=program5, startDate=date(2022, 9, 1),
                           isCanceled=False, deletionDate=None, isService=True)
 
-    # Give Bob 4 unique semesters of service including one in 2024-2025-test
-    EventParticipant.create(user=fixture_info['user3'], event=eventBobCurrent, hoursEarned=2)
+    # Bob is a Senior with 3 unique service semesters, which means he should NOT appear in the list
     EventParticipant.create(user=fixture_info['user3'], event=event5, hoursEarned=2)
     EventParticipant.create(user=fixture_info['user3'], event=event6, hoursEarned=3)
     EventParticipant.create(user=fixture_info['user3'], event=event7, hoursEarned=4)
 
     # Bob now has 4 unique semesters total, and is a Senior in 2024-2025-test
     columns, rows = graduatingSeniorsVolunteerHours("2024-2025-test")
+    assert list(rows) == []
+
+    # Add a 4th unique semester for Bob. So now he should appear regardless of academic year queried
+    termBobUnique = Term.create(description='Spring 2023 Test', academicYear='2022-2023-test')
+    eventBobUnique = Event.create(name='EventBob4th', term=termBobUnique, program=program5,
+                                 startDate=date(2023, 2, 1), isCanceled=False, deletionDate=None, isService=True)
+    EventParticipant.create(user=fixture_info['user3'], event=eventBobUnique, hoursEarned=2)
+
+    # Bob now appears for ANY academic year since we only check rawClassLevel
+    columns, rows = graduatingSeniorsVolunteerHours("2024-2025-test")
     result = list(rows)
     assert len(result) == 1
     assert result[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 4, 11.0)
 
-    # Bob should NOT appear when querying a year where he is not a Senior
     columns, rows = graduatingSeniorsVolunteerHours("2023-2024-test")
-    assert list(rows) == []
+    result = list(rows)
+    assert len(result) == 1
+    assert result[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 4, 11.0)
 
-    # non-senior students should never appear even with enough semesters
+    # Non-senior students should never appear even with enough semesters
     extraTerm = Term.create(description='Spring 2021 Test', academicYear='2020-2021-test')
     extraTerm2 = Term.create(description='Fall 2020 Test', academicYear='2020-2021-test')
     extraTerm3 = Term.create(description='Spring 2020 Test', academicYear='2019-2020-test')
@@ -418,13 +423,15 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     event10 = Event.create(name='Event10', term=extraTerm3, program=program5, startDate=date(2020, 2, 1),
                            isCanceled=False, deletionDate=None, isService=True)
 
-    # Give John (Sophomore) 4 unique semesters — should never appear
+    # Give John (Sophomore) 4 unique semesters. He should never appear because he is not a senior
     EventParticipant.create(user=fixture_info['user1'], event=event8, hoursEarned=1)
     EventParticipant.create(user=fixture_info['user1'], event=event9, hoursEarned=1)
     EventParticipant.create(user=fixture_info['user1'], event=event10, hoursEarned=1)
-    # John already has term5/term6/term7 plus one more = 4, but is Sophomore so should not appear
+    # John already has term5/term6/term7 plus one more = 6, but is Sophomore so should not appear
     columns, rows = graduatingSeniorsVolunteerHours("2023-2024-test")
-    assert list(rows) == []
+    result = list(rows)
+    assert len(result) == 1 
+    assert result[0][0] == "Bob Builder"
 
     # Test "Graduating" class level works the same as "Senior"
     graduatingUser = User.create(username="smithj", firstName="James", lastName="Smith",
@@ -449,12 +456,18 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     EventParticipant.create(user=graduatingUser, event=gevent3, hoursEarned=5)
     EventParticipant.create(user=graduatingUser, event=gevent4, hoursEarned=5)
 
+    # Both Bob and James should appear now
     columns, rows = graduatingSeniorsVolunteerHours("2023-2024-test")
     result = list(rows)
-    assert len(result) == 1
-    assert result[0] == ("James Smith", "smithj@berea.edu", "B999999", 4, 20.0)
+    assert len(result) == 2
+    names = [r[0] for r in result]
+    assert "Bob Builder" in names
+    assert "James Smith" in names
 
-    # non-service events should not be counted
+    james = next(r for r in result if r[0] == "James Smith")
+    assert james == ("James Smith", "smithj@berea.edu", "B999999", 4, 20.0)
+
+    # non-service events should not be counted towards semester count
     nonServiceTerm = Term.create(description='Fall 2019 Test', academicYear='2019-2020-test')
     nonServiceEvent = Event.create(name='NonServiceEvent', term=nonServiceTerm, program=program5,
                                    startDate=date(2019, 9, 1), isCanceled=False, deletionDate=None, isService=False)
@@ -463,4 +476,5 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     # Bob still has exactly 4 service semesters, the non-service event should not push the count up
     columns, rows = graduatingSeniorsVolunteerHours("2024-2025-test")
     result = list(rows)
-    assert result[0][3] == 4
+    bob = next(r for r in result if r[0] == "Bob Builder")
+    assert bob[3] == 4

@@ -218,13 +218,7 @@ def termParticipation(term):
 def graduatingSeniorsVolunteerHours(academicYear):
     columns = ["Full Name", "Email", "B-Number", "Unique Volunteer Semesters", "Total Volunteer Hours"]
 
-    currentSeniors = (EventParticipant
-                     .select(EventParticipant.user_id)
-                     .join(User).switch(EventParticipant)
-                     .join(Event)
-                     .join(Term)
-                     .where(Term.academicYear == academicYear,
-                            User.rawClassLevel.in_(["Senior", "Graduating"])))
+    currentSeniors = (User.select().where(User.rawClassLevel.in_(["Senior", "Graduating"])))
 
     query = (EventParticipant
              .select(fn.CONCAT(User.firstName, ' ', User.lastName),
