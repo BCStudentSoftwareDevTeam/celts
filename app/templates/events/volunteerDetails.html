@@ -162,23 +162,24 @@
         {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
       </div>
     </div>
-
-    <table class="table d-print-table" id="volunteerInformationTableToPrint">
-      <thead>
-        <tr>
-          <th class="text-center">Name</th>
-          <th class="phoneSelect">Phone Number</th>
-          <th class="emailSelect">Email</th>
-          <th class="statusSelect">Volunteer Status</th>
-          <th class="dietRestrictionSelect">Dietary Restrictions</th>
-          <th class="emergencyContactSelect">Emergency Contact</th>
-          <th class="insuranceSelect">Insurance Information</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table d-print-table w-100" id="volunteerInformationTableToPrint">
+        <thead>
+          <tr>
+            <th class="text-center">Name</th>
+            <th class="phoneSelect">Phone Number</th>
+            <th class="emailSelect">Email</th>
+            <th class="statusSelect">Volunteer Status</th>
+            <th class="dietRestrictionSelect">Dietary Restrictions</th>
+            <th class="emergencyContactSelect">Emergency Contact</th>
+            <th class="insuranceSelect">Insurance Information</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
+        </tbody>
+      </table>
+    </div>
 {% else %}
     <h3>No volunteer information available for this event.</h3>
 {% endif %}
