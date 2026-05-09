@@ -1,5 +1,5 @@
 from flask import  url_for, g, session
-from peewee import DoesNotExist, fn, JOIN
+from peewee import DoesNotExist, fn, JOIN, Case, Value
 from dateutil import parser
 from datetime import timedelta, date, datetime
 from dateutil.relativedelta import relativedelta
@@ -398,21 +398,21 @@ def getParticipatedEventsForUser(user):
                       Used in testing, defaults to the current timestamp.
         :return: A list of Event objects
     """
-
-    participatedEvents = (Event.select(Event, Program.programName)
+    participatedEvents = (Event.select(Event, Program.programName, Case(None, (
+                               ((Event.isLaborOnly | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),                                
+                               ((Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                               (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
                                       Event.isAllVolunteerTraining == False, Event.deletionDate == None)
                                .order_by(Event.startDate, Event.name))
-
-    allVolunteer = (Event.select(Event, "")
+    allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
-
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
