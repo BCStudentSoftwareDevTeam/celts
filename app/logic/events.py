@@ -398,6 +398,10 @@ def getParticipatedEventsForUser(user):
                       Used in testing, defaults to the current timestamp.
         :return: A list of Event objects
     """
+
+    eventName = fn.LOWER(Event.name)
+    checkIfLaborMeeting = eventName.contains("labor meeting")
+
     participatedEvents = (Event.select(Event, Program.programName, Case(None, (
                                ((Event.isLaborOnly | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),                                
                                ((Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
@@ -405,7 +409,7 @@ def getParticipatedEventsForUser(user):
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, ~checkIfLaborMeeting)
                                .order_by(Event.startDate, Event.name))
     allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
