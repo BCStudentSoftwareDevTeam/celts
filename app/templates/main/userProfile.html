@@ -167,12 +167,14 @@
               <thead>
                 <th scope="col">Program</th>
                 <th scope="col">Event Name</th>
+                <th scope="col">Participation Type</th>
                 <th scope="col">Event Date</th>
               </thead>
               {% for event in participatedEvents %}
               <tr>
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                <td>{{event.participatedType}}</td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
               </tr>
               {% endfor %}
