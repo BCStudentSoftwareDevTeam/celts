@@ -29,7 +29,7 @@ $(document).ready(function () {
 		if (status === 'attended' && !$('#attendedSelect').is(':checked')) return false;
 		if (status === 'rsvp' && !$('#rsvpSelect').is(':checked')) return false;
 		if (status === 'invited' && !$('#invitedSelect').is(':checked')) return false;
-		if (status === 'waitlist' && !$('#waitlistSelect').is(':checked')) return false;
+		if (status === 'waitlisted' && !$('#waitlistSelect').is(':checked')) return false;
 		return true;
 	});
 	function hideDuplicateVolunteers() {
