@@ -5,6 +5,15 @@ $(document).ready(function () {
     }).get();
 	users = new Set(users);
 	users = [... users]
+	    const columnMap = {
+        phoneSelect: 1,
+        emailSelect: 2,
+        statusSelect: 3,
+        dietRestrictionSelect: 4,
+        emergencyContactSelect: 5,
+        insuranceSelect: 6,
+    };
+
 	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint_wrapper").toggle()
@@ -47,31 +56,35 @@ $(document).ready(function () {
 		});
 	}
 	function getCheckBoxes() {
-		$(".displayCheckbox").each(function () {
-			let checkboxId = this.id;
-			if ($('#' + checkboxId).is(':checked')) {
-				$("#volunteerInformationCardToPrint ." + checkboxId).show();
-			} else {
-				$("#volunteerInformationCardToPrint ." + checkboxId).hide();
-			}
-			});
-		hideDuplicateVolunteers()
-		volunteerInfoTable.page('first').draw(false);
+        $(".displayCheckbox").each(function () {
+            let checkboxId = this.id;
+            let isChecked = $(this).is(':checked');
+            if (checkboxId in columnMap) {
+                volunteerInfoTable.column(columnMap[checkboxId]).visible(isChecked);
+            }
+            if (isChecked) {
+                $("#volunteerInformationCardToPrint ." + checkboxId).show();
+            } else {
+                $("#volunteerInformationCardToPrint ." + checkboxId).hide();
+            }
+        });
+        hideDuplicateVolunteers()
+        volunteerInfoTable.page('first').draw(false);
+    }
 
-	}
-	
 	function sortVolunteers() {
-		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
-		let entriesTable = sortedTable.find(".volunteerInfoEntries");
-	
-		entriesTable.sort(function (a, b) {
-			let textA = a.getElementsByClassName('nameSelect')[0].innerText
-			let textB = b.getElementsByClassName('nameSelect')[0].innerText
-			return textA.localeCompare(textB);
-		});
-	
-		entriesCards.appendTo(sortedCards);
-	};
+        let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
+        let entriesTable = sortedTable.find(".volunteerInfoEntries");
+   
+        entriesTable.sort(function (a, b) {
+            let textA = a.getElementsByClassName('nameSelect')[0].innerText
+            let textB = b.getElementsByClassName('nameSelect')[0].innerText
+            return textA.localeCompare(textB);
+        });
+        let sortedCards = $("#volunteerInformationCardToPrint .sort-here");
+        let entriesCards = sortedCards.find(".volunteerInfoEntries");
+        entriesCards.appendTo(sortedCards);
+    };
 
 	var volunteerInfoTable = $('#volunteerInformationTableToPrint').DataTable({pageLength: 10,order: [[0, 'asc']]});
 	getCheckBoxes()
