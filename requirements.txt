@@ -4,7 +4,7 @@ attrs==25.3.0
 blessings==1.7
 blinker==1.9.0
 certifi==2025.8.3
-cffi
+cffi==1.17.1
 chardet==5.2.0
 charset-normalizer==3.4.2
 click==8.2.1
