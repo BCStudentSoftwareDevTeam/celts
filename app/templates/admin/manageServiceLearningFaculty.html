@@ -52,7 +52,14 @@
 
   {########################### Unapproved Table ###############################}
     {% if unapprovedCourses | length == 0 %}
-    <h5 class="ms-3">There are no unapproved courses for {{ term.description }}.</h5>
+   <table class="table table-striped border pb-5">
+
+      <tbody>
+        <tr>
+          <td>There are no approved courses for {{ term.description }}.<td>
+        </tr>
+      </tbody>
+    </table>
     {% else %}
     <table class="table table-striped border">
       <thead>
@@ -95,7 +102,14 @@
   {########################### Approved Table #################################}
     <h2>Approved</h2>
     {% if approvedCourses | length == 0 %}
-    <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+   <table class="table table-striped border pb-5">
+
+      <tbody>
+        <tr>
+          <td>There are no approved courses for {{ term.description }}.<td>
+        </tr>
+      </tbody>
+    </table>
     {% else %}
     <table class="table table-striped border">
       <thead>
@@ -135,7 +149,18 @@
 
   <!-- IMPORTED COURSES -->
     {% if importedCourses | length == 0 %}
-    <h5 class="ms-3 pb-3">There are no imported courses for {{ term.description }}.</h5>
+   <table class="table table-striped border pb-5">
+
+      <tbody>
+        <tr>
+          <td>There are no approved courses for {{ term.description }}.<td>
+        </tr>
+      </tbody>
+    </table>
+
+
+</body>
+</html>
     {% else %}
     <table class="table table-striped border pb-5">
       <thead>
