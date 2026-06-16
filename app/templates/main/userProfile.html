@@ -234,6 +234,7 @@
                       <td class="programBan pt-3"> Eligible
                       {% set label = "Ban" %}
                     {% else %}
+
                       <td class="programBan text-danger pt-3"> Banned
                       {% set label = "Unban" %}
                     {% endif %}
@@ -244,7 +245,7 @@
                     {% endif %}
                     </td>
                    
-                    {% if g.current_user.isCeltsAdmin %}
+                    {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff  %}
                         <td class="onTranscript">
                           <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}"
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
