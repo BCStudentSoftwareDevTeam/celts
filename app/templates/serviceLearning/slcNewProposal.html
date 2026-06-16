@@ -25,24 +25,24 @@
   <div class="tab text-break">
       {% include "serviceLearning/slcQuestionnaire.html" %}
   </div>
-  <div class="row align-items-end pt-5 pb-5">
-    <div class="col col-xl col-12 d-flex gap-2 justify-content-xl-start justify-content-center">
+  <div class="row align-items-center pt-5 pb-5">
+    <div class="col col-xl col-12 d-flex flex-wrap gap-2 justify-content-xl-start justify-content-center mb-2 mb-xl-0">
       <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
       <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
       <button class="btn btn-primary" type="button" id="saveExit">Save & Exit</button> <!--only for editing-->
       <button class="btn btn-primary" type="button" id="exitButton">Exit</button> <!--only for view-->
+    </div>
+    <div class="col-12 col-xl-auto d-flex justify-content-center align-items-center py-2 py-xl-0 stepsIndicator">
+      <span class="step"></span>
+      <span class="step"></span>
+      <span class="step"></span>
+    </div>
+    <div class="col col-xl col-12 d-flex flex-wrap gap-2 justify-content-xl-end justify-content-center mt-2 mt-xl-0">
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
       <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
       {% if g.current_user.isCeltsAdmin %}
         <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
       {% endif %}
-    </div>
-    <div class="col-2 col-xl-1 col-12 text-sm-center stepsIndicator">
-      <span class="step"></span>
-      <span class="step"></span>
-      <span class="step"></span>
-    </div>
-    <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
     </div>
   </div>
 </form>
