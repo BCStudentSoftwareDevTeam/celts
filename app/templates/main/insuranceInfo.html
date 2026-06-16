@@ -72,14 +72,14 @@
 
     <br>
 
-    <div class='row align-items-center'>
-        <div class='col-12 col-sm-auto d-flex flex-wrap gap-2 justify-content-center justify-content-sm-start mb-2 mb-sm-0'>
-            <a id='exit' href='/profile/{{username}}' class='btn btn-secondary'>{{'Exit' if readOnly else 'Cancel'}}</a>
+    <div class='row'>
+        <div class='form-group col-auto'>
+            <a id='exit' href='/profile/{{username}}' class='btn btn-secondary text-start'>{{'Exit' if readOnly else 'Cancel'}}</a>
         </div>
         <div class='col'></div>
-        <div class='col-12 col-sm-auto d-flex flex-wrap gap-2 justify-content-center justify-content-sm-end mt-2 mt-sm-0'>
+        <div class='form-group col-auto'>
             {% if not readOnly %}
-                <a id='saveExit' class='btn btn-primary'>Save &amp; Exit</a>
+                <a id='saveExit' class='btn btn-primary'> Save & Exit </a>
                 <a id='saveContinue' class='btn btn-primary'>Continue to Emergency Contact</a>
             {% endif %}
         </div>
