@@ -18,6 +18,7 @@ services:
   db:
     image: mysql
     restart: always
+    command: --require_secure_transport=OFF
     environment: 
       MYSQL_DATABASE: 'celts'
       MYSQL_USER: 'celts_user'
