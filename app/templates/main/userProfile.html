@@ -208,7 +208,9 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
-                  <th scope="col">On Transcript</th>
+                  {% if g.current_user.isCeltsAdmin%}
+                    <th scope="col">On Transcript</th>
+                    {% endif %}
                 {% endif %}
 
               </tr>
@@ -244,7 +246,7 @@
                     {% endif %}
                     </td>
                    
-                    {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                    {% if g.current_user.isCeltsAdmin %}
                         <td class="onTranscript">
                           <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}"
                           data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
