@@ -181,10 +181,6 @@ contributors:
     role: "Software Engineer"
   - name: "Alina Petrosyants"
     role: "Software Engineer"
-<<<<<<< HEAD
-  - name: "Dayton Conwell"
-    role: "Software Engineer"
-=======
   - name: "Denys Zhytkov"
     role: "Software Engineer"
   - name: "Bhushan Sah"
@@ -207,4 +203,5 @@ contributors:
     role: "Software Engineer"
   - name: "Nahom Mesfin Terrefe"
     role: "Software Engineer"
->>>>>>> a2d4c0194beec43fc51dcce4459f2aaf8c4df31e
+  - name: "Dayton Conwell"
+    role: "Software Engineer"
