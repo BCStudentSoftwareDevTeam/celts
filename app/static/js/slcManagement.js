@@ -7,6 +7,9 @@ $(document).ready(function() {
   $('.modal').on('hidden.bs.modal', function () {
     resetAllSelections()
   });
+  $('#withdrawModal').on('hidden.bs.modal', function () {
+    $("#withdrawError").text("").addClass("d-none");
+  });
   $('#renewTerm').on('change', function(){
     if ($('#renewTerm').value != "---"){
       $('#renewBtn').prop('disabled', false);
@@ -141,13 +144,10 @@ function withdraw(){
     },
     error: function(request, status, error) {
       console.log(status, error);
-      let message;
-      if (request.responseJSON && request.responseJSON.message) {
-        message = request.responseJSON.message;
-      } else {
-        message = "An error occurred while withdrawing the course. Please try again.";
-      }
-      msgFlash(message, "danger");
+      let message = (request.responseJSON && request.responseJSON.message)
+        ? request.responseJSON.message
+        : "An error occurred while withdrawing the course. Please try again.";
+      $("#withdrawError").text(message).removeClass("d-none");
     },
     complete: function () {
       $('#' + courseID).val('---');
