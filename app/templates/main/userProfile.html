@@ -208,7 +208,9 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
-                  <th scope="col">On Transcript</th>
+                  {% if g.current_user.isCeltsAdmin%}
+                    <th scope="col">On Transcript</th>
+                    {% endif %}
                 {% endif %}
 
               </tr>
