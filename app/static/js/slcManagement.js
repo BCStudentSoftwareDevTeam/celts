@@ -7,9 +7,6 @@ $(document).ready(function() {
   $('.modal').on('hidden.bs.modal', function () {
     resetAllSelections()
   });
-  $('#withdrawModal').on('hidden.bs.modal', function () {
-    $("#withdrawError").text("").addClass("d-none");
-  });
   $('#renewTerm').on('change', function(){
     if ($('#renewTerm').value != "---"){
       $('#renewBtn').prop('disabled', false);
@@ -128,7 +125,6 @@ function renew(){
         location = '/serviceLearning/editProposal/' + newID;
       },
       error: function(request, status, error) {
-          console.log(status,error);
       }
     })
     resetAllSelections()
@@ -143,11 +139,11 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-      console.log(status, error);
-      let message = (request.responseJSON && request.responseJSON.message)
-        ? request.responseJSON.message
-        : "An error occurred while withdrawing the course. Please try again.";
-      $("#withdrawError").text(message).removeClass("d-none");
+      let message = "An error occurred while withdrawing the course. Please try again.";
+      if (request.responseJSON && request.responseJSON.message) {
+        message = request.responseJSON.message;
+      }
+      msgFlash(message, "danger");
     },
     complete: function () {
       $('#' + courseID).val('---');
