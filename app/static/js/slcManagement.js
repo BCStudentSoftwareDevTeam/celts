@@ -141,10 +141,13 @@ function withdraw(){
     },
     error: function(request, status, error) {
       console.log(status, error);
-      let message = (request.responseJSON && request.responseJSON.message)
-        ? request.responseJSON.message
-        : "An error occurred while withdrawing the course. Please try again.";
-      alert(message);
+      let message;
+      if (request.responseJSON && request.responseJSON.message) {
+        message = request.responseJSON.message;
+      } else {
+        message = "An error occurred while withdrawing the course. Please try again.";
+      }
+      msgFlash(message, "danger");
     },
     complete: function () {
       $('#' + courseID).val('---');
