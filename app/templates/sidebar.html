@@ -51,16 +51,16 @@
       </li>
       <li>
         {% if g.current_user.isCeltsAdmin %}
-        <nav class="navbar navbar-dark bg-dark">
-          <div class="container-fluid">
-            <button id="admin" class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
+        <nav class="navbar navbar-dark bg-dark py-0">
+          <div class="container-fluid py-0">
+            <button id="admin" class="navbar-toggler text-white w-100 text-start border-0 fs-6 ps-3 dropdown-toggle col-xs-3 sidebar-toggle-btn sidebar_padding shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
               aria-label="Toggle navigation">
               Admin
             </button>
           </div>
         </nav>
         <div class="{{ 'collapse-show' if request.path in ['/activityLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
-          <div class="bg-dark ps-3">
+          <div class="bg-dark ps-3  ">
             <a href="/activityLogs" class="nav-link text-white {{ 'active' if request.path =='/activityLogs' }}">
               Activity Logs
             </a>
