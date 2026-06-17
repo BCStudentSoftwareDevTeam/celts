@@ -50,5 +50,9 @@
     transition: all 0.25s ease-in-out;
 }
 .sidebar_padding{
-  padding-block: 0.6rem;
+  margin-block:2px;
+  padding-block: 0.7rem;
+}
+.sidebar_padding:hover{
+    background-color: #0d6dfc;
 }
