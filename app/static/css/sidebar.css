@@ -41,14 +41,3 @@
 
 .fw-semibold { font-weight: 600; }
 .lh-tight { line-height: 1.25; }
-
-.d-none-custom { display: none; }
-
-@media (min-width: 1239.99px) {
-    .d-block-custom-lg { display: block; }
-    .d-none-custom-lg { display: none !important; }
-}
-
-@media (max-width: 1239.98px) {
-    .d-none-custom-lg { display: block; }
-}
