@@ -183,7 +183,7 @@ function disableInput() {
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#syllabusUploadButton").prop("disabled", true);
-    $("#submitAndApproveButton").hide();
+    hideButton("#submitAndApproveButton");
     $(".editButton").hide()
     $(".removeButton").hide()
     $(".slcQuestionWordCounter").replaceWith(" ");
@@ -193,6 +193,18 @@ function disableInput() {
 
 function readOnly() {
     return window.location.href.includes("view");
+}
+
+function showButton(buttonSelector) {
+    let button = $(buttonSelector);
+    button.show();
+    button.closest(".proposal-button-wrapper").show();
+}
+
+function hideButton(buttonSelector) {
+    let button = $(buttonSelector);
+    button.hide();
+    button.closest(".proposal-button-wrapper").hide();
 }
 
 function fixStepIndicator(navigateTab) {
@@ -230,51 +242,51 @@ function showTab(currentTab) {
 
   switch(currentTab) {
     case 0: // First page
-        $("#cancelButton").show();
-        $("#previousButton").hide();
-        $("#submitAndApproveButton").hide();
+        showButton("#cancelButton");
+        hideButton("#previousButton");
+        hideButton("#submitAndApproveButton");
         $("#nextButton").text("Next");
-        $("#nextButton").show();
-        $("#saveContinue").hide();
-        $("#exitButton").hide()
-        $("#saveExit").show();
+        showButton("#nextButton");
+        hideButton("#saveContinue");
+        hideButton("#exitButton")
+        showButton("#saveExit");
         if(readOnly()) {
-            $("#saveExit").hide();
-            $("#exitButton").show()
+            hideButton("#saveExit");
+            showButton("#exitButton")
         }
         break;
     case 1: // Second page
-        $("#cancelButton").hide();
-        $("#previousButton").show();
-        $("#submitAndApproveButton").hide();
-        $("#nextButton").hide();
-        $("#saveContinue").show();
+        hideButton("#cancelButton");
+        showButton("#previousButton");
+        hideButton("#submitAndApproveButton");
+        hideButton("#nextButton");
+        showButton("#saveContinue");
         $("#saveContinue").text("Next");
-        $("#saveExit").show()
-        $("#exitButton").hide()
+        showButton("#saveExit")
+        hideButton("#exitButton")
         if(readOnly()) {
-            $("#nextButton").show();
-            $("#saveContinue").hide();
-            $("#saveExit").hide()
+            showButton("#nextButton");
+            hideButton("#saveContinue");
+            hideButton("#saveExit")
             $(".removeAttachment").hide()
-            $("#exitButton").show()
+            showButton("#exitButton")
         }
         break;
     case 2: // Third page
-        $("#cancelButton").hide();
-        $("#previousButton").show();
-        $("#submitAndApproveButton").show();
+        hideButton("#cancelButton");
+        showButton("#previousButton");
+        showButton("#submitAndApproveButton");
         $("#nextButton").text("Submit Proposal");
-        $("#nextButton").show();
-        $("#saveContinue").hide();
-        $("#exitButton").hide()
-        $("#saveExit").show()
+        showButton("#nextButton");
+        hideButton("#saveContinue");
+        hideButton("#exitButton")
+        showButton("#saveExit")
         if(readOnly()) {
             $("#nextButton").text("Next");
-            $("#nextButton").hide();
-            $("#saveExit").hide();
-            $("#submitAndApproveButton").hide();
-            $("#exitButton").show()
+            hideButton("#nextButton");
+            hideButton("#saveExit");
+            hideButton("#submitAndApproveButton");
+            showButton("#exitButton")
           }
         break;
     }
