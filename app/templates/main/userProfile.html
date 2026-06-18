@@ -13,9 +13,7 @@
 {% endblock %}
 
 {% block app_content %}
-{% if g.current_user.isAdmin or g.current_user.isCeltsStudentStaff %}
 
-{% endif %}
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
@@ -664,7 +662,11 @@
 </div>
 <!-- ################# Ban or Unban Modal ################ -->
 
-<a href="javascript:window.history.back();" class="btn btn-secondary btn-s my-3">Back </a> 
+
+{% if volunteer != g.current_user %}
+<a href="javascript:window.history.back();" class="btn btn-secondary btn-s my-3">Back</a>
+{% endif %}
+
 
 <!-- ################# Edit Volunteer Information Modal ################ -->
 <div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" aria-hidden="true">
@@ -710,7 +712,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-      </div>
+      </div> 
     </div>
   </div>
 </div>
