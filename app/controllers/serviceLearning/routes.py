@@ -197,7 +197,7 @@ def updateInstructorPhone():
     instructorData = request.get_json()
     (User.update(phoneNumber=instructorData[1])
         .where(User.username == instructorData[0])).execute()
-    return "success", 200
+    return "success"
 
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
