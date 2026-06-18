@@ -125,6 +125,7 @@ function renew(){
         location = '/serviceLearning/editProposal/' + newID;
       },
       error: function(request, status, error) {
+        location.reload();
       }
     })
     resetAllSelections()
@@ -139,11 +140,6 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-      let message = "An error occurred while withdrawing the course. Please try again.";
-      if (request.responseJSON && request.responseJSON.message) {
-        message = request.responseJSON.message;
-      }
-      msgFlash(message, "danger");
       location.reload();
     },
     complete: function () {
