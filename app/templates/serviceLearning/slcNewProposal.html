@@ -26,16 +26,20 @@
       {% include "serviceLearning/slcQuestionnaire.html" %}
   </div>
   <div class="pt-5 pb-5">
-    <div id="proposalButtonControls" class="row align-items-md-center justify-content-center mb-4 g-2">
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-secondary" type="button" id="previousButton" style=" margin-bottom: 7px;">Previous</button></div>
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton" style=" margin-bottom: 9px;">Cancel</button></div>
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveExit">Save & Exit</button></div> <!--only for editing-->
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="exitButton">Exit</button></div> <!--only for view-->
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid ms-md-auto"><button class="btn btn-primary" type="button" id="nextButton">Next</button></div>
-      <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveContinue">Next</button></div>
-      {% if g.current_user.isCeltsAdmin %}
-        <div class="proposal-button-wrapper col-8 col-md-auto d-grid"><button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button></div>
-      {% endif %}
+    <div id="proposalButtonControls" class="row align-items-md-center justify-content-center mb-4 gy-3">
+      <div class="proposal-button-group col-12 col-md row justify-content-center justify-content-md-start g-2">
+        <div id="previousButtonWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-secondary" type="button" id="previousButton">Previous</button></div>
+        <div id="cancelButtonWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button></div>
+        <div id="saveExitWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveExit">Save & Exit</button></div> <!--only for editing-->
+        <div id="exitButtonWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="exitButton">Exit</button></div> <!--only for view-->
+      </div>
+      <div class="proposal-button-group col-12 col-md row justify-content-center justify-content-md-end g-2">
+        <div id="nextButtonWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="nextButton">Next</button></div>
+        <div id="saveContinueWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveContinue">Next</button></div>
+        {% if g.current_user.isCeltsAdmin %}
+          <div id="submitAndApproveButtonWrapper" class="col-8 col-md-auto d-grid"><button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button></div>
+        {% endif %}
+      </div>
     </div>
     <div class="row">
       <div class="col-12 d-flex justify-content-center stepsIndicator">

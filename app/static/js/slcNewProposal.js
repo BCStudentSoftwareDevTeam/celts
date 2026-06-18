@@ -183,7 +183,7 @@ function disableInput() {
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#syllabusUploadButton").prop("disabled", true);
-    hideButton("#submitAndApproveButton");
+    $("#submitAndApproveButtonWrapper").addClass("d-none");
     $(".editButton").hide()
     $(".removeButton").hide()
     $(".slcQuestionWordCounter").replaceWith(" ");
@@ -195,17 +195,6 @@ function readOnly() {
     return window.location.href.includes("view");
 }
 
-function showButton(buttonSelector) {
-    let button = $(buttonSelector);
-    button.show();
-    button.closest(".proposal-button-wrapper").show();
-}
-
-function hideButton(buttonSelector) {
-    let button = $(buttonSelector);
-    button.hide();
-    button.closest(".proposal-button-wrapper").hide();
-}
 
 function fixStepIndicator(navigateTab) {
   // This function updates the active step indicator
@@ -242,51 +231,51 @@ function showTab(currentTab) {
 
   switch(currentTab) {
     case 0: // First page
-        showButton("#cancelButton");
-        hideButton("#previousButton");
-        hideButton("#submitAndApproveButton");
+        $("#cancelButtonWrapper").removeClass("d-none");
+        $("#previousButtonWrapper").addClass("d-none");
+        $("#submitAndApproveButtonWrapper").addClass("d-none");
         $("#nextButton").text("Next");
-        showButton("#nextButton");
-        hideButton("#saveContinue");
-        hideButton("#exitButton")
-        showButton("#saveExit");
+        $("#nextButtonWrapper").removeClass("d-none");
+        $("#saveContinueWrapper").addClass("d-none");
+        $("#exitButtonWrapper").addClass("d-none")
+        $("#saveExitWrapper").removeClass("d-none");
         if(readOnly()) {
-            hideButton("#saveExit");
-            showButton("#exitButton")
+            $("#saveExitWrapper").addClass("d-none");
+            $("#exitButtonWrapper").removeClass("d-none")
         }
         break;
     case 1: // Second page
-        hideButton("#cancelButton");
-        showButton("#previousButton");
-        hideButton("#submitAndApproveButton");
-        hideButton("#nextButton");
-        showButton("#saveContinue");
+        $("#cancelButtonWrapper").addClass("d-none");
+        $("#previousButtonWrapper").removeClass("d-none");
+        $("#submitAndApproveButtonWrapper").addClass("d-none");
+        $("#nextButtonWrapper").addClass("d-none");
+        $("#saveContinueWrapper").removeClass("d-none");
         $("#saveContinue").text("Next");
-        showButton("#saveExit")
-        hideButton("#exitButton")
+        $("#saveExitWrapper").removeClass("d-none")
+        $("#exitButtonWrapper").addClass("d-none")
         if(readOnly()) {
-            showButton("#nextButton");
-            hideButton("#saveContinue");
-            hideButton("#saveExit")
+            $("#nextButtonWrapper").removeClass("d-none");
+            $("#saveContinueWrapper").addClass("d-none");
+            $("#saveExitWrapper").addClass("d-none")
             $(".removeAttachment").hide()
-            showButton("#exitButton")
+            $("#exitButtonWrapper").removeClass("d-none")
         }
         break;
     case 2: // Third page
-        hideButton("#cancelButton");
-        showButton("#previousButton");
-        showButton("#submitAndApproveButton");
+        $("#cancelButtonWrapper").addClass("d-none");
+        $("#previousButtonWrapper").removeClass("d-none");
+        $("#submitAndApproveButtonWrapper").removeClass("d-none");
         $("#nextButton").text("Submit Proposal");
-        showButton("#nextButton");
-        hideButton("#saveContinue");
-        hideButton("#exitButton")
-        showButton("#saveExit")
+        $("#nextButtonWrapper").removeClass("d-none");
+        $("#saveContinueWrapper").addClass("d-none");
+        $("#exitButtonWrapper").addClass("d-none")
+        $("#saveExitWrapper").removeClass("d-none")
         if(readOnly()) {
             $("#nextButton").text("Next");
-            hideButton("#nextButton");
-            hideButton("#saveExit");
-            hideButton("#submitAndApproveButton");
-            showButton("#exitButton")
+            $("#nextButtonWrapper").addClass("d-none");
+            $("#saveExitWrapper").addClass("d-none");
+            $("#submitAndApproveButtonWrapper").addClass("d-none");
+            $("#exitButtonWrapper").removeClass("d-none")
           }
         break;
     }
