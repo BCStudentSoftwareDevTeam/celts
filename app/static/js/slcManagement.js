@@ -142,9 +142,6 @@ function withdraw(){
     error: function(request, status, error) {
       location.reload();
     },
-    complete: function () {
-      $('#' + courseID).val('---');
-    }
   });
 };
 
