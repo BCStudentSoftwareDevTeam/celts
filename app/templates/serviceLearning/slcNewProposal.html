@@ -26,18 +26,18 @@
       {% include "serviceLearning/slcQuestionnaire.html" %}
   </div>
   <div class="pt-5 pb-5">
-    <div class="row align-items-center mb-3">
-      <div class="col d-flex flex-wrap gap-2 justify-content-start">
-        <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
-        <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
-        <button class="btn btn-primary" type="button" id="saveExit">Save & Exit</button> <!--only for editing-->
-        <button class="btn btn-primary" type="button" id="exitButton">Exit</button> <!--only for view-->
+    <div class="row align-items-md-center justify-content-center mb-4 gy-3">
+      <div class="col-12 col-md row justify-content-center justify-content-md-start g-2">
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-secondary" type="button" id="previousButton">Previous</button></div>
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button></div>
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveExit">Save & Exit</button></div> <!--only for editing-->
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="exitButton">Exit</button></div> <!--only for view-->
       </div>
-      <div class="col d-flex flex-wrap gap-2 justify-content-end">
-        <button class="btn btn-primary" type="button" id="nextButton">Next</button>
-        <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
+      <div class="col-12 col-md row justify-content-center justify-content-md-end g-2">
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="nextButton">Next</button></div>
+        <div class="col-8 col-md-auto d-grid"><button class="btn btn-primary" type="button" id="saveContinue">Next</button></div>
         {% if g.current_user.isCeltsAdmin %}
-          <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
+          <div class="col-8 col-md-auto d-grid"><button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button></div>
         {% endif %}
       </div>
     </div>
