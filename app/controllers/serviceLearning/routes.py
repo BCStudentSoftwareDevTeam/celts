@@ -197,7 +197,7 @@ def updateInstructorPhone():
     instructorData = request.get_json()
     (User.update(phoneNumber=instructorData[1])
         .where(User.username == instructorData[0])).execute()
-    return "success"
+    return "success", 200
 
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
@@ -205,12 +205,14 @@ def withdrawCourse(courseID):
         if g.current_user.isAdmin or g.current_user.isFaculty:
             withdrawProposal(courseID)
             flash("Course successfully withdrawn", 'success')
+            return ""
         else:
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         print(e)
         flash("Withdrawal Unsuccessful", 'warning')
-    return ""
+
+    return "", 500
 
         
 @serviceLearning_bp.route('/proposalReview/', methods = ['GET', 'POST'])
