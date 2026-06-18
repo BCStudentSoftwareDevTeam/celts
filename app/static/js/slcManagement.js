@@ -144,6 +144,7 @@ function withdraw(){
         message = request.responseJSON.message;
       }
       msgFlash(message, "danger");
+      location.reload();
     },
     complete: function () {
       $('#' + courseID).val('---');
