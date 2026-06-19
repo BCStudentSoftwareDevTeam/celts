@@ -311,12 +311,12 @@
       {% endif %}
     </div>
   </div>
-  <div class="row justify-content-left mt-2">
+  <div class="row justify-content-center mt-2">
     <div class="col-md-6 offset-md-3">
       <div class="w-100 m-auto">
         <!--Submission buttons-->
             {% if not event %}
-        <a href="javascript:window.history.back();" class="btn btn-secondary" btn-sm m-2> Back</a>
+        <a href="{{ url_for('admin.templateSelect') }}" class="btn btn-secondary btn-sm m-2">Back</a>
             {% endif %}
         {% if event %}
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete

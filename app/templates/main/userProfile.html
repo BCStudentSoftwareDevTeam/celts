@@ -665,7 +665,7 @@
 
 {% if volunteer != g.current_user %}
 <div class="text-center my-3">
-  <a href="javascript:window.history.back();" class="btn btn-secondary">Back</a>
+  <a href="{{ url_for('admin.studentSearchPage') }}" class="btn btn-secondary">Back</a>
 </div>
 {% endif %}
 
