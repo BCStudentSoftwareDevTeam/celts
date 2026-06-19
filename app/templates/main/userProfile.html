@@ -429,16 +429,17 @@
                   <td>{{row.note.noteContent}}</td>
                   <td>
                     {% set bonner = "Bonner " if row.isBonnerNote else "" %}
+                    {% set cceMinor = "CCE Minor " if row.isCCEMinorNote else "" %}
                     {% if row.viewTier == 3 %}
-                      {{bonner}}Admins
+                      {{cceMinor}}{{bonner}}Admins
                     {% elif row.viewTier == 2 %}
-                      {{bonner}}Admins/Student Staff
+                      {{cceMinor}}{{bonner}}Admins/Student Staff
                     {% else %}
-                      {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
+                      {{cceMinor}}{{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
                   <td class ="text-nowrap">
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                     <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
+                     <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}"data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}">Edit</button>
                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
                       <button type="button" class="btn btn-sm btn-primary me-1" disabled>Edit</button>
@@ -580,6 +581,12 @@
                   <div class="form-check form-switch pt-4">
                     <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
                     <label class="form-check-label" for="bonnerInput"><strong>Related to Bonner Scholars Program</strong></label>
+                  </div>
+                {% endif %}
+                {% if volunteer.minorInterest %}
+                  <div class="form-check form-switch pt-4">
+                    <input class="form-check-input" name="cceMinor" id="cceMinorInput" type="checkbox" />
+                    <label class="form-check-label" for="cceMinorInput"><strong>Related to CCE Minor</strong></label>
                   </div>
                 {% endif %}
               </div>
