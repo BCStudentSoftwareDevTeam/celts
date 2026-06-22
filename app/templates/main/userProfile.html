@@ -522,15 +522,20 @@
             {# Bonner Requirements #}
             <div class="col-md-6">
               <h5>Requirement Progress</h5>
-              <ul>
+              <ul class="list-unstyled">
               {% for req in bonnerRequirements %}
-                <li>{{req.name}}
-                {% if req.completed %}
-                  <span class="bi bi-check fs-3 text-success"></span>
-                {% else %}
-                  <!-- <span class="bi bi-x fs-3"></span> -->
-                   <span class="text-muted px-6">Not completed</span>
-                {% endif %}
+                <li class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                  <span>
+                    {{req.name}}
+                    {% if not req.isRequired %}
+                      <small class="text-muted">(Optional)</small>
+                    {% endif %}
+                  </span>
+                  {% if req.completed %}
+                    <span class="badge bg-success ms-2">Completed</span>
+                  {% else %}
+                    <span class="badge bg-secondary ms-2">Not Started</span>
+                  {% endif %}
                 </li>
               {% endfor %}
               </ul>
