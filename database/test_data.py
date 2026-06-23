@@ -1314,15 +1314,6 @@ eventParticipants = [
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
-# Link Bonner requirements to events so completion badges can be tested.
-# neillz + khatts + ayisie participated in event 1 → they show Completed for req 1
-# neillz + partont participated in event 2 → they show Completed for req 2
-# All other Bonner requirements have no match → show Incomplete for everyone
-requirementMatches = [
-    { "requirement": 1, "event": 1 },  # Bonner Orientation → event 1
-    { "requirement": 2, "event": 2 },  # All Bonner Meeting → event 2
-]
-RequirementMatch.insert_many(requirementMatches).on_conflict_replace().execute()
 
 eventRsvp =  [
     {
