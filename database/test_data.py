@@ -29,7 +29,6 @@ from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
-from app.models.requirementMatch import RequirementMatch
 from app.models.individualRequirement import IndividualRequirement
 from app.models.celtsLabor import CeltsLabor
 
