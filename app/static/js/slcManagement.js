@@ -125,7 +125,7 @@ function renew(){
         location = '/serviceLearning/editProposal/' + newID;
       },
       error: function(request, status, error) {
-          console.log(status,error);
+        location.reload();
       }
     })
     resetAllSelections()
@@ -140,12 +140,8 @@ function withdraw(){
       location.reload();
     },
     error: function(request, status, error) {
-        console.log(status,error);      
-        
+      location.reload();
     },
-    done: function () {
-      $('#' + courseID).val('---');
-    }
   });
 };
 
