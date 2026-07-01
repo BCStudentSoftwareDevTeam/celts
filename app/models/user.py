@@ -31,9 +31,17 @@ class User(baseModel):
     
     @property
     def processedClassLevel(self):
-        if not self.rawClassLevel:
-            return ""
-        return "Graduated" if (self.hasGraduated) else self.rawClassLevel
+        if self.isAlumni:
+            return "Alumni"
+        return self.rawClassLevel or "Not Enrolled"
+
+    @property
+    def isAlumni(self):
+        return self.hasGraduated or self.rawClassLevel == "Graduating"
+    
+    @property 
+    def isCurrentlyEnrolled(self):
+        return self.isStudent and not self.isAlumni
 
     @property
     def isAdmin(self):

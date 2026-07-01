@@ -1,5 +1,5 @@
 from flask import  url_for, g, session
-from peewee import DoesNotExist, fn, JOIN
+from peewee import DoesNotExist, fn, JOIN, Case, Value
 from dateutil import parser
 from datetime import timedelta, date, datetime
 from dateutil.relativedelta import relativedelta
@@ -118,8 +118,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     
     seriesId = calculateNewSeriesId()
 
-    # Create separate event data inheriting from the original eventData
-    seriesData = eventData.get('seriesData')
+    # Create separate event data for each event in the series, inheriting from the original eventData
+    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
+ # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -129,8 +130,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
+                'location': event['eventLocation'],
                 'seriesId': seriesId,
-                'isRepeating': bool(isRepeating)
+                'isRepeating': bool(isRepeating), 
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
@@ -173,7 +175,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     if attachmentFiles:
         for event in events:
             addFile = FileHandler(attachmentFiles, eventId=event.id)
-            addFile.saveFiles(saveOriginalFile=events[0])
+            addFile.saveFiles(parentEvent=events[0])
     return events, ""
 
 
@@ -251,7 +253,7 @@ def getEngagementEvents(term):
                                  .execute())
     return engagementEvents
 
-def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
     """
         Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
@@ -265,8 +267,8 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
             (Event.deletionDate.is_null(True)) &
             (Event.isService == True) &
             ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
-            ((Event.startDate > currentTime) |
-             ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime))) &
+            ((Event.startDate > currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate.time()))) &
             (Event.isCanceled == False)
         )
         .group_by(Program.id)
@@ -274,6 +276,32 @@ def getUpcomingVolunteerOpportunitiesCount(term, currentTime):
 
     programCountDict = {}
     for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
+
+def getPastVolunteerOpportunitiesCount(term, currentDate):
+    """
+        Return a count of all past events for each volunteer opportunities program.
+    """
+    
+    pastCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate < currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate.time()))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
+
+    programCountDict = {}
+    for programCount in pastCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
@@ -371,20 +399,24 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    participatedEvents = (Event.select(Event, Program.programName)
+    eventName = fn.LOWER(Event.name)
+    checkIfLaborMeeting = eventName.contains("labor meeting")
+
+    participatedEvents = (Event.select(Event, Program.programName, Case(None, (
+                               ((Event.isLaborOnly | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),                                
+                               ((Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                               (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, ~checkIfLaborMeeting)
                                .order_by(Event.startDate, Event.name))
-
-    allVolunteer = (Event.select(Event, "")
+    allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
-
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
@@ -458,7 +490,9 @@ def getRepeatingEventsData(eventData):
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
-              "week": counter+1}
+              "week": counter+1,
+              'location': eventData['location']
+            }
             for counter in range(0, ((eventData['endDate']-eventData['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):

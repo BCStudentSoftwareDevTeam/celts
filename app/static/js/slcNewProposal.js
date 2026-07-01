@@ -183,7 +183,7 @@ function disableInput() {
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#syllabusUploadButton").prop("disabled", true);
-    $("#submitAndApproveButton").hide();
+    $("#submitAndApproveButtonWrapper").addClass("d-none");
     $(".editButton").hide()
     $(".removeButton").hide()
     $(".slcQuestionWordCounter").replaceWith(" ");
@@ -194,6 +194,7 @@ function disableInput() {
 function readOnly() {
     return window.location.href.includes("view");
 }
+
 
 function fixStepIndicator(navigateTab) {
   // This function updates the active step indicator
@@ -230,51 +231,51 @@ function showTab(currentTab) {
 
   switch(currentTab) {
     case 0: // First page
-        $("#cancelButton").show();
-        $("#previousButton").hide();
-        $("#submitAndApproveButton").hide();
+        $("#cancelButtonWrapper").removeClass("d-none");
+        $("#previousButtonWrapper").addClass("d-none");
+        $("#submitAndApproveButtonWrapper").addClass("d-none");
         $("#nextButton").text("Next");
-        $("#nextButton").show();
-        $("#saveContinue").hide();
-        $("#exitButton").hide()
-        $("#saveExit").show();
+        $("#nextButtonWrapper").removeClass("d-none");
+        $("#saveContinueWrapper").addClass("d-none");
+        $("#exitButtonWrapper").addClass("d-none")
+        $("#saveExitWrapper").removeClass("d-none");
         if(readOnly()) {
-            $("#saveExit").hide();
-            $("#exitButton").show()
+            $("#saveExitWrapper").addClass("d-none");
+            $("#exitButtonWrapper").removeClass("d-none")
         }
         break;
     case 1: // Second page
-        $("#cancelButton").hide();
-        $("#previousButton").show();
-        $("#submitAndApproveButton").hide();
-        $("#nextButton").hide();
-        $("#saveContinue").show();
+        $("#cancelButtonWrapper").addClass("d-none");
+        $("#previousButtonWrapper").removeClass("d-none");
+        $("#submitAndApproveButtonWrapper").addClass("d-none");
+        $("#nextButtonWrapper").addClass("d-none");
+        $("#saveContinueWrapper").removeClass("d-none");
         $("#saveContinue").text("Next");
-        $("#saveExit").show()
-        $("#exitButton").hide()
+        $("#saveExitWrapper").removeClass("d-none")
+        $("#exitButtonWrapper").addClass("d-none")
         if(readOnly()) {
-            $("#nextButton").show();
-            $("#saveContinue").hide();
-            $("#saveExit").hide()
+            $("#nextButtonWrapper").removeClass("d-none");
+            $("#saveContinueWrapper").addClass("d-none");
+            $("#saveExitWrapper").addClass("d-none")
             $(".removeAttachment").hide()
-            $("#exitButton").show()
+            $("#exitButtonWrapper").removeClass("d-none")
         }
         break;
     case 2: // Third page
-        $("#cancelButton").hide();
-        $("#previousButton").show();
-        $("#submitAndApproveButton").show();
+        $("#cancelButtonWrapper").addClass("d-none");
+        $("#previousButtonWrapper").removeClass("d-none");
+        $("#submitAndApproveButtonWrapper").removeClass("d-none");
         $("#nextButton").text("Submit Proposal");
-        $("#nextButton").show();
-        $("#saveContinue").hide();
-        $("#exitButton").hide()
-        $("#saveExit").show()
+        $("#nextButtonWrapper").removeClass("d-none");
+        $("#saveContinueWrapper").addClass("d-none");
+        $("#exitButtonWrapper").addClass("d-none")
+        $("#saveExitWrapper").removeClass("d-none")
         if(readOnly()) {
             $("#nextButton").text("Next");
-            $("#nextButton").hide();
-            $("#saveExit").hide();
-            $("#submitAndApproveButton").hide();
-            $("#exitButton").show()
+            $("#nextButtonWrapper").addClass("d-none");
+            $("#saveExitWrapper").addClass("d-none");
+            $("#submitAndApproveButtonWrapper").addClass("d-none");
+            $("#exitButtonWrapper").removeClass("d-none")
           }
         break;
     }

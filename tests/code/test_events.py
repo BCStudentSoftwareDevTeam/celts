@@ -299,13 +299,15 @@ def test_calculateRecurringEventFrequency():
 
     eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
-                 'endDate': parser.parse("03/11/2023")}
+                 'endDate': parser.parse("03/11/2023"),
+                 'location': "a big room"}
 
     # test correct response
     returnedEvents = getRepeatingEventsData(eventInfo)
-    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
-    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
-    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1, 'location': 'a big room'}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2, 'location': 'a big room'}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3, 'location': 'a big room'}
+
 
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
@@ -366,40 +368,46 @@ def test_attemptSaveMultipleOfferings():
     validseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 2',
                             'eventDate': '2022-06-13', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a small room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     duplicatedseriesData = baseEventData.copy()
     duplicatedseriesData['seriesData'] = [{ 
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 1',
                             'eventDate': '2022-06-12', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           },
                           {
                             'eventName': 'Offering 3',
                             'eventDate': '2022-06-16', 
-                            'startTime': '09:00 PM',
-                            'endTime': '10:00 PM', 
+                            'startTime': '09:00',
+                            'endTime': '10:00', 
+                            'eventLocation':"a big room",
                           }]
     
     
@@ -410,6 +418,9 @@ def test_attemptSaveMultipleOfferings():
         assert succeeded == True
         assert len(savedEvents) == 3
         assert len(failedSavedOfferings) == 0
+
+        assert savedEvents[0].location == 'a big room'
+        assert savedEvents[1].location == 'a small room'
 
         transaction.rollback()
         
@@ -761,7 +772,7 @@ def test_deleteEvent():
 @pytest.mark.integration
 def test_upcomingEvents():
     with mainDB.atomic() as transaction:
-        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("08/01/2021 05:00","%m/%d/%Y %H:%M")
         dayBeforeTestDate = testDate - timedelta(days=1)
 
         # Create a user to run the tests with
@@ -1011,6 +1022,101 @@ def test_calculateNewSeriesId():
     else:
         maxSeriesId += 1
     assert calculateNewSeriesId() == maxSeriesId
+
+@pytest.mark.integration
+def test_getParticipatedEventsForUser_participatedTypes():
+    with mainDB.atomic() as transaction:
+        user = User.create(
+            username='usrtst2',
+            firstName='Test',
+            lastName='User',
+            bnumber='03522493',
+            email='user2@berea.edu',
+            isStudent=True
+        )
+
+        program = Program.create(
+            id=14,
+            programName="BOO",
+            isBonnerScholars=False,
+            contactEmail="test@email",
+            contactName="testName"
+        )
+
+        laborEvent = Event.create(
+            name="Labor shift",
+            term=2,
+            description="Labor event",
+            timeStart="18:00:00",
+            timeEnd="21:00:00",
+            location="The moon",
+            startDate="2021-12-12",
+            isAllVolunteerTraining=False,
+            isLaborOnly=True,
+            isService=False,
+            program=program
+        )
+
+        volunteerEvent = Event.create(
+            name="Volunteer event",
+            term=2,
+            description="Volunteer event",
+            timeStart="18:00:00",
+            timeEnd="21:00:00",
+            location="The moon",
+            startDate="2021-12-13",
+            isAllVolunteerTraining=False,
+            isLaborOnly=False,
+            isService=True,
+            program=program
+        )
+
+        laborVolunteerEvent = Event.create(
+            name="Labor volunteer event",
+            term=2,
+            description="Labor and volunteer event",
+            timeStart="18:00:00",
+            timeEnd="21:00:00",
+            location="The moon",
+            startDate="2021-12-14",
+            isAllVolunteerTraining=False,
+            isLaborOnly=True,
+            isService=True,
+            program=program
+        )
+
+        allVolunteerTrainingEvent = Event.create(
+            name="All Volunteer Training",
+            term=2,
+            description="All volunteer training event",
+            timeStart="18:00:00",
+            timeEnd="21:00:00",
+            location="The moon",
+            startDate="2021-12-15",
+            isAllVolunteerTraining=True,
+            isLaborOnly=False,
+            isService=False,
+            program=program
+        )
+
+        EventParticipant.create(user=user, event=allVolunteerTrainingEvent)
+        EventParticipant.create(user=user, event=laborEvent)
+        EventParticipant.create(user=user, event=volunteerEvent)
+        EventParticipant.create(user=user, event=laborVolunteerEvent)
+
+        result = getParticipatedEventsForUser(user)
+
+        participatedTypes = {
+            event.name: event.participatedType for event in result
+        }
+
+        assert participatedTypes["Labor shift"] == "Labor"
+        assert participatedTypes["Volunteer event"] == "Volunteer"
+        assert participatedTypes["Labor volunteer event"] == "Labor & Volunteer"
+        assert participatedTypes["All Volunteer Training"] == "Volunteer"
+
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
@@ -1318,7 +1424,7 @@ def test_inviteCohortsToEvent():
         with app.app_context():
             g.current_user = "heggens"
             
-            testDate = datetime.strptime("2025-08-01 05:00","%Y-%m-%d %H:%M")
+            testDate = datetime.strptime("08/01/2025 05:00","%m/%d/%Y %H:%M")
             programEvent = Program.create(id = 13,
                                         programName = "Bonner Scholars",
                                         isBonnerScholars = True,
@@ -1351,7 +1457,7 @@ def test_updateEventCohorts():
         with app.app_context():
             g.current_user = "heggens"
             
-            testDate = datetime.strptime("2025-10-01 05:00","%Y-%m-%d %H:%M")
+            testDate = datetime.strptime("10/01/2025 05:00","%m/%d/%Y %H:%M")
             programEvent = Program.create(id = 13,
                                           programName = "Bonner Scholars",
                                           isBonnerScholars = True,

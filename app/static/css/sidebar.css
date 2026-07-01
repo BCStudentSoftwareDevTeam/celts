@@ -18,7 +18,7 @@
     height: 100vh;
     max-height: 100vh;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
 .b-example-divider {
@@ -41,3 +41,18 @@
 
 .fw-semibold { font-weight: 600; }
 .lh-tight { line-height: 1.25; }
+
+
+.col-xs-3{
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    -o-transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease-in-out;
+}
+.sidebar_padding{
+  margin-block:2px;
+  padding-block: 0.7rem;
+}
+.sidebar_padding:hover{
+    background-color: #0d6dfc;
+}
