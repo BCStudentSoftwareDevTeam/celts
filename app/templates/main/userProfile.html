@@ -38,7 +38,7 @@
   </div>
 </div>
 <div class="profile-links">
-  <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
+  <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Personal Information</a>
 
   {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
     <a href="/profile/{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm" target="_blank">Print Travel Form</a>
