@@ -68,5 +68,5 @@ def retrieveEvents():
 		response.raise_for_status()
 		return jsonify(data_dict)
 	except requests.exceptions.RequestException as e:
-		print(e)
+		print("Error retrieving data from campusgroups: \n", e)
 		abort(500)	
