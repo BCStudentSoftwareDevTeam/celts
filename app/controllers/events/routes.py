@@ -1,4 +1,5 @@
-from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session
+from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session, jsonify
+import requests, xmltodict
 from datetime import datetime
 from peewee import DoesNotExist
 
@@ -11,6 +12,9 @@ from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
+
+from app import app
+
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
 def loadKiosk(eventid):
@@ -48,3 +52,21 @@ def kioskSignin():
     except Exception as e:
         print("Error in Kiosk Page", e)
         return "", 500
+
+@events_bp.route('/retrieveEvents', methods=['GET'])
+def retrieveEvents():
+	now = datetime.now()
+	ts_now = now.isoformat().replace('+00:00', 'Z')
+	campus_groups_url = f'{app.config["campusgroups"]["sandbox"]["url"]}/rss_events?ts={ts_now}&preauth={app.config["campusgroups"]["sandbox"]["key"]}'
+	headers = {
+        'X-CG-API-Secret': app.config["campusgroups"]["sandbox"]["secret"]
+    }
+	try:
+		response = requests.get(campus_groups_url, headers = headers)
+		response.raise_for_status()
+		data_dict = xmltodict.parse(response.text)
+		response.raise_for_status()
+		return jsonify(data_dict)
+	except requests.exceptions.RequestException as e:
+		print(e)
+		abort(500)	
