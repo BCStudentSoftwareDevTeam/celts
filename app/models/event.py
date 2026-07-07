@@ -27,6 +27,7 @@ class Event(baseModel):
     isCanceled = BooleanField(default=False)
     deletionDate = DateTimeField(null=True)
     deletedBy = TextField(null=True)
+    campusGroupsId = IntegerField(null=True)
 
     _spCache = "Empty"
 

@@ -37,10 +37,12 @@ campusgroups:
     url: https://berea-sandbox.campusgroups.com
     secret: 'addkeyhere' 
     key: 'addkeyhere'  
+    school: 'berea-sandbox'
   production:
     url: https://berea.campusgroups.com
     secret: 'addkeyhere' 
     key: 'addkeyhere'  
+    school: 'berea'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea

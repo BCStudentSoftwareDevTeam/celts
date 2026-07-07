@@ -1,3 +1,4 @@
+from app.logic.campusGroups import CampusGroups
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session, jsonify
 import requests, xmltodict
 from datetime import datetime
@@ -55,18 +56,17 @@ def kioskSignin():
 
 @events_bp.route('/retrieveEvents', methods=['GET'])
 def retrieveEvents():
-	now = datetime.now()
-	ts_now = now.isoformat().replace('+00:00', 'Z')
-	campus_groups_url = f'{app.config["campusgroups"]["sandbox"]["url"]}/rss_events?ts={ts_now}&preauth={app.config["campusgroups"]["sandbox"]["key"]}'
-	headers = {
-        'X-CG-API-Secret': app.config["campusgroups"]["sandbox"]["secret"]
-    }
-	try:
-		response = requests.get(campus_groups_url, headers = headers)
-		response.raise_for_status()
-		data_dict = xmltodict.parse(response.text)
-		response.raise_for_status()
-		return jsonify(data_dict)
-	except requests.exceptions.RequestException as e:
-		print("Error retrieving data from campusgroups: \n", e)
-		abort(500)	
+    cg = CampusGroups()
+    events = cg.getEvents()
+    return events
+
+@events_bp.route('/addEventToCampusGroups/<event_id>', methods=['GET'])
+def addEventToCampusGroups(event_id):
+    if app.env == "production":
+        campusGroupsEnv = "production"
+    else:
+        campusGroupsEnv = "sandbox"
+    cg = CampusGroups(campusGroupsEnv)
+    data = cg.parseEventData(event_id)
+    response = cg.addEvent(data)
+    return response
