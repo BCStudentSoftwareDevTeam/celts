@@ -335,6 +335,8 @@ def eventDisplay(eventId):
 
     # Event Edit
     if 'edit' in rule.rule:
+        event.isCampusGroupsSynced = False
+        event.save(only=[Event.isCampusGroupsSynced])
         return render_template("events/createEvent.html",
                                 eventData = eventData,
                                 termList = Term.select().order_by(Term.termOrder),
@@ -367,6 +369,11 @@ def eventDisplay(eventId):
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
+        # CampusGroups integration        
+        if event.campusGroupsId:
+            eventData["campusGroupsURL"] = event.campusGroupsURL
+            eventData["campusGroupsId"] = event.campusGroupsId
+            eventData["isCampusGroupsSynced"] = event.isCampusGroupsSynced
         return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,

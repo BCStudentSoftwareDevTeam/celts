@@ -29,6 +29,7 @@ class Event(baseModel):
     deletedBy = TextField(null=True)
     campusGroupsId = IntegerField(null=True)
     campusGroupsURL = CharField(null=True)
+    isCampusGroupsSynced = BooleanField(default=False)
 
     _spCache = "Empty"
 

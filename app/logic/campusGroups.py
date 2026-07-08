@@ -176,14 +176,12 @@ class CampusGroups:
 			"cg_event_id": find_text("cg_event_id"),
 			"message": find_text("message"),
 			"message_code": find_text("message_code"),
-		}
-	
-		if int(response["message_code"]) == 1:
-			# Event creation successful in CampusGroups
+		}		
+		
+		if response["cg_event_id"]:		
 			self.event.campusGroupsId = response["cg_event_id"]
 			self.event.campusGroupsURL = f"{self.url}/celts/rsvp_boot?id={response['cg_event_id']}"
+			self.event.isCampusGroupsSynced = True
 			self.event.save()
-		else:
-			# Event creation/update failed in CampusGroups
-			print(f"Error adding/updating event in CampusGroups: {response['message']} (code {response['message_code']})")		
+		
 		return response
