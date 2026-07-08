@@ -1579,7 +1579,7 @@ def test_campusGroups():
                                         <CreateUpdateEventResult>
                                         <cg_event_id>374950</cg_event_id>
                                         <message_code>0</message_code>
-                                        <message>SUCCESS: Event updated</message>
+                                        <message>FAILED: Failed message</message>
                                         </CreateUpdateEventResult>
                                     </CreateUpdateEventResponse>
                                     </soap:Body>
