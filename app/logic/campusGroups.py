@@ -52,6 +52,7 @@ class CampusGroups:
 		self.key = app.config["campusgroups"][campusGroupsEnv]["key"]
 		self.school = app.config["campusgroups"][campusGroupsEnv]["school"]
 		self.headers = {'X-CG-API-Secret': self.secret}
+		self.event = None
 
 	def getEvents(self):
 		"""
@@ -60,16 +61,11 @@ class CampusGroups:
 		now = datetime.now()
 		ts_now = now.isoformat().replace('+00:00', 'Z')
 		rss_events_url = f'{self.url}/rss_events?ts={ts_now}&preauth={self.key}'
+		response = requests.get(rss_events_url, headers = self.headers)
+		response.raise_for_status()
+		data_dict = xmltodict.parse(response.text)
+		return jsonify(data_dict)
 		
-		try:
-			response = requests.get(rss_events_url, headers = self.headers)
-			response.raise_for_status()
-			data_dict = xmltodict.parse(response.text)
-			response.raise_for_status()
-			return jsonify(data_dict)
-		except requests.exceptions.RequestException as e:
-			print("Error retrieving data from campusgroups: \n", e)
-			abort(500)
 
 	def addEvent(self, eventData):
 		"""
@@ -81,29 +77,11 @@ class CampusGroups:
 		self.headers["SOAPAction"] = "http://campusgroups.com/CreateUpdateEvent"
 		self.headers["Content-Type"] = "text/xml; charset=utf-8"
 
-		try:
-			response = requests.post(createUpdateEvent_url, data=xmlOut, headers=self.headers, timeout=15)
-			response.raise_for_status()
-			return self.parse_event_response(response.content)
+	
+		response = requests.post(createUpdateEvent_url, data=xmlOut, headers=self.headers, timeout=15)
+		response.raise_for_status()
 
-		except requests.exceptions.RequestException as e:
-			print("Error retrieving data from campusgroups: \n", e)
-			abort(500)
-	
-	def parse_event_response(self, xml_content):
-		"""Pull cg_event_id / message / message_code out of the SOAP response,
-		tolerating either the namespaced or bare tag form."""
-		responseData = xmltodict.parse(xml_content)		
-		
-		def find_text(tag):
-			el = responseData['soap:Envelope']['soap:Body']['CreateUpdateEventResponse']['CreateUpdateEventResult'].get(tag)
-			return el if el is not None else None
-	
-		return {
-			"cg_event_id": find_text("cg_event_id"),
-			"message": find_text("message"),
-			"message_code": find_text("message_code"),
-		}
+		return self.parse_event_response(response.content)
 
 
 	def build_event_xml(self, payload):
@@ -142,32 +120,34 @@ class CampusGroups:
 		xml_bytes = ET.tostring(envelope, encoding="utf-8")
 		return b'<?xml version="1.0" encoding="utf-8"?>' + xml_bytes
 	
-	def parseEventData(self, eventData):
+	def parseEventData(self, eventID):
 		"""
 		Parse the event data from Celts-link database into a dictionary.
 		"""
 
 		# TODO handle recurring events 
-
-		event = Event.get_by_id(eventData)
-		if not event:
-			abort(404, description=f"No events with ID {eventData} found.")
+		try:
+			self.event = Event.get_by_id(eventID)
+		except Event.DoesNotExist:
+			abort(404, description=f"No events with ID {eventID} found.")
 		data = {}
-		if event.campusGroupsId is None:
+
+		if self.event.campusGroupsId is None:
 			data["cg_event_id"] = 0		# create a new event
 		else:
-			data["cg_event_id"] = event.campusGroupsId #update an existing event
+			data["cg_event_id"] = self.event.campusGroupsId #update an existing event
+		
 		data["cg_group_acronym"] = "Celts"		# event.program?
-		data["external_event_id"] = event.id
-		data["event_coordinator"] = event.contactEmail
-		data["event_name"] = event.name
-		data["quick_description"] = event.description
+		data["external_event_id"] = self.event.id
+		data["event_coordinator"] = self.event.contactEmail
+		data["event_name"] = self.event.name
+		data["quick_description"] = self.event.description
 		data["event_type"] = "Academic"
-		data["event_start_date"] = event.startDate.strftime("%Y-%m-%d")
-		data["event_start_time"] = event.timeStart.strftime("%H:%M")
-		data["event_end_date"] = event.startDate.strftime("%Y-%m-%d")
-		data["event_end_time"] = event.timeEnd.strftime("%H:%M")
-		data["event_location"] = event.location
+		data["event_start_date"] = self.event.startDate.strftime("%Y-%m-%d")
+		data["event_start_time"] = self.event.timeStart.strftime("%H:%M")
+		data["event_end_date"] = self.event.startDate.strftime("%Y-%m-%d")
+		data["event_end_time"] = self.event.timeEnd.strftime("%H:%M")
+		data["event_location"] = self.event.location
 
 		# Check CampusGroups API documentation for magic numbers:
 		data["event_display_to"] = 0
@@ -177,5 +157,33 @@ class CampusGroups:
 		data["hide_from_events_slider"] = 0
 		data["force_display_on_rooms_schedule"] = 0
 		data["location_type"] = 0
-
+		
 		return data
+	
+	def parse_event_response(self, xml_content):
+		"""
+		Pull cg_event_id / message / message_code out of the SOAP response,
+		tolerating either the namespaced or bare tag form.
+		"""
+		
+		responseData = xmltodict.parse(xml_content)		
+
+		def find_text(tag):
+			el = responseData['soap:Envelope']['soap:Body']['CreateUpdateEventResponse']['CreateUpdateEventResult'].get(tag)
+			return el if el is not None else None
+	
+		response = {
+			"cg_event_id": find_text("cg_event_id"),
+			"message": find_text("message"),
+			"message_code": find_text("message_code"),
+		}
+	
+		if int(response["message_code"]) == 1:
+			# Event creation successful in CampusGroups
+			self.event.campusGroupsId = response["cg_event_id"]
+			self.event.campusGroupsURL = f"{self.url}/celts/rsvp_boot?id={response['cg_event_id']}"
+			self.event.save()
+		else:
+			# Event creation/update failed in CampusGroups
+			print(f"Error adding/updating event in CampusGroups: {response['message']} (code {response['message_code']})")		
+		return response

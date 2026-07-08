@@ -4,7 +4,7 @@ from flask import g, session
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
 from playhouse.shortcuts import model_to_dict
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, time, timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
@@ -33,6 +33,7 @@ from app.logic.volunteers import updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
+from app.logic.campusGroups import CampusGroups
 
 @pytest.mark.integration
 def test_event_end():
@@ -1489,3 +1490,101 @@ def test_updateEventCohorts():
             
             transaction.rollback()
 
+@pytest.mark.integration
+def test_campusGroups():
+    """
+    This function tests the CampusGroups class and its methods for creating and updating events in the CampusGroups system.
+    """
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "heggens"
+
+            p = Program.create( id = 14,
+                                programName = "People Who Care",
+                                isBonnerScholars = False,
+                                contactEmail = "heggens@berea.edu",
+                                contactName = "Scott Heggen")            
+            event = Event.create(
+                                    name="Test Event Creation",
+                                    term=2,
+                                    description="This is a test event by Scott",
+                                    timeStart=time(17, 30),
+                                    timeEnd=time(18, 45),
+                                    location="MACP",
+                                    startDate=date(2026, 7, 6),
+                                    contactEmail="heggens@berea.edu",
+                                    contactName="Scott Heggen",
+                                    program=p.id
+                                )            
+            # Test default values in Event object 
+            assert event.campusGroupsId == None
+            assert event.campusGroupsURL == None
+
+            cg = CampusGroups()
+
+            # Test default value for an event in CampusGroups object
+            assert cg.event == None
+            
+            cg.event = event
+
+            # After event is created but before it is sent to CampusGroups
+            assert cg.event.campusGroupsId == None 
+            assert cg.event.campusGroupsURL == None       
+            
+            # After the event is created in campusGroups
+            assert cg.parseEventData(event.id) == { 'cg_event_id': 0, 
+                                                    'cg_group_acronym': 'Celts', 
+                                                    'external_event_id': cg.event.id, 
+                                                    'event_coordinator': 'heggens@berea.edu', 
+                                                    'event_name': 'Test Event Creation', 
+                                                    'quick_description': 'This is a test event by Scott', 
+                                                    'event_type': 'Academic', 
+                                                    'event_start_date': '2026-07-06', 
+                                                    'event_start_time': '17:30', 
+                                                    'event_end_date': '2026-07-06', 
+                                                    'event_end_time': '18:45', 
+                                                    'event_location': 'MACP', 
+                                                    'event_display_to': 0, 
+                                                    'allow_rsvp': 1, 
+                                                    'event_open_to': 1, 
+                                                    'delete_event': 0, 
+                                                    'hide_from_events_slider': 0, 
+                                                    'force_display_on_rooms_schedule': 0, 
+                                                    'location_type':0
+                                                    }
+
+            # simulated xml response from CampusGroups API for event update
+            # Successful response from CampusGroups API for event update
+            xml_content = """<?xml version="1.0" encoding="utf-8"?>
+                                <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                    <soap:Body>
+                                    <CreateUpdateEventResponse xmlns="http://campusgroups.com/">
+                                        <CreateUpdateEventResult>
+                                        <cg_event_id>374950</cg_event_id>
+                                        <message_code>1</message_code>
+                                        <message>SUCCESS: Event updated</message>
+                                        </CreateUpdateEventResult>
+                                    </CreateUpdateEventResponse>
+                                    </soap:Body>
+                                </soap:Envelope>"""
+            
+            assert cg.parse_event_response(xml_content) == {'cg_event_id': '374950', 'message': 'SUCCESS: Event updated', 'message_code': '1'}
+            assert Event.get_by_id(cg.event.id).campusGroupsId == 374950
+
+            # Failed response from CampusGroups API for event update
+            xml_content = """<?xml version="1.0" encoding="utf-8"?>
+                                <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                    <soap:Body>
+                                    <CreateUpdateEventResponse xmlns="http://campusgroups.com/">
+                                        <CreateUpdateEventResult>
+                                        <cg_event_id>374950</cg_event_id>
+                                        <message_code>0</message_code>
+                                        <message>SUCCESS: Event updated</message>
+                                        </CreateUpdateEventResult>
+                                    </CreateUpdateEventResponse>
+                                    </soap:Body>
+                                </soap:Envelope>"""
+            
+            assert Event.get_by_id(event.id).campusGroupsURL == f"{app.config["campusgroups"]["sandbox"]['url']}/celts/rsvp_boot?id=374950"
+
+            transaction.rollback()

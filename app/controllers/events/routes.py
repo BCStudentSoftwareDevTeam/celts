@@ -56,9 +56,14 @@ def kioskSignin():
 
 @events_bp.route('/retrieveEvents', methods=['GET'])
 def retrieveEvents():
-    cg = CampusGroups()
-    events = cg.getEvents()
-    return events
+    try:
+        cg = CampusGroups()
+        events = cg.getEvents()
+        return events
+    except requests.exceptions.RequestException as e:
+        print("Error retrieving data from campusgroups: \n", e)
+        return "", 500
+
 
 @events_bp.route('/addEventToCampusGroups/<event_id>', methods=['GET'])
 def addEventToCampusGroups(event_id):
@@ -66,7 +71,13 @@ def addEventToCampusGroups(event_id):
         campusGroupsEnv = "production"
     else:
         campusGroupsEnv = "sandbox"
-    cg = CampusGroups(campusGroupsEnv)
-    data = cg.parseEventData(event_id)
-    response = cg.addEvent(data)
-    return response
+
+    try:
+        cg = CampusGroups(campusGroupsEnv)
+        data = cg.parseEventData(event_id)
+        response = cg.addEvent(data)
+        return response  # FIXME Return a better response, or parse this in the front end
+    except requests.exceptions.RequestException as e:
+        print("Error retrieving data from campusgroups: \n", e)
+        return "", 500
+	
