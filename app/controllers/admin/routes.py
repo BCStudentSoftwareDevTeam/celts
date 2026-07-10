@@ -682,3 +682,20 @@ def displayEventFile():
     isChecked = fileData.get('checked') == 'true'
     eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
+
+@admin_bp.route("/handbookSignature", methods=["GET", "POST"])
+def handbookSignature():
+    if request.method == "GET":
+        if not g.current_user.isAdmin:
+            abort(403)
+        
+        return render_template("admin/signature.html")
+    else:
+        data = request.form
+        
+        signer = User.get(User.username == data["studentID"])
+        if signer:
+            signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
+            signer.save()
+
+        return "", 200

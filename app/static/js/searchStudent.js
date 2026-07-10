@@ -1,6 +1,6 @@
 import searchUser from './searchUser.js'
 function callback(selected) {
-  $("#searchStudent").submit();
+  $("#searchStudentsInput").submit();
 }
 $(document).ready(function() {
   $("#searchStudentsInput").on("input", function() {

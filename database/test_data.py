@@ -1613,8 +1613,14 @@ celtsLabor = [
     },
     {
         "user": "ayisie",
-        "positionTitle": "AGP Team Memeber",
+        "positionTitle": "AGP Team Member",
         "term": 2,
+        "isAcademicYear": True
+    },
+    {
+        "user": "neillz",
+        "positionTitle": "AGP Team Leader",
+        "term": 3,
         "isAcademicYear": True
     }
 ]

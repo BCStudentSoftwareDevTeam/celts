@@ -4,6 +4,8 @@ from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
+from dateutil.relativedelta import relativedelta
+
 
 from app.controllers.main import main_bp
 from app import app
@@ -234,6 +236,13 @@ def viewUsersProfile(username):
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
+        handbookOverdue = True
+        if volunteer.lastHandbookSignature:
+            if volunteer.lastHandbookSignature > (datetime.datetime.now() - relativedelta(years=1)).date():
+                handbookOverdue = False
+            volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")            
+        else:
+            volunteer.lastHandbookSignature = "NOT SIGNED"
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -252,6 +261,7 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
+                                handbookOverdue = handbookOverdue
                             )
     abort(403)
 

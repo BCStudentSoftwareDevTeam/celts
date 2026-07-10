@@ -1,0 +1,59 @@
+{% set title = "Handbook Signature" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="module" src="/static/js/handbookSignature.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/handbookSignature.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block app_content %}
+    <div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Handbook Acknowledgement Form</h3>
+    </div>
+    <div class="panel-body">
+        <form>
+            <div class="col-sm-6 col-sm-offset-3 m-auto">
+                <div class="row">
+                    <div class="form-group ui-widget" id="studentSearchField">
+                        <div class="input-group">
+                            <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search for the student" autocomplete="off">
+                            <span class="input-group-text" id="searchIcon"><span class="bi bi-search"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkboxes">
+                <label>
+                    <input class="checkbox" type="checkbox" value="readHandbook"> I have read and understand the CELTS handbook.
+                </label>        
+            </div>
+            <div class="checkboxes">
+                <label>
+                    <input class="checkbox" type="checkbox" value="followHandbook"> I agree to follow the guidelines outlined in the CELTS handbook.
+                </label>
+            </div>
+            {% if g.current_user.hasCurrentCeltsLabor %} 
+            <div class="checkboxes">
+                <label>
+                    <input class="checkbox" type="checkbox" value="laborHandbook"> I agree to uphold the CELTS handbook with volunteers I am supervising in my program.
+                </label>
+            </div>
+            {% endif %}
+            <canvas id="handbook-signature-pad" class="signature-pad disabled" data-student = ""></canvas>
+        </div>
+        
+        <div class="panel-footer">
+            <button id="clear-btn" class="btn btn-warning">Clear</button>
+            <button id="save-btn" class="btn btn-primary" type = "button">Save Signature</button>
+        </div>
+        </form>
+    </div>
+{% endblock %}
