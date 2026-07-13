@@ -47,6 +47,12 @@ $('#save-btn').on('click', function () {
         },
         error: function(error, status){
             console.log(error, status)
+            $("#signatureConfirmation h3").text("Uh oh. Something wrong. Please seek out help from the CELTS staff")
+            $("#signatureConfirmation h3").replaceWith(function() {
+                return $('<p>', { html: $(this).html() });
+            });
+            $("#signatureConfirmation").show();
+            $("#signatureButtons").hide();
         }
     })    
 });

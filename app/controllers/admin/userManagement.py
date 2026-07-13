@@ -152,7 +152,6 @@ def addNewTerm():
 def uploadHandbook(currentTerm):
     term = Term.select().where(Term.id == currentTerm).get()
     allAYterm = Term.select().where(Term.academicYear == term.academicYear)
-    print(list(allAYterm))
     dir_path = Path("app/static/files/handbooks")
     dir_path.mkdir(parents=True, exist_ok=True)
     file = request.files['handbookUploader']

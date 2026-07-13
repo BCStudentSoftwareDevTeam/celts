@@ -694,5 +694,4 @@ def handbookSignature():
     if signer:
         signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
         signer.save()
-
     return "", 200
