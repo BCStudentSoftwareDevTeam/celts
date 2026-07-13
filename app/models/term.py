@@ -6,6 +6,7 @@ class Term(baseModel):
     isSummer = BooleanField(default=False)
     isCurrentTerm = BooleanField(default=False)
     termOrder = CharField()
+    handbook = CharField(null=True)
 
     _cache = None
 

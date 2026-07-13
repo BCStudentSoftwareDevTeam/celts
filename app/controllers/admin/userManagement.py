@@ -1,7 +1,13 @@
-from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify
+import os
+from pathlib import Path
+
+from app.models.term import Term
+from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify, session
 from playhouse.shortcuts import model_to_dict
 from peewee import fn, JOIN, DoesNotExist
 import re
+from werkzeug.utils import secure_filename
+
 
 from app.controllers.admin import admin_bp
 from app.models.user import User
@@ -139,3 +145,20 @@ def addNewTerm():
     addNextTerm()
     flash("New term added", "success")
     return ""
+
+@admin_bp.route('/uploadHandbook/<currentTerm>', methods = ['POST'])
+def uploadHandbook(currentTerm):
+    term = Term.get_by_id(currentTerm)    
+    dir_path = Path("app/static/files/handbooks")
+    dir_path.mkdir(parents=True, exist_ok=True)
+    file = request.files['handbookUploader']
+    filename = secure_filename(file.filename)
+    full_path = os.path.join(dir_path, filename)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+    file.save(full_path)
+    term.handbook = filename
+    term.save()
+    g.current_term = term
+    flash(f"Handbook saved successfully to {term.description}!", "success")
+    return redirect(request.referrer)

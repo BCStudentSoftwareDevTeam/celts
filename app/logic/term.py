@@ -52,11 +52,12 @@ def addPastTerm(description):
     return createdOldTerm
 
 def changeCurrentTerm(term):
-    oldCurrentTerm = Term.get_by_id(g.current_term)
-    oldCurrentTerm.isCurrentTerm = False
-    oldCurrentTerm.save()
+    activeTerms = Term.select().where(Term.isCurrentTerm)
+    print("@@@@@@@")
+    print(list(activeTerms))
+    nterms = (Term.update(isCurrentTerm = False).where(Term.isCurrentTerm).execute())    
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createActivityLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+    createActivityLog(f"Changed Current Term to {newCurrentTerm.description}")

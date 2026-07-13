@@ -127,8 +127,8 @@
             <div class="text-center">
               <div class="card">
                 <div class="card-header"><strong>Select the Current Term</strong></div>
-                  <ul class="list-group" name="currentTermList" id="currentTermList">
-                  {% for term in terms %}
+                  <ul class="list-group" name="currentTermList" id="currentTermList">                  
+                  {% for term in terms %}                    
                     <li class="term-btn list-group-item list-group-item-action {{'active' if g.current_term == term}}"
                       id="termFormID_{{ loop.index }}"
                       aria-label="{{'Current term' if g.current_term == term}}"
@@ -141,8 +141,30 @@
                   </ul>
                 <div class="card-footer">
                   <button class="btn btn-success w-100" id="addNewTerm" role ="button">Add New Term</button>
-                </div>
+                </div>                
               </div>
+            </div>
+          </div>
+
+          <div class="container-fluid col-md-4">
+            <div class="text-center">
+              <form method="POST" action="/uploadHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <div class="card">                
+                  <div class="card-header"><strong>Upload the CELTS handbook for {{g.current_term.description}}:</strong></div>
+                    <ul class="list-group" name="handbookUploadList" id="handbookUploadList">                  
+                      <li class="list-group-item list-group-item-action"                        
+                        aria-label="{{g.current_term.description}}">
+                        <input class="form-control" type="file" id="handbookUploader" name="handbookUploader" accept=".pdf,.doc,.docx" required></input>
+                        <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                      </li>
+                      <li class="list-group-item list-group-item-action">
+                        <button class="btn btn-success w-100" id="uploadHandbook" role ="button" type="submit">Upload {{g.current_term.description}} handbook</button>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                </div>
+              </form>
             </div>
           </div>
         </div>

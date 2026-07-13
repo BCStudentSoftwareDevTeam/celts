@@ -236,7 +236,7 @@ def viewUsersProfile(username):
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
         handbookOverdue = getHandbookStatus(volunteer)
-
+        currentTerm = Term.get(Term.isCurrentTerm)
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -255,7 +255,8 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                handbookOverdue = handbookOverdue
+                                handbookOverdue = handbookOverdue,
+                                currentTerm = currentTerm
                             )
     abort(403)
 
