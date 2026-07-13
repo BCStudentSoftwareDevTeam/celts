@@ -238,9 +238,12 @@ def viewUsersProfile(username):
 
         handbookOverdue = True
         if volunteer.lastHandbookSignature:
-            if volunteer.lastHandbookSignature > (datetime.datetime.now() - relativedelta(years=1)).date():
+            today = datetime.date.today()
+
+            # Signature must be during the current academic year (July 1 - June 30)
+            if datetime.date(today.year, 7, 1) < volunteer.lastHandbookSignature < datetime.date(today.year + 1, 6, 30):
                 handbookOverdue = False
-            volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")            
+            volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")
         else:
             volunteer.lastHandbookSignature = "NOT SIGNED"
         return render_template ("/main/userProfile.html",

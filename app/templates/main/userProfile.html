@@ -5,11 +5,14 @@
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script type="module" src="/static/js/handbookSignature.js"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
 {% endblock %}
 
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
+  {#<link rel="stylesheet" href="{{url_for('static', filename ='css/handbookSignature.css') }}?u={{lastStaticUpdate}}">#}
 {% endblock %}
 
 {% block app_content %}
@@ -17,11 +20,11 @@
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
-<div class="row mb-2">
+<div class="row mb-2" id="handbookSignatureContainer">
   <div class="col-md-6 col-lg-4">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    <div>CELTS Handbook signed on: <span {% if handbookOverdue %}style="color:red"{% endif %}>{{volunteer.lastHandbookSignature}}</span>
+    <div>CELTS Handbook signed on: <span id="signatureDate" {% if handbookOverdue %}style="color:red"{% endif %}>{{volunteer.lastHandbookSignature}}</span>
       {% if handbookOverdue -%}
         <div class="tooltip-container">
           <span class="bi bi-info-circle-fill"></span>
@@ -707,11 +710,23 @@
           <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if norestrictions}} />
           <span id="saveNotification" class="text-success" style="display:none"> Saved!</span>
         </div>
-          <div class="container" id="dietContainer" {%if norestrictions%} style="display:none" {%endif%}>
-            <div class="form-group">
-              <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
-            </div>
+        <div class="container" id="dietContainer" {%if norestrictions %} style="display:none" {%endif%}>
+          <div class="form-group">
+            <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+          </div>
         </div>
+
+        <br>
+        {% if handbookOverdue %}
+        <h5 id="signatureHeader">Handbook Signature</h5>
+        <div class="row mb-3">
+          <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
+        </div>
+        <div class="row mb-3">
+          <button id="clear-btn" class="btn btn-warning">Clear</button>
+          <button id="save-btn" class="btn btn-primary" type = "button">Save Signature</button>
+        </div>
+        {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
