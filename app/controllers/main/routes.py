@@ -236,16 +236,7 @@ def viewUsersProfile(username):
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
-        handbookOverdue = True
-        if volunteer.lastHandbookSignature:
-            today = datetime.date.today()
-
-            # Signature must be during the current academic year (July 1 - June 30)
-            if datetime.date(today.year, 7, 1) < volunteer.lastHandbookSignature < datetime.date(today.year + 1, 6, 30):
-                handbookOverdue = False
-            volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")
-        else:
-            volunteer.lastHandbookSignature = "NOT SIGNED"
+        handbookOverdue = getHandbookStatus(volunteer)
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -267,6 +258,19 @@ def viewUsersProfile(username):
                                 handbookOverdue = handbookOverdue
                             )
     abort(403)
+
+def getHandbookStatus(volunteer):
+    handbookOverdue = True
+    if volunteer.lastHandbookSignature:
+        today = datetime.date.today()
+
+            # Signature must be during the current academic year (July 1 - June 30)
+        if datetime.date(today.year, 7, 1) < volunteer.lastHandbookSignature < datetime.date(today.year + 1, 6, 30):
+            handbookOverdue = False
+        volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")
+    else:
+        volunteer.lastHandbookSignature = "NOT SIGNED"
+    return handbookOverdue
 
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
 def emergencyContactInfo(username):
