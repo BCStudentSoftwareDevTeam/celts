@@ -30,18 +30,16 @@ $('#clear-btn').on('click', function () {
     signaturePad.clear();
 });
 
-
 $('#save-btn').on('click', function () {    
     $.ajax({
         url: `/handbookSignature`,
         type: "POST",
         headers: {'Content-Type': 'application/json'},
         data: JSON.stringify({studentID: $('#handbook-signature-pad').attr('data-student')}),
-        success: function(s){
-            alert("Thank you for signing the CELTS Handbook. We look forward to your participation in CELTS!");
+        success: function(s){            
             signaturePad.off();
-            $('#save-btn').hide();
-            $('#clear-btn').hide();
+            $("#signatureConfirmation").show();
+            $("#signatureButtons").hide();
             const today = new Date();
             $("#signatureDate").text(today.toLocaleDateString('en-US'));
             $("#signatureDate").css("color", "black");
