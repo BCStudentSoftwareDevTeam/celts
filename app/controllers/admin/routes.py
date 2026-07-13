@@ -684,16 +684,12 @@ def displayEventFile():
     eventfile.changeDisplay(fileData['id'], isChecked)
     return ""
 
-@admin_bp.route("/handbookSignature", methods=["GET", "POST"])
-def handbookSignature():
-    if request.method == "GET":
-            return render_template("admin/signature.html")
-    # POST
-    else:
-        signer = User.get(User.username == g.current_user.username)
-        print("CURRENT USER: ", signer)
-        if signer:
-            signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
-            signer.save()
+@admin_bp.route("/handbookSignature", methods=["POST"])
+def handbookSignature():        
+    signer = User.get(User.username == g.current_user.username)
+    print("CURRENT USER: ", signer)
+    if signer:
+        signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
+        signer.save()
 
-        return "", 200
+    return "", 200
