@@ -1,0 +1,72 @@
+{%set title ="Volunteer Extravaganza"%}
+{% extends "base.html"%}
+
+{% block scripts %}
+  {{super()}}  
+  <script type="module" src="/static/js/extravaganza.js"></script>  
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+{% endblock %}
+
+{% block app_content %}
+<h1>Welcome to the CELTS Volunteer Extravaganza <br />{{g.current_user.fullName}}!</h1>
+<p><strong>Step 1:</strong> Indicate your interest in a CELTS programs below. Your interest helps us get you involved!</p>
+<p><strong>Step 2:</strong> Attend one of the All Volunteers Trainings listed below. Click to RSVP!</p>
+<p><strong>Step 3:</strong> Attend the Program-specific training to learn more about volunteering with that program!</p>
+
+<h2> CELTS Programs </h2>
+<div class="table-responsive">
+    <table class="table table-striped allVolTable">
+        <tr>
+            <td><strong>All programs require attending one All Volunteers Training!</strong></td>
+            <td class="text-right">
+                {% for training in upcomingAllVolunteers %}
+                    {% if not loop.first %} <br /> {% endif %}
+                        <a href=event/{{training.id}}/view >{{training.name}}</a> ({{training.startDate}} @ {{training.timeStart}})
+                {% endfor %}
+            </td>
+        </tr>
+</table>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped programsTable">
+        <thead>
+            <tr>
+                <th scope="col">Program</th>
+                <th scope="col">Indicate Interest</th>
+                <th scope="col">Upcoming Trainings <br />(Required to participate)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for program in programs %}
+            {% if program in programsInterested %}
+                {% set checked = "checked" %}
+            {% endif %}
+            <tr>
+                <td><a href="{{program.url}}" id="programNameTable">{{program.programName}}</a></td>
+                <td>
+                    <input  class="form-check-input interestedInput"
+                            id="interestedInput"
+                            type="checkbox"
+                            data-programid="{{program.id}}"
+                            data-username="{{g.current_user.username}}"
+                            {{checked}}/>
+                </td>
+                <td>
+                    {% for training in upcomingTrainings %}
+                        {% if training.program.id == program.id %}
+                            <a href=event/{{training.id}}/view >{{training.name}}</a> ({{training.startDate}} @ {{training.timeStart}})
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="https://next.berea.edu/centers/center-for-excellence-in-learning-through-service">For more information about CELTS opportunities, click here.</a>
+</div>
+
+
+{% endblock %}

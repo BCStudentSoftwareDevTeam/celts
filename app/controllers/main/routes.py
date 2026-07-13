@@ -235,8 +235,8 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-
         handbookOverdue = getHandbookStatus(volunteer)
+
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -660,3 +660,28 @@ def updateMinorDeclaration(username):
     tab = request.args.get("tab", "interested")
     return redirect(url_for('admin.manageMinor', tab=tab))
 
+@main_bp.route('/extravaganza', methods=['GET'])
+def extravaganza():
+
+    programs = Program.select().where(Program.isOtherCeltsSponsored == False)
+    interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
+    programsInterested = [interest.program for interest in interests]
+
+    Term2 = Term.alias()            
+    sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
+    print("@@@@@@@@@", list(sameYearTerms), "@@@@@")
+    upcomingAllVolunteers = Event.select().where(Event.isAllVolunteerTraining, Event.term.in_(sameYearTerms))
+    upcomingTrainings = Event.select().where(Event.isTraining, Event.term.in_(sameYearTerms))
+    
+                                 
+
+    for idx, training in enumerate(upcomingTrainings):
+        upcomingTrainings[idx].startDate = training.startDate.strftime("%b %d")
+        upcomingTrainings[idx].timeStart = training.timeStart.strftime("%I:%M %p")
+
+    return render_template("main/extravanganzaWelcome.html",
+                           programs = programs,
+                           programsInterested = programsInterested,
+                           upcomingTrainings = upcomingTrainings,
+                           upcomingAllVolunteers = upcomingAllVolunteers
+                           )
