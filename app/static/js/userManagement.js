@@ -152,6 +152,13 @@ $(document).ready(function(){
   })
   });
 
+$('.viewRosters').on('click', function() {
+    // Openning the modal after the data was received
+    $('#programPlaceholder').data('programid', $(this).data('programid'))
+    let modal = new bootstrap.Modal($('#viewRostersModal'));
+      modal.show();
+});
+
 function submitRequest(method, username){
   let data = {
       method: method,

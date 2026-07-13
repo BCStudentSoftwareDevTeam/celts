@@ -686,10 +686,10 @@ def displayEventFile():
 
 @admin_bp.route("/handbookSignature", methods=["GET", "POST"])
 def handbookSignature():
-    if request.method == "GET":                                
+    if request.method == "GET":
             return render_template("admin/signature.html")
     # POST
-    else:                
+    else:
         signer = User.get(User.username == g.current_user.username)
         print("CURRENT USER: ", signer)
         if signer:

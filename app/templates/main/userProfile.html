@@ -723,8 +723,12 @@
           <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
         </div>
         <div class="row mb-3">
-          <button id="clear-btn" class="btn btn-warning">Clear</button>
-          <button id="save-btn" class="btn btn-primary" type = "button">Save Signature</button>
+          <div class="col-md-6">
+            <button id="clear-btn" class="btn btn-danger btn-sm w-100">Clear</button>
+          </div>
+          <div class="col-md-6">
+            <button id="save-btn" class="btn btn-primary btn-sm w-100" type = "button">Save Signature</button>
+          </div>
         </div>
         {% endif %}
       </div>
