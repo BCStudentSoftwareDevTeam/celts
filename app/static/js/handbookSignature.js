@@ -16,6 +16,7 @@ function resizeCanvas() {
 }
 
 window.addEventListener("resize", resizeCanvas);
+
 $('#editVolunteerModal').on('shown.bs.modal', function () {
     resizeCanvas();
 });
@@ -30,13 +31,12 @@ $('#clear-btn').on('click', function () {
 });
 
 
-$('#save-btn').on('click', function () {   
-    var dataURL = signaturePad.toDataURL();
-    console.log(dataURL); // You can send this base64 string to your server
+$('#save-btn').on('click', function () {    
     $.ajax({
         url: `/handbookSignature`,
         type: "POST",
-        data: {studentID: $('#handbook-signature-pad').attr('data-student')},
+        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({studentID: $('#handbook-signature-pad').attr('data-student')}),
         success: function(s){
             alert("Thank you for signing the CELTS Handbook. We look forward to your participation in CELTS!");
             signaturePad.off();

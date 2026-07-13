@@ -661,8 +661,7 @@ def updateMinorDeclaration(username):
     return redirect(url_for('admin.manageMinor', tab=tab))
 
 @main_bp.route('/extravaganza', methods=['GET'])
-def extravaganza():
-
+def extravaganza():    
     programs = Program.select().where(Program.isOtherCeltsSponsored == False)
     interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
     programsInterested = [interest.program for interest in interests]

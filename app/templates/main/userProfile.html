@@ -716,8 +716,10 @@
         </div>
 
         <br>
-        {% if handbookOverdue and g.current_user.username == volunteer.username%}
+        
         <h5 id="signatureHeader">Handbook Signature</h5>
+        <p><a href="">CELTS Student Handbook</a></p>
+        {% if handbookOverdue and g.current_user.username == volunteer.username%}
         <div class="row mb-3">
           <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
         </div>

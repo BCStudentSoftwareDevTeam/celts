@@ -685,7 +685,10 @@ def displayEventFile():
     return ""
 
 @admin_bp.route("/handbookSignature", methods=["POST"])
-def handbookSignature():        
+def handbookSignature():
+    data = request.get_json()
+    if not (g.current_user.username == data.get('studentID')):
+        abort(403)
     signer = User.get(User.username == g.current_user.username)
     print("CURRENT USER: ", signer)
     if signer:
