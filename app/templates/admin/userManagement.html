@@ -150,7 +150,7 @@
             <div class="text-center">
               <form method="POST" action="/uploadHandbook/{{g.current_term}}" enctype="multipart/form-data">
                 <div class="card">                
-                  <div class="card-header"><strong>Upload the CELTS handbook for {{g.current_term.description}}:</strong></div>
+                  <div class="card-header"><strong>Upload the CELTS handbook for AY {{currentTerm.academicYear}}:</strong></div>
                     <ul class="list-group" name="handbookUploadList" id="handbookUploadList">                  
                       <li class="list-group-item list-group-item-action"                        
                         aria-label="{{g.current_term.description}}">
@@ -158,9 +158,12 @@
                         <span class="sr-only visually-hidden">{{g.current_term}}</span>
                       </li>
                       <li class="list-group-item list-group-item-action">
-                        <button class="btn btn-success w-100" id="uploadHandbook" role ="button" type="submit">Upload {{g.current_term.description}} handbook</button>
+                        <button class="btn btn-success w-100" id="uploadHandbook" role ="button" type="submit">Upload AY {{g.current_term.academicYear}} handbook</button>
                       </li>
                     </ul>
+                    {% if currentTerm.handbook %}
+                      <a href="{{ url_for('static', filename='files/handbooks/' + currentTerm.handbook|default('', true))}}" target="_blank"/>AY {{currentTerm.academicYear}} - CELTS Student Handbook</a>
+                    {% endif %}
                   </div>
                   
                 </div>

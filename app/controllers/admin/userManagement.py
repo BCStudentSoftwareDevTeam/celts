@@ -124,12 +124,14 @@ def userManagement():
     
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
+    currentTerm = Term.get(Term.isCurrentTerm)
     if g.current_user.isCeltsAdmin or g.current_user.isProgramManager:
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(currentPrograms),
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
+                                currentTerm = currentTerm
                                 )
     abort(403)
 
@@ -148,7 +150,9 @@ def addNewTerm():
 
 @admin_bp.route('/uploadHandbook/<currentTerm>', methods = ['POST'])
 def uploadHandbook(currentTerm):
-    term = Term.get_by_id(currentTerm)    
+    term = Term.select().where(Term.id == currentTerm).get()
+    allAYterm = Term.select().where(Term.academicYear == term.academicYear)
+    print(list(allAYterm))
     dir_path = Path("app/static/files/handbooks")
     dir_path.mkdir(parents=True, exist_ok=True)
     file = request.files['handbookUploader']
@@ -157,8 +161,9 @@ def uploadHandbook(currentTerm):
     if os.path.exists(full_path):
         os.remove(full_path)
     file.save(full_path)
-    term.handbook = filename
-    term.save()
+    for t in allAYterm:
+        t.handbook = filename
+        t.save()
     g.current_term = term
     flash(f"Handbook saved successfully to {term.description}!", "success")
     return redirect(request.referrer)

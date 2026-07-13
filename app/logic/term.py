@@ -15,17 +15,22 @@ def addNextTerm():
     
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear   
+    handbook = None
     if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
-
+    else:   # if the previous term is fall or spring, make sure we copy the handbook
+        handbook = prevTerm.handbook
     semester = newDescription.split()[0]
     summer= "Summer" in semester
     newTerm = Term.create(description=newDescription,
                           year=newYear,
                           academicYear=newAY,
                           isSummer= summer,
-                          termOrder=Term.convertDescriptionToTermOrder(newDescription))
+                          termOrder=Term.convertDescriptionToTermOrder(newDescription),
+                          handbook=handbook
+                         )
+
     newTerm.save()
 
     return newTerm
@@ -52,9 +57,7 @@ def addPastTerm(description):
     return createdOldTerm
 
 def changeCurrentTerm(term):
-    activeTerms = Term.select().where(Term.isCurrentTerm)
-    print("@@@@@@@")
-    print(list(activeTerms))
+    activeTerms = Term.select().where(Term.isCurrentTerm)    
     nterms = (Term.update(isCurrentTerm = False).where(Term.isCurrentTerm).execute())    
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
