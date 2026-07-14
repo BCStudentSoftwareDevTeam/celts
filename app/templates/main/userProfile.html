@@ -722,7 +722,7 @@
           No handbook available for {{currentTerm.description}} yet.
         {% else %}          
           <p>{{currentTerm.description}}: <a href="{{ url_for('static', filename='files/handbooks/' + currentTerm.handbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
-          {% if handbookOverdue and g.current_user.username == volunteer.username%}
+          {% if handbookOverdue and g.current_user.username == volunteer.username %}
             <div class="row mb-3">
               <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
             </div>
@@ -734,7 +734,7 @@
                 <button id="save-btn" class="btn btn-primary btn-sm w-100" type = "button">Save Signature</button>
               </div>              
             </div>
-            <div class="row mb-3" id="signatureConfirmation" style="display: none;"">
+            <div class="row mb-3" id="signatureConfirmation" style="display: none;">
               <div class="col-md-12 center-block text-center">
                 <h3>Handbook signed!</h3>
               </div>              
