@@ -503,7 +503,11 @@ function checkValidation() {
   let allFieldFilled = true;
   let seriesEvent = $("#checkIsSeries").is(":checked");
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked");
-  let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training';
+  var pageId = $("#pageTitle").attr('name');
+
+  let isAllVolunteer = pageId == "all-volunteer";
+  let isLaborOnly = (pageId == "labor-meeting" || pageId == "all-celts-training");
+  
   enableLiveCustomValidityClearing([".all", ".series", ".seriesWeekly", ".main", ".allV"]);
 
   // Always validate common fields (.all class)
@@ -513,6 +517,9 @@ function checkValidation() {
     // Validate all volunteer specific fields
     allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
 
+  } else if (isLaborOnly) {
+    allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
+  
   } else if (seriesEvent) {
     // Validate series-specific fields
     allFieldFilled = validateFieldGroup(".series", allFieldFilled);

@@ -11,7 +11,8 @@ class Event(baseModel):
     timeEnd = TimeField()
     location = CharField()
     isFoodProvided = BooleanField(default=False)
-    isLaborOnly = BooleanField(default=False)
+    includesLabor = BooleanField(default=False)     # Event has some labor students working in addition to volunteers
+    isLaborOnly = BooleanField(default=False)     # Event is a labor meeting, specifically for labor students only 
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)

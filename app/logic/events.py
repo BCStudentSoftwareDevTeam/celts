@@ -196,8 +196,8 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "timeStart": newEventData['timeStart'],
                 "timeEnd": newEventData['timeEnd'],
                 "location": newEventData['location'],
-                "isFoodProvided" : newEventData['isFoodProvided'],
-                "isLaborOnly" : newEventData['isLaborOnly'],
+                "isFoodProvided" : newEventData['isFoodProvided'],                
+                "includesLabor" : newEventData['includesLabor'],
                 "isTraining": newEventData['isTraining'],
                 "isEngagement": newEventData['isEngagement'],
                 "isRsvpRequired": newEventData['isRsvpRequired'],
@@ -390,6 +390,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     return eventsList
 
+#TODO This method appears to be very poorly tested, and very complex. 
 def getParticipatedEventsForUser(user):
     """
         Get all the events a user has participated in.
@@ -400,11 +401,12 @@ def getParticipatedEventsForUser(user):
     """
 
     eventName = fn.LOWER(Event.name)
-    checkIfLaborMeeting = eventName.contains("labor meeting")
+    checkIfLaborMeeting = eventName.contains("labor meeting")       # Flimsy!! Let's use event.isLaborOnly instead? 
 
+    # Does this handle labor only and/or includes labor events?
     participatedEvents = (Event.select(Event, Program.programName, Case(None, (
-                               ((Event.isLaborOnly | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),                                
-                               ((Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                               ((Event.includesLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"), 
+                               ((Event.includesLabor | Event.name.contains("Labor")), "Labor"),
                                (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
@@ -428,7 +430,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['isLaborOnly']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['includesLabor']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -507,7 +509,7 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'isLaborOnly']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:

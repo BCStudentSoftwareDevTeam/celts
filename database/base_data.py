@@ -53,6 +53,22 @@ templates = [
         "templateFile": "createEvent.html",
         "isVisible": True
     },
+    {
+        "id": 3,
+        "name": "All CELTS Training",
+        "tag": "all-celts-training",
+        "templateJSON": '{"name": "All CELTS Training (Labor)","description": "Training for all CELTS Labor Students", "isTraining": true, "isService": false, "isRequired": true, "isLaborOnly": true, "rsvpLimit": ""}',
+        "templateFile": "createEvent.html",
+        "isVisible": True
+    },
+    {
+        "id": 4,
+        "name": "Weekly Labor Meeting",
+        "tag": "labor-meeting",
+        "templateJSON": '{"name": "CELTS Labor Meeting","description": "Regularly scheduled CELTS labor meeting", "isTraining": true, "isService": false, "isRequired": true, "isLaborOnly": true, "rsvpLimit": ""}',
+        "templateFile": "createEvent.html",
+        "isVisible": True
+    },
 
 ]
 EventTemplate.insert_many(templates).on_conflict_replace().execute()
