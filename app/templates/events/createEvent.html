@@ -300,10 +300,12 @@
                 <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}} />
                 <label class="custom-control-label" for="checkFood"><strong>This event provides food.</strong></label>
               </div>
+              {% if not eventData.isLaborOnly %}
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="checkIncludesLabor" name="includesLabor" {{"checked" if eventData.includesLabor}}/>
                 <label class="custom-control-label" for="checkIncludesLabor"><strong>This event includes labor.</strong></label>
               </div>
+              {% endif %}
             </div>
           </div>
         </div>
