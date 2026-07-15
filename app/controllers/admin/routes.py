@@ -97,7 +97,7 @@ def createEvent(templateid, programid):
         return redirect(url_for("admin.program_picker"))
 
     # Get the data from the form or from the template
-    eventData = template.templateData
+    eventData = template.templateData    
     eventData['program'] = program
 
     if request.method == "GET":
@@ -114,6 +114,7 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         savedEvents = None
         eventData.update(request.form.copy())
+        print("\n\n\n\n\n1\n\n\n\n", eventData)
         eventData = preprocessEventData(eventData)
 
         if eventData.get('isSeries'):

@@ -119,8 +119,16 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data for each event in the series, inheriting from the original eventData
+    
+    # Reformat dates from Jul 10, 2026 to 2026-07-10 for easier sorting
+    eventData2 = []
+    for ed in eventData['seriesData']:        
+        ed['eventDate'] = datetime.strptime(ed['eventDate'], "%b %d, %Y").strftime("%Y-%m-%d")
+        eventData2.append(ed)    
+    eventData['seriesData'] = eventData2
+
     seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
- # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
+    # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -188,24 +196,24 @@ def saveEventToDb(newEventData, renewedEvent = False):
 
     eventRecords = []
     with mainDB.atomic():
-        
         eventData = {
-                "term": newEventData['term'],
-                "name": newEventData['name'],
-                "description": newEventData['description'],
-                "timeStart": newEventData['timeStart'],
-                "timeEnd": newEventData['timeEnd'],
-                "location": newEventData['location'],
-                "isFoodProvided" : newEventData['isFoodProvided'],                
-                "includesLabor" : newEventData['includesLabor'],
-                "isTraining": newEventData['isTraining'],
-                "isEngagement": newEventData['isEngagement'],
-                "isRsvpRequired": newEventData['isRsvpRequired'],
-                "isService": newEventData['isService'],
-                "startDate": newEventData['startDate'],
-                "rsvpLimit": newEventData['rsvpLimit'],
-                "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName'],
+                "term":             newEventData['term'],
+                "name":             newEventData['name'],
+                "description":      newEventData['description'],
+                "timeStart":        newEventData['timeStart'],
+                "timeEnd":          newEventData['timeEnd'],
+                "location":         newEventData['location'],
+                "isFoodProvided" :  newEventData['isFoodProvided'],                
+                "isLaborOnly" :     newEventData['isLaborOnly'],
+                "includesLabor" :   newEventData['includesLabor'],
+                "isTraining":       newEventData['isTraining'],
+                "isEngagement":     newEventData['isEngagement'],
+                "isRsvpRequired":   newEventData['isRsvpRequired'],
+                "isService":        newEventData['isService'],
+                "startDate":        newEventData['startDate'],
+                "rsvpLimit":        newEventData['rsvpLimit'],
+                "contactEmail":     newEventData['contactEmail'],
+                "contactName":      newEventData['contactName'],
             }
         
         # The three fields below are only relevant during event creation so we only set/change them when 
@@ -509,8 +517,9 @@ def preprocessEventData(eventData):
         - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor']
-
+    print("\n\n\n\n\n2\n\n\n\n", eventData)
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor', 'isLaborOnly']
+    
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
@@ -553,7 +562,7 @@ def preprocessEventData(eventData):
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
     if 'timeEnd' in eventData:
-        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])    
 
     return eventData
 
@@ -738,5 +747,3 @@ def updateEventCohorts(event, cohortYears):
     except Exception as e:
         print(f"Error updating cohorts for event: {e}")
         return False, f"Error updating cohorts for event: {e}", []
-
-
