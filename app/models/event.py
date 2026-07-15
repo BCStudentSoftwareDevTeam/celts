@@ -11,12 +11,14 @@ class Event(baseModel):
     timeEnd = TimeField()
     location = CharField()
     isFoodProvided = BooleanField(default=False)
-    isLaborOnly = BooleanField(default=False)
-    isTraining = BooleanField(default=False)
+    includesLabor = BooleanField(default=False)             # Event has some labor students working in addition to volunteers
+    isLaborOnly = BooleanField(default=False)               # Event is a labor meeting, specifically for labor students only 
+    isTraining = BooleanField(default=False)                # Event is a training for a Program (required by volunteers to earn service hours in that program)
+    isAllVolunteerTraining = BooleanField(default=False)    # Event is an All Volunteers Training (required to earn any service hours)
+    isCeltsTraining = BooleanField(default=False)           # Event is a CELTS labor training (required by all CELTS labor students)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     isEngagement = BooleanField(default=False)
-    isAllVolunteerTraining = BooleanField(default=False)
     rsvpLimit = IntegerField(null=True)
     startDate = DateField()
     seriesId = IntegerField(null=True)

@@ -98,7 +98,7 @@ def createEvent(templateid, programid):
         return redirect(url_for("admin.program_picker"))
 
     # Get the data from the form or from the template
-    eventData = template.templateData
+    eventData = template.templateData    
     eventData['program'] = program
 
     if request.method == "GET":
@@ -468,6 +468,7 @@ def deleteAllEventsInSeriesRoute(eventId):
 
 @admin_bp.route('/makeRepeatingEvents', methods=['POST'])
 def addRepeatingEvents():
+    repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(repeatingEvents, default=str)
 

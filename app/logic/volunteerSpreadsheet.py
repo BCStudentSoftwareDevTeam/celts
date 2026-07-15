@@ -119,12 +119,12 @@ def getAllTermData(term):
     base = getBaseQuery(term.academicYear)
 
     columns = ["Program Name", "Event Name", "Event Description", "Event Date", "Event Start Time", "Event End Time", "Event Location",
-               "Food Provided", "Labor Only", "Training Event", "RSVP Required", "Service Event", "Engagement Event", "All Volunteer Training",
+               "Food Provided", "Includes Labor", "Training Event", "RSVP Required", "Service Event", "Engagement Event", "All Volunteer Training",
                "RSVP Limit", "Series #", "Is Repeating Event", "Contact Name", "Contact Email",
                "Student First Name", "Student Last Name", "Student Email", "Student B-Number", "Student Phone", "Student CPO", "Student Major", "Student Has Graduated", "Student Class Level", "Student Dietary Restrictions",
                "Hours Earned"]
     query = (base.select(Program.programName,Event.name, Event.description, Event.startDate, Event.timeStart, Event.timeEnd, Event.location, 
-                         makeCase(Event.isFoodProvided), makeCase(Event.isLaborOnly), makeCase(Event.isTraining), makeCase(Event.isRsvpRequired), makeCase(Event.isService), makeCase(Event.isEngagement), makeCase(Event.isAllVolunteerTraining), 
+                         makeCase(Event.isFoodProvided), makeCase(Event.includesLabor), makeCase(Event.isTraining), makeCase(Event.isRsvpRequired), makeCase(Event.isService), makeCase(Event.isEngagement), makeCase(Event.isAllVolunteerTraining), 
                          Event.rsvpLimit, Event.seriesId, makeCase(Event.isRepeating), Event.contactName, Event.contactEmail,
                          User.firstName, User.lastName, fn.CONCAT(User.username,'@berea.edu'), User.bnumber, User.phoneNumber,User.cpoNumber,User.major, makeCase(User.hasGraduated), User.rawClassLevel, User.dietRestriction, 
                          EventParticipant.hoursEarned)
