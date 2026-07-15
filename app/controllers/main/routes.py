@@ -198,7 +198,6 @@ def viewUsersProfile(username):
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
         
-        
 
         eligibilityTable = []
         
@@ -237,6 +236,8 @@ def viewUsersProfile(username):
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
         handbookOverdue = getHandbookStatus(volunteer)
         currentTerm = Term.get(Term.isCurrentTerm)
+
+
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -261,16 +262,10 @@ def viewUsersProfile(username):
     abort(403)
 
 def getHandbookStatus(volunteer):
-    handbookOverdue = True
-    if volunteer.lastHandbookSignature:
-        today = datetime.date.today()
-
-            # Signature must be during the current academic year (July 1 - June 30)
-        if datetime.date(today.year, 7, 1) < volunteer.lastHandbookSignature < datetime.date(today.year + 1, 6, 30):
-            handbookOverdue = False
-        volunteer.lastHandbookSignature = volunteer.lastHandbookSignature.strftime("%m/%d/%Y")
-    else:
-        volunteer.lastHandbookSignature = "NOT SIGNED"
+    handbookOverdue = False
+    
+    if not volunteer.signatureTerm or volunteer.signatureTerm.academicYear != g.current_term.academicYear:
+        handbookOverdue = True
     return handbookOverdue
 
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])

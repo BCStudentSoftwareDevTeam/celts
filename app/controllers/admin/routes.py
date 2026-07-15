@@ -690,8 +690,9 @@ def handbookSignature():
     if not (g.current_user.username == data.get('studentID')):
         abort(403)
     signer = User.get(User.username == g.current_user.username)
-    print("CURRENT USER: ", signer)
     if signer:
         signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
+        signer.signatureTerm = g.current_term
         signer.save()
-    return "", 200
+        return "", 200
+    abort(403)

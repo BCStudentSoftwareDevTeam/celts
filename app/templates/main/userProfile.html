@@ -7,10 +7,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
   <script type="module" src="/static/js/handbookSignature.js"></script>  
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
+
+
 {% endblock %}
 
 {% block styles %}
   {{super()}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">  
 {% endblock %}
 
@@ -19,18 +22,10 @@
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
-<div class="row mb-2" id="handbookSignatureContainer">
+<div class="row mb-2">
   <div class="col-md-6 col-lg-4">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    <div>CELTS Handbook signed on: <span id="signatureDate" {% if handbookOverdue %}style="color:red"{% endif %}>{{volunteer.lastHandbookSignature}}</span>
-      {% if handbookOverdue -%}
-        <div class="tooltip-container">
-          <span class="bi bi-info-circle-fill"></span>
-          <span class="tooltip-text">See a Program Manager or CELTS staff member to sign the handbook</span>
-        </div>
-      {% endif %}
-    </div>  
   </div>
   <div class="col-md-6 col-lg-4">
     {% if volunteer.major -%}
@@ -47,6 +42,7 @@
     {%endif%}
   </div>
 </div>
+
 <div class="profile-links">
   <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
 
@@ -674,7 +670,7 @@
 
 
 <!-- ################# Edit Volunteer Information Modal ################ -->
-<div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" aria-hidden="true">
+<div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -717,16 +713,31 @@
 
         <br>
         
-        <h5 id="signatureHeader">Handbook {% if handbookOverdue %}Signature {% endif %}</h5>  
-        {% if not currentTerm.handbook %}
-          No handbook available for {{currentTerm.description}} yet.
-        {% else %}          
-          <p>{{currentTerm.description}}: <a href="{{ url_for('static', filename='files/handbooks/' + currentTerm.handbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
+        <h5>AY {{g.current_term.academicYear}} Files</h5>
+        <div class="row mb-3">
+          {% if not currentTerm.volunteerHandbook %}
+            No handbook available for {{currentTerm.description}} yet.
+          {% else %}
+            <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + currentTerm.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
+          {% endif %}
+          {% if not currentTerm.laborHandbook %}
+            <p>No CELTS Labor Handbook available for {{currentTerm.description}} yet.</p>
+          {% else %}          
+          <p><a href="{{ url_for('static', filename='files/laborHandbook/' + currentTerm.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
+          {% endif %}
+          {% if currentTerm.backgroundForm %}            
+            <p><a href="{{ url_for('static', filename='files/backgroundForm/' + currentTerm.backgroundForm|default('', true))}}" target="_blank"/>Background Check Form</a></p>
+          {% endif %}
+        </div>
+        
+        <h5 id="signatureHeader">Sign the handbook</h5>    
+        {% if currentTerm.volunteerHandbook %}          
           {% if handbookOverdue and g.current_user.username == volunteer.username %}
             <div class="row mb-3">
               <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
             </div>
             <div class="row mb-3" id="signatureButtons">
+              <p><i class="bi bi-exclamation-diamond" style="color: red;"> </i>By saving your signature, you agree to adhere to <em>all</em> of the guidelines outlined in the handbook.</p>
               <div class="col-md-6">
                 <button id="clear-btn" class="btn btn-danger btn-sm w-100">Clear</button>
               </div>
@@ -736,7 +747,7 @@
             </div>
             <div class="row mb-3" id="signatureConfirmation" style="display: none;">
               <div class="col-md-12 center-block text-center">
-                <h3>Handbook signed!</h3>
+                <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
               </div>              
             </div>
           {% endif %}

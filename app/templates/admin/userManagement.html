@@ -146,27 +146,54 @@
             </div>
           </div>
 
-          <div class="container-fluid col-md-4">
-            <div class="text-center">
-              <form method="POST" action="/uploadHandbook/{{g.current_term}}" enctype="multipart/form-data">
-                <div class="card">                
-                  <div class="card-header"><strong>Upload the CELTS handbook for AY {{currentTerm.academicYear}}:</strong></div>
-                    <ul class="list-group" name="handbookUploadList" id="handbookUploadList">                  
-                      <li class="list-group-item list-group-item-action"                        
-                        aria-label="{{g.current_term.description}}">
-                        <input class="form-control" type="file" id="handbookUploader" name="handbookUploader" accept=".pdf,.doc,.docx" required></input>
-                        <span class="sr-only visually-hidden">{{g.current_term}}</span>
-                      </li>
-                      <li class="list-group-item list-group-item-action">
-                        <button class="btn btn-success w-100" id="uploadHandbook" role ="button" type="submit">Upload AY {{g.current_term.academicYear}} handbook</button>
-                      </li>
-                    </ul>
-                    {% if currentTerm.handbook %}
-                      <a href="{{ url_for('static', filename='files/handbooks/' + currentTerm.handbook|default('', true))}}" target="_blank"/>AY {{currentTerm.academicYear}} - CELTS Student Handbook</a>
-                    {% endif %}
+          <div class="container-fluid col-md-6">      
+            <h5>AY {{g.current_term.academicYear}} files</h5>
+            <div class="row">
+              <form class="uploaders" method="POST" action="/upload/volunteerHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
+                  <div class="col-8">
+                    <label for="handbookUploader"><strong>Volunteer Handbook:</strong></label>
+                    <input class="form-control" type="file" id="volunteerHandbook" name="volunteerHandbook" accept=".pdf,.doc,.docx" required></input>
                   </div>
-                  
-                </div>
+                  <div class="col-4">
+                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
+                  </div>
+                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                </div>                      
+                  <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not currentTerm.volunteerHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Student Handbook</a>            
+              </form>
+            </div>
+
+            <div class="row">
+              <form class="uploaders" method="POST" action="/upload/laborHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
+                  <div class="col-8">
+                    <label for="laborUploader"><strong>CELTS Labor Handbook:</strong></label>
+                    <input class="form-control" type="file" id="laborHandbook" name="laborHandbook" accept=".pdf,.doc,.docx" required></input>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
+                  </div>
+                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                </div>                                      
+                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not currentTerm.laborHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Labor Handbook</a>
+                
+              </form>
+            </div>
+
+            <div class="row">
+              <form class="uploaders" method="POST" action="/upload/backgroundForm/{{g.current_term}}" enctype="multipart/form-data">
+                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
+                  <div class="col-8">
+                    <label for="backgroundFormUploader"><strong>Background Check Form:</strong></label>
+                    <input class="form-control" type="file" id="backgroundForm" name="backgroundForm" accept=".pdf,.doc,.docx" required></input>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
+                  </div>
+                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                </div>                      
+                  <a id="backgroundFormURL" href="{{ url_for('static', filename='files/backgroundForm/' + g.current_term.backgroundForm|default('', true))}}" target="_blank" {% if not currentTerm.backgroundForm %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - Background Check Form</a>            
               </form>
             </div>
           </div>

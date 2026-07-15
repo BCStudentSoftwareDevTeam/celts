@@ -139,8 +139,8 @@ def userManagement():
 def changeTerm():
     termData = request.form
     term = int(termData["id"])
-    changeCurrentTerm(term)
-    return ""
+    newTerm = changeCurrentTerm(term)
+    return model_to_dict(newTerm)
 
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
 def addNewTerm():
@@ -148,20 +148,29 @@ def addNewTerm():
     flash("New term added", "success")
     return ""
 
-@admin_bp.route('/uploadHandbook/<currentTerm>', methods = ['POST'])
-def uploadHandbook(currentTerm):
+@admin_bp.route('/upload/<fileCategory>/<currentTerm>', methods = ['POST'])
+def upload(fileCategory, currentTerm):
     term = Term.select().where(Term.id == currentTerm).get()
     allAYterm = Term.select().where(Term.academicYear == term.academicYear)
-    dir_path = Path("app/static/files/handbooks")
+    if not fileCategory in ["laborHandbook", "volunteerHandbook", "backgroundForm"]:
+        abort(405)
+    dir_path = Path("app/static/files/", fileCategory)
     dir_path.mkdir(parents=True, exist_ok=True)
-    file = request.files['handbookUploader']
-    filename = secure_filename(file.filename)
+    file = request.files[fileCategory]
+    filename = g.current_term.academicYear + "-" + fileCategory + "." + secure_filename(file.filename).split(".")[-1]
     full_path = os.path.join(dir_path, filename)
     if os.path.exists(full_path):
         os.remove(full_path)
     file.save(full_path)
     for t in allAYterm:
-        t.handbook = filename
+        if fileCategory == "volunteerHandbook":
+            t.volunteerHandbook = filename
+        elif fileCategory == "laborHandbook":
+            t.laborHandbook = filename
+        elif fileCategory == "backgroundForm":
+            t.backgroundForm = filename
+        else:
+            abort(405)
         t.save()
     g.current_term = term
     flash(f"Handbook saved successfully to {term.description}!", "success")

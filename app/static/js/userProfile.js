@@ -1,5 +1,7 @@
-$(document).ready(function(){
-
+$(document).ready(function(){  
+  $('#editVolunteerModal').modal({
+    backdrop: 'static'
+  });
    $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {

@@ -198,3 +198,14 @@ def sortParticipantsByStatus(event):
         eventNonAttendedData = []
     
     return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants
+
+def hasGoneToTraining(participant, term):
+    """
+    Taken in a User object, and returns which training (specifically, All volunteers training or All CELTS labor training) they attended for this term.
+    This is necessary for delivering the correct handbook to the student for signing. 
+    
+    return: Event object of a) the All Volunteers training they attended, b) the All Celts training they attended, or c) None 
+    """
+
+    user = User.get_by_id(participant)
+    training = Event.select().where(Event.term == term, Event.isAllVolunteerTraining | Event.isCeltsTraining)

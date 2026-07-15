@@ -1,4 +1,5 @@
 from app.models import *
+from app.models.term import Term
 
 class User(baseModel):
     username = CharField(primary_key=True)
@@ -20,6 +21,7 @@ class User(baseModel):
     hasGraduated = BooleanField(default=False)
     declaredMinor = BooleanField(default=False)
     lastHandbookSignature = DateField(null=True)
+    signatureTerm = ForeignKeyField(Term, null = True)
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
     def __init__(self,*args, **kwargs):

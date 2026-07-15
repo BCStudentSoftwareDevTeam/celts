@@ -12,47 +12,58 @@ function resizeCanvas() {
     canvas.style.width = displayWidth + "px";
     canvas.style.height = displayHeight + "px";
     canvas.getContext("2d").scale(ratio, ratio);
-    signaturePad.clear(); 
+    // signaturePad.clear(); 
 }
 
 window.addEventListener("resize", resizeCanvas);
 
 $('#editVolunteerModal').on('shown.bs.modal', function () {
-    resizeCanvas();
+    resizeCanvas();    
 });
 
 $('#editVolunteerModal').on('hidden.bs.modal', function () {
-    $("#signatureHeader").remove();
-    canvas.remove();
+    if (!signaturePad.isEmpty() & hasSavedSignature) {
+        $("#signatureHeader").remove();
+        canvas.remove();
+        // signaturePad.clear();
+        $("#signatureButtons").hide();
+    }
 });
 
 $('#clear-btn').on('click', function () {
     signaturePad.clear();
 });
 
+var hasSavedSignature = false;
+
 $('#save-btn').on('click', function () {    
-    $.ajax({
-        url: `/handbookSignature`,
-        type: "POST",
-        headers: {'Content-Type': 'application/json'},
-        data: JSON.stringify({studentID: $('#handbook-signature-pad').attr('data-student')}),
-        success: function(s){            
-            signaturePad.off();
-            $("#signatureConfirmation").show();
-            $("#signatureButtons").hide();
-            const today = new Date();
-            $("#signatureDate").text(today.toLocaleDateString('en-US'));
-            $("#signatureDate").css("color", "black");
-            $("#handbookSignatureContainer .bi-info-circle-fill").hide();
-        },
-        error: function(error, status){
-            console.log(error, status)
-            $("#signatureConfirmation h3").text("Uh oh. Something wrong. Please seek out help from the CELTS staff")
-            $("#signatureConfirmation h3").replaceWith(function() {
-                return $('<p>', { html: $(this).html() });
-            });
-            $("#signatureConfirmation").show();
-            $("#signatureButtons").hide();
-        }
-    })    
+    if (signaturePad.isEmpty()) {
+        alert("You forgot to sign!");   
+    } else {
+        $.ajax({
+            url: `/handbookSignature`,
+            type: "POST",
+            headers: {'Content-Type': 'application/json'},
+            data: JSON.stringify({studentID: $('#handbook-signature-pad').attr('data-student')}),
+            success: function(s){            
+                signaturePad.off();
+                $("#signatureConfirmation").show();
+                $("#signatureButtons").hide();
+                const today = new Date();
+                $("#signatureText").text("CELTS Handbook signed for AY 2026-2027");
+                $("#signatureText").css("color", "black");
+                $("#handbookSignatureContainer .bi-info-circle-fill").hide();
+                hasSavedSignature = true;
+            },
+            error: function(error, status){
+                console.log(error, status)
+                $("#signatureConfirmation h3").text("Uh oh. Something wrong. Please seek out help from the CELTS staff")
+                $("#signatureConfirmation h3").replaceWith(function() {
+                    return $('<p>', { html: $(this).html() });
+                });
+                $("#signatureConfirmation").show();
+                $("#signatureButtons").hide();
+            }
+        })
+    }
 });

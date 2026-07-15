@@ -15,20 +15,27 @@ def addNextTerm():
     
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear   
-    handbook = None
+    volunteerHandbook = None
+    laborHandbook = None
+    backgroundForm = None
     if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
     else:   # if the previous term is fall or spring, make sure we copy the handbook
-        handbook = prevTerm.handbook
+        volunteerHandbook = prevTerm.volunteerHandbook
+        laborHandbook = prevTerm.laborHandbook
+        backgroundForm = prevTerm.backgroundForm
+
     semester = newDescription.split()[0]
     summer= "Summer" in semester
     newTerm = Term.create(description=newDescription,
                           year=newYear,
                           academicYear=newAY,
                           isSummer= summer,
-                          termOrder=Term.convertDescriptionToTermOrder(newDescription),
-                          handbook=handbook
+                          termOrder=Term.convertDescriptionToTermOrder(newDescription),                          
+                          volunteerHandbook=volunteerHandbook,
+                          laborHandbook=laborHandbook,
+                          backgroundForm=backgroundForm
                          )
 
     newTerm.save()
@@ -64,3 +71,5 @@ def changeCurrentTerm(term):
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
     createActivityLog(f"Changed Current Term to {newCurrentTerm.description}")
+
+    return newCurrentTerm

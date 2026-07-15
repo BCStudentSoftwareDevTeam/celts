@@ -251,12 +251,38 @@ function submitTerm(){
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
-    success: function(s){
-      msgFlash("Current term successfully changed to " + selectedTerm.html(), "success")
+    success: function(response){
+      console.log(response)
+      msgFlash("Current term successfully changed to " + response["description"], "success")
+      $(".uploaders").each(function(idx) {
+        // update the form action attribute to point at the right term
+        $(this).attr("action", $(this).attr("action").split("/").slice(0, -1).join("/") + "/" + termInfo["id"]);        
+      })
+
+      // Update all other fields in the form uploader section
+      $("#collapseTwo h5").text("AY " + response["academicYear"] + " files");
+      if(response["volunteerHandbook"]) {
+        $("#volunteerHandbookURL").text("AY " + response["academicYear"] + " - CELTS Student Handbook")
+        $("#volunteerHandbookURL").removeAttr("hidden");
+      } else {
+        $("#volunteerHandbookURL").attr("hidden", true);
+      }
+      if(response["laborHandbook"]) {
+        $("#laborHandbookURL").text("AY " + response["academicYear"] + " - CELTS Labor Handbook")
+        $("#laborHandbookURL").removeAttr("hidden");
+      } else {
+        $("#laborHandbookURL").attr("hidden", true);
+      }
+      if(response["backgroundForm"]) {
+        $("#backgroundFormURL").text("AY " + response["academicYear"] + " - Background Check Form")
+        $("#backgroundFormURL").removeAttr("hidden");
+      } else {
+        $("#backgroundFormURL").attr("hidden", true);
+      }
     },
     error: function(error, status){
-        msgFlash("Current term was not changed. Please try again.", "warning")
-        console.log(error, status)
+        msgFlash("Current term was not changed. Please reload the page and try again.", "warning")
+        // console.log(error, status)
     }
   })
 }
