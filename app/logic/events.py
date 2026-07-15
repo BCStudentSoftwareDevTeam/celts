@@ -122,8 +122,11 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     
     # Reformat dates from Jul 10, 2026 to 2026-07-10 for easier sorting
     eventData2 = []
-    for ed in eventData['seriesData']:        
-        ed['eventDate'] = datetime.strptime(ed['eventDate'], "%b %d, %Y").strftime("%Y-%m-%d")
+    for ed in eventData['seriesData']:
+        try:
+            ed['eventDate'] = datetime.strptime(ed['eventDate'], "%b %d, %Y").strftime("%Y-%m-%d")
+        except:
+            pass    # eventDate comes into the system differently for recurring weekly events and recurring events (non-weekly). This should format it correctly for both cases
         eventData2.append(ed)    
     eventData['seriesData'] = eventData2
 
