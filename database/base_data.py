@@ -57,7 +57,7 @@ templates = [
         "id": 3,
         "name": "All CELTS Training",
         "tag": "all-celts-training",
-        "templateJSON": '{"name": "All CELTS Training (Labor)","description": "Training for all CELTS Labor Students", "isTraining": true, "isService": false, "isRequired": true, "isLaborOnly": true, "rsvpLimit": ""}',
+        "templateJSON": '{"name": "All CELTS Training (Labor)","description": "Training for all CELTS Labor Students", "isTraining": true, "isService": false, "isRequired": true, "isLaborOnly": true, "isCeltsTraining": true, "rsvpLimit": ""}',
         "templateFile": "createEvent.html",
         "isVisible": True
     },
