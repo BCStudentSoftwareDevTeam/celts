@@ -208,6 +208,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "location":         newEventData['location'],
                 "isFoodProvided" :  newEventData['isFoodProvided'],                
                 "isLaborOnly" :     newEventData['isLaborOnly'],
+                "isCeltsTraining":  newEventData['isCeltsTraining'],
                 "includesLabor" :   newEventData['includesLabor'],
                 "isTraining":       newEventData['isTraining'],
                 "isEngagement":     newEventData['isEngagement'],
@@ -401,7 +402,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
 
     return eventsList
 
-#TODO This method appears to be very poorly tested, and very complex. 
+#TODO This method appears to be very poorly tested, and very complex. NEEDS TESTING!
 def getParticipatedEventsForUser(user):
     """
         Get all the events a user has participated in.
@@ -411,9 +412,6 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    eventName = fn.LOWER(Event.name)
-    checkIfLaborMeeting = eventName.contains("labor meeting")       # Flimsy!! Let's use event.isLaborOnly instead? 
-
     # Does this handle labor only and/or includes labor events?
     participatedEvents = (Event.select(Event, Program.programName, Case(None, (
                                ((Event.includesLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"), 
@@ -422,7 +420,7 @@ def getParticipatedEventsForUser(user):
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, ~checkIfLaborMeeting)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, Event.isLaborOnly == False, Event.isCeltsTraining == False)
                                .order_by(Event.startDate, Event.name))
     allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
@@ -521,7 +519,7 @@ def preprocessEventData(eventData):
     """
     ## Process checkboxes
     print("\n\n\n\n\n2\n\n\n\n", eventData)
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor', 'isLaborOnly']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor', 'isLaborOnly', 'isCeltsTraining']
     
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:

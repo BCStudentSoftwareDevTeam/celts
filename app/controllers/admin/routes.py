@@ -114,7 +114,6 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         savedEvents = None
         eventData.update(request.form.copy())
-        print("\n\n\n\n\n1\n\n\n\n", eventData)
         eventData = preprocessEventData(eventData)
 
         if eventData.get('isSeries'):
@@ -468,6 +467,7 @@ def deleteAllEventsInSeriesRoute(eventId):
 
 @admin_bp.route('/makeRepeatingEvents', methods=['POST'])
 def addRepeatingEvents():
+    repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(repeatingEvents, default=str)
 
