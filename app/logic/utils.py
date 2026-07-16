@@ -52,6 +52,8 @@ def selectAllSummerTerms(currentTerm, student):
             year = 3
         case "Senior":
             year = 4
+        case _: 
+            year = 5
 
     match order[1]: 
         case "1": 
