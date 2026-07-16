@@ -7,7 +7,7 @@ from app.models.cceMinorProposal import CCEMinorProposal
 from app.models.term import Term
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.fileHandler import FileHandler
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, selectAllSummerTerms
 from app.logic.minor import (
     changeProposalStatus,
     createOtherEngagement,
@@ -117,13 +117,16 @@ def createSummerExperienceRequest(username):
         createSummerExperience(username, request.form)
         flash("Proposal successfully created.", "success")
         return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
+
+    student   = User.get_by_id(username)
+    year_name = User.rawClassLevel
     
-    summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)
+    summerTerms = selectAllSummerTerms(g.current_term, student)
 
     return render_template("minor/summerExperience.html",
                             selectableTerms = summerTerms,
                             contentAreas = [],
-                            user = User.get_by_id(username),
+                            user = student,
                             )
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
