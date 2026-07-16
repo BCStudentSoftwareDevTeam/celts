@@ -169,6 +169,7 @@
                 <th scope="col">Event Name</th>
                 <th scope="col">Participation Type</th>
                 <th scope="col">Event Date</th>
+                <th scope="col">Service Hours</th>
               </thead>
               {% for event in participatedEvents %}
               <tr>
@@ -176,6 +177,11 @@
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td>{{event.participatedType}}</td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                {% if event.participatedType == 'Volunteer' %}
+                  <td>{{eventparticipant[loop.index0].hoursEarned}}</td>
+                {% else %}
+                  <td>-</td>
+                {% endif %}
               </tr>
               {% endfor %}
               {% else %}
