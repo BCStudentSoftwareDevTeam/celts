@@ -178,7 +178,7 @@
                 <td>{{event.participatedType}}</td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                 {% if event.participatedType == 'Volunteer' %}
-                  <td>{{eventparticipant[loop.index0].hoursEarned}}</td>
+                  <td>{{eventParticipant[loop.index0].hoursEarned}}</td>
                 {% else %}
                   <td>-</td>
                 {% endif %}

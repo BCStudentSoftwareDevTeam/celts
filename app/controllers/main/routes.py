@@ -233,7 +233,10 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-        eventparticipant = list(EventParticipant.select(EventParticipant.hoursEarned).join(Event).where(EventParticipant.user == volunteer, EventParticipant.event == Event.id,).order_by(Event.id.asc()))
+        eventParticipant = list(EventParticipant.select(EventParticipant.hoursEarned)
+                                                .join(Event)
+                                                .where(EventParticipant.user == volunteer, EventParticipant.event == Event.id,)
+                                                .order_by(Event.id.asc()))
 
         return render_template ("/main/userProfile.html",
                                 username=username,
@@ -253,7 +256,7 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                eventparticipant = eventparticipant
+                                eventParticipant = eventParticipant
                             )
     abort(403)
 
