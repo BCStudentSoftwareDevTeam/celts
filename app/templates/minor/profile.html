@@ -32,7 +32,7 @@
         </li>
         <li class="col-md-3 col-12 nav-item" role="presentation">
           <button class="nav-link {{ 'active' if activeTab == 'manageProposals' else '' }}" id="manageProposals"
-            data-bs-toggle="pill" data-bs-target="#pills-manageProposals" type="button" role="tab" aria-controls="pills-manageProposals" aria-selected="{{'true' if activeTab == 'manageProposals' else 'false'}}">{{ 'My Proposals' if g.current_user.isStudent else 'Manage Proposals' }}</button>
+            data-bs-toggle="pill" data-bs-target="#pills-manageProposals" type="button" role="tab" aria-controls="pills-manageProposals" aria-selected="{{'true' if activeTab == 'manageProposals' else 'false'}}">{{ 'My Proposals' if g.current_user.isStudent and g.current_user == user else 'Manage Proposals' }}</button>
         </li>
       </ul>
     </div>
