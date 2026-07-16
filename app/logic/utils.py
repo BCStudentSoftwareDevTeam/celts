@@ -36,6 +36,42 @@ def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
 
     return surroundingTerms
 
+def selectAllSummerTerms(currentTerm, student):
+    """
+    Selects all summer terms for CCE Minor. 
+    """
+    year_name = student.rawClassLevel
+    timeOrder = currentTerm.timeOrder
+
+    match year_name: 
+        case "Freshman":    year = 1, 
+        case "Sophomore":   year = 2, 
+        case "Junior":      year = 3, 
+        case "Senior":      year = 4
+    
+    match timeOrder[1]: 
+        case 1: timeOfTheYear = "Fall"
+        case 2: timeOfTheYear = "Spring"
+        case 3: timeOfTheYear = "Summer"
+
+    if student.hasGraduated: 
+        return []
+    elif timeOfTheYear == "Fall" and year == 1:
+        firstSummer = currentTerm.year + 1
+        lastSummer = currentTerm.year + 3
+    else: 
+        firstSummer = currentTerm.year 
+        lastSummer = currentTerm.year + (4 - year) 
+        # because we do not know whether the student came to Berea in the Fall or in the Spring, 
+        # we have an extra summer in the list just in case. 
+    
+    surroundingTerms = (Term.select()
+                            .where(Term.year >= firstSummer, Term.year <= lastSummer)
+                            .order_by(Term.termOrder)
+                            .where(Term.isSummer))
+
+    return surroundingTerms
+
 def getStartofCurrentAcademicYear(currentTerm):
     if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
