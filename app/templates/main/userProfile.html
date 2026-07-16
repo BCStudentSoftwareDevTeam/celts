@@ -733,11 +733,16 @@
           {% endif %}
         </div>
         
-        {% if not training %}
-          <p>To volunteer, you must sign the CELTS handbook, and you must do this at All Volunteers Training. </p>
-        {% else %}
-          <h5 id="signatureHeader">Sign the handbook</h5>    
-          {% if currentTerm.volunteerHandbook %}          
+        {% if g.current_user.signatureTerm.academicYear != g.current_term.academicYear and not training %}
+          <p>To volunteer, you must sign the CELTS handbook, and you must do this at All Volunteers Training.</p>
+        {% else %}    
+          {% if volunteer.signatureTerm.academicYear != g.current_term.academicYear %}
+            <h5 id="signatureHeader">Sign the handbook</h5>    
+          {% else %}          
+            <p> Your handbook signature is good for AY {{volunteer.signatureTerm.academicYear}}.</p>
+          {% endif %}
+          
+          {% if currentTerm.volunteerHandbook %}
             {% if handbookOverdue and g.current_user.username == volunteer.username %}
               <div class="row mb-3">
                 <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>

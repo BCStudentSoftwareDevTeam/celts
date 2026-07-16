@@ -210,17 +210,20 @@ def hasGoneToTraining(participant, term):
                 2) the All Volunteers training, if they attended, 
                 3) None 
     """
-
-    user = User.get_by_id(participant)
-    attended = (Event.select()
-                                .join(EventParticipant)
-                                .where(EventParticipant.user == user, Event.isAllVolunteerTraining | Event.isCeltsTraining, Event.term == term)
+    attended = (EventParticipant.select()
+                                .join(User)
+                                .switch(EventParticipant)                                
+                                .join(Event)
+                                .join(Term)
+                                .where(User.username == participant.username,
+                                       Term.id == term.id,
+                                       Event.isAllVolunteerTraining | Event.isCeltsTraining)
                                 .order_by(Event.isCeltsTraining)
                 )
+    
     if not attended:
         return None
     if len(attended) > 1:
         attended = attended[-1]
-    print("\n\n\n\n\n\n$$$$$$$$$$",attended.get())
-    return attended.get()
+    return attended.get().event
     

@@ -116,7 +116,6 @@ def createEvent(templateid, programid):
         savedEvents = None
         eventData.update(request.form.copy())
         eventData = preprocessEventData(eventData)
-
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
@@ -131,7 +130,6 @@ def createEvent(templateid, programid):
             except Exception as e:
                 print("Failed saving regular event", e)
                 validationErrorMessage = "Failed to save event."
-
         if savedEvents:
             rsvpCohorts = request.form.getlist("cohorts[]")
             if rsvpCohorts:
@@ -181,8 +179,7 @@ def createEvent(templateid, programid):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-                
-            
+    # FIXME ISCELTSTRAINING IS CORRECT HERE WRONG
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -263,6 +260,8 @@ def eventDisplay(eventId):
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
+        # FIXME BY HERE ISCELTSTRAINING IS WRONG
+        print("TRAINING: ", event)
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event == event
         )) 
@@ -290,7 +289,7 @@ def eventDisplay(eventId):
 
                 
     if request.method == "POST": # Attempt to save form
-        eventData = request.form.copy()
+        eventData = request.form.copy()        
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 

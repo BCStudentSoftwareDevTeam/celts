@@ -666,11 +666,8 @@ def extravaganza():
 
     Term2 = Term.alias()            
     sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
-    print("@@@@@@@@@", list(sameYearTerms), "@@@@@")
     upcomingAllVolunteers = Event.select().where(Event.isAllVolunteerTraining, Event.term.in_(sameYearTerms))
     upcomingTrainings = Event.select().where(Event.isTraining, Event.term.in_(sameYearTerms))
-    
-                                 
 
     for idx, training in enumerate(upcomingTrainings):
         upcomingTrainings[idx].startDate = training.startDate.strftime("%b %d")
