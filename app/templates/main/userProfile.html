@@ -714,42 +714,49 @@
         <br>
         
         <h5>AY {{g.current_term.academicYear}} Files</h5>
-        <div class="row mb-3">
-          {% if not currentTerm.volunteerHandbook %}
-            No handbook available for {{currentTerm.description}} yet.
+        <div class="row mb-3">          
+          {% if training.isCeltsTraining %}
+            {% if not currentTerm.laborHandbook %}
+              <p>No CELTS Labor Handbook available for {{currentTerm.description}} yet.</p>
+            {% else %}
+            <p><a href="{{ url_for('static', filename='files/laborHandbook/' + currentTerm.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
+            {% endif %}
           {% else %}
-            <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + currentTerm.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
-          {% endif %}
-          {% if not currentTerm.laborHandbook %}
-            <p>No CELTS Labor Handbook available for {{currentTerm.description}} yet.</p>
-          {% else %}          
-          <p><a href="{{ url_for('static', filename='files/laborHandbook/' + currentTerm.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
+            {% if not currentTerm.volunteerHandbook %}
+              No handbook available for {{currentTerm.description}} yet.
+            {% else %}
+              <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + currentTerm.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
+            {% endif %}
           {% endif %}
           {% if currentTerm.backgroundForm %}            
             <p><a href="{{ url_for('static', filename='files/backgroundForm/' + currentTerm.backgroundForm|default('', true))}}" target="_blank"/>Background Check Form</a></p>
           {% endif %}
         </div>
         
-        <h5 id="signatureHeader">Sign the handbook</h5>    
-        {% if currentTerm.volunteerHandbook %}          
-          {% if handbookOverdue and g.current_user.username == volunteer.username %}
-            <div class="row mb-3">
-              <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
-            </div>
-            <div class="row mb-3" id="signatureButtons">
-              <p><i class="bi bi-exclamation-diamond" style="color: red;"> </i>By saving your signature, you agree to adhere to <em>all</em> of the guidelines outlined in the handbook.</p>
-              <div class="col-md-6">
-                <button id="clear-btn" class="btn btn-danger btn-sm w-100">Clear</button>
+        {% if not training %}
+          <p>To volunteer, you must sign the CELTS handbook, and you must do this at All Volunteers Training. </p>
+        {% else %}
+          <h5 id="signatureHeader">Sign the handbook</h5>    
+          {% if currentTerm.volunteerHandbook %}          
+            {% if handbookOverdue and g.current_user.username == volunteer.username %}
+              <div class="row mb-3">
+                <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
               </div>
-              <div class="col-md-6">
-                <button id="save-btn" class="btn btn-primary btn-sm w-100" type = "button">Save Signature</button>
-              </div>              
-            </div>
-            <div class="row mb-3" id="signatureConfirmation" style="display: none;">
-              <div class="col-md-12 center-block text-center">
-                <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
-              </div>              
-            </div>
+              <div class="row mb-3" id="signatureButtons">
+                <p><i class="bi bi-exclamation-diamond" style="color: red;"> </i>By saving your signature, you agree to adhere to <em>all</em> of the guidelines outlined in the handbook.</p>
+                <div class="col-md-6">
+                  <button id="clear-btn" class="btn btn-danger btn-sm w-100">Clear</button>
+                </div>
+                <div class="col-md-6">
+                  <button id="save-btn" class="btn btn-primary btn-sm w-100" type = "button">Save Signature</button>
+                </div>              
+              </div>
+              <div class="row mb-3" id="signatureConfirmation" style="display: none;">
+                <div class="col-md-12 center-block text-center">
+                  <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
+                </div>              
+              </div>
+            {% endif %}
           {% endif %}
       </div>
       <div class="modal-footer">

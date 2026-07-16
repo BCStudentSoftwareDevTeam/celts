@@ -38,7 +38,7 @@ from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.participants import hasGoneToTraining, unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
 @main_bp.route('/logout', methods=['GET'])
@@ -237,6 +237,7 @@ def viewUsersProfile(username):
         handbookOverdue = getHandbookStatus(volunteer)
         currentTerm = Term.get(Term.isCurrentTerm)
 
+        training = hasGoneToTraining(g.current_user, g.current_term)
 
         return render_template ("/main/userProfile.html",
                                 username=username,
@@ -257,6 +258,7 @@ def viewUsersProfile(username):
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
                                 handbookOverdue = handbookOverdue,
+                                training = training,
                                 currentTerm = currentTerm
                             )
     abort(403)

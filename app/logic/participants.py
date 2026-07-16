@@ -1,5 +1,6 @@
 from flask import g
 from peewee import fn, JOIN
+from playhouse.shortcuts import model_to_dict
 from datetime import date
 from app.models.user import User
 from app.models.event import Event
@@ -204,8 +205,22 @@ def hasGoneToTraining(participant, term):
     Taken in a User object, and returns which training (specifically, All volunteers training or All CELTS labor training) they attended for this term.
     This is necessary for delivering the correct handbook to the student for signing. 
     
-    return: Event object of a) the All Volunteers training they attended, b) the All Celts training they attended, or c) None 
+    return: A single event object of, in this order of precedence:
+                1) the All Celts training, if they attended,
+                2) the All Volunteers training, if they attended, 
+                3) None 
     """
 
     user = User.get_by_id(participant)
-    training = Event.select().where(Event.term == term, Event.isAllVolunteerTraining | Event.isCeltsTraining)
+    attended = (Event.select()
+                                .join(EventParticipant)
+                                .where(EventParticipant.user == user, Event.isAllVolunteerTraining | Event.isCeltsTraining, Event.term == term)
+                                .order_by(Event.isCeltsTraining)
+                )
+    if not attended:
+        return None
+    if len(attended) > 1:
+        attended = attended[-1]
+    print("\n\n\n\n\n\n$$$$$$$$$$",attended.get())
+    return attended.get()
+    
