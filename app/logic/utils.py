@@ -62,17 +62,23 @@ def selectAllSummerTerms(currentTerm, student):
             timeOfTheYear = "Spring"
         case "3": 
             timeOfTheYear = "Summer"
+    
 
     if student.hasGraduated: 
         return []
-    elif timeOfTheYear == "Fall" and year == 1:
-        firstSummer = currentTerm.year + 1
-        lastSummer = currentTerm.year + 3
-    else: 
-        firstSummer = currentTerm.year 
-        lastSummer = currentTerm.year + (4 - year) 
+    elif timeOfTheYear == "Fall":
+        firstSummer = currentTerm.year - year + 2
+        lastSummer = currentTerm.year + (4 + 1 - year) 
         # because we do not know whether the student came to Berea in the Fall or in the Spring, 
-        # we have an extra summer in the list just in case. 
+        # we have an extra summer (+1) in the list just in case. 
+    else: 
+        firstSummer = currentTerm.year - year + 1
+        lastSummer = currentTerm.year + (3 + 1 - year) 
+        # because we do not know whether the student came to Berea in the Fall or in the Spring, 
+        # we have an extra summer (+1) in the list just in case.
+
+        # this condition assumes that your raw class level changes every fall, so
+        # your academic year is the same for the spring and summer. 
     
     surroundingTerms = (Term.select()
                             .where(Term.year >= firstSummer, Term.year <= lastSummer)
