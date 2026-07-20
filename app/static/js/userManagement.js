@@ -152,10 +152,10 @@ $(document).ready(function(){
   })
   });
 
-$('.viewRosters').on('click', function() {
+$('.viewRoster').on('click', function() {
     // Openning the modal after the data was received
     $('#programPlaceholder').data('programid', $(this).data('programid'))
-    let modal = new bootstrap.Modal($('#viewRostersModal'));
+    let modal = new bootstrap.Modal($('#viewRosterModal'));
       modal.show();
 });
 

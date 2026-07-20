@@ -175,3 +175,12 @@ def upload(fileCategory, currentTerm):
     g.current_term = term
     flash(f"Handbook saved successfully to {term.description}!", "success")
     return redirect(request.referrer)
+
+@admin_bp.route('/viewRoster/<programID>', methods = ['GET'])
+def viewRoster(programID):
+    print(programID)
+    program = Program.get(programID)
+
+    return render_template('admin/viewRoster.html',
+                           program = program
+                                )

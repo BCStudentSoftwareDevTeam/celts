@@ -28,15 +28,18 @@
     <span class="form-label borderless fs-5">{{ program.programName }}</span>
   </div>
   <div class="d-flex gap-2">
+    <a class="btn btn-success btn-sm viewRoster" href="viewRoster/{{program.id}}" data-programid="{{program.id}}">
+      View Roster
+    </a>
     <button class="btn btn-success btn-sm editDetails" 
             role="button" 
             id="programManagementButton{{ loop_index }}"  
             loop-index="{{ loop_index }}"
             data-programid="{{program.id}}">
-        <span style="display: none;" id="editDetailsButtonSpinner{{ loop_index }}">
-          Edit Details
-        </span>
-        <span id="editDetailsButtonText{{ loop_index }}">Edit Details</span>
+      <span style="display: none;" id="editDetailsButtonSpinner{{ loop_index }}">
+        Edit Details
+      </span>
+      <span id="editDetailsButtonText{{ loop_index }}">Edit Details</span>
     </button>
     {% if show_edit_managers %}
     <button class ="btn btn-success btn-sm editProgramManagersButton"
