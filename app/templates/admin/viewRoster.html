@@ -19,22 +19,35 @@
     <h1>{{program.programName}} Rosters</h1>
 </div>
 <div class="row">
-    <div class="col-3"></div>
-    <div class="text-center justify-content-evenly align-items-center col-6">
+    <div class="text-center justify-content-evenly align-items-center col-12">
         <table class="table mb-0">
-                <thead>
+            <thead>                
                 <tr>
-                    <th colspan="2" scope="col">Rosters</th>
+                    <th>Potential Volunteer</th>
+                    <th>Email</th>
+                    <th>AY {{g.current_term.academicYear}} handbook complete</th>
+                    <th>All Volunteer Training Attended</th>
+                    <th>Program Specific Training Attended</th>
+                    <th>Banned?</th>
+                    <th>Background Check Complete?</th>
                 </tr>
-                </thead>
-                <tbody id="rostersTable">
+            </thead>
+            <tbody id="rostersTable">
+                {% for prospectiveVolunteer in trainedAndInterested %}                
+                <tr>
+                    <td>{{trainedAndInterested[prospectiveVolunteer]["userObj"].fullName}}</td>
+                    <td>{{trainedAndInterested[prospectiveVolunteer]["userObj"].email}}</td>                    
+                    <td>{% if trainedAndInterested[prospectiveVolunteer]["userObj"].signatureTerm.academicYear == g.current_term.academicYear %} Signed {% else %} NOT signed {% endif %}</td>
+                    <td>{% if trainedAndInterested[prospectiveVolunteer]['allVolunteer'] %} Trained {% else %} NOT trained {% endif %}</td>
+                    <td>{% if trainedAndInterested[prospectiveVolunteer]['programSpecific'] %} Trained {% else %} NOT trained {% endif %}</td>
+                    <td>{% if trainedAndInterested[prospectiveVolunteer]['eligible'] %} Eligible {% else %} NOT Eligible {% endif %}</td>
+                </tr>
+                {% endfor %}
                 <td></td>
                 <td></td>
-                <td></td>
-                
-                </tbody>
-            </table>
+            
+            </tbody>
+        </table>
     </div>
-    <div class="col-3"></div>
 </div>
 {% endblock %}

@@ -51,6 +51,22 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
+def getUserInterest(username):
+    """
+    This function is used to retrieve a user's interests.
+    Parameters:    
+    username: username of the user showing interest
+    """
+    return Interest.select().where(Interest.user == username)
+
+def getProgramInterest(program):
+    """
+    This function is used to retrieve a programs's interested users.
+    Parameters:
+    username: username of the user showing interest
+    """
+    return Interest.select(Interest.user).where(Interest.program == program)
+
 def getBannedUsers(program):
     """
     This function returns users banned from a program.

@@ -7,6 +7,7 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
+from app.models.programBan import ProgramBan
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
@@ -131,14 +132,14 @@ def getEventParticipants(event):
 
     return [p for p in eventParticipants]
 
-def getParticipationStatusForTrainings(program, userList, term):
+def getParticipationStatusForTrainings(program, userList, term, returnStr = True):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    isRelevantTraining = ((Event.isAllVolunteerTraining | ((Event.isTraining) & (Event.program == program))) & 
+    isRelevantTraining = ((Event.isAllVolunteerTraining | Event.isCeltsTraining | ((Event.isTraining) & (Event.program == program))) & 
                               (Event.term.academicYear == term.academicYear))
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
@@ -166,9 +167,39 @@ def getParticipationStatusForTrainings(program, userList, term):
         for user in userList:
             if training.name not in userParticipationStatus[user.username] or user.username in attendeeList:
                 userParticipationStatus[user.username][training.name] = [training, user.username in attendeeList]
-    
-    return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
+    if returnStr:
+        return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
+    else:
+        return {user: list(userParticipationStatus[user.username].values()) for user in userList}
 
+def getTrainingsForInterestedParticipants(programID, interestedUsers):
+    trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
+    bannedUsers = list(User
+               .select(User.username)
+               .join(ProgramBan)
+               .where(ProgramBan.program == programID,
+                      User.username << [user.username for user in interestedUsers]))
+    print("\n\n\n\n\n BANNED: ", bannedUsers)
+    trainedAndInterested = {}
+    for interestedUser in interestedUsers:
+        if interestedUser in trainedUsers:
+            trainedAndInterested[interestedUser.username] = {}
+            trainedAndInterested[interestedUser.username]["userObj"] = interestedUser
+            trainedAndInterested[interestedUser.username]['allVolunteer'] = False
+            trainedAndInterested[interestedUser.username]['programSpecific'] = False           
+            for event in trainedUsers[interestedUser]:
+                if not event[1]: # they didn't attend
+                    continue
+                elif event[0].isAllVolunteerTraining:  # They attended the training
+                    trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
+                elif event[0].isTraining:
+                    trainedAndInterested[interestedUser.username]["programSpecific"] = True
+            trainedAndInterested[interestedUser.username]["eligible"] = True
+            if interestedUser in bannedUsers:
+                trainedAndInterested[interestedUser.username]["eligible"] = False
+                
+
+    return trainedAndInterested
 
 def sortParticipantsByStatus(event):
     """

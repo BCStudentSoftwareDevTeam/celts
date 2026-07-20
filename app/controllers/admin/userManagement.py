@@ -15,11 +15,14 @@ from app.models.program import Program
 from app.logic.fileHandler import FileHandler
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo
+from app.logic.participants import getTrainingsForInterestedParticipants
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
+from app.logic.users import getProgramInterest
 from app.logic.volunteers import setProgramManager
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
+from app.models.programBan import ProgramBan
 from app.models.user import User
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
@@ -178,9 +181,14 @@ def upload(fileCategory, currentTerm):
 
 @admin_bp.route('/viewRoster/<programID>', methods = ['GET'])
 def viewRoster(programID):
-    print(programID)
     program = Program.get(programID)
-
+    interested = list(getProgramInterest(program))    
+    interestedUsers = [i.user for i in interested]
+    trainedAndInterested = getTrainingsForInterestedParticipants(programID, interestedUsers)
+    print(trainedAndInterested)
     return render_template('admin/viewRoster.html',
-                           program = program
+                           program = program,
+                           interestedUsers = interestedUsers, 
+                           trainedAndInterested = trainedAndInterested
                                 )
+
