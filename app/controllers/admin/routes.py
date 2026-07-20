@@ -115,7 +115,9 @@ def createEvent(templateid, programid):
     if request.method == "POST":
         savedEvents = None
         eventData.update(request.form.copy())
+        print(">>>>>>>> createEvent before preprocess 1: ", list(Event.select().where(Event.isCeltsTraining)))
         eventData = preprocessEventData(eventData)
+        print(">>>>>>>> createEvent after preprocess 1: ", list(Event.select().where(Event.isCeltsTraining)))
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
@@ -179,7 +181,6 @@ def createEvent(templateid, programid):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-    # FIXME ISCELTSTRAINING IS CORRECT HERE WRONG
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -260,8 +261,6 @@ def eventDisplay(eventId):
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
-        # FIXME BY HERE ISCELTSTRAINING IS WRONG
-        print("TRAINING: ", event)
         invitedCohorts = list(EventCohort.select().where(
             EventCohort.event == event
         )) 
@@ -467,7 +466,6 @@ def deleteAllEventsInSeriesRoute(eventId):
 
 @admin_bp.route('/makeRepeatingEvents', methods=['POST'])
 def addRepeatingEvents():
-    repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     repeatingEvents = getRepeatingEventsData(preprocessEventData(request.form.copy()))
     return json.dumps(repeatingEvents, default=str)
 

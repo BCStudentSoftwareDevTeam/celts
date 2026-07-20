@@ -175,7 +175,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
-        
     newEventData = preprocessEventData(eventData)
     
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -196,7 +195,6 @@ def saveEventToDb(newEventData, renewedEvent = False):
         raise Exception("Unvalidated data passed to saveEventToDb")
     
     isNewEvent = ('id' not in newEventData)
-    print("\n\n\n\n\n\n\n\n#####", newEventData['isCeltsTraining'], "#####\n\n\n\n\n")
     eventRecords = []
     with mainDB.atomic():
         eventData = {
@@ -226,8 +224,8 @@ def saveEventToDb(newEventData, renewedEvent = False):
             eventData['seriesId'] = newEventData.get('seriesId')
             eventData['isRepeating'] = bool(newEventData.get('isRepeating'))
             eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
-            eventData["isCeltsTraining"] = newEventData['isCeltsTraining'],
-            eventRecord = Event.create(**eventData)
+            eventData["isCeltsTraining"] = bool(newEventData.get('isCeltsTraining', False))
+            eventRecord = Event.create(**eventData)            
         else:
             eventRecord = Event.get_by_id(newEventData['id'])
             Event.update(**eventData).where(Event.id == eventRecord).execute()
@@ -517,6 +515,7 @@ def preprocessEventData(eventData):
         - seriesData should be a JSON string
         - Look up matching certification requirement if necessary
     """
+
     ## Process checkboxes and templateData
     eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'includesLabor', 'isLaborOnly', 'isCeltsTraining']
     
@@ -563,6 +562,7 @@ def preprocessEventData(eventData):
 
     if 'timeEnd' in eventData:
         eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])    
+    
     return eventData
 
 def getTomorrowsEvents():
