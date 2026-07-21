@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function(){    
 
     $(".interestedInput").click(function updateInterest(){
         var programID = $(this).data("programid");

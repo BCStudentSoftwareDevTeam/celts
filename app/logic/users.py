@@ -63,9 +63,9 @@ def getProgramInterest(program):
     """
     This function is used to retrieve a programs's interested users.
     Parameters:
-    username: username of the user showing interest
+    program: Program object
     """
-    return Interest.select(Interest.user).where(Interest.program == program)
+    return User.select().join(Interest).where(Interest.program == program)
 
 def getBannedUsers(program):
     """

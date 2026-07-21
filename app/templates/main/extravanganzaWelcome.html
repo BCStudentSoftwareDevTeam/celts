@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block app_content %}
-<h1>Welcome to the CELTS Volunteer Extravaganza <br />{{g.current_user.fullName}}!</h1>
+<h1>Welcome to the {{g.current_term.academicYear}} CELTS Volunteer Extravaganza <br />{{g.current_user.fullName}}!</h1>
 <p><strong>Step 1:</strong> Indicate your interest in a CELTS programs below. Your interest helps us get you involved!</p>
 <p><strong>Step 2:</strong> Attend one of the All Volunteers Trainings listed below. Click to RSVP!</p>
 <p><strong>Step 3:</strong> Attend the Program-specific training to learn more about volunteering with that program!</p>
@@ -57,7 +57,7 @@
                 <td>
                     {% for training in upcomingTrainings %}
                         {% if training.program.id == program.id %}
-                            <a href=event/{{training.id}}/view >{{training.name}}</a> ({{training.startDate}} @ {{training.timeStart}})
+                            <a href=event/{{training.id}}/view >{{training.name}}</a> ({{training.startDate}} @ {{training.timeStart}}){% if loop.index != 0 %}<br />{% endif %}
                         {% endif %}
                     {% endfor %}
                 </td>

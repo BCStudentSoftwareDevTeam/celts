@@ -659,19 +659,19 @@ def updateMinorDeclaration(username):
     return redirect(url_for('admin.manageMinor', tab=tab))
 
 @main_bp.route('/extravaganza', methods=['GET'])
-def extravaganza():    
-    programs = Program.select().where(Program.isOtherCeltsSponsored == False)
+def extravaganza():
+    programs = Program.select().where(Program.isOtherCeltsSponsored == False, 
+                                      Program.programName != "Hunger Initiatives", 
+                                      Program.programName != "Bonner Scholars")
     interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
     programsInterested = [interest.program for interest in interests]
 
-    Term2 = Term.alias()            
-    sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
-    upcomingAllVolunteers = Event.select().where(Event.isAllVolunteerTraining, Event.term.in_(sameYearTerms))
-    upcomingTrainings = Event.select().where(Event.isTraining, Event.term.in_(sameYearTerms))
+    upcomingAllVolunteers = Event.select().join(Term).where(Event.isAllVolunteerTraining, Term.academicYear == g.current_term.academicYear)
+    upcomingTrainings = Event.select().join(Term).where(Event.isTraining, Term.academicYear == g.current_term.academicYear)
 
-    for idx, training in enumerate(upcomingTrainings):
-        upcomingTrainings[idx].startDate = training.startDate.strftime("%b %d")
-        upcomingTrainings[idx].timeStart = training.timeStart.strftime("%I:%M %p")
+    for training in upcomingTrainings:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
 
     return render_template("main/extravanganzaWelcome.html",
                            programs = programs,

@@ -181,9 +181,10 @@ def upload(fileCategory, currentTerm):
 
 @admin_bp.route('/viewRoster/<programID>', methods = ['GET'])
 def viewRoster(programID):
-    program = Program.get(programID)
-    interested = list(getProgramInterest(program))    
-    interestedUsers = [i.user for i in interested]
+    program = Program.get_by_id(programID)
+    print(program.programName)
+    interestedUsers = list(getProgramInterest(program)) 
+    print("\n\n\n\n#############\n\n\n\n", interestedUsers)       
     trainedAndInterested = getTrainingsForInterestedParticipants(programID, interestedUsers)
     print(trainedAndInterested)
     return render_template('admin/viewRoster.html',

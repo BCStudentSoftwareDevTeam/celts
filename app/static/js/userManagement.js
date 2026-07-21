@@ -27,6 +27,7 @@ function callbackProgramManager(selected, action = 'add') {
 }
 
 $(document).ready(function(){
+
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
       searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "celtsLinkAdmin")
