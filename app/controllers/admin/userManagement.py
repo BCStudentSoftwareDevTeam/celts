@@ -15,7 +15,7 @@ from app.models.program import Program
 from app.logic.fileHandler import FileHandler
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo
-from app.logic.participants import getTrainingsForInterestedParticipants
+from app.logic.participants import getTrainingsForInterestedParticipants, getParticipantsForProgramForAY
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
 from app.logic.users import getProgramInterest
@@ -182,14 +182,19 @@ def upload(fileCategory, currentTerm):
 @admin_bp.route('/viewRoster/<programID>', methods = ['GET'])
 def viewRoster(programID):
     program = Program.get_by_id(programID)
-    print(program.programName)
     interestedUsers = list(getProgramInterest(program)) 
-    print("\n\n\n\n#############\n\n\n\n", interestedUsers)       
     trainedAndInterested = getTrainingsForInterestedParticipants(programID, interestedUsers)
-    print(trainedAndInterested)
+
+    lastAY = f"{int(g.current_term.academicYear.split("-")[0])-1}-{int(g.current_term.academicYear.split("-")[1])-1}"
+    lastYearsParticipants = getParticipantsForProgramForAY(programID, lastAY)
+    print("\n\n\n\n\n\n\n", list(lastYearsParticipants), "\n\n\n\n\n\n\n")
+    currentYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.academicYear)
     return render_template('admin/viewRoster.html',
                            program = program,
                            interestedUsers = interestedUsers, 
-                           trainedAndInterested = trainedAndInterested
+                           trainedAndInterested = trainedAndInterested,
+                           lastYearsParticipants = lastYearsParticipants,
+                           currentYearsParticipants = currentYearsParticipants,
+                           lastAY = lastAY
                                 )
 

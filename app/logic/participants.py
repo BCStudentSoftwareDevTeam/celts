@@ -1,7 +1,7 @@
 from flask import g
 from peewee import fn, JOIN
 from playhouse.shortcuts import model_to_dict
-from datetime import date
+from datetime import date, datetime
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
@@ -9,11 +9,13 @@ from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.eventParticipant import EventParticipant
+from app.models.backgroundCheck import BackgroundCheck
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 from collections import defaultdict
+
 
 def trainedParticipants(programID, targetTerm):
     """
@@ -173,20 +175,43 @@ def getParticipationStatusForTrainings(program, userList, term, returnStr = True
         return {user: list(userParticipationStatus[user.username].values()) for user in userList}
 
 def getTrainingsForInterestedParticipants(programID, interestedUsers):
+    """
+    Takes in a programID and a list of interested users, and returns all of the trainings they have completed for that program. 
+    Returns a nested dictionary which looks like the following: 
+    {'userID1': [{'trainingID1': True, 'trainingID2': False}],
+     'userID2': [{'trainingID1: True, 'trainingID3': True}]}
+
+     where userID is a username, trainingIDs are eventID, and the booleans represent if they attended that training. 
+     Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)    
+    """
     trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
     bannedUsers = list(User
                .select(User.username)
                .join(ProgramBan)
                .where(ProgramBan.program == programID,
                       User.username << [user.username for user in interestedUsers]))
-    print("\n\n\n\n\n BANNED: ", bannedUsers)
+    
+    bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted, BackgroundCheck.termSubmitted)
+                                         .join(BackgroundCheck)
+                                         .join(Term)
+                                         .where(BackgroundCheck.termSubmitted.academicYear == g.current_term.academicYear).distinct())
+
+    # bgCheckSubmitted = [model_to_dict(bg) for bg in bgCheckSubmitted]
+    bgCheckDict = {}    
+    for bg in bgCheckSubmitted:
+        
+        bgCheckDict[bg.username] = {"dateCompleted": bg.backgroundcheck.dateCompleted.strftime("%m/%d/%Y"), 
+                                    "termSubmitted": bg.backgroundcheck.termSubmitted
+                                   }        
+    
     trainedAndInterested = {}
     for interestedUser in interestedUsers:
         if interestedUser in trainedUsers:
             trainedAndInterested[interestedUser.username] = {}
             trainedAndInterested[interestedUser.username]["userObj"] = interestedUser
             trainedAndInterested[interestedUser.username]['allVolunteer'] = False
-            trainedAndInterested[interestedUser.username]['programSpecific'] = False           
+            trainedAndInterested[interestedUser.username]['programSpecific'] = False
+            trainedAndInterested[interestedUser.username]['bgCheck'] = "Not submitted"
             for event in trainedUsers[interestedUser]:
                 if not event[1]: # they didn't attend
                     continue
@@ -197,9 +222,23 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             trainedAndInterested[interestedUser.username]["eligible"] = True
             if interestedUser in bannedUsers:
                 trainedAndInterested[interestedUser.username]["eligible"] = False
-                
+            if interestedUser in bgCheckSubmitted:
+                trainedAndInterested[interestedUser.username]['bgCheck'] = bgCheckDict[interestedUser.username]['dateCompleted']
 
     return trainedAndInterested
+
+def getParticipantsForProgramForAY(programID, academicYear):    
+    participants = (User.select()
+                                .join(EventParticipant)
+                                .join(Event)
+                                .join(Program)
+                                .switch(Event)
+                                .join(Term)
+                                .where(Program.id == programID, Term.academicYear == academicYear, User.hasGraduated == False, EventParticipant.hoursEarned > 0)
+                                .distinct()
+                            )
+    return participants
+
 
 def sortParticipantsByStatus(event):
     """
