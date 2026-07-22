@@ -340,14 +340,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="input-group">
+        <div class="input-group mb-3">
+              <input type="search" id="addVolunteerInput" name='addVolunteerInput' class="form-control" placeholder="Search" autocomplete="off"/>
+              <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
+          </div>
+        <!-- <div class="input-group">          
           <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
-            <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
+            
           </div>
           <button type="button" class="btn btn-primary btn-sm">
             <i class="bi bi-search ms-0"></i>
           </button>
-        </div>
+        </div> -->
         <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
           {% if event.isRepeating and not event.isFirstRepeatingEvent%}
             {% if repeatingingVolunteers %}

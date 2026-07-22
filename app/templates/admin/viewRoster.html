@@ -5,12 +5,12 @@
   {{super()}}  
   <script src="https://cdn.datatables.net/v/dt/dt-2.3.8/r-3.0.8/datatables.min.js" integrity="sha384-eipZfAkielQNS2ZpCdLQjRSMr5lEzXO+G95xGKbCV3eda5FGsfPjAp5r3yfRfvdP" crossorigin="anonymous"></script>  
   <script type="module" src="/static/js/rosterManagement.js"></script>
-  <script type="module" src="/static/js/searchStudent.js"></script>
 {% endblock %}
 
 {% block styles %}
   {{super()}}
   <link href="https://cdn.datatables.net/v/dt/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-xvaWqQ6yNt3Nps5orN0cPJA3lEDUfOpxonnUWSyXh6pWYusQXk6vp6ndFMAdNBZJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/viewRoster.css') }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
 {% block app_content %}
@@ -53,7 +53,7 @@
                                 {% endfor %}             
                             </tbody>
                         </table>                        
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#searchStudentModal"><i class="bi bi-plus-circle" style="color:green;"></i> Add an interested student</button>                        
+                        <button class='btn btn-outline-primary' type="button" data-bs-toggle="modal" data-bs-target="#searchStudentModal"><i class="bi bi-plus-circle" style="color:green;"></i> Add an interested student</button>                        
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
 </div>
 
 <div class="modal fade" tabindex="-1" id="searchStudentModal">
-    <form id= "searchStudent" action="/addInterestedStudent" method="POST">
+    <form id= "searchStudentForm" data-program="{{program.id}}" method="POST">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
@@ -140,20 +140,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="col-sm-6 col-sm-offset-3 m-auto">
+                <div class="col-sm-12 col-sm-offset-3 m-auto">
                     <div class="row">
-                        <div class="form-group ui-widget">
+                        <div class="form-group ui-widget" id="searchTarget">
                             <div class="input-group">
                                 <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
                                 <span class="input-group-text" id="searchIcon"><span class="bi bi-plus-circle" style="color:green;"></span></span>
                             </div>
                         </div>
                     </div>
+                    <div class="row" id="addedNameDivTarget">
+                        <p></p>
+                        <p id="addedNameToClone" hidden><span class="addedNameTarget"></span>'s interest added!</p>
+                    </div>
                 </div>                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="dismissModal">Close</button>                
             </div>
             </div>
         </div>
