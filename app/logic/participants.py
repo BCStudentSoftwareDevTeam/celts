@@ -176,13 +176,21 @@ def getParticipationStatusForTrainings(program, userList, term, returnStr = True
 
 def getTrainingsForInterestedParticipants(programID, interestedUsers):
     """
-    Takes in a programID and a list of interested users, and returns all of the trainings they have completed for that program. 
+    Takes in a programID and a list of interested users, and returns all of the trainings and background checks they have completed. 
     Returns a nested dictionary which looks like the following: 
-    {'userID1': [{'trainingID1': True, 'trainingID2': False}],
-     'userID2': [{'trainingID1: True, 'trainingID3': True}]}
+    {'userID1': {'userObj: <User>,
+                 'allVolunteer': True,
+                 'programSpecific': False,
+                 'bgCheck': '0/22/2026'
+                 },                
+     'userID2': {'userObj: <User>,
+                 'allVolunteer': True,
+                 'programSpecific': False,
+                 'bgCheck': '0/22/2026'
+                 }
+    }
 
-     where userID is a username, trainingIDs are eventID, and the booleans represent if they attended that training. 
-     Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)    
+     Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)
     """
     trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
     bannedUsers = list(User

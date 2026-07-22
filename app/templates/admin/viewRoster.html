@@ -97,15 +97,15 @@
 
     <div class="accordion-item">
         <h3 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Last Year's Volunteers (AY {{lastAY}})</button>
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Last Year's Volunteers (AY {{g.current_term.previousAcademicYear}})</button>
         </h3>
         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#rosterMain">
             <div class="accordion-body">
                 <div class="row">
                     <div class="justify-content-evenly col-12">
-                        <p>The following table includes all current students who participated in at least one {{program.programName}} event in AY {{lastAY}}.</p>
+                        <p>The following table includes all current students who participated in at least one {{program.programName}} event in AY {{g.current_term.previousAcademicYear}}.</p>
                         {% if lastYearsParticipants|length == 0%}
-                            <p>There were no participants in {{program.programName}} during AY {{lastAY}}</p>
+                            <p>There were no participants in {{program.programName}} during AY {{g.current_term.previousAcademicYear}}</p>
                         {% else %}
                         <table class="table table-striped table-bordered" id="lastAYrosterTable">
                             <thead>

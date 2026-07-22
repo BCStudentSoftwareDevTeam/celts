@@ -723,7 +723,7 @@
             {% endif %}
           {% else %}
             {% if not currentTerm.volunteerHandbook %}
-              No handbook available for {{currentTerm.description}} yet.
+              <p>No handbook available for {{currentTerm.description}} yet.</p>
             {% else %}
               <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + currentTerm.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
             {% endif %}

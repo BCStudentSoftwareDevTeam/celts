@@ -13,6 +13,13 @@ class Term(baseModel):
     _cache = None
 
     @property
+    def previousAcademicYear(self):
+        """
+        Returns the previous academic year.
+        """
+        return f"{int(self.academicYear.split("-")[0])-1}-{int(self.academicYear.split("-")[1])-1}"
+    
+    @property
     def academicYearStartingTerm(self):
         """
         Saves the term that starts the academic year of the chosen term in a cache

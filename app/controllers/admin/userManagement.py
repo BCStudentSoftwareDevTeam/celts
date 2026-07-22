@@ -185,15 +185,13 @@ def viewRoster(programID):
     interestedUsers = list(getProgramInterest(program)) 
     trainedAndInterested = getTrainingsForInterestedParticipants(programID, interestedUsers)
 
-    lastAY = f"{int(g.current_term.academicYear.split("-")[0])-1}-{int(g.current_term.academicYear.split("-")[1])-1}"
-    lastYearsParticipants = getParticipantsForProgramForAY(programID, lastAY)
+    lastYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.previousAcademicYear)
     currentYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.academicYear)
     return render_template('admin/viewRoster.html',
                            program = program,
                            interestedUsers = interestedUsers, 
                            trainedAndInterested = trainedAndInterested,
                            lastYearsParticipants = lastYearsParticipants,
-                           currentYearsParticipants = currentYearsParticipants,
-                           lastAY = lastAY
+                           currentYearsParticipants = currentYearsParticipants
                                 )
 
