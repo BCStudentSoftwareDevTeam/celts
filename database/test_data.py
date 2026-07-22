@@ -1501,15 +1501,13 @@ background = [
     "user": "khatts",
     "type": "CAN",
     "backgroundCheckStatus": "Passed",
-    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d"),
-    "termSubmitted": 4
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
     "user": "mupotsal",
     "type": "SHS",
     "backgroundCheckStatus": "Submitted",
-    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d"),
-    "termSubmitted": 4
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()

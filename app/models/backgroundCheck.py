@@ -10,4 +10,3 @@ class BackgroundCheck(baseModel):
     dateCompleted = DateField(null=True)
     deletionDate = DateTimeField(null=True)
     deletedBy = TextField(null=True)
-    termSubmitted = ForeignKeyField(Term)

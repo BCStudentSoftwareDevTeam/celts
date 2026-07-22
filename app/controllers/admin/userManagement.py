@@ -187,7 +187,6 @@ def viewRoster(programID):
 
     lastAY = f"{int(g.current_term.academicYear.split("-")[0])-1}-{int(g.current_term.academicYear.split("-")[1])-1}"
     lastYearsParticipants = getParticipantsForProgramForAY(programID, lastAY)
-    print("\n\n\n\n\n\n\n", list(lastYearsParticipants), "\n\n\n\n\n\n\n")
     currentYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.academicYear)
     return render_template('admin/viewRoster.html',
                            program = program,

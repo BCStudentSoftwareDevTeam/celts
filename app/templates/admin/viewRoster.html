@@ -36,7 +36,7 @@
                                     <th>All Volunteers Training</th>
                                     <th>Program Specific Training</th>
                                     <th>Eligible</th>
-                                    <th>Background Check submitted on:</th>
+                                    <th>Background Check</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,7 +48,7 @@
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['allVolunteer'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['programSpecific'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['eligible'] %} <i class="bi bi-check-square" style="color:green;"></i> Yes {% else %} <i class="bi bi-ban" style="color:red;"></i> No {% endif %}</td>
-                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['bgCheck'] == "Not submitted" %}<i class="bi bi-patch-minus" style="color: red;"> {% endif %}</i>{{trainedAndInterested[prospectiveVolunteer]['bgCheck']}}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['bgCheck'] == "Not submitted" %}<i class="bi bi-patch-minus" style="color: red;"> {% else %} <i class="bi bi-patch-check" style="color:green;"> </i>{% endif %}</i>{{trainedAndInterested[prospectiveVolunteer]['bgCheck']}}</td>
                                 </tr>
                                 {% endfor %}             
                             </tbody>

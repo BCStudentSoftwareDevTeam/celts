@@ -191,19 +191,10 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
                .where(ProgramBan.program == programID,
                       User.username << [user.username for user in interestedUsers]))
     
-    bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted, BackgroundCheck.termSubmitted)
+    bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted)
                                          .join(BackgroundCheck)
-                                         .join(Term)
-                                         .where(BackgroundCheck.termSubmitted.academicYear == g.current_term.academicYear).distinct())
+                                         .where(BackgroundCheck.backgroundCheckStatus == "Submitted").distinct())
 
-    # bgCheckSubmitted = [model_to_dict(bg) for bg in bgCheckSubmitted]
-    bgCheckDict = {}    
-    for bg in bgCheckSubmitted:
-        
-        bgCheckDict[bg.username] = {"dateCompleted": bg.backgroundcheck.dateCompleted.strftime("%m/%d/%Y"), 
-                                    "termSubmitted": bg.backgroundcheck.termSubmitted
-                                   }        
-    
     trainedAndInterested = {}
     for interestedUser in interestedUsers:
         if interestedUser in trainedUsers:
@@ -223,7 +214,7 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             if interestedUser in bannedUsers:
                 trainedAndInterested[interestedUser.username]["eligible"] = False
             if interestedUser in bgCheckSubmitted:
-                trainedAndInterested[interestedUser.username]['bgCheck'] = bgCheckDict[interestedUser.username]['dateCompleted']
+                trainedAndInterested[interestedUser.username]['bgCheck'] = "Submitted"
 
     return trainedAndInterested
 
