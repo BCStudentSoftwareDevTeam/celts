@@ -15,8 +15,10 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
+        # lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
+        lsfUrl = "http://127.0.0.1:8989/api/org/2084"
         response = requests.get(lsfUrl)
+        print("jinja", response.json())
         return response.json()
     except json.decoder.JSONDecodeError: 
         print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
@@ -117,14 +119,37 @@ def refreshCeltsLaborRecords(laborDict):
 def getCeltsLaborHistory(volunteer):
     
     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+                                              CeltsLabor.id,
                                               Term.description, 
                                               Term.academicYear, 
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
-                                      .where(CeltsLabor.user == volunteer))
-    
+                                      .where(CeltsLabor.user == volunteer)
+                                      .order_by(Term.id.asc()))
+    termsByAcademicYear = {}
+    for position in laborHistoryList:
+        if position.term.isSummer:
+            continue
+        academicYear = position.term.academicYear
+        description = position.term.description
+        if academicYear not in termsByAcademicYear:
+            termsByAcademicYear[academicYear] = {"Fall": False,"Spring": False}
+        if "Fall" in description:
+            termsByAcademicYear[academicYear]["Fall"] = True
+        elif "Spring" in description:
+            termsByAcademicYear[academicYear]["Spring"] = True
     laborHistoryDict= {}
-    for position in laborHistoryList: 
-        laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
-
+    for position in laborHistoryList:
+        description = position.term.description
+        academicYear = position.term.academicYear
+        if position.term.isSummer:
+            positionTerm = description
+        else:
+            hasFall = termsByAcademicYear[academicYear]["Fall"]
+            hasSpring = termsByAcademicYear[academicYear]["Spring"]
+            if hasFall and hasSpring:
+                positionTerm = description
+            else:
+                positionTerm = f"AY {academicYear}"
+        laborHistoryDict[position.id] = (position.positionTitle,positionTerm)
     return laborHistoryDict
