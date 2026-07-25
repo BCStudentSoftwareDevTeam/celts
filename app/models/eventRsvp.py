@@ -9,6 +9,10 @@ class EventRsvp(baseModel):
     rsvpTime = DateTimeField(default=datetime.now)
     rsvpWaitlist = BooleanField(default=False)
 
+    @property
+    def rsvp(self):
+        # EventRsvp always represents an RSVP record, including invited participants.
+        return True
 
     class Meta:
         indexes = ( (('user', 'event'), True), )

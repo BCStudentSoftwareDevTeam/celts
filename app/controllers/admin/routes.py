@@ -5,6 +5,7 @@ from playhouse.shortcuts import model_to_dict
 import json
 from datetime import datetime
 import os
+from collections import namedtuple
 
 from app import app
 from app.models.backgroundCheck import BackgroundCheck
@@ -33,7 +34,7 @@ from app.logic.createLogs import createActivityLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import attemptSaveMultipleOfferings, cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, getRepeatingEventsData, deleteEventAndAllFollowing, deleteAllEventsInSeries, getBonnerEvents,addEventView, getEventRsvpCount, copyRsvpToNewEvent, getCountdownToEvent, calculateNewSeriesId, inviteCohortsToEvent, updateEventCohorts
-from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp
+from app.logic.participants import getParticipationStatusForTrainings, checkUserRsvp, getTargetList
 from app.logic.minor import getMinorInterest
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort, addBonnerCohortToRsvpLog
@@ -195,7 +196,31 @@ def createEvent(templateid, programid):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
-        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        # Existing RSVP-specific log entries
+        eventLogs = list(EventRsvpLog.select(EventRsvpLog, User)
+                                    .join(User, on=(EventRsvpLog.createdBy == User.username))
+                                    .where(EventRsvpLog.event_id == eventId))
+
+        # Include invited users from EventRsvp so the log display reflects invitations too
+        invitedRsvps = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event == eventId)
+
+        LogEntry = namedtuple('LogEntry', ['createdOn', 'createdBy', 'rsvpLogContent'])
+
+        allLogs = []
+        allLogs.extend(eventLogs)
+
+        # Only add invitation logs for non-RSVP events, as for RSVP events, EventRsvp represents RSVPs, not invitations
+        if not event.isRsvpRequired:
+            for rsvp in invitedRsvps:
+                # Provide an explicit invitation action for EventRsvp records
+                allLogs.append(LogEntry(
+                    createdOn=rsvp.rsvpTime,
+                    createdBy=rsvp.user,
+                    rsvpLogContent=f"Added {rsvp.user.fullName} to {getTargetList(event)}"
+                ))
+
+        allLogs.sort(key=lambda entry: entry.createdOn, reverse=True)
+
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 allLogs = allLogs)
