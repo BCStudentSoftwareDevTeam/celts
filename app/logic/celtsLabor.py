@@ -125,7 +125,7 @@ def getCeltsLaborHistory(volunteer):
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
                                       .where(CeltsLabor.user == volunteer)
-                                      .order_by(Term.id.asc()))
+                                      .order_by(Term.termOrder.asc()))
     termsByAcademicYear = {}
     for position in laborHistoryList:
         if position.term.isSummer:
