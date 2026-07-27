@@ -44,7 +44,7 @@
 </div>
 
 <div class="profile-links">
-  <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Volunteer Information</a>
+  <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Personal Information</a>
 
   {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
     <a href="/profile/{{volunteer.username}}/travelForm" class="btn btn-primary btn-sm" target="_blank">Print Travel Form</a>
@@ -669,12 +669,12 @@
 <!-- ################# Ban or Unban Modal ################ -->
 
 
-<!-- ################# Edit Volunteer Information Modal ################ -->
-<div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" data-backdrop="static">
+<!-- ################# Edit Personal Information Modal ################ -->
+<div class="modal fade" id="editVolunteerModal" tabindex="-1" aria-labelledby="editVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Edit Volunteer Information</h5>
+        <h5 class="modal-title">Edit Personal Information</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -771,6 +771,6 @@
     </div>
   </div>
 </div>
-<!-- ################# Edit Volunteer Information Modal ################ -->
+<!-- ################# Edit Personal Information Modal ################ -->
 
 {% endblock %}
