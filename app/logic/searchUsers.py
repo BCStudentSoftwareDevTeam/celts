@@ -8,14 +8,13 @@ def searchUsers(query, category=None):
     '''
     # add wildcards to each piece of the query
     splitSearch = query.strip().split()
-    firstName = splitSearch[0] + "%"
-    lastName = " ".join(splitSearch[1:]) +"%"
-
-    if len(splitSearch) == 1: # search for query in first OR last name
-        searchWhere = (User.firstName ** firstName | User.lastName ** firstName | User.username ** splitSearch)
-    else:                     # search for first AND last name
-        searchWhere = (User.firstName ** firstName & User.lastName ** lastName)
-
+    fullSearch = " ".join(splitSearch) + "%"
+    searchWhere = (User.firstName ** fullSearch | User.lastName ** fullSearch | User.username ** fullSearch)
+    for splitIndex in range(1, len(splitSearch)):
+        firstName = " ".join(splitSearch[:splitIndex]) + "%"
+        lastName = " ".join(splitSearch[splitIndex:]) + "%"
+        searchWhere |= (User.firstName ** firstName & User.lastName ** lastName)
+    
     if category == "instructor":
         userWhere = (User.isFaculty | User.isStaff)
     elif category == "admin":
