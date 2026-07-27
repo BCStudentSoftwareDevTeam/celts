@@ -1,6 +1,11 @@
+import datetime
 from flask import g, session
 from playhouse.shortcuts import model_to_dict
+import xlsxwriter
 
+from app import app
+from app.logic.participants import getParticipantsForProgramForAY
+from app.logic.volunteerSpreadsheet import makeDataXls
 from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
@@ -105,3 +110,23 @@ def getAllowedTemplates(currentUser):
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []  
+    
+def generateSheetData(program, academicYear, rosterType):
+    print(rosterType)
+    columns = []
+    if rosterType == "Interested Volunteers":
+        columns = ["Potential Volunteer", "Email", f"AY {academicYear} Handbook Signed", "All Volunteers Training", "Program Specific Training", "Eligible", "Background Check"]
+
+    query = getParticipantsForProgramForAY(program, academicYear)
+    return (columns,query.tuples())
+
+def createSpreadsheetForRosters(academicYear, program):
+    filepath = f"{app.config['files']['base_path']}/{program}_rosters_{academicYear}.xlsx"
+    workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
+    
+    makeDataXls("Interested Volunteers", generateSheetData(program, academicYear, "Interested Volunteers"), workbook, sheetDesc=f"Interested Volunteers Roster")
+    makeDataXls(f"Engaged Volunteers ({academicYear})", generateSheetData(program, academicYear, "Engaged Volunteers"), workbook, sheetDesc=f"Engaged Volunteers")
+    makeDataXls(f"Last Year Volunteers", generateSheetData(program, academicYear, "Last Year Volunteers"), workbook, sheetDesc=f"Last Year Volunteers")
+
+    workbook.close()
+    return filepath

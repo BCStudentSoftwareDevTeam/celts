@@ -49,3 +49,18 @@ $('#searchStudentForm').on('submit', function(e) {
     }
   })
 });
+
+$("#exportRoster").click(function() {
+  var year = $(this).data("year");
+  var program = $(this).data('program');
+  $.ajax({
+    url: "/exportRosters/" + program + "/" + year,
+    type: 'GET',
+    success: function(response) {
+        console.log(response)
+    },
+    error: function(xhr, status, error) {      
+        console.log(status, error);
+    }
+  })
+})

@@ -201,7 +201,7 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
     
     bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted)
                                          .join(BackgroundCheck)
-                                         .where(BackgroundCheck.backgroundCheckStatus == "Submitted").distinct())
+                                         .distinct())
 
     trainedAndInterested = {}
     for interestedUser in interestedUsers:

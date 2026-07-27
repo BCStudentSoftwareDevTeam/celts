@@ -15,7 +15,15 @@
 
 {% block app_content %}
 <div class="container mt-50 text-center ">
-    <h1>{{program.programName}} Rosters</h1>
+    <div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <h1>{{program.programName}} Rosters</h1>
+    </div>
+    <div class="col-2">
+        <button class='btn btn-primary' type="button" id="exportRoster" data-program="{{program.id}}" data-year="{{g.current_term.academicYear}}"><img class="me-2" src="{{url_for('static', filename='xls-icon-3379.png')}}" alt="Export Rosters" height="24" width="24">Export Rosters</button>
+    </div>
+    </div>
 </div>
 <div class="accordion" id="rosterMain">
     <div class="accordion-item">
@@ -32,7 +40,7 @@
                                 <tr>
                                     <th>Potential Volunteer</th>
                                     <th>Email</th>
-                                    <th>AY {{g.current_term.academicYear}} handbook</th>
+                                    <th>AY {{g.current_term.academicYear}} Handbook Signed</th>
                                     <th>All Volunteers Training</th>
                                     <th>Program Specific Training</th>
                                     <th>Eligible</th>
@@ -53,7 +61,7 @@
                                 {% endfor %}             
                             </tbody>
                         </table>                        
-                        <button class='btn btn-outline-primary' type="button" data-bs-toggle="modal" data-bs-target="#searchStudentModal"><i class="bi bi-plus-circle" style="color:green;"></i> Add an interested student</button>                        
+                        <button class='btn btn-outline-primary' type="button" data-bs-toggle="modal" data-bs-target="#searchStudentModal"><i class="bi bi-plus-circle" style="color:green;"></i> Add an interested student</button>
                     </div>
                 </div>
             </div>
