@@ -15,10 +15,8 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        # lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
-        lsfUrl = "http://127.0.0.1:8989/api/org/2084"
+        lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
         response = requests.get(lsfUrl)
-        print("jinja", response.json())
         return response.json()
     except json.decoder.JSONDecodeError: 
         print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
