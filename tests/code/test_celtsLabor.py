@@ -244,13 +244,24 @@ def test_getCeltsLaborHistory():
                           isAcademicYear = True)
 
 
-        testDataAyisieHistory = {"Bonner Manager": "Summer 2021"}
+        testDataAyisieHistory = [('Bonner Manager', 'Summer 2021')]
         getAyisieHistory = getCeltsLaborHistory(ayisie)
 
-        testDataMupotsalHistory = {"Habitat For Humanity Cord.": "2020-2021"}
+        testDataMupotsalHistory = [('Habitat For Humanity Cord.', 'AY 2020-2021')]
         getMupotsalHistory = getCeltsLaborHistory(mupotsal)
 
-        assert getAyisieHistory == testDataAyisieHistory
-        assert getMupotsalHistory == testDataMupotsalHistory
+        assert list(getAyisieHistory.values()) == testDataAyisieHistory
+        assert list(getMupotsalHistory.values()) == testDataMupotsalHistory
+
+        CeltsLabor.create(user = mupotsal, 
+                          positionTitle = "Bonner Manager", 
+                          term = Term.get_by_id(1), 
+                          isAcademicYear = True)
+
+        #this is to test if there are two different celts labor in a academic year it no longers show AY 2020-2021 instead shows Fall and Spring in ascending order
+        testDataMupotsalHistoryFallSpring = [('Bonner Manager', 'Fall 2020'), ('Habitat For Humanity Cord.', 'Spring 2021')]
+        getMupotsalHistory = getCeltsLaborHistory(mupotsal)
+
+        assert list(getMupotsalHistory.values()) == testDataMupotsalHistoryFallSpring
 
         transaction.rollback()
