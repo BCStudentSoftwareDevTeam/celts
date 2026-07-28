@@ -114,10 +114,8 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         savedEvents = None
-        eventData.update(request.form.copy())
-        print(">>>>>>>> createEvent before preprocess 1: ", list(Event.select().where(Event.isCeltsTraining)))
+        eventData.update(request.form.copy())        
         eventData = preprocessEventData(eventData)
-        print(">>>>>>>> createEvent after preprocess 1: ", list(Event.select().where(Event.isCeltsTraining)))
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))

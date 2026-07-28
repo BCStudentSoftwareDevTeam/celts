@@ -227,16 +227,16 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
     return trainedAndInterested
 
 def getParticipantsForProgramForAY(programID, academicYear):    
-    participants = (User.select(User.username, 
+    participants = (User.select(User.username,
                                 User.bnumber,
                                 User.email,
                                 User.phoneNumber,
                                 User.firstName,
                                 User.lastName,
-                                User.cpoNumber,                                
+                                User.cpoNumber,
                                 User.major,
-                                User.rawClassLevel,                                                                
-                                User.dietRestriction,                
+                                User.rawClassLevel,
+                                User.dietRestriction,
                                 User.lastHandbookSignature)
                             .join(EventParticipant)
                             .join(Event)

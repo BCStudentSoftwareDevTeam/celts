@@ -283,7 +283,6 @@ function submitTerm(){
     },
     error: function(error, status){
         msgFlash("Current term was not changed. Please reload the page and try again.", "warning")
-        // console.log(error, status)
     }
   })
 }

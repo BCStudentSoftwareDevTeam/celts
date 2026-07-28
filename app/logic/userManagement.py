@@ -155,14 +155,13 @@ def generateSheetData(program, academicYear, rosterType):
         return (columns, query)
 
 def cleanInterestedParticipantsData(query):
-    print("Starting cleaning")
     if type(query) == dict:    
         for username, userData in query.items():            
             # Dictionary of user object and participation data            
             query[username]["userObj"].major = "Unknown" if not query[username]["userObj"].major else query[username]["userObj"].major
             query[username]["userObj"].rawClassLevel = "Unknown" if not query[username]["userObj"].rawClassLevel  else query[username]["userObj"].rawClassLevel
             query[username]["userObj"].dietRestriction = "Unknown" if not query[username]["userObj"].dietRestriction else query[username]["userObj"].dietRestriction
-            # query[username]["userObj"].signatureTerm = "Not Signed" if not query[username]["userObj"].signatureTerm else query[username]["userObj"].signatureTerm
+            query[username]["userObj"].lastHandbookSignature = "Not Signed" if not query[username]["userObj"].lastHandbookSignature else query[username]["userObj"].lastHandbookSignature
             query[username]["allVolunteer"] = "No" if query[username]["allVolunteer"] == False else "Yes"
             query[username]["programSpecific"] = "No" if query[username]["programSpecific"] == False else "Yes"
             query[username]["eligible"] = "No" if query[username]["eligible"] == False else "Yes"        
@@ -175,7 +174,6 @@ def cleanInterestedParticipantsData(query):
             userObj["lastHandbookSignature"] = "Not Signed" if not userObj["lastHandbookSignature"] else userObj["lastHandbookSignature"]
             query[index] = userObj
     return query
-            
 
 
 def createSpreadsheetForRosters(academicYear, program):

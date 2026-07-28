@@ -4,8 +4,6 @@ $(document).ready(function(){
         var programID = $(this).data("programid");
         var username = $(this).data('username');
 
-        console.log(programID + username);
-
         var interest = $(this).is(':checked');
         var routeUrl = interest ? "addInterest" : "removeInterest";
         var interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
