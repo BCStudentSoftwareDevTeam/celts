@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from app.models.term import Term
-from flask import render_template,request, flash, g, abort, redirect, url_for, jsonify, session
+from flask import render_template,request, flash, g, abort, redirect, send_file, url_for, jsonify, session
 from playhouse.shortcuts import model_to_dict
 from peewee import fn, JOIN, DoesNotExist
 import re
@@ -199,6 +199,7 @@ def viewRoster(programID):
 def exportRosters(programID, academicYear):
     try:
         outFile = createSpreadsheetForRosters(academicYear, programID)
-        return outFile
+        filepath = os.path.abspath(outFile)
+        return send_file(filepath, as_attachment=True, download_name=filepath.split("/")[-1], mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     except DoesNotExist:
         abort(403)

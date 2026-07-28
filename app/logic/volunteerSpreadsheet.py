@@ -1,6 +1,7 @@
 from os import major
 import xlsxwriter 
-from peewee import fn, Case, JOIN, SQL, Select
+from peewee import ModelSelect, fn, Case, JOIN, SQL, Select
+from playhouse.shortcuts import model_to_dict
 from collections import defaultdict
 from datetime import date, datetime,time
 from app import app
@@ -304,7 +305,7 @@ def laborAttendanceByTerm(term):
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
-    (columnTitles, dataTuples) = sheetData
+    (columnTitles, dataRows) = sheetData
     worksheet = workbook.add_worksheet(sheetName)
     bold = workbook.add_format({'bold': True})
 
@@ -315,24 +316,35 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     for column, title in enumerate(columnTitles):
         worksheet.write(3, column, title, bold)
 
-    for row, rowData in enumerate(dataTuples):
-        for column, value in enumerate(rowData):
-            # dates and times should use their text representation
-            if isinstance(value, (datetime, date, time)):
-                value = str(value)
+    if type(dataRows) == list:
+        for row, rowData in enumerate(dataRows):
+            col_idx = 0
+            for column, value in rowData.items():
+                # dates and times should use their text representation
+                if isinstance(value, (datetime, date, time)):
+                    value = str(value)
 
-            worksheet.write(row + 4, column, value)
+                worksheet.write(row + 4, col_idx, str(value))
+                col_idx += 1
 
-    # set the width to the size of the text, with a maximum of 50 characters
-    for column, title in enumerate(columnTitles):
-        # put all of the data in each column into a list
-        columnData = [title] + [rowData[column] for rowData in dataTuples]
+    elif type(dataRows) == dict:
+        idx = 0
+        # Each participant
+        for row, rowData in dataRows.items():
+            idx2 = 0
+            # All participant data
+            for key, value in dict(rowData).items():
+                if key == "userObj":
+                    # Data inside user object          
+                    for key, userObjVal in model_to_dict(rowData[key], only=(User.username, User.bnumber, User.email, User.phoneNumber, User.firstName, User.lastName, User.cpoNumber, User.major, User.rawClassLevel, User.dietRestriction, User.lastHandbookSignature)).items():
+                        worksheet.write(idx + 4, idx2, userObjVal)
+                        idx2 += 1
+                else:
+                    # participation data outside user object
+                    worksheet.write(idx + 4, idx2, str(value))
+                    idx2 += 1
 
-        # find the largest item in the list (and cut it off at 50)
-        setColumnWidth = min(max(len(str(x)) for x in columnData),50)
-
-        worksheet.set_column(column, column, setColumnWidth + 3)
-
+            idx += 1
 
 def createSpreadsheet(academicYear):
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"

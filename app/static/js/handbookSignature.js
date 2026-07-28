@@ -1,6 +1,7 @@
 var canvas = $('#handbook-signature-pad')[0];
 var signaturePad = new SignaturePad(canvas);
 
+
 // Resize canvas to fix Bootstrap 3 responsiveness
 function resizeCanvas() {
     var ratio = Math.max(window.devicePixelRatio || 1, 1);

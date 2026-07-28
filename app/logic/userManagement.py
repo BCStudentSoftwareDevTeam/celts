@@ -1,10 +1,11 @@
 import datetime
-from flask import g, session
-from playhouse.shortcuts import model_to_dict
+from flask import abort, g, session
+from playhouse.shortcuts import DoesNotExist, model_to_dict
 import xlsxwriter
 
 from app import app
-from app.logic.participants import getParticipantsForProgramForAY
+from app.logic.participants import getParticipantsForProgramForAY, getTrainingsForInterestedParticipants
+from app.logic.users import getProgramInterest
 from app.logic.volunteerSpreadsheet import makeDataXls
 from app.models.user import User
 from app.models.term import Term
@@ -112,21 +113,81 @@ def getAllowedTemplates(currentUser):
         return []  
     
 def generateSheetData(program, academicYear, rosterType):
-    print(rosterType)
     columns = []
     if rosterType == "Interested Volunteers":
-        columns = ["Potential Volunteer", "Email", f"AY {academicYear} Handbook Signed", "All Volunteers Training", "Program Specific Training", "Eligible", "Background Check"]
+        columns = ["Username",
+                   "B-number",
+                   "Email",
+                   "Phone",
+                   "First Name",
+                   "Last Name",
+                   "CPO",
+                   "Major",
+                   "Class Level",
+                   "Dietary Restrictions",
+                   "Handbook Signature",
+                   "All Volunteers Training",
+                   "Program Specific Training",
+                   "Background Check",
+                   "Eligible"
+                   ]
+        query = getTrainingsForInterestedParticipants(program, getProgramInterest(program))
+        query = cleanInterestedParticipantsData(query)
+        return (columns, query)
+    elif rosterType == "Engaged Volunteers" or rosterType == "Last Year Volunteers":
+        columns = ["Username",
+                   "B-number",
+                   "Email",
+                   "Phone",
+                   "First Name",
+                   "Last Name",
+                   "CPO",
+                   "Major",
+                   "Class Level",
+                   "Dietary Restrictions",
+                   "Handbook Signature"
+                   ]
+        if rosterType == "Last Year Volunteers":
+            academicYear = Term.select().where(Term.academicYear == academicYear).get().previousAcademicYear
+        query = getParticipantsForProgramForAY(program, academicYear)
+        query = [model_to_dict(user, only=(User.username, User.bnumber, User.email, User.phoneNumber, User.firstName, User.lastName, User.cpoNumber, User.major, User.rawClassLevel, User.dietRestriction, User.lastHandbookSignature)) for user in query]
+        query = cleanInterestedParticipantsData(query)
+        return (columns, query)
 
-    query = getParticipantsForProgramForAY(program, academicYear)
-    return (columns,query.tuples())
+def cleanInterestedParticipantsData(query):
+    print("Starting cleaning")
+    if type(query) == dict:    
+        for username, userData in query.items():            
+            # Dictionary of user object and participation data            
+            query[username]["userObj"].major = "Unknown" if not query[username]["userObj"].major else query[username]["userObj"].major
+            query[username]["userObj"].rawClassLevel = "Unknown" if not query[username]["userObj"].rawClassLevel  else query[username]["userObj"].rawClassLevel
+            query[username]["userObj"].dietRestriction = "Unknown" if not query[username]["userObj"].dietRestriction else query[username]["userObj"].dietRestriction
+            # query[username]["userObj"].signatureTerm = "Not Signed" if not query[username]["userObj"].signatureTerm else query[username]["userObj"].signatureTerm
+            query[username]["allVolunteer"] = "No" if query[username]["allVolunteer"] == False else "Yes"
+            query[username]["programSpecific"] = "No" if query[username]["programSpecific"] == False else "Yes"
+            query[username]["eligible"] = "No" if query[username]["eligible"] == False else "Yes"        
+    else:
+        # User objects only
+        for index, userObj in enumerate(query):
+            userObj["major"] = "Unknown" if not userObj["major"] else userObj["major"]
+            userObj["rawClassLevel"] = "Unknown" if not userObj["rawClassLevel"] else userObj["rawClassLevel"]
+            userObj["dietRestriction"] = "Unknown" if not userObj["dietRestriction"] else userObj["dietRestriction"]
+            userObj["lastHandbookSignature"] = "Not Signed" if not userObj["lastHandbookSignature"] else userObj["lastHandbookSignature"]
+            query[index] = userObj
+    return query
+            
+
 
 def createSpreadsheetForRosters(academicYear, program):
-    filepath = f"{app.config['files']['base_path']}/{program}_rosters_{academicYear}.xlsx"
+    try:
+        program = Program.get_by_id(program)
+    except DoesNotExist:
+        raise DoesNotExist
+    filepath = f"{app.config['files']['base_path']}/{program.programName.replace(" ", "_")}_rosters_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
-    
-    makeDataXls("Interested Volunteers", generateSheetData(program, academicYear, "Interested Volunteers"), workbook, sheetDesc=f"Interested Volunteers Roster")
-    makeDataXls(f"Engaged Volunteers ({academicYear})", generateSheetData(program, academicYear, "Engaged Volunteers"), workbook, sheetDesc=f"Engaged Volunteers")
-    makeDataXls(f"Last Year Volunteers", generateSheetData(program, academicYear, "Last Year Volunteers"), workbook, sheetDesc=f"Last Year Volunteers")
-
+    makeDataXls("Interested Volunteers", generateSheetData(program, academicYear, "Interested Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who have indicated interest in {program.programName}")
+    makeDataXls(f"Engaged Volunteers ({academicYear})", generateSheetData(program, academicYear, "Engaged Volunteers"), workbook, sheetDesc=f"This worksheet shows all students who have participated in a service hours earning event in {program.programName}")
+    makeDataXls(f"Last Year Volunteers", generateSheetData(program, academicYear, "Last Year Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who participated in a service hours earning event in {program.programName} during the previous academic year")
+ 
     workbook.close()
     return filepath

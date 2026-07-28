@@ -56,11 +56,35 @@ $("#exportRoster").click(function() {
   $.ajax({
     url: "/exportRosters/" + program + "/" + year,
     type: 'GET',
-    success: function(response) {
-        console.log(response)
-    },
-    error: function(xhr, status, error) {      
-        console.log(status, error);
-    }
+    xhrFields: { responseType: "blob" },
+  success: function(blob, status, xhr) {
+      msgFlash("Download Successful", "success");
+      var filename = 'download.xlsx'; // fallback if header is missing/unparseable
+      var disposition = xhr.getResponseHeader('Content-Disposition');
+      if (disposition) {
+        // handles both: filename="report.xlsx" and filename=report.xlsx
+        var match = disposition.match(/filename\*?=(?:UTF-\d['"]*)?["']?([^"';\n]+)["']?/i);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1]);
+        }
+      }
+
+    var xlsxBlob = new Blob([blob], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+
+    var url = window.URL.createObjectURL(xlsxBlob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  },
+  error: function(xhr, status, error) {
+    console.log(status, error);
+  }
   })
 })
+
