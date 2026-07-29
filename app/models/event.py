@@ -59,7 +59,6 @@ class Event(baseModel):
         Overrides the default Peewee save method. 
         NOTE: This method is not called when using Model.update()
         """
-        print("Saving")
         if self.checkFlags():
             return super().save(*args, **kwargs)
         else:            
@@ -77,12 +76,10 @@ class Event(baseModel):
             if self.eventFlagsMatrix.get(attribute):
                 if getattr(self, attribute):
                     setFlags.append(attribute)
-        print(setFlags)
         for setFlag in setFlags:
             allowedFlags = self.eventFlagsMatrix[setFlag]
             if not all(flag in allowedFlags for flag in setFlags):
                 return False
-
         return True
 
 
