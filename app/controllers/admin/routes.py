@@ -128,7 +128,7 @@ def createEvent(templateid, programid):
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
-                print("Failed saving regular event", e)
+                print("Failed saving regular event: ", e)
                 validationErrorMessage = "Failed to save event."
         if savedEvents:
             rsvpCohorts = request.form.getlist("cohorts[]")
@@ -290,6 +290,10 @@ def eventDisplay(eventId):
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
+        except IntegrityError as e:
+            print("Error saving event:", e)
+            savedEvents = False
+            validationErrorMessage = "This combination of settings is not allowed."
         except Exception as e:
             print("Error saving event:", e)
             savedEvents = False

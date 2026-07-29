@@ -125,7 +125,7 @@ def getAllTermData(term):
                "Student First Name", "Student Last Name", "Student Email", "Student B-Number", "Student Phone", "Student CPO", "Student Major", "Student Has Graduated", "Student Class Level", "Student Dietary Restrictions",
                "Hours Earned"]
     query = (base.select(Program.programName,Event.name, Event.description, Event.startDate, Event.timeStart, Event.timeEnd, Event.location, 
-                         makeCase(Event.isFoodProvided), makeCase(Event.includesLabor), makeCase(Event.isTraining), makeCase(Event.isRsvpRequired), makeCase(Event.isService), makeCase(Event.isEngagement), makeCase(Event.isAllVolunteerTraining), 
+                         makeCase(Event.isFoodProvided), makeCase(Event.allowsLabor), makeCase(Event.isTraining), makeCase(Event.isRsvpRequired), makeCase(Event.isService), makeCase(Event.isEngagement), makeCase(Event.isAllVolunteerTraining), 
                          Event.rsvpLimit, Event.seriesId, makeCase(Event.isRepeating), Event.contactName, Event.contactEmail,
                          User.firstName, User.lastName, fn.CONCAT(User.username,'@berea.edu'), User.bnumber, User.phoneNumber,User.cpoNumber,User.major, makeCase(User.hasGraduated), User.rawClassLevel, User.dietRestriction, 
                          EventParticipant.hoursEarned)

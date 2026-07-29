@@ -302,8 +302,8 @@
               </div>
               {% if not eventData.isLaborOnly %}
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="checkIncludesLabor" name="includesLabor" {{"checked" if eventData.includesLabor}}/>
-                <label class="custom-control-label" for="checkIncludesLabor"><strong>This event includes labor.</strong></label>
+                <input class="form-check-input" type="checkbox" id="checkAllowsLabor" name="allowsLabor" {{"checked" if eventData.allowsLabor}}/>
+                <label class="custom-control-label" for="checkAllowsLabor"><strong>This event includes labor.</strong></label>
               </div>
               {% endif %}
             </div>

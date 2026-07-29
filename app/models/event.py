@@ -11,7 +11,7 @@ class Event(baseModel):
     timeEnd = TimeField()
     location = CharField()
     isFoodProvided = BooleanField(default=False)
-    includesLabor = BooleanField(default=False)             # Event has some labor students working in addition to volunteers
+    allowsLabor = BooleanField(default=False)             # Event has some labor students working in addition to volunteers
     isLaborOnly = BooleanField(default=False)               # Event is a labor meeting, specifically for labor students only 
     isTraining = BooleanField(default=False)                # Event is a training for a Program (required by volunteers to earn service hours in that program)
     isAllVolunteerTraining = BooleanField(default=False)    # Event is an All Volunteers Training (required to earn any service hours)
@@ -29,12 +29,64 @@ class Event(baseModel):
     isCanceled = BooleanField(default=False)
     deletionDate = DateTimeField(null=True)
     deletedBy = TextField(null=True)
+    eventFlagsMatrix = {'isAllVolunteerTraining':   {'isAllVolunteerTraining', 
+                                                     'isTraining'},
+                        'isCeltsTraining':          {'isCeltsTraining',
+                                                     'isLaborOnly', 
+                                                     'isTraining'},
+                        'isLaborOnly':              {'isLaborOnly',
+                                                     'isCeltsTraining',
+                                                     'isTraining'},
+                        'allowsLabor':              {'allowsLabor',
+                                                     'isTraining', 
+                                                     'isService',
+                                                     'isEngagement'},
+                        'isTraining':               {'isTraining',
+                                                     'isAllVolunteerTraining',
+                                                     'isCeltsTraining',
+                                                     'isLaborOnly',
+                                                     'allowsLabor'},
+                        'isService':                {'isService',
+                                                     'allowsLabor'},
+                        'isEngagement':             {'isEngagement',
+                                                     'allowsLabor'}
+                        }
 
     _spCache = "Empty"
 
+    def save(self, *args, **kwargs):
+        """
+        Overrides the default Peewee save method. 
+        NOTE: This method is not called when using Model.update()
+        """
+        print("Saving")
+        if self.checkFlags():
+            return super().save(*args, **kwargs)
+        else:            
+            raise IntegrityError("This combination of options is not allowed")
+    
     def __str__(self):
         return f"{self.id}: {self.description}"
 
+    def checkFlags(self):
+        """
+        Checks the eventFlagsMatrix to ensure the user is only picking a combination of flags that are allowed.
+        """
+        setFlags = []
+        for attribute in self._meta.fields.keys():
+            if self.eventFlagsMatrix.get(attribute):
+                if getattr(self, attribute):
+                    setFlags.append(attribute)
+        print(setFlags)
+        for setFlag in setFlags:
+            allowedFlags = self.eventFlagsMatrix[setFlag]
+            if not all(flag in allowedFlags for flag in setFlags):
+                return False
+
+        return True
+
+
+                
     @property
     def isDeleted(self):
         return self.deletionDate is not None

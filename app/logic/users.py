@@ -1,3 +1,5 @@
+from app.logic.participants import trainedParticipants
+from app.models.program import Program
 from app.models.user import User
 from app.models.event import Event
 from app.models.programBan import ProgramBan
@@ -16,15 +18,25 @@ from flask import g
 
 def isEligibleForProgram(program, user):
     """
-    Verifies if a given user is eligible for a program by checking if they are
-    banned from a program.
+    Verifies if a given user is eligible for a program by checking if they are:
+    1. Banned from a program.
+    2. Missed All Volunteer Training (volunteers) or All CELTS training (labor)
+    3. Missed Program-specific training
+    4. Not signed the handbook
 
     :param program: accepts a Program object or a valid programid
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     now = datetime.datetime.now()
+    # Banned?
     if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now, ProgramBan.unbanNote == None).exists()):
+        return False
+    # Missed trainings?
+    if User.get_by_id(user) not in trainedParticipants(program, g.current_term):
+        return False
+    # Missing signature
+    if not User.get_by_id(user).signatureTerm.academicYear != g.current_term.academicYear:
         return False
     return True
 
@@ -79,7 +91,16 @@ def isBannedFromEvent(username, eventId):
     """
     program = Event.get_by_id(eventId).program
     user = User.get(User.username == username)
-    return not isEligibleForProgram(program, user)
+    isBanned = (ProgramBan.select()
+                          .join(User)
+                          .switch(ProgramBan)
+                          .join(Program)
+                          .where(ProgramBan.user == user,
+                                 ProgramBan.program == program,
+                                 ProgramBan.endDate > datetime.datetime.now(), 
+                                 ProgramBan.unbanNote.is_null()).exists()                                 
+                )
+    return isBanned
 
 def banUser(program_id, username, note, banEndDate, creator):
     """

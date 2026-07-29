@@ -1,3 +1,4 @@
+from app import app
 from flask import g
 from peewee import fn, JOIN
 from playhouse.shortcuts import model_to_dict
@@ -10,7 +11,6 @@ from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.eventParticipant import EventParticipant
 from app.models.backgroundCheck import BackgroundCheck
-from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
@@ -25,7 +25,7 @@ def trainedParticipants(programID, targetTerm):
     """
 
     # Reset program eligibility each term for all other trainings
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining | Event.isCeltsTraining) & (Event.term.academicYear == targetTerm.academicYear) 
     isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
     allTrainings = (Event.select()
                          .join(Term)
@@ -50,7 +50,7 @@ def addBnumberAsParticipant(bnumber, eventId):
         return None, "does not exist"
 
     event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(event.program, kioskUser):
+    if not app.logic.users.isEligibleForProgram(event.program, kioskUser):
         userStatus = "banned"
 
     elif checkUserVolunteer(kioskUser, event):
