@@ -242,9 +242,9 @@ def getVolunteerOpportunities(term):
     volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where((Event.term == term) &
-                                        (Event.deletionDate.is_null(True)) &
+                                        (Event.deletionDate.is_null()) &
                                         (Event.isService == True) &
-                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
+                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null())
                                  )
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())

@@ -18,6 +18,7 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
+from playhouse.shortcuts import model_to_dict
 
 @pytest.mark.integration
 def test_deleteUserBackgroundCheck():
@@ -73,50 +74,52 @@ def test_user_model():
 @pytest.mark.integration
 def test_isEligibleForProgram():
     with mainDB.atomic() as transaction:
-        with app.app_context():
-            g.current_term = Term.get_by_id(1)
+        with app.app_context():            
+            g.current_term = Term.get_by_id(1)            
 
             # Test user Sandesh's eligibility for program 2
             user = User.get(User.username == "lamichhanes2")
             program = Program.get(Program.id == 2)
 
-            # Sandesh is ineligible at first (tests programID and Program obj)
+            # Sandesh is ineligible at first (tests id's and obj's)
             eligible = isEligibleForProgram(2, "lamichhanes2")
             assert not eligible
             eligible = isEligibleForProgram(program, user)
             assert not eligible
+        
+            # Sandesh completes All Volunteers training (he is still ineligible)  
+            avt = Event.get(Event.isAllVolunteerTraining)
+            EventParticipant.create(user=user, event=avt)
+            eligible = isEligibleForProgram(2, user)
+            assert not eligible
 
-            # Sandesh completes All Volunteers training (he is still ineligible)
-            allVolunteerTrainingEvent = Event.create(
-                    name="All Volunteer Training",
-                    term=2,
-                    description="All volunteer training event",
+        
+            # Sandesh attends Program-specific training (still not eligible!)
+            programSpecificTraining = Event.create(
+                    name="Program Specific Training",
+                    term=g.current_term,
+                    description="Program Specific Training",
                     timeStart="18:00:00",
                     timeEnd="21:00:00",
                     location="The moon",
                     startDate="2021-12-15",
                     isAllVolunteerTraining=True,
                     isLaborOnly=False,
-                    isService=False,
+                    isTraining=True,
                     program=program
                 )
-            
-            EventParticipant.create(user=user, event=allVolunteerTrainingEvent)
-            eligible = isEligibleForProgram(2, "lamichhanes2")
+            EventParticipant.create(user=user, event=programSpecificTraining)
+            eligible = isEligibleForProgram(2, user)
             assert not eligible
 
-            # Sandesh signs the handbook (he is still ineligible)
+            # Sandesh signs the handbook (he is NOW eligible)
             user.lastHandbookSignature = "2026-07-21"
-            user.signatureTerm = 2
+            user.signatureTerm = g.current_term
             user.save()
-            eligible = isEligibleForProgram(2, "lamichhanes2")
-            assert not eligible
-
-            # Sandesh attends Program-specific training (NOW he's eligible!)
-
-            # there are no required events
-            # eligible = isEligibleForProgram(4, "ayisie")
-            # assert eligible
+            print(user.signatureTerm.academicYear)
+            print(g.current_term.academicYear)
+            eligible = isEligibleForProgram(2, user)
+            assert eligible
 
         transaction.rollback()
 

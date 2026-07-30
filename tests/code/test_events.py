@@ -435,7 +435,7 @@ def test_attemptSaveMultipleOfferings():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True, 'allowsLabor': False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                   'isTraining':True, 'isEngagement': False,'isRepeating': False,'isAllVolunteerTraining': True, 
                   'seriesId':None, 'startDate': parser.parse('2021-12-12'), 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -470,21 +470,21 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_repeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None,  'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None,  'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
@@ -518,21 +518,21 @@ def test_saveEventToDb_repeating():
 def test_saveEventToDb_nonRepeatingSeries():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True, 'allowsLabor': False,
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False,'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'),'location':"this is only a test",
@@ -683,20 +683,20 @@ def test_deleteEvent():
         transaction.rollback()
 
         # create repeating events
-        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True, 'allowsLabor': False,
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
                     'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
                     'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
                     'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True, 'allowsLabor': False,
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
                     'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
                     'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True, 'allowsLabor': False,
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
@@ -1082,7 +1082,7 @@ def test_getParticipatedEventsForUser_participatedTypes():
             location="The moon",
             startDate="2021-12-14",
             isAllVolunteerTraining=False,
-            isLaborOnly=True,
+            isLaborOnly=False,
             allowsLabor=True,
             isService=True,
             program=program

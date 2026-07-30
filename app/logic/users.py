@@ -1,5 +1,6 @@
-from app.logic.participants import trainedParticipants
+from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
+from app.models.term import Term
 from app.models.user import User
 from app.models.event import Event
 from app.models.programBan import ProgramBan
@@ -12,9 +13,10 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist, fn
 from dateutil import parser
 from flask import g
+from playhouse.shortcuts import model_to_dict
 
 def isEligibleForProgram(program, user):
     """
@@ -22,21 +24,28 @@ def isEligibleForProgram(program, user):
     1. Banned from a program.
     2. Missed All Volunteer Training (volunteers) or All CELTS training (labor)
     3. Missed Program-specific training
-    4. Not signed the handbook
+    4. Not signed the handbook (or expired)
 
     :param program: accepts a Program object or a valid programid
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     now = datetime.datetime.now()
+    try:
+        user = User.get_by_id(user)
+    except DoesNotExist:
+        raise DoesNotExist
     # Banned?
     if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now, ProgramBan.unbanNote == None).exists()):
         return False
     # Missed trainings?
-    if User.get_by_id(user) not in trainedParticipants(program, g.current_term):
+    if user not in trainedParticipants(program, g.current_term):
         return False
-    # Missing signature
-    if not User.get_by_id(user).signatureTerm.academicYear != g.current_term.academicYear:
+    # Missing signature?
+    if not user.signatureTerm:
+        return False
+    # Old signature?
+    elif not user.signatureTerm.academicYear == g.current_term.academicYear:
         return False
     return True
 
@@ -101,6 +110,28 @@ def isBannedFromEvent(username, eventId):
                                  ProgramBan.unbanNote.is_null()).exists()                                 
                 )
     return isBanned
+
+def trainedParticipants(programID, targetTerm):
+    """
+    This function tracks the users who have attended every Prerequisite
+    event and adds them to a list that will not flag them when tracking hours.
+    Returns a list of user objects who've completed all training events.
+    """
+
+    # Reset program eligibility each term for all other trainings
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining | Event.isCeltsTraining) & (Event.term.academicYear == targetTerm.academicYear) 
+    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
+    allTrainings = (Event.select()
+                         .join(Term)
+                         .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
+                                Event.isCanceled == False))
+
+    fullyTrainedUsers = (User.select()
+                             .join(EventParticipant)
+                             .where(EventParticipant.event.in_(allTrainings))
+                             .group_by(EventParticipant.user)
+                             .having(fn.Count(EventParticipant.user) == len(allTrainings)).order_by(User.username))
+    return list(fullyTrainedUsers)
 
 def banUser(program_id, username, note, banEndDate, creator):
     """

@@ -1,8 +1,8 @@
-from app import app
 from flask import g
 from peewee import fn, JOIN
 from playhouse.shortcuts import model_to_dict
 from datetime import date, datetime
+from app.logic.users import isEligibleForProgram
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
@@ -15,34 +15,15 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 from collections import defaultdict
+from app import app
 
 
-def trainedParticipants(programID, targetTerm):
-    """
-    This function tracks the users who have attended every Prerequisite
-    event and adds them to a list that will not flag them when tracking hours.
-    Returns a list of user objects who've completed all training events.
-    """
-
-    # Reset program eligibility each term for all other trainings
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining | Event.isCeltsTraining) & (Event.term.academicYear == targetTerm.academicYear) 
-    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
-    allTrainings = (Event.select()
-                         .join(Term)
-                         .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
-                                Event.isCanceled == False))
-
-    fullyTrainedUsers = (User.select()
-                             .join(EventParticipant)
-                             .where(EventParticipant.event.in_(allTrainings))
-                             .group_by(EventParticipant.user)
-                             .having(fn.Count(EventParticipant.user) == len(allTrainings)).order_by(User.username))
-
-    return list(fullyTrainedUsers)
 
 def addBnumberAsParticipant(bnumber, eventId):
-    """Accepts scan input and signs in the user. If user exists or is already
-    signed in will return user and login status"""
+    """
+    Accepts scan input and signs in the user. If user exists or is already
+    signed in will return user and login status
+    """
     try:
         kioskUser = User.get(User.bnumber == bnumber)
     except Exception as e:
@@ -50,7 +31,7 @@ def addBnumberAsParticipant(bnumber, eventId):
         return None, "does not exist"
 
     event = Event.get_by_id(eventId)
-    if not app.logic.users.isEligibleForProgram(event.program, kioskUser):
+    if (ProgramBan.select().where(ProgramBan.user == kioskUser, ProgramBan.program == event.program, ProgramBan.endDate > datetime.now(), ProgramBan.unbanNote == None).exists()):
         userStatus = "banned"
 
     elif checkUserVolunteer(kioskUser, event):
@@ -110,7 +91,6 @@ def addPersonToEvent(user, event):
     return True
 
 def unattendedRequiredEvents(program, user):
-
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
                            .where(Event.isTraining == True, Event.program == program))
@@ -118,7 +98,9 @@ def unattendedRequiredEvents(program, user):
     if requiredEvents:
         attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
+            attendedRequirement = (EventParticipant.select()
+                                                   .join(User)
+                                                   .where(EventParticipant.user == User.username, EventParticipant.event == event))
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
