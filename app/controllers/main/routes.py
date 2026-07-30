@@ -670,6 +670,10 @@ def extravaganza():
     programsInterested = [interest.program for interest in interests]
 
     upcomingAllVolunteers = Event.select().join(Term).where(Event.isAllVolunteerTraining, Term.academicYear == g.current_term.academicYear)
+    for training in upcomingAllVolunteers:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
+
     upcomingTrainings = Event.select().join(Term).where(Event.isTraining, Term.academicYear == g.current_term.academicYear)
 
     for training in upcomingTrainings:

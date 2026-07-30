@@ -40,22 +40,22 @@
                                 <tr>
                                     <th>Potential Volunteer</th>
                                     <th>Email</th>
-                                    <th>AY {{g.current_term.academicYear}} Handbook Signed</th>
+                                    <th>Eligible</th>
                                     <th>All Volunteers Training</th>
                                     <th>Program Specific Training</th>
-                                    <th>Eligible</th>
+                                    <th>AY {{g.current_term.academicYear}} Handbook Signed</th>
                                     <th>Background Check</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for prospectiveVolunteer in trainedAndInterested %}                
                                 <tr>
-                                    <td><a href="{{ url_for('main.viewUsersProfile', username=prospectiveVolunteer) }}" >{{trainedAndInterested[prospectiveVolunteer]["userObj"].fullName}}</a></td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['star']%}<i class="bi bi-star" style="color:green;"> </i>{% endif %}<a href="{{ url_for('main.viewUsersProfile', username=prospectiveVolunteer) }}" >{{trainedAndInterested[prospectiveVolunteer]["userObj"].fullName}}</a></td>
                                     <td><a href="mailto:{{trainedAndInterested[prospectiveVolunteer]['userObj'].email}}">{{trainedAndInterested[prospectiveVolunteer]["userObj"].email}}</a></td>
-                                    <td>{% if trainedAndInterested[prospectiveVolunteer]["userObj"].signatureTerm.academicYear == g.current_term.academicYear %} <i class="bi bi-patch-check" style="color:green;"></i> Signed {% else %} <i class="bi bi-patch-minus" style="color: red;"></i> Not signed {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['eligible'] %} <i class="bi bi-check-square" style="color:green;"></i> Yes {% else %} <i class="bi bi-ban" style="color:red;"></i> No {% endif %}</td>
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['allVolunteer'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['programSpecific'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
-                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['eligible'] %} <i class="bi bi-check-square" style="color:green;"></i> Yes {% else %} <i class="bi bi-ban" style="color:red;"></i> No {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]["userObj"].signatureTerm.academicYear == g.current_term.academicYear %} <i class="bi bi-patch-check" style="color:green;"></i> Signed {% else %} <i class="bi bi-patch-minus" style="color: red;"></i> Not signed {% endif %}</td>
                                     <td>{% if trainedAndInterested[prospectiveVolunteer]['bgCheck'] == "Not submitted" %}<i class="bi bi-patch-minus" style="color: red;"> {% else %} <i class="bi bi-patch-check" style="color:green;"> </i>{% endif %}</i>{{trainedAndInterested[prospectiveVolunteer]['bgCheck']}}</td>
                                 </tr>
                                 {% endfor %}             

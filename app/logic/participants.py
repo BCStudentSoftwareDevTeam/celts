@@ -160,31 +160,38 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
     """
     Takes in a programID and a list of interested users, and returns all of the trainings and background checks they have completed. 
     Returns a nested dictionary which looks like the following: 
-    {'userID1': {'userObj: <User>,
+    {'userID1': {'userObj': <User>,
                  'allVolunteer': True,
                  'programSpecific': False,
-                 'bgCheck': '0/22/2026'
+                 'bgCheck': '0/22/2026',
+                 'eligible': True, 
+                 'star': False
                  },                
-     'userID2': {'userObj: <User>,
+     'userID2': {'userObj': <User>,
                  'allVolunteer': True,
-                 'programSpecific': False,
-                 'bgCheck': '0/22/2026'
+                 'programSpecific': True,
+                 'bgCheck': '0/22/2026',
+                 'eligible': True, 
+                 'star': True
                  }
     }
 
-     Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)
+    Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)
     """
     trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
+    now = datetime.now()
     bannedUsers = list(User
                .select(User.username)
                .join(ProgramBan)
                .where(ProgramBan.program == programID,
+                      ProgramBan.endDate > now,
+                      ProgramBan.unbanNote == None, 
                       User.username << [user.username for user in interestedUsers]))
-    
     bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted)
                                          .join(BackgroundCheck)
+                                         .where(BackgroundCheck.user == User.username,
+                                                BackgroundCheck.deletionDate.is_null())
                                          .distinct())
-
     trainedAndInterested = {}
     for interestedUser in interestedUsers:
         if interestedUser in trainedUsers:
@@ -193,19 +200,35 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             trainedAndInterested[interestedUser.username]['allVolunteer'] = False
             trainedAndInterested[interestedUser.username]['programSpecific'] = False
             trainedAndInterested[interestedUser.username]['bgCheck'] = "Not submitted"
-            for event in trainedUsers[interestedUser]:
-                if not event[1]: # they didn't attend
-                    continue
-                elif event[0].isAllVolunteerTraining:  # They attended the training
-                    trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
-                elif event[0].isTraining:
-                    trainedAndInterested[interestedUser.username]["programSpecific"] = True
             trainedAndInterested[interestedUser.username]["eligible"] = True
+            trainedAndInterested[interestedUser.username]["star"] = False
+            
+            # Go through the trainings
+            for event in trainedUsers[interestedUser]:
+                if not event[1]: # they didn't attend this training
+                    continue
+                elif event[0].isAllVolunteerTraining:   # They attended AVT
+                    trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
+                elif event[0].isTraining:           # They attended the Program-specific training
+                    trainedAndInterested[interestedUser.username]["programSpecific"] = True                    
+            # They are banned
             if interestedUser in bannedUsers:
                 trainedAndInterested[interestedUser.username]["eligible"] = False
+            # They submitted their background check
             if interestedUser in bgCheckSubmitted:
                 trainedAndInterested[interestedUser.username]['bgCheck'] = "Submitted"
+            
+            # NOTE: Handbook signature already tracked inside the user object
 
+            # Give them a star if they have met all the requirements
+            if ( trainedAndInterested[interestedUser.username]["allVolunteer"] and
+                 trainedAndInterested[interestedUser.username]["programSpecific"] and 
+                 trainedAndInterested[interestedUser.username]["eligible"] and
+                 trainedAndInterested[interestedUser.username]['bgCheck'] == "Submitted" and
+                 trainedAndInterested[interestedUser.username]['userObj'].lastHandbookSignature is not None and 
+                 trainedAndInterested[interestedUser.username]['userObj'].signatureTerm.academicYear == g.current_term.academicYear):
+                trainedAndInterested[interestedUser.username]["star"] = True
+            
     return trainedAndInterested
 
 def getParticipantsForProgramForAY(programID, academicYear):    

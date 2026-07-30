@@ -156,7 +156,7 @@ def generateSheetData(program, academicYear, rosterType):
 
 def cleanInterestedParticipantsData(query):
     if type(query) == dict:    
-        for username, userData in query.items():            
+        for username, userData in query.items():
             # Dictionary of user object and participation data            
             query[username]["userObj"].major = "Unknown" if not query[username]["userObj"].major else query[username]["userObj"].major
             query[username]["userObj"].rawClassLevel = "Unknown" if not query[username]["userObj"].rawClassLevel  else query[username]["userObj"].rawClassLevel
@@ -164,7 +164,8 @@ def cleanInterestedParticipantsData(query):
             query[username]["userObj"].lastHandbookSignature = "Not Signed" if not query[username]["userObj"].lastHandbookSignature else query[username]["userObj"].lastHandbookSignature
             query[username]["allVolunteer"] = "No" if query[username]["allVolunteer"] == False else "Yes"
             query[username]["programSpecific"] = "No" if query[username]["programSpecific"] == False else "Yes"
-            query[username]["eligible"] = "No" if query[username]["eligible"] == False else "Yes"        
+            query[username]["eligible"] = "No" if query[username]["eligible"] == False else "Yes"
+            del(query[username]["star"])        # Not needed in spreadsheet
     else:
         # User objects only
         for index, userObj in enumerate(query):

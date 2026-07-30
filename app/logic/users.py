@@ -25,6 +25,7 @@ def isEligibleForProgram(program, user):
     2. Missed All Volunteer Training (volunteers) or All CELTS training (labor)
     3. Missed Program-specific training
     4. Not signed the handbook (or expired)
+    5. Background Check Submitted (does not matter if it passed or not)
 
     :param program: accepts a Program object or a valid programid
     :param user: accepts a User object or userid
@@ -47,6 +48,10 @@ def isEligibleForProgram(program, user):
     # Old signature?
     elif not user.signatureTerm.academicYear == g.current_term.academicYear:
         return False
+    # Background check submitted?
+    if not (User.select(User.username, BackgroundCheck.dateCompleted).join(BackgroundCheck).distinct()):
+        return False
+ 
     return True
 
 def addUserInterest(program_id, username):
