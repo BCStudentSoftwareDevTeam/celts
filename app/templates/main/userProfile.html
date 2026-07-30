@@ -713,7 +713,7 @@
 
         <br>
         
-        <h5>AY {{g.current_term.academicYear}} Files</h5>
+        <h5>AY {{g.current_term.academicYear}} Handbook</h5>
         <div class="row mb-3">          
           {% if training.isCeltsTraining %}
             {% if not currentTerm.laborHandbook %}
@@ -727,10 +727,7 @@
             {% else %}
               <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + currentTerm.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
             {% endif %}
-          {% endif %}
-          {% if currentTerm.backgroundForm %}            
-            <p><a href="{{ url_for('static', filename='files/backgroundForm/' + currentTerm.backgroundForm|default('', true))}}" target="_blank"/>Background Check Form</a></p>
-          {% endif %}
+          {% endif %}                    
         </div>
         
         {% if g.current_user.signatureTerm.academicYear != g.current_term.academicYear and not training %}

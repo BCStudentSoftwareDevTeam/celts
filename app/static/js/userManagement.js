@@ -273,13 +273,7 @@ function submitTerm(){
         $("#laborHandbookURL").removeAttr("hidden");
       } else {
         $("#laborHandbookURL").attr("hidden", true);
-      }
-      if(response["backgroundForm"]) {
-        $("#backgroundFormURL").text("AY " + response["academicYear"] + " - Background Check Form")
-        $("#backgroundFormURL").removeAttr("hidden");
-      } else {
-        $("#backgroundFormURL").attr("hidden", true);
-      }
+      }      
     },
     error: function(error, status){
         msgFlash("Current term was not changed. Please reload the page and try again.", "warning")

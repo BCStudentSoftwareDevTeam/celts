@@ -8,7 +8,6 @@ class Term(baseModel):
     termOrder = CharField()
     volunteerHandbook = CharField(null=True)
     laborHandbook = CharField(null=True)
-    backgroundForm = CharField(null=True)
 
     _cache = None
 

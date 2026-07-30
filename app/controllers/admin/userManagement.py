@@ -155,7 +155,7 @@ def addNewTerm():
 def upload(fileCategory, currentTerm):
     term = Term.select().where(Term.id == currentTerm).get()
     allAYterm = Term.select().where(Term.academicYear == term.academicYear)
-    if not fileCategory in ["laborHandbook", "volunteerHandbook", "backgroundForm"]:
+    if not fileCategory in ["laborHandbook", "volunteerHandbook"]:
         abort(405)
     dir_path = Path("app/static/files/", fileCategory)
     dir_path.mkdir(parents=True, exist_ok=True)
@@ -169,9 +169,7 @@ def upload(fileCategory, currentTerm):
         if fileCategory == "volunteerHandbook":
             t.volunteerHandbook = filename
         elif fileCategory == "laborHandbook":
-            t.laborHandbook = filename
-        elif fileCategory == "backgroundForm":
-            t.backgroundForm = filename
+            t.laborHandbook = filename        
         else:
             abort(405)
         t.save()

@@ -17,14 +17,12 @@ def addNextTerm():
     newAY = prevTerm.academicYear   
     volunteerHandbook = None
     laborHandbook = None
-    backgroundForm = None
     if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
     else:   # if the previous term is fall or spring, make sure we copy the handbook
         volunteerHandbook = prevTerm.volunteerHandbook
         laborHandbook = prevTerm.laborHandbook
-        backgroundForm = prevTerm.backgroundForm
 
     semester = newDescription.split()[0]
     summer= "Summer" in semester
@@ -34,8 +32,7 @@ def addNextTerm():
                           isSummer= summer,
                           termOrder=Term.convertDescriptionToTermOrder(newDescription),                          
                           volunteerHandbook=volunteerHandbook,
-                          laborHandbook=laborHandbook,
-                          backgroundForm=backgroundForm
+                          laborHandbook=laborHandbook
                          )
 
     newTerm.save()

@@ -179,26 +179,9 @@
                   </div>
                   <span class="sr-only visually-hidden">{{g.current_term}}</span>
                 </div>                                      
-                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not currentTerm.laborHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Labor Handbook</a>
-                
+                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not currentTerm.laborHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Labor Handbook</a>                
               </form>
-            </div>
-
-            <div class="row">
-              <form class="uploaders" method="POST" action="/upload/backgroundForm/{{g.current_term}}" enctype="multipart/form-data">
-                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
-                  <div class="col-8">
-                    <label for="backgroundFormUploader"><strong>Background Check Form:</strong></label>
-                    <input class="form-control" type="file" id="backgroundForm" name="backgroundForm" accept=".pdf,.doc,.docx" required></input>
-                  </div>
-                  <div class="col-4">
-                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
-                  </div>
-                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
-                </div>                      
-                  <a id="backgroundFormURL" href="{{ url_for('static', filename='files/backgroundForm/' + g.current_term.backgroundForm|default('', true))}}" target="_blank" {% if not currentTerm.backgroundForm %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - Background Check Form</a>            
-              </form>
-            </div>
+            </div>            
           </div>
         </div>
       </div>
