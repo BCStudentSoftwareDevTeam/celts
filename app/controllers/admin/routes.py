@@ -76,6 +76,13 @@ def templateSelect():
     if not programs:
         abort(403)
     visibleTemplates = getAllowedTemplates(g.current_user)
+    
+    # Create extravaganza QR code if it doesn't exist
+    imgPath = app.config["files"]["image_path"] + "/extravaganza_qr.png"
+    if not os.path.exists(imgPath):
+        import qrcode
+        img = qrcode.make(request.url.split("/")[-2] + "/extravaganza")
+        img.save(imgPath)
     return render_template("/events/templateSelector.html",
                             programs=programs,
                             celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
