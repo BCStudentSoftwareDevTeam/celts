@@ -142,16 +142,17 @@ def test_addUserProfileNote():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
-            profileNote = addProfileNote(1, True, "Test profile note", "neillz")
+            profileNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert profileNote == ProfileNote.get_by_id(profileNote.id)
 
-            profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            profileNote2 = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
             assert profileNote2.viewTier == 3
 
-            profileNote3 = addProfileNote(3, True, "Test profile note 3", "ramsayb2")
+            profileNote3 = addProfileNote(3, True, False, "Test profile note 3", "ramsayb2")
             assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
             assert profileNote3.viewTier == 1
+            assert profileNote.isCCEMinorNote is False
         transaction.rollback()
 
 @pytest.mark.integration
@@ -160,7 +161,7 @@ def test_deleteUserProfileNote():
         with app.app_context():
             g.current_user = "ramsayb2"
 
-            addedNote = addProfileNote(1, True, "Test profile note", "neillz")
+            addedNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert addedNote.isBonnerNote == True
             assert addedNote.viewTier == 1
             assert addedNote.user == User.get_by_id("neillz")
@@ -169,7 +170,7 @@ def test_deleteUserProfileNote():
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote)
 
-            addedNote = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            addedNote = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             profileNote = deleteProfileNote(addedNote)
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote.id)
