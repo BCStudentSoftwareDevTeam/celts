@@ -39,10 +39,12 @@ mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE 
 rm -rf migrations
 rm -rf migrations.json
 
-echo -n "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo " from backup"
     mysql -u root -proot celts < prod-backup.sql
+    mysql -u root -proot -NBe "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='celts' AND TABLE_NAME='profilenote' AND COLUMN_NAME='isCCEMinorNote';" |
+        grep -q '^1$' ||
+        mysql -u root -proot celts -e "ALTER TABLE profilenote ADD COLUMN isCCEMinorNote TINYINT(1) NOT NULL DEFAULT 0 AFTER isBonnerNote;"
 else
     echo " empty"
     ./migrate_db.sh no-backup

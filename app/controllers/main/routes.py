@@ -37,7 +37,7 @@ from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote 
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -378,21 +378,64 @@ def eventTravelForm(eventID):
                            userList = userList,
                            )
 
-@main_bp.route('/profile/addNote', methods=['POST'])
+@main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
-    """
-    This function adds a note to the user's profile.
-    """
     postData = request.form
-    try:
-        note = addProfileNote(postData["visibility"], postData["bonner"] == "yes", postData["noteTextbox"], postData["username"])
-        flash("Successfully added profile note", "success")
-        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
-    except Exception as e:
-        print("Error adding note", e)
-        flash("Failed to add profile note", "danger")
-        return "Failed to add profile note", 500
 
+    noteTextbox = postData.get("noteTextbox", "").strip()
+
+    if not noteTextbox:
+        return "Note cannot be empty", 400
+
+    addProfileNote(
+        visibility=postData.get("visibility", 1),
+        bonner=postData.get("bonner") == "yes",
+        cceMinor=postData.get("cceMinor") == "yes",
+        noteTextbox=noteTextbox,
+        username=postData["username"],
+    )
+
+    return "success"
+    
+@main_bp.route("/<username>/editNote", methods=["POST"])
+def editProfileNote(username):
+    profileNoteID = request.form.get("id")
+    noteTextbox = request.form.get("noteTextbox", "").strip()
+    visibility = request.form.get("visibility", 1)
+    bonner = request.form.get("bonner") == "yes"
+    cceMinor = request.form.get("cceMinor") == "yes"
+
+    if not profileNoteID:
+        return "Missing profile note ID", 400
+
+    if not noteTextbox:
+        return "Note cannot be empty", 400
+
+    try:
+        profileNote = ProfileNote.get_by_id(profileNoteID)
+    except ProfileNote.DoesNotExist:
+        return "Profile note not found", 404
+
+    # Prevent editing a note belonging to another profile.
+    if profileNote.user.username != username:
+        abort(403)
+
+    # Only the creator or a CELTS administrator may edit the note.
+    if (
+        profileNote.note.createdBy != g.current_user
+        and not g.current_user.isCeltsAdmin
+    ):
+        abort(403)
+
+    updateProfileNote(
+        profileNoteID=profileNoteID,
+        visibility=visibility,
+        bonner=bonner,
+        cceMinor=cceMinor,
+        noteTextbox=noteTextbox,
+    )
+
+    return "success"
     
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):

@@ -124,19 +124,56 @@ def getUserBGCheckHistory(username):
         bgHistory[row.type_id].append(row)
     return bgHistory
 
-def addProfileNote(visibility, bonner, noteTextbox, username):
+def addProfileNote(
+    visibility,
+    bonner,
+    cceMinor,
+    noteTextbox,
+    username,
+):
     if bonner:
-        visibility = 1 # bonner notes are always admins and the student
+        # Bonner notes are always visible to admins and the student.
+        visibility = 1
 
-    noteForDb = Note.create(createdBy = g.current_user,
-                            createdOn = datetime.datetime.now(),
-                            noteContent = noteTextbox,
-                            noteType = "profile")
-    createProfileNote = ProfileNote.create(user = User.get(User.username == username),
-                                           note = noteForDb,
-                                           isBonnerNote = bonner,
-                                           viewTier = visibility)
-    return createProfileNote
+    noteForDb = Note.create(
+        createdBy=g.current_user,
+        createdOn=datetime.datetime.now(),
+        noteContent=noteTextbox,
+        noteType="profile",
+    )
+
+    profileNote = ProfileNote.create(
+        user=User.get(User.username == username),
+        note=noteForDb,
+        isBonnerNote=bonner,
+        isCCEMinorNote=cceMinor,
+        viewTier=int(visibility),
+    )
+
+    return profileNote
+def updateProfileNote( profileNoteID, visibility, bonner, cceMinor, noteTextbox, ):
+    """
+    Update an existing profile note without deleting and recreating it.
+    """
+
+    profileNote = ProfileNote.get_by_id(profileNoteID)
+
+    # Bonner notes always use the Bonner visibility level.
+    if bonner:
+        visibility = 1
+
+    # Update the actual note text.
+    note = profileNote.note
+    note.noteContent = noteTextbox
+    note.save()
+
+    # Update the ProfileNote information.
+    profileNote.viewTier = int(visibility)
+    profileNote.isBonnerNote = bonner
+    profileNote.isCCEMinorNote = cceMinor
+    profileNote.save()
+
+    return profileNote
 
 def deleteProfileNote(noteId):
     return ProfileNote.delete().where(ProfileNote.id == noteId).execute()

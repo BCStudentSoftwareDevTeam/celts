@@ -394,73 +394,175 @@
 <!-- ################# Background Check Section  ################ -->
 
 <!-- ################# Notes Section ################ -->
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingSix">
-      {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">Notes</button>
-    </h3>
-    {% set show = "show" if visibleAccordion == "notes" else "" %}
-    <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
-      <div class="accordion-body">
-        <table class="table table-responsive table-striped" id="profileTable">
+ <div class="accordion-item">
+  {% set notesOpen = visibleAccordion == "notes" %}
+
+  <h3 class="accordion-header" id="headingSix">
+    <button
+      class="accordion-button {{ '' if notesOpen else 'collapsed' }}"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapseSix"
+      aria-expanded="{{ 'true' if notesOpen else 'false' }}"
+      aria-controls="collapseSix"
+    >
+      Notes
+    </button>
+  </h3>
+
+  <div
+    id="collapseSix"
+    class="accordion-collapse collapse {{ 'show' if notesOpen else '' }}"
+    aria-labelledby="headingSix"
+    data-bs-parent="#userProfile"
+  >
+    <div class="accordion-body">
+
+      {% if g.current_user.isCeltsAdmin %}
+        {% set userTier = 3 %}
+      {% elif g.current_user.isCeltsStudentStaff %}
+        {% set userTier = 2 %}
+      {% else %}
+        {% set userTier = 1 %}
+      {% endif %}
+
+      {% set note = namespace(count=0) %}
+
+      <div class="table-responsive">
+        <table
+          class="table table-striped"
+          id="profileTable"
+        >
           <thead>
             <tr>
               <th>Date</th>
               <th>Creator</th>
               <th>Note</th>
               <th>Visible To</th>
-              <th></th>
+              <th>Actions</th>
             </tr>
           </thead>
+
           <tbody>
-            {% if g.current_user.isCeltsAdmin %}
-              {% set userTier = 3 %}
-            {% elif g.current_user.isCeltsStudentStaff %}
-              {% set userTier = 2 %}
-            {% else %}
-              {% set userTier = 1 %}
-            {% endif %}
-            {% set note = namespace(count=0) %}
             {% for row in profileNotes %}
-              {% if userTier >= row.viewTier and (not row.isBonnerNote or g.current_user.isBonnerScholar) %}
+
+              {% set canViewBonnerNote =
+                not row.isBonnerNote
+                or g.current_user.isBonnerScholar
+                or g.current_user.isCeltsAdmin
+                or g.current_user.isCeltsStudentStaff
+              %}
+
+              {% if userTier >= row.viewTier and canViewBonnerNote %}
                 <tr>
-                  <td>{{row.note.createdOn.strftime('%m/%d/%Y')}}</td>
-                  <td>{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}}{{ " (you)" if row.note.createdBy == g.current_user else ""}}</td>
-                  <td>{{row.note.noteContent}}</td>
                   <td>
-                    {% set bonner = "Bonner " if row.isBonnerNote else "" %}
-                    {% set cceMinor = "CCE Minor " if row.isCCEMinorNote else "" %}
-                    {% if row.viewTier == 3 %}
-                      {{cceMinor}}{{bonner}}Admins
-                    {% elif row.viewTier == 2 %}
-                      {{cceMinor}}{{bonner}}Admins/Student Staff
+                    {% if row.note.createdOn is string %}
+                      {% set dateParts = row.note.createdOn[:10].split('-') %}
+                      {{ dateParts[1] }}/{{ dateParts[2] }}/{{ dateParts[0] }}
                     {% else %}
-                      {{cceMinor}}{{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
+                      {{ row.note.createdOn.strftime('%m/%d/%Y') }}
                     {% endif %}
-                  <td class ="text-nowrap">
-                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                     <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}"data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}">Edit</button>
-                     <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                  </td>
+
+                  <td>
+                    {{ row.note.createdBy.firstName }}
+                    {{ row.note.createdBy.lastName }}
+
+                    {% if row.note.createdBy == g.current_user %}
+                      (you)
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {{ row.note.noteContent }}
+                  </td>
+
+                  <td>
+                    {% if row.viewTier == 3 %}
+                      Admins
+                    {% elif row.viewTier == 2 %}
+                      Admins/Student Staff
+                    {% elif row.isBonnerNote %}
+                      Bonner Scholars
                     {% else %}
-                      <button type="button" class="btn btn-sm btn-primary me-1" disabled>Edit</button>
-                      <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
+                      Everyone
+                    {% endif %}
+                  </td>
+
+                  <td class="text-nowrap">
+                    {% if
+                      g.current_user == row.note.createdBy
+                      or g.current_user.isCeltsAdmin
+                    %}
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-primary me-1 editNoteButton"
+                        data-noteid="{{ row.id }}"
+                        data-notetext="{{ row.note.noteContent|e }}"
+                        data-username="{{ volunteer.username }}"
+                        data-visibility="{{ row.viewTier }}"
+                        data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}"
+                        data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger deleteNoteButton"
+                        data-noteid="{{ row.id }}"
+                        data-username="{{ volunteer.username }}"
+                      >
+                        Delete
+                      </button>
+                    {% else %}
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-primary me-1"
+                        disabled
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        disabled
+                      >
+                        Delete
+                      </button>
                     {% endif %}
                   </td>
                 </tr>
+
                 {% set note.count = note.count + 1 %}
               {% endif %}
             {% endfor %}
+
+            {% if note.count == 0 %}
+              <tr>
+                <td
+                  colspan="5"
+                  class="text-center text-muted"
+                >
+                  There are no notes yet.
+                </td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
-        {% if note.count == 0 %}
-          <tr>There are no notes yet</tr>
-        {% endif %}
-        <br>
-        <br>
-        <button type="button" name="button" class="btn btn-primary" id="addNoteButton">Add Note</button>
       </div>
+
+      <button
+        type="button"
+        class="btn btn-primary mt-3"
+        id="addNoteButton"
+      >
+        Add Note
+      </button>
     </div>
   </div>
+</div>
 <!-- ################# Notes Section ################ -->
 
 <!-- ################# Bonner Scholar ################ -->
@@ -512,7 +614,14 @@
                           data-noteid="{{row.note.id}}"
                           data-username="{{volunteer.username}}"
                           style="cursor:pointer"></i>
-                    <dd class='text-muted'>{{row.note.createdBy.fullName}} <span class="float-end">{{row.note.createdOn.strftime('%m/%d/%Y')}}</span></dt>
+                    <dd class='text-muted'>{{row.note.createdBy.fullName}} 
+                      <span class="float-end">
+                        {% if row.note.createdOn is string %}
+                          {% set dateParts = row.note.createdOn[:10].split('-') %}
+                          {{ dateParts[1] }}/{{ dateParts[2] }}/{{ dateParts[0] }}
+                        {% else %}
+                          {{ row.note.createdOn.strftime('%m/%d/%Y') }}
+                        {% endif %}</span></dt>
                 {% endfor %}
               </dl>
               {% else %}
@@ -543,70 +652,192 @@
 <!-- ################# Bonner Scholar ################ -->
 
 </div>
-<!-- ################# Add Notes Modal ################ -->
-<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" style="width:-60px;">
-  <form id="addNoteForm">
-    <div class="modal-dialog">
-      <div class="modal-content">
+<!-- ################# Add/Edit Notes Modal ################# -->
+<div
+  class="modal fade"
+  id="noteModal"
+  tabindex="-1"
+  aria-labelledby="addProfileNoteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form id="addNoteForm">
         <div class="modal-header">
-          <h5 class="modal-title">Notes</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5
+            class="modal-title"
+            id="addProfileNoteModalLabel"
+          >
+            Note
+          </h5>
+
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
 
-        <div class="modal-body" style="align-content: center">
-          <div class="input-group">
-            <div class="form-group input-group-x form-outline">
-              {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
-              {% if vis != "" %}
-                <p><b>This note will only be visible to you, CELTS Student Staff, and Administrators.</b></p>
+        <div class="modal-body">
+          {% set vis =
+            ""
+            if g.current_user.isCeltsStudentStaff
+            or g.current_user.isCeltsAdmin
+            else "d-none"
+          %}
+
+          {% if vis != "" %}
+            <p>
+              <strong>
+                This note will only be visible to you, CELTS Student
+                Staff, and Administrators.
+              </strong>
+            </p>
+          {% endif %}
+
+          <!-- Bonner visibility explanation -->
+          <p
+            class="form-label"
+            id="bonnerStatement"
+            style="display: none;"
+          >
+            <strong>
+              Bonner notes are visible to
+              {{ volunteer.firstName }} and CELTS administrators.
+            </strong>
+          </p>
+
+          <!-- Visibility selection -->
+          <div class="mb-3">
+            <label
+              class="form-label {{ vis }}"
+              for="noteDropdown"
+              id="visibilityLabel"
+            >
+              <strong>Visibility</strong>
+            </label>
+
+            <select
+              class="form-select {{ vis }}"
+              name="visibility"
+              id="noteDropdown"
+            >
+              {% if g.current_user.isCeltsAdmin %}
+                <option value="3">
+                  Admins
+                </option>
               {% endif %}
 
-              <label class="form-label" style="display:none" for='inputEventTerm' id="bonnerStatement"><strong>Bonner notes are visible to {{volunteer.firstName}} and CELTS administrators.</strong></label>
-              <label class="form-label {{vis}}" for='inputEventTerm' id="visibilityLabel"><strong>Visibility</strong></label>
-              <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
+              {% if
+                g.current_user.isCeltsAdmin
+                or g.current_user.isCeltsStudentStaff
+              %}
+                <option value="2">
+                  Admin/Student Staff
+                </option>
+              {% endif %}
 
+              <option value="1" selected>
+                Everyone
+              </option>
+            </select>
+          </div>
 
+          <!-- Program-related switches -->
+          <div id="addVisibility">
 
-                  {% if g.current_user.isCeltsAdmin %}
-                    <option value='3'>Admins</option>
-                  {% endif %}
-                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
-                    <option value='2'>Admin/Student Staff</option>
-                  {% endif %}
-                  <option value='1' selected>Everyone</option>
-                </select>
+            {% if volunteer.isBonnerScholar %}
+              <div class="form-check form-switch mb-3">
+                <input
+                  class="form-check-input"
+                  name="bonner"
+                  id="bonnerInput"
+                  type="checkbox"
+                  value="yes"
+                >
 
-              <div id="addVisibility">
-                {% if volunteer.isBonnerScholar %}
-                  <div class="form-check form-switch pt-4">
-                    <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
-                    <label class="form-check-label" for="bonnerInput"><strong>Related to Bonner Scholars Program</strong></label>
-                  </div>
-                {% endif %}
-                {% if volunteer.minorInterest %}
-                  <div class="form-check form-switch pt-4">
-                    <input class="form-check-input" name="cceMinor" id="cceMinorInput" type="checkbox" />
-                    <label class="form-check-label" for="cceMinorInput"><strong>Related to CCE Minor</strong></label>
-                  </div>
-                {% endif %}
+                <label
+                  class="form-check-label"
+                  for="bonnerInput"
+                >
+                  <strong>
+                    Related to Bonner Scholars Program
+                  </strong>
+                </label>
               </div>
+            {% endif %}
 
-              <br>
-            </div>
-            <div class="form-group input-group-x form-outline ui-widget">
-              <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
-            </div>
-          </div> 
+            {% if volunteer.minorInterest %}
+              <div class="form-check form-switch mb-3">
+                <input
+                  class="form-check-input"
+                  name="cceMinor"
+                  id="cceMinorInput"
+                  type="checkbox"
+                  value="yes"
+                >
+
+                <label
+                  class="form-check-label"
+                  for="cceMinorInput"
+                >
+                  <strong>
+                    Related to CCE Minor
+                  </strong>
+                </label>
+              </div>
+            {% endif %}
+
+          </div>
+
+          <!-- Note text -->
+          <div class="mb-3">
+            <label
+              class="form-label"
+              for="addNoteTextArea"
+            >
+              <strong>Note</strong>
+            </label>
+
+            <textarea
+              required
+              name="noteTextbox"
+              rows="8"
+              id="addNoteTextArea"
+              class="form-control"
+              placeholder="Add a note to this user's profile."
+            ></textarea>
+          </div>
         </div>
+
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="notesSaveButton" data-username="{{volunteer.username}}" type="submit" class="btn btn-primary">Save</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+
+          <button
+            id="notesSaveButton"
+            data-username="{{ volunteer.username }}"
+            data-mode="add"
+            data-noteid=""
+            type="submit"
+            class="btn btn-primary"
+          >
+            Save
+          </button>
         </div>
-      </div>
+      </form>
+
     </div>
-  </form>
+  </div>
 </div>
-<!-- ################# Add Notes Modal ################ -->
+<!-- ################# Add/Edit Notes Modal ################# -->
 
 
 <!-- ################# Delete Note Warning Modal ################ -->
