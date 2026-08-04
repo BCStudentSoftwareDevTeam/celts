@@ -478,22 +478,11 @@
                       or g.current_user.isCeltsAdmin
                     %}
                       <button
-                        type="button"
-                        class="btn btn-sm btn-primary me-1 editNoteButton"
-                        data-noteid="{{ row.id }}"
-                        data-notetext="{{ row.note.noteContent|e }}"
-                        data-username="{{ volunteer.username }}"
-                        data-visibility="{{ row.viewTier }}"
-                        data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}"
-                        data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}"
-                      >
-                        Edit
+                        type="button" class="btn btn-sm btn-primary me-1 editNoteButton" data-noteid="{{ row.id }}" data-notetext="{{ row.note.noteContent|e }}" data-username="{{ volunteer.username }}" data-visibility="{{ row.viewTier }}" data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}" data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}" > Edit
                       </button>
-
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton"  data-noteid="{{ row.id }}" data-username="{{ volunteer.username }}"  >  Delete </button>
                     {% else %}
                       <button type="button" class="btn btn-sm btn-primary me-1" disabled > Edit </button>
-
                       <button  type="button"  class="btn btn-sm btn-danger" disabled > Delete </button>
                     {% endif %}
                   </td>
@@ -626,7 +615,6 @@
             if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin
             else "d-none"
           %}
-
           {% if vis != "" %}
             <p> <strong> This note will only be visible to you, CELTS Student Staff, and Administrators.</strong> </p>
           {% endif %}
@@ -642,12 +630,10 @@
               {% if g.current_user.isCeltsAdmin %}
                 <option value="3">  Admins  </option>
               {% endif %}
-
               {% if g.current_user.isCeltsAdmin  or g.current_user.isCeltsStudentStaff
               %}
                 <option value="2">  Admin/Student Staff </option>
               {% endif %}
-
               <option value="1" selected>  Everyone </option>
             </select>
           </div>
@@ -668,7 +654,6 @@
                 <label  class="form-check-label" for="cceMinorInput" > <strong>  Related to CCE Minor </strong> </label>
               </div>
             {% endif %}
-
           </div>
 
           <!-- Note text -->
@@ -682,7 +667,6 @@
           <button id="notesSaveButton" data-username="{{ volunteer.username }}" data-mode="add" data-noteid="" type="submit" class="btn btn-primary" > Save</button>
         </div>
       </form>
-
     </div>
   </div>
 </div>
