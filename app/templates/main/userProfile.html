@@ -398,24 +398,10 @@
   {% set notesOpen = visibleAccordion == "notes" %}
 
   <h3 class="accordion-header" id="headingSix">
-    <button
-      class="accordion-button {{ '' if notesOpen else 'collapsed' }}"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#collapseSix"
-      aria-expanded="{{ 'true' if notesOpen else 'false' }}"
-      aria-controls="collapseSix"
-    >
-      Notes
-    </button>
+    <button class="accordion-button {{ '' if notesOpen else 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="{{ 'true' if notesOpen else 'false' }}" aria-controls="collapseSix" >  Notes </button>
   </h3>
 
-  <div
-    id="collapseSix"
-    class="accordion-collapse collapse {{ 'show' if notesOpen else '' }}"
-    aria-labelledby="headingSix"
-    data-bs-parent="#userProfile"
-  >
+  <div id="collapseSix" class="accordion-collapse collapse {{ 'show' if notesOpen else '' }}" aria-labelledby="headingSix" data-bs-parent="#userProfile" >
     <div class="accordion-body">
 
       {% if g.current_user.isCeltsAdmin %}
@@ -429,10 +415,7 @@
       {% set note = namespace(count=0) %}
 
       <div class="table-responsive">
-        <table
-          class="table table-striped"
-          id="profileTable"
-        >
+        <table class="table table-striped"  id="profileTable" >
           <thead>
             <tr>
               <th>Date</th>
@@ -507,59 +490,27 @@
                         Edit
                       </button>
 
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger deleteNoteButton"
-                        data-noteid="{{ row.id }}"
-                        data-username="{{ volunteer.username }}"
-                      >
-                        Delete
-                      </button>
+                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton"  data-noteid="{{ row.id }}" data-username="{{ volunteer.username }}"  >  Delete </button>
                     {% else %}
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-primary me-1"
-                        disabled
-                      >
-                        Edit
-                      </button>
+                      <button type="button" class="btn btn-sm btn-primary me-1" disabled > Edit </button>
 
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        disabled
-                      >
-                        Delete
-                      </button>
+                      <button  type="button"  class="btn btn-sm btn-danger" disabled > Delete </button>
                     {% endif %}
                   </td>
                 </tr>
-
                 {% set note.count = note.count + 1 %}
               {% endif %}
             {% endfor %}
 
             {% if note.count == 0 %}
               <tr>
-                <td
-                  colspan="5"
-                  class="text-center text-muted"
-                >
-                  There are no notes yet.
-                </td>
+                <td colspan="5"class="text-center text-muted" >  There are no notes yet. </td>
               </tr>
             {% endif %}
           </tbody>
         </table>
       </div>
-
-      <button
-        type="button"
-        class="btn btn-primary mt-3"
-        id="addNoteButton"
-      >
-        Add Note
-      </button>
+      <button type="button" class="btn btn-primary mt-3" id="addNoteButton" > Add Note </button>
     </div>
   </div>
 </div>
@@ -653,13 +604,7 @@
 
 </div>
 <!-- ################# Add/Edit Notes Modal ################# -->
-<div
-  class="modal fade"
-  id="noteModal"
-  tabindex="-1"
-  aria-labelledby="addProfileNoteModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" >
   <div class="modal-dialog">
     <div class="modal-content">
 
@@ -672,76 +617,38 @@
             Note
           </h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button"class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
         </div>
 
         <div class="modal-body">
           {% set vis =
             ""
-            if g.current_user.isCeltsStudentStaff
-            or g.current_user.isCeltsAdmin
+            if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin
             else "d-none"
           %}
 
           {% if vis != "" %}
-            <p>
-              <strong>
-                This note will only be visible to you, CELTS Student
-                Staff, and Administrators.
-              </strong>
-            </p>
+            <p> <strong> This note will only be visible to you, CELTS Student Staff, and Administrators.</strong> </p>
           {% endif %}
 
           <!-- Bonner visibility explanation -->
-          <p
-            class="form-label"
-            id="bonnerStatement"
-            style="display: none;"
-          >
-            <strong>
-              Bonner notes are visible to
-              {{ volunteer.firstName }} and CELTS administrators.
-            </strong>
-          </p>
+          <p class="form-label" id="bonnerStatement"  style="display: none;"> <strong>  Bonner notes are visible to  {{ volunteer.firstName }} and CELTS administrators. </strong>  </p>
 
           <!-- Visibility selection -->
           <div class="mb-3">
-            <label
-              class="form-label {{ vis }}"
-              for="noteDropdown"
-              id="visibilityLabel"
-            >
-              <strong>Visibility</strong>
-            </label>
+            <label class="form-label {{ vis }}" for="noteDropdown" id="visibilityLabel"  > <strong>Visibility</strong> </label>
+            <select class="form-select {{ vis }}" name="visibility"  id="noteDropdown" >
 
-            <select
-              class="form-select {{ vis }}"
-              name="visibility"
-              id="noteDropdown"
-            >
               {% if g.current_user.isCeltsAdmin %}
-                <option value="3">
-                  Admins
-                </option>
+                <option value="3">  Admins  </option>
               {% endif %}
 
-              {% if
-                g.current_user.isCeltsAdmin
-                or g.current_user.isCeltsStudentStaff
+              {% if g.current_user.isCeltsAdmin  or g.current_user.isCeltsStudentStaff
               %}
-                <option value="2">
-                  Admin/Student Staff
-                </option>
+                <option value="2">  Admin/Student Staff </option>
               {% endif %}
 
-              <option value="1" selected>
-                Everyone
-              </option>
+              <option value="1" selected>  Everyone </option>
             </select>
           </div>
 
@@ -750,87 +657,29 @@
 
             {% if volunteer.isBonnerScholar %}
               <div class="form-check form-switch mb-3">
-                <input
-                  class="form-check-input"
-                  name="bonner"
-                  id="bonnerInput"
-                  type="checkbox"
-                  value="yes"
-                >
-
-                <label
-                  class="form-check-label"
-                  for="bonnerInput"
-                >
-                  <strong>
-                    Related to Bonner Scholars Program
-                  </strong>
-                </label>
+                <input class="form-check-input" name="bonner"  id="bonnerInput" type="checkbox" value="yes">
+                <label  class="form-check-label" for="bonnerInput"> <strong>  Related to Bonner Scholars Program </strong> </label>
               </div>
             {% endif %}
 
             {% if volunteer.minorInterest %}
               <div class="form-check form-switch mb-3">
-                <input
-                  class="form-check-input"
-                  name="cceMinor"
-                  id="cceMinorInput"
-                  type="checkbox"
-                  value="yes"
-                >
-
-                <label
-                  class="form-check-label"
-                  for="cceMinorInput"
-                >
-                  <strong>
-                    Related to CCE Minor
-                  </strong>
-                </label>
+                <input  class="form-check-input"  name="cceMinor" id="cceMinorInput" type="checkbox"  value="yes"  >
+                <label  class="form-check-label" for="cceMinorInput" > <strong>  Related to CCE Minor </strong> </label>
               </div>
             {% endif %}
 
           </div>
 
           <!-- Note text -->
-          <div class="mb-3">
-            <label
-              class="form-label"
-              for="addNoteTextArea"
-            >
-              <strong>Note</strong>
-            </label>
-
-            <textarea
-              required
-              name="noteTextbox"
-              rows="8"
-              id="addNoteTextArea"
-              class="form-control"
-              placeholder="Add a note to this user's profile."
-            ></textarea>
+          <div class="mb-3">  <label class="form-label"  for="addNoteTextArea"  > <strong>Note</strong></label>
+            <textarea required name="noteTextbox" rows="8" id="addNoteTextArea" class="form-control" placeholder="Add a note to this user's profile." ></textarea>
           </div>
         </div>
 
         <div class="modal-footer justify-content-between">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
-
-          <button
-            id="notesSaveButton"
-            data-username="{{ volunteer.username }}"
-            data-mode="add"
-            data-noteid=""
-            type="submit"
-            class="btn btn-primary"
-          >
-            Save
-          </button>
+          <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal" > Close </button>
+          <button id="notesSaveButton" data-username="{{ volunteer.username }}" data-mode="add" data-noteid="" type="submit" class="btn btn-primary" > Save</button>
         </div>
       </form>
 

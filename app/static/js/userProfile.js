@@ -101,9 +101,7 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-    /*
-     * Ban Functionality
-     */
+  // Ban Functionality
   $(".banEdit").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -157,9 +155,7 @@ $(document).ready(function(){
     });
   });
 
-/*
- * Note Functionality
- */
+//  Note Functionality
 
 function bonnerNoteOff() {
     $("#bonnerInput").prop("checked", false);
@@ -187,27 +183,20 @@ function resetNoteModal() {
     $("#notesSaveButton").prop("disabled", false);
 }
 
-/*
- * Open the modal for a normal new note.
- */
+//  Open the modal for a normal new note.
 $("#addNoteButton").click(function () {
     resetNoteModal();
     $("#noteModal").modal("toggle");
 });
 
-/*
- * Open the modal from the Bonner Notes area.
- * Bonner is selected by default, but CCE Minor stays independent.
- */
+//  Open the modal from the Bonner Notes area. Bonner is selected by default, but CCE Minor stays independent.
 $("#addBonnerNoteButton").click(function () {
     resetNoteModal();
     bonnerNoteOn();
     $("#noteModal").modal("toggle");
 });
 
-/*
- * Show or hide visibility whenever Bonner changes.
- */
+//  Show or hide visibility whenever Bonner changes.
 $("#bonnerInput").on("change", function () {
     if ($(this).is(":checked")) {
         bonnerNoteOn();
@@ -216,9 +205,7 @@ $("#bonnerInput").on("change", function () {
     }
 });
 
-/*
- * Add or update a note.
- */
+//  Add or update a note.
 $("#addNoteForm").submit(function (event) {
     event.preventDefault();
 
@@ -239,19 +226,11 @@ $("#addNoteForm").submit(function (event) {
         return;
     }
 
-    const requestData = {
-        username: username,
-        visibility: visibility,
-        noteTextbox: noteTextbox,
-        bonner: isBonner ? "yes" : "no",
-        cceMinor: isCCEMinor ? "yes" : "no"
-    };
-
+    const requestData = { username: username, visibility: visibility, noteTextbox: noteTextbox, bonner: isBonner ? "yes" : "no", cceMinor: isCCEMinor ? "yes" : "no" };
     let requestURL = "/profile/addNote";
     let successMessage = "Successfully added note";
 
-    if (mode === "edit") {
-        requestURL = "/" + username + "/editNote";
+    if (mode === "edit") { requestURL = "/" + username + "/editNote";
         requestData.id = noteid;
         successMessage = "Successfully updated note";
     }
@@ -263,31 +242,18 @@ $("#addNoteForm").submit(function (event) {
         url: requestURL,
         data: requestData,
 
-        success: function () {
-            msgFlash(
-                successMessage,
-                "success",
-                1300,
-                true
-            );
+        success: function () { msgFlash( successMessage,  "success", 1300, true );
 
             location.reload();
         },
 
-        error: function (xhr) {
-            console.error(
-                "Unable to save note:",
-                xhr.responseText
-            );
-
+        error: function (xhr) { console.error( "Unable to save note:", xhr.responseText  );
             saveButton.prop("disabled", false);
         }
     });
 });
 
-/*
- * Open an existing note for editing.
- */
+// Open an existing note for editing.
 $(document).on("click", ".editNoteButton", function () {
     const noteText = $(this).data("notetext");
     const visibility = String($(this).data("visibility"));
@@ -302,42 +268,24 @@ $(document).on("click", ".editNoteButton", function () {
     $("#addNoteTextArea").val(noteText);
     $("#noteDropdown").val(visibility);
 
-    if (isBonner) {
-        bonnerNoteOn();
-    } else {
+    if (isBonner) {  bonnerNoteOn(); }
+    else {
         bonnerNoteOff();
         $("#noteDropdown").val(visibility);
     }
 
-    /*
-     * This is the part that restores the CCE Minor toggle.
-     */
-    $("#cceMinorInput").prop(
-        "checked",
-        isCCEMinor
-    );
-
-    $("#notesSaveButton").data(
-        "noteid",
-        noteid
-    );
-
-    $("#notesSaveButton").data(
-        "mode",
-        "edit"
-    );
-
-    $("#notesSaveButton").prop(
-        "disabled",
-        false
-    );
-
+    
+//  This is the part that restores the CCE Minor toggle.
+  
+    $("#cceMinorInput").prop( "checked", isCCEMinor);
+    $("#notesSaveButton").data( "noteid", noteid );
+    $("#notesSaveButton").data( "mode", "edit" );
+    $("#notesSaveButton").prop( "disabled",  false );
     $("#noteModal").modal("toggle");
 });
 
-/*
- * Open the delete confirmation.
- */
+
+//  Open the delete confirmation.
 $(document).on("click", ".deleteNoteButton", function () {
     $("#confirmDeleteNote").data(
         "username",
@@ -352,37 +300,19 @@ $(document).on("click", ".deleteNoteButton", function () {
     $("#deleteNoteWarning").modal("show");
 });
 
-/*
- * Confirm note deletion.
- */
+// Confirm note deletion.
 $("#confirmDeleteNote").click(function () {
     const username = $(this).data("username");
     const noteid = $(this).data("noteid");
 
-    $.ajax({
-        method: "POST",
-        url: "/" + username + "/deleteNote",
-        data: {
-            id: noteid
-        },
-
-        success: function () {
-            msgFlash(
-                "Successfully deleted note",
-                "success",
-                1300,
-                true
-            );
-
+    $.ajax({method: "POST", url: "/" + username + "/deleteNote", data: {  id: noteid  },
+        success: function () { msgFlash("Successfully deleted note",  "success", 1300, true );
             reloadWithAccordion("notes");
         },
 
-        error: function (xhr) {
-            console.error(
-                "Unable to delete note:",
-                xhr.responseText
-            );
-        }
+        error: function (xhr) { console.error("Unable to delete note:", xhr.responseText  );
+          
+          }
     });
 });
   /*
