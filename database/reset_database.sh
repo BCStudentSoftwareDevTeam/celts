@@ -39,10 +39,10 @@ mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE 
 rm -rf migrations
 rm -rf migrations.json
 
+echo -n "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo " from backup"
     mysql -u root -proot celts < prod-backup.sql
-    
 else
     echo " empty"
     ./migrate_db.sh no-backup
