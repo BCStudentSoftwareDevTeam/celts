@@ -378,62 +378,80 @@ def eventTravelForm(eventID):
                            userList = userList,
                            )
 
+def getProfileNoteData(include_username=False, include_id=False):
+    noteData = {
+        "visibility": request.form.get("visibility", 1),
+        "bonner": request.form.get("bonner") == "yes",
+        "cceMinor": request.form.get("cceMinor") == "yes",
+        "noteTextbox": request.form.get("noteTextbox", "").strip(),
+    }
+
+    if not noteData["noteTextbox"]:
+        raise ValueError("Note cannot be empty")
+
+    if include_username:
+        noteData["username"] = request.form.get("username")
+
+        if not noteData["username"]:
+            raise ValueError("Missing username")
+
+    if include_id:
+        noteData["profileNoteID"] = request.form.get("id")
+
+        if not noteData["profileNoteID"]:
+            raise ValueError("Missing profile note ID")
+
+    return noteData
+
+
 @main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
-    postData = request.form
+    try:
+        noteData = getProfileNoteData(include_username=True)
+        addProfileNote(**noteData)
 
-    noteTextbox = postData.get("noteTextbox", "").strip()
+    except ValueError as error:
+        return str(error), 400
 
-    if not noteTextbox:
-        return "Note cannot be empty", 400
+    except User.DoesNotExist:
+        return "User not found", 404
 
-    addProfileNote(
-        visibility=postData.get("visibility", 1),
-        bonner=postData.get("bonner") == "yes",
-        cceMinor=postData.get("cceMinor") == "yes",
-        noteTextbox=noteTextbox,
-        username=postData["username"],
-    )
+    except Exception as error:
+        print("Error adding profile note:", error)
+        return "Failed to add profile note", 500
 
     return "success"
-    
+
+
 @main_bp.route("/<username>/editNote", methods=["POST"])
 def editProfileNote(username):
-    profileNoteID = request.form.get("id")
-    noteTextbox = request.form.get("noteTextbox", "").strip()
-    visibility = request.form.get("visibility", 1)
-    bonner = request.form.get("bonner") == "yes"
-    cceMinor = request.form.get("cceMinor") == "yes"
-
-    if not profileNoteID:
-        return "Missing profile note ID", 400
-
-    if not noteTextbox:
-        return "Note cannot be empty", 400
-
     try:
-        profileNote = ProfileNote.get_by_id(profileNoteID)
+        noteData = getProfileNoteData(include_id=True)
+        profileNote = ProfileNote.get_by_id(
+            noteData["profileNoteID"]
+        )
+
+    except ValueError as error:
+        return str(error), 400
+
     except ProfileNote.DoesNotExist:
         return "Profile note not found", 404
 
-    # Prevent editing a note belonging to another profile.
     if profileNote.user.username != username:
         abort(403)
 
-    # Only the creator or a CELTS administrator may edit the note.
     if (
         profileNote.note.createdBy != g.current_user
         and not g.current_user.isCeltsAdmin
     ):
         abort(403)
 
-    updateProfileNote(
-        profileNoteID=profileNoteID,
-        visibility=visibility,
-        bonner=bonner,
-        cceMinor=cceMinor,
-        noteTextbox=noteTextbox,
-    )
+    try:
+        updateProfileNote(**noteData)
+
+    except Exception as error:
+        print("Error updating profile note:", error)
+        return "Failed to update profile note", 500
 
     return "success"
     

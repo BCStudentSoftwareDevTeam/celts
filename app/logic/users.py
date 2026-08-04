@@ -124,13 +124,8 @@ def getUserBGCheckHistory(username):
         bgHistory[row.type_id].append(row)
     return bgHistory
 
-def addProfileNote(
-    visibility,
-    bonner,
-    cceMinor,
-    noteTextbox,
-    username,
-):
+def addProfileNote(visibility, bonner,cceMinor, noteTextbox,username):
+    user = User.get(User.username == username)
     if bonner:
         # Bonner notes are always visible to admins and the student.
         visibility = 1
@@ -143,7 +138,7 @@ def addProfileNote(
     )
 
     profileNote = ProfileNote.create(
-        user=User.get(User.username == username),
+        user=User,
         note=noteForDb,
         isBonnerNote=bonner,
         isCCEMinorNote=cceMinor,
@@ -151,7 +146,8 @@ def addProfileNote(
     )
 
     return profileNote
-def updateProfileNote( profileNoteID, visibility, bonner, cceMinor, noteTextbox, ):
+
+def updateProfileNote( profileNoteID, visibility, bonner, cceMinor, noteTextbox):
     """
     Update an existing profile note without deleting and recreating it.
     """
