@@ -150,10 +150,10 @@ def createEvent(templateid, programid):
            
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRepeating'):
-                    createActivityLog(f"Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name[:-7]}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createActivityLog(f'''Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name[:-7]}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.''')
                 elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
-                    eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
+                    eventList = ', '.join(f'''<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>''' for event in savedEvents)
 
                     if len(savedEvents) > 1:
                         #creates list of events created in a multiple series to display in the logs
@@ -165,9 +165,9 @@ def createEvent(templateid, programid):
                     createActivityLog(f"Created series {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
-                    createActivityLog(f"Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog('''Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.''')
             else:
-                createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createActivityLog(f'''Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.''')
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -243,7 +243,7 @@ def renewEvent(eventId):
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
         copyRsvpToNewEvent(priorEvent, newEvent[0])
-        createActivityLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        createActivityLog(f'''Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.''')
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
 
