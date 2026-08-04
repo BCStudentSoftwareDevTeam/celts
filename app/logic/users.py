@@ -123,38 +123,47 @@ def getUserBGCheckHistory(username):
     for row in allBackgroundChecks:
         bgHistory[row.type_id].append(row)
     return bgHistory
+def getProfileNoteData(formData, includeUsername=False, includeId=False):
+    noteData = {
+        "visibility": int(formData.get("visibility", 1)),
+        "bonner": formData.get("bonner") == "yes",
+        "cceMinor": formData.get("cceMinor") == "yes",
+        "noteTextbox": formData.get("noteTextbox", "").strip(),
+    }
+    if not noteData["noteTextbox"]:
+        raise ValueError("Note cannot be empty")
+    if includeUsername:
+        noteData["username"] = formData.get("username")
+        if not noteData["username"]:
+            raise ValueError("Missing username")
+    if includeId:
+        noteData["profileNoteID"] = formData.get("id")
+        if not noteData["profileNoteID"]:
+            raise ValueError("Missing profile note ID")
+    return noteData
 
 def addProfileNote(visibility, bonner, cceMinor, noteTextbox, username):
     user = User.get(User.username == username)
-
+    visibility = int(visibility)
     if bonner:
         visibility = 1
 
-    noteForDb = Note.create( createdBy=g.current_user,  createdOn=datetime.datetime.now(),  noteContent=noteTextbox, noteType="profile", )
-    profileNote = ProfileNote.create( user=user, note=noteForDb, isBonnerNote=bonner,  isCCEMinorNote=cceMinor, viewTier=int(visibility),  )
+    noteForDb = Note.create( createdBy=g.current_user, createdOn=datetime.datetime.now(),  noteContent=noteTextbox, noteType="profile" )
+    profileNote = ProfileNote.create( user=user, note=noteForDb, isBonnerNote=bonner, isCCEMinorNote=cceMinor, viewTier=visibility, )
     return profileNote
 
 def updateProfileNote( profileNoteID, visibility, bonner, cceMinor, noteTextbox):
-    """
-    Update an existing profile note without deleting and recreating it.
-    """
     profileNote = ProfileNote.get_by_id(profileNoteID)
-
-    # Bonner notes always use the Bonner visibility level.
+    visibility = int(visibility)
     if bonner:
         visibility = 1
-
-    # Update the actual note text.
     note = profileNote.note
     note.noteContent = noteTextbox
     note.save()
-
-    # Update the ProfileNote information.
-    profileNote.viewTier = int(visibility)
+    profileNote.viewTier = visibility
     profileNote.isBonnerNote = bonner
     profileNote.isCCEMinorNote = cceMinor
     profileNote.save()
-
     return profileNote
 
 def deleteProfileNote(noteId):

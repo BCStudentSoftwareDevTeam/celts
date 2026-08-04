@@ -247,15 +247,8 @@ $("#addNoteForm").submit(function (event) {
         method: "POST",
         url: requestURL,
         data: requestData,
-
-        success: function () { msgFlash( successMessage,  "success", 1300, true );
-
-            location.reload();
-        },
-
-        error: function (xhr) { console.error( "Unable to save note:", xhr.responseText  );
-            saveButton.prop("disabled", false);
-        }
+        success: function () {location.reload();},
+      error: function (xhr) { const errorMessage = xhr.responseText || "Unable to save profile note"; msgFlash( errorMessage, "danger", 3000, true ); saveButton.prop("disabled", false);}
     });
 });
 

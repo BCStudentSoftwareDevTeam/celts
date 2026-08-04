@@ -37,7 +37,7 @@ from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote 
+from app.logic.users import  addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory,addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote, getProfileNoteData
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -378,64 +378,44 @@ def eventTravelForm(eventID):
                            userList = userList,
                            )
 
-def getProfileNoteData(include_username=False, include_id=False):
-    noteData = {
-        "visibility": request.form.get("visibility", 1),
-        "bonner": request.form.get("bonner") == "yes",
-        "cceMinor": request.form.get("cceMinor") == "yes",
-        "noteTextbox": request.form.get("noteTextbox", "").strip(),
-    }
-
-    if not noteData["noteTextbox"]:
-        raise ValueError("Note cannot be empty")
-    if include_username:
-        noteData["username"] = request.form.get("username")
-        if not noteData["username"]:
-            raise ValueError("Missing username")
-    if include_id:
-        noteData["profileNoteID"] = request.form.get("id")
-        if not noteData["profileNoteID"]:
-            raise ValueError("Missing profile note ID")
-    return noteData
-
 @main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
     try:
-        noteData = getProfileNoteData(include_username=True)
+        noteData = getProfileNoteData(request.form,  includeUsername=True, )
         addProfileNote(**noteData)
-
+        flash("Successfully added profile note", "success")
     except ValueError as error:
+        flash(str(error), "danger")
         return str(error), 400
     except User.DoesNotExist:
+        flash("User not found", "danger")
         return "User not found", 404
     except Exception as error:
         print("Error adding profile note:", error)
+        flash("Failed to add profile note", "danger")
         return "Failed to add profile note", 500
     return "success"
 
 @main_bp.route("/<username>/editNote", methods=["POST"])
 def editProfileNote(username):
     try:
-        noteData = getProfileNoteData(include_id=True)
-        profileNote = ProfileNote.get_by_id(
-            noteData["profileNoteID"]
-        )
-
-    except ValueError as error:
-        return str(error), 400
-
-    except ProfileNote.DoesNotExist:
-        return "Profile note not found", 404
-
-    if profileNote.user.username != username:
-        abort(403)
-
-    if ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin ):
-        abort(403)
-    try:
+        noteData = getProfileNoteData( request.form,includeId=True, )
+        profileNote = ProfileNote.get_by_id( noteData["profileNoteID"] )
+        if profileNote.user.username != username:
+            abort(403)
+        if ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin ):
+            abort(403)
         updateProfileNote(**noteData)
+        flash("Successfully updated profile note", "success")
+    except ValueError as error:
+        flash(str(error), "danger")
+        return str(error), 400
+    except ProfileNote.DoesNotExist:
+        flash("Profile note not found", "danger")
+        return "Profile note not found", 404
     except Exception as error:
         print("Error updating profile note:", error)
+        flash("Failed to update profile note", "danger")
         return "Failed to update profile note", 500
     return "success"
     

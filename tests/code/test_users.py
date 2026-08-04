@@ -14,7 +14,7 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
 
 @pytest.mark.integration
@@ -136,7 +136,19 @@ def test_removeUserInterestt():
         assert result == True
 
         transaction.rollback()
-
+@pytest.mark.integration
+def test_getProfileNoteData():
+    formData = { "visibility": "3","bonner": "yes", "cceMinor": "no",  "noteTextbox": "  Test profile note  ",  "username": "ramsayb2",  "id": "12", }
+    noteData = getProfileNoteData(  formData, includeUsername=True, includeId=True, )
+    assert noteData == {"visibility": 3,"bonner": True,   "cceMinor": False,"noteTextbox": "Test profile note", "username": "ramsayb2", "profileNoteID": "12",  }
+    invalidData = [
+        ({}, "Note cannot be empty"),
+        ( {"noteTextbox": "Test note"}, "Missing username" ),
+        ( {"noteTextbox": "Test note",  "username": "ramsayb2",  },  "Missing profile note ID", ),
+    ]
+    for formData, errorMessage in invalidData:
+        with pytest.raises(ValueError, match=errorMessage):
+            getProfileNoteData(formData,  includeUsername=True, includeId=True,)
 @pytest.mark.integration
 def test_addUserProfileNote():
     with mainDB.atomic() as transaction:
