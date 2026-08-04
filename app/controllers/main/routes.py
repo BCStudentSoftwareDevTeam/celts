@@ -388,21 +388,15 @@ def getProfileNoteData(include_username=False, include_id=False):
 
     if not noteData["noteTextbox"]:
         raise ValueError("Note cannot be empty")
-
     if include_username:
         noteData["username"] = request.form.get("username")
-
         if not noteData["username"]:
             raise ValueError("Missing username")
-
     if include_id:
         noteData["profileNoteID"] = request.form.get("id")
-
         if not noteData["profileNoteID"]:
             raise ValueError("Missing profile note ID")
-
     return noteData
-
 
 @main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
@@ -412,16 +406,12 @@ def addNote():
 
     except ValueError as error:
         return str(error), 400
-
     except User.DoesNotExist:
         return "User not found", 404
-
     except Exception as error:
         print("Error adding profile note:", error)
         return "Failed to add profile note", 500
-
     return "success"
-
 
 @main_bp.route("/<username>/editNote", methods=["POST"])
 def editProfileNote(username):
@@ -440,19 +430,13 @@ def editProfileNote(username):
     if profileNote.user.username != username:
         abort(403)
 
-    if (
-        profileNote.note.createdBy != g.current_user
-        and not g.current_user.isCeltsAdmin
-    ):
+    if ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin ):
         abort(403)
-
     try:
         updateProfileNote(**noteData)
-
     except Exception as error:
         print("Error updating profile note:", error)
         return "Failed to update profile note", 500
-
     return "success"
     
 @main_bp.route('/<username>/deleteNote', methods=['POST'])

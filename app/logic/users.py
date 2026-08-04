@@ -130,28 +130,14 @@ def addProfileNote(visibility, bonner, cceMinor, noteTextbox, username):
     if bonner:
         visibility = 1
 
-    noteForDb = Note.create(
-        createdBy=g.current_user,
-        createdOn=datetime.datetime.now(),
-        noteContent=noteTextbox,
-        noteType="profile",
-    )
-
-    profileNote = ProfileNote.create(
-        user=user,
-        note=noteForDb,
-        isBonnerNote=bonner,
-        isCCEMinorNote=cceMinor,
-        viewTier=int(visibility),
-    )
-
+    noteForDb = Note.create( createdBy=g.current_user,  createdOn=datetime.datetime.now(),  noteContent=noteTextbox, noteType="profile", )
+    profileNote = ProfileNote.create( user=user, note=noteForDb, isBonnerNote=bonner,  isCCEMinorNote=cceMinor, viewTier=int(visibility),  )
     return profileNote
 
 def updateProfileNote( profileNoteID, visibility, bonner, cceMinor, noteTextbox):
     """
     Update an existing profile note without deleting and recreating it.
     """
-
     profileNote = ProfileNote.get_by_id(profileNoteID)
 
     # Bonner notes always use the Bonner visibility level.
