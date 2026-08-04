@@ -467,13 +467,13 @@ def ban(program_id, username):
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
-        flash("Successfully banned the volunteer", "success")
-        createActivityLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
-        return "Successfully banned the volunteer."
+        flash("Successfully marked the volunteer as ineligible", "success")
+        createActivityLog(f'Marked {username} as ineligible from {programInfo.programName} until {banEndDate}.')
+        return "Successfully marked the volunteer as ineligible."
     except Exception as e:
         print("Error while updating ban", e)
-        flash("Failed to ban the volunteer", "danger")
-        return "Failed to ban the volunteer", 500
+        flash("Failed to mark the volunteer as ineligible", "danger")
+        return "Failed to mark the volunteer as ineligible", 500
 
 # ===========================Unban===============================================
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
@@ -488,14 +488,14 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createActivityLog(f'Unbanned {username} from {programInfo.programName}.')
-        flash("Successfully unbanned the volunteer", "success")
-        return "Successfully unbanned the volunteer"
+        createActivityLog(f'marked {username} as eligible from {programInfo.programName}.')
+        flash("Successfully marked the volunteer as eligible", "success")
+        return "Successfully marked the volunteer as eligible"
 
     except Exception as e:
         print("Error while updating Unban", e)
-        flash("Failed to unban the volunteer", "danger")
-        return "Failed to unban the volunteer", 500
+        flash("Failed to mark the volunteer as eligible", "danger")
+        return "Failed to mark the volunteer as eligible", 500
 
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])

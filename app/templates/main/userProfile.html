@@ -234,10 +234,10 @@
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
                       <td class="programBan pt-3"> Eligible
-                      {% set label = "Ban" %}
+                      {% set label = "Ineligible" %}
                     {% else %}
-                      <td class="programBan text-danger pt-3"> Banned
-                      {% set label = "Unban" %}
+                      <td class="programBan text-danger pt-3"> Ineligible
+                      {% set label = "Eligible" %}
                     {% endif %}
 
                     {% if g.current_user.isCeltsAdmin %}
@@ -710,8 +710,8 @@
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
           <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
           <div id="banNoteDiv">
-            <h6 align="left">Reason for ban:</h6>
-            <p align="left" id="banNote">Why the student was banned</p>
+            <h6 align="left">Reason for ineligibility:</h6>
+            <p align="left" id="banNote">Why the student is ineligible</p>
           </div>
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6><span class="text-danger">*</span>
@@ -725,7 +725,7 @@
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
+          <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Mark Ineligible/Eligible</button>
         </div>
       </div>
     </div>
