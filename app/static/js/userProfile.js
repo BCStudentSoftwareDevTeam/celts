@@ -118,19 +118,19 @@ $(document).ready(function(){
     var banNote = $("#banNote")
     var banValue = $(this).val()
 
-    banButton.text(banValue + " Volunteer");
+    banButton.text("Set " + banValue);
     programID = $(this).data("programid"); // Assign value to programID variable
     banButton.data("programID", programID)
     banButton.data("username", $(".banEdit").data("username"))
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
+    $(".modal-title-ban").text("Mark Volunteer as " + banValue +  " from "+ $(this).data("name") + "?");
     $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
-    if(banValue == "Unban"){
+    if(banValue == "Eligible"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
@@ -148,6 +148,12 @@ $(document).ready(function(){
      $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
+
+    if(route =="eligible"){ // This handles the case where the user is being marked as eligible/ineligible and changes to ban and unban status for the route
+      route= 'unban'
+    }else{
+      route= 'ban'
+    }
     var program = $(this).data("programID") //Expected to be a program's primary ID
    
     $.ajax({
