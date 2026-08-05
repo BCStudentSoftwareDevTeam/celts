@@ -46,6 +46,12 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
+def removeCeltsOperationsTeam(user): # May need more detail.
+    user = User.get_by_id(user)
+    user.isOperationsTeam = False
+    user.save()
+    createActivityLog(f'Removed {user.firstName} {user.lastName} from CELTS operations team members.')
+
 def changeProgramInfo(programId, 
                       attachment, 
                       programName= None, 
@@ -106,7 +112,7 @@ def getAllowedPrograms(currentUser):
 
 def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
-    if currentUser.isCeltsAdmin:
+    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam: # Gave access to the short cut.
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []  

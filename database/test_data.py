@@ -80,7 +80,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
-        "isCeltsOperationsTeam": False,
+        "isCeltsOperationsTeam": True,
         "major": "Psychology",
         "rawClassLevel": "Sophomore",
         "minorInterest": 0,

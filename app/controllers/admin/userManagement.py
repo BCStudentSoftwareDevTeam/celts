@@ -82,7 +82,7 @@ def deleteProgramFile():
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID):
+    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID) or g.current_user.isCeltsOperationsTeam:
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
@@ -98,7 +98,7 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
 def getProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID):
+    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID) or g.current_user.isCeltsOperationsTeam:
         try:
             targetProgram = Program.get_by_id(programID)
             programInfo = model_to_dict(targetProgram, recurse=False)
@@ -128,14 +128,14 @@ def userManagement():
             .join(User, JOIN.LEFT_OUTER, on=(ProgramManager.user == User.username))
     )
 
-    if not g.current_user.isCeltsAdmin:
+    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsOperationsTeam: #Allows CELTS Operations Team to view all programs.
         currentPrograms = currentPrograms.where(ProgramManager.user == g.current_user.username)
 
     currentPrograms = currentPrograms.group_by(Program.id)
     
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager:
+    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam:
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(currentPrograms),
