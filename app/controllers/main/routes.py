@@ -381,42 +381,31 @@ def eventTravelForm(eventID):
 @main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
     try:
-        noteData = getProfileNoteData(request.form,  includeUsername=True, )
+        noteData = getProfileNoteData(
+            request.form,
+            includeUsername=True,
+        )
         addProfileNote(**noteData)
         flash("Successfully added profile note", "success")
-    except ValueError as error:
-        flash(str(error), "danger")
-        return str(error), 400
-    except User.DoesNotExist:
-        flash("User not found", "danger")
-        return "User not found", 404
     except Exception as error:
         print("Error adding profile note:", error)
         flash("Failed to add profile note", "danger")
-        return "Failed to add profile note", 500
+        return str(error), 500
     return "success"
-
 @main_bp.route("/<username>/editNote", methods=["POST"])
 def editProfileNote(username):
     try:
-        noteData = getProfileNoteData( request.form,includeId=True, )
-        profileNote = ProfileNote.get_by_id( noteData["profileNoteID"] )
-        if( (profileNote.user.username != username) or ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin )):
+        noteData = getProfileNoteData( request.form,  includeId=True, )
+        profileNote = ProfileNote.get_by_id(noteData["profileNoteID"]  )
+        if (profileNote.user.username != username or (profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin) ):
             abort(403)
         updateProfileNote(**noteData)
         flash("Successfully updated profile note", "success")
-    except ValueError as error:
-        flash(str(error), "danger")
-        return str(error), 400
-    except ProfileNote.DoesNotExist:
-        flash("Profile note not found", "danger")
-        return "Profile note not found", 404
     except Exception as error:
         print("Error updating profile note:", error)
         flash("Failed to update profile note", "danger")
-        return "Failed to update profile note", 500
-    return "success"
-    
+        return str(error), 500
+    return "success"  
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):
     """
