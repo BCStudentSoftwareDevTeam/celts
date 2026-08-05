@@ -16,13 +16,18 @@ def addCeltsAdmin(user):
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS admin member.')
 
-
-def addCeltsStudentStaff(user):
+#FIXME: Rename to addCeltsProgramManager (Once the Program Manager is implemented in the model.)
+def addCeltsStudentStaff(user): #Change to Program Manager
     user = User.get_by_id(user)
-    user.isCeltsStudentStaff = True
+    user.isCeltsStudentStaff = True # May change to account for Operations Team rules. (Ex and user.isCeltsOperationsTeam == False)
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
 
+def addCeltsOperationsTeam(user):
+    user = User.get_by_id(user)
+    user.isOperationsTeam = True
+    user.save()
+    createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS operations team member.')
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)

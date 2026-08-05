@@ -48,13 +48,30 @@ def manageUsers():
             else:
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
+    elif method == "addCeltsOperationsTeam":
+        if not user.isCeltsStudentStaff:
+            flash(username + " cannot be added as CELTS Operations Team", 'danger')
+        else:
+            if user.isCeltsOperationsTeam:
+                flash(user.firstName + " " + user.lastName + " is already a CELTS Operations Team member", 'danger')
+            else:
+                user.isCeltsOperationsTeam = True
+                user.save()
+                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
-    return ("success")
+    # Double check if this function works as intended. It should remove the user from CELTS Operations Team if they are a member.
+    elif method == "removeCeltsOperationsTeam":
+        if not user.isCeltsOperationsTeam:
+            flash(user.firstName + " " + user.lastName + " is not a CELTS Operations Team member", 'danger')
+        else:
+            user.isCeltsOperationsTeam = False
+            user.save()
+            flash(user.firstName + " " + user.lastName + " is no longer a CELTS Operations Team member", 'success')
 
 
 @admin_bp.route('/deleteProgramFile', methods=['POST'])

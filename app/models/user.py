@@ -15,6 +15,7 @@ class User(baseModel):
     isStaff = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
+    isCeltsOperationsTeam = BooleanField(default=False) # A user MUST be a CELTS Student Staff member to be a CELTS Operations Team member.
     dietRestriction = TextField(null=True)
     minorInterest = BooleanField(null=True)
     hasGraduated = BooleanField(default=False)
@@ -46,6 +47,10 @@ class User(baseModel):
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
+
+    @property
+    def isOperationsTeam(self):
+        return self.isCeltsStudentStaff and self.isCeltsOperationsTeam
 
     @property
     def isBonnerScholar(self):
