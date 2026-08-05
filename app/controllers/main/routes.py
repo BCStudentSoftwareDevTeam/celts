@@ -401,9 +401,7 @@ def editProfileNote(username):
     try:
         noteData = getProfileNoteData( request.form,includeId=True, )
         profileNote = ProfileNote.get_by_id( noteData["profileNoteID"] )
-        if profileNote.user.username != username:
-            abort(403)
-        if ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin ):
+        if( (profileNote.user.username != username) or ( profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin )):
             abort(403)
         updateProfileNote(**noteData)
         flash("Successfully updated profile note", "success")

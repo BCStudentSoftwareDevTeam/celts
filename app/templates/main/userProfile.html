@@ -543,13 +543,14 @@
                 {% for row in profileNotes|selectattr("isBonnerNote") %}
                     <dt>{{row.note.noteContent}}
                       <span class="float-end">
-                        <i class="bi bi-pencil text-primary editNoteButton me-2" 
-                          data-notetext="{{row.note.noteContent}}"
-                          data-visibility="{{row.note.visibility}}"
-                          data-bonner="yes"
-                          data-noteid="{{row.note.id}}"
-                          data-username="{{volunteer.username}}"
-                          style="cursor:pointer"></i>
+                       <i class="bi bi-pencil text-primary editNoteButton me-2"
+                          data-notetext="{{ row.note.noteContent|e }}"
+                          data-visibility="{{ row.viewTier }}"
+                          data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}"
+                          data-cceminor="{{ 'yes' if row.isCCEMinorNote else 'no' }}"
+                          data-noteid="{{ row.id }}"
+                          data-username="{{ volunteer.username }}"
+                          style="cursor:pointer" ></i>
                        <i class="bi bi-trash text-danger deleteNoteButton"
                           data-noteid="{{row.note.id}}"
                           data-username="{{volunteer.username}}"

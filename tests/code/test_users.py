@@ -14,7 +14,7 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData, updateProfileNote
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
 
 @pytest.mark.integration
@@ -147,8 +147,9 @@ def test_getProfileNoteData():
         ( {"noteTextbox": "Test note",  "username": "ramsayb2",  },  "Missing profile note ID", ),
     ]
     for formData, errorMessage in invalidData:
-        with pytest.raises(ValueError, match=errorMessage):
+        with pytest.raises(ValueError) as error:
             getProfileNoteData(formData,  includeUsername=True, includeId=True,)
+        assert str(error.value) == errorMessage
 @pytest.mark.integration
 def test_addUserProfileNote():
     with mainDB.atomic() as transaction:
@@ -161,11 +162,27 @@ def test_addUserProfileNote():
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
             assert profileNote2.viewTier == 3
 
-            profileNote3 = addProfileNote(3, True, False, "Test profile note 3", "ramsayb2")
-            assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
-            assert profileNote3.viewTier == 1
-            assert profileNote.isCCEMinorNote is False
+            profileNote3 = addProfileNote(3, True, True, "Test Bonner and CCE Minor note", "ramsayb2")
+            savedProfileNote = ProfileNote.get_by_id(profileNote3.id)
+            assert profileNote3 == savedProfileNote
+            assert savedProfileNote.isBonnerNote is True
+            assert savedProfileNote.isCCEMinorNote is True
+            assert savedProfileNote.viewTier == 1
         transaction.rollback()
+@pytest.mark.integration
+def test_updateUserProfileNote():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            profileNote = addProfileNote( 3, False,False,"Original note","ramsayb2", )
+            updatedNote = updateProfileNote( profileNote.id, 3, True, True,"Updated Bonner and CCE Minor note", )
+            savedNote = ProfileNote.get_by_id(profileNote.id)
+            assert updatedNote == savedNote
+            assert savedNote.note.noteContent == ( "Updated Bonner and CCE Minor note" )
+            assert savedNote.isBonnerNote is True
+            assert savedNote.isCCEMinorNote is True
+            assert savedNote.viewTier == 1
+        transaction.rollback()       
 
 @pytest.mark.integration
 def test_deleteUserProfileNote():
