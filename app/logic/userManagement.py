@@ -103,7 +103,7 @@ def changeProgramInfo(programId,
 
 def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
-    if currentUser.isCeltsAdmin:
+    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam:
         return Program.select().order_by(Program.programName)
     else:
         return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
@@ -112,7 +112,7 @@ def getAllowedPrograms(currentUser):
 
 def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
-    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam: # Gave access to the short cut.
+    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam:
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []  
