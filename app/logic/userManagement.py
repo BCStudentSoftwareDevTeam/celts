@@ -1,6 +1,7 @@
 from flask import g, session
 from playhouse.shortcuts import model_to_dict
 
+from app.models import user
 from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
@@ -16,18 +17,19 @@ def addCeltsAdmin(user):
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS admin member.')
 
-#FIXME: Rename to addCeltsProgramManager (Once the Program Manager is implemented in the model.)
-def addCeltsStudentStaff(user): #Change to Program Manager
+def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True # May change to account for Operations Team rules. (Ex and user.isCeltsOperationsTeam == False)
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
 
-def addCeltsOperationsTeam(user):
-    user = User.get_by_id(user)
-    user.isOperationsTeam = True
+def addCeltsOperationsTeam(username):
+    user = User.get_by_id(username)
+    if not user.isCeltsStudentStaff:
+        raise ValueError("A user must be CELTS Student Staff before joining the Operations Team.")
+    user.isCeltsOperationsTeam = True
     user.save()
-    createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS operations team member.')
+    createActivityLog(f"Made {user.fullName} a CELTS operations team member.")
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -48,7 +50,7 @@ def removeCeltsStudentStaff(user):
 
 def removeCeltsOperationsTeam(user): # May need more detail.
     user = User.get_by_id(user)
-    user.isOperationsTeam = False
+    user.isCeltsOperationsTeam = False
     user.save()
     createActivityLog(f'Removed {user.firstName} {user.lastName} from CELTS operations team members.')
 

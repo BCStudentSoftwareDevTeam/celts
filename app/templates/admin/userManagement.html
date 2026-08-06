@@ -94,12 +94,24 @@
               <table class="table mb-3">
                 <thead>
                   <tr>
-                    <th colspan="2" scope="col">Current Student Staff</th>
+                    <th colspan="3" scope="col">Current Student Staff</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for studentStaff in currentStudentStaff %}
                     <tr>
+                      <td>
+                          <label class="checkbox-inline">
+                            <input
+                                type="checkbox"
+                                class="operations-team-checkbox"
+                                data-username="{{ studentStaff.username }}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Check to add or remove this student staff member to the CELTS Operations Team."
+                                {% if studentStaff.isCeltsOperationsTeam %}checked{% endif %}>
+                            </label>
+                        </td>
                       <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
                       <td class="text-end"><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
                      </tr>

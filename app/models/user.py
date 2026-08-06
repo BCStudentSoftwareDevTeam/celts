@@ -49,7 +49,7 @@ class User(baseModel):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
 
     @property
-    def isOperationsTeam(self):
+    def isOnOperationsTeam(self):
         return self.isCeltsStudentStaff and self.isCeltsOperationsTeam
 
     @property

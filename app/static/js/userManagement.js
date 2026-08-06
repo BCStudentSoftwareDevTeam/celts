@@ -26,6 +26,19 @@ function callbackProgramManager(selected, action = 'add') {
   }
 }
 
+function operationsTeamCheckboxHandler() {
+    let isCeltsOperationsTeam = $(this).is(':checked');
+    let username = $(this).data('username');
+
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    if (isCeltsOperationsTeam) {
+        submitRequest("addCeltsOperationsTeam", username);
+    } else {
+        submitRequest("removeCeltsOperationsTeam", username);
+    }
+}
+
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -46,6 +59,9 @@ $(document).ready(function(){
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
+
+  $(".operations-team-checkbox").on("change", operationsTeamCheckboxHandler);
+
   $("#programManagersTable").on("click", ".removeProgramManager", function(){
     let row = $(this).closest("tr");
     let fullName = row.find("td").eq(0).text().trim();

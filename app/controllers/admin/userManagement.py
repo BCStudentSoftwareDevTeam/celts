@@ -7,7 +7,7 @@ from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
 from app.logic.fileHandler import FileHandler
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,addCeltsOperationsTeam ,removeCeltsAdmin,removeCeltsStudentStaff,removeCeltsOperationsTeam
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
@@ -50,29 +50,26 @@ def manageUsers():
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
     elif method == "addCeltsOperationsTeam":
         if not user.isCeltsStudentStaff:
-            flash(username + " cannot be added as CELTS Operations Team", 'danger')
+            flash(username + " cannot be added as CELTS Operations Team", "danger")
         else:
             if user.isCeltsOperationsTeam:
-                flash(user.firstName + " " + user.lastName + " is already a CELTS Operations Team member", 'danger')
+                flash(user.firstName + " " + user.lastName +" is already a CELTS Operations Team member", "danger")
             else:
-                user.isCeltsOperationsTeam = True
-                user.save()
-                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", 'success')
+                addCeltsOperationsTeam(user)
+                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", "success")
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
-    # Double check if this function works as intended. It should remove the user from CELTS Operations Team if they are a member.
     elif method == "removeCeltsOperationsTeam":
         if not user.isCeltsOperationsTeam:
-            flash(user.firstName + " " + user.lastName + " is not a CELTS Operations Team member", 'danger')
+            flash(user.firstName + " " + user.lastName +" is not a CELTS Operations Team member", "danger")
         else:
-            user.isCeltsOperationsTeam = False
-            user.save()
-            flash(user.firstName + " " + user.lastName + " is no longer a CELTS Operations Team member", 'success')
-
+            removeCeltsOperationsTeam(user)
+            flash(user.firstName + " " + user.lastName + " is no longer a CELTS Operations Team member", "success")    
+    return ("success", 200)
 
 @admin_bp.route('/deleteProgramFile', methods=['POST'])
 def deleteProgramFile():
