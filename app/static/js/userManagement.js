@@ -253,30 +253,11 @@ function submitTerm(){
     type: "POST",
     data: termInfo,
     success: function(response){
-      console.log(response)
-      msgFlash("Current term successfully changed to " + response["description"], "success")
-      $(".uploaders").each(function(idx) {
-        // update the form action attribute to point at the right term
-        $(this).attr("action", $(this).attr("action").split("/").slice(0, -1).join("/") + "/" + termInfo["id"]);        
-      })
-
-      // Update all other fields in the form uploader section
-      $("#collapseTwo h5").text("AY " + response["academicYear"] + " files");
-      if(response["volunteerHandbook"]) {
-        $("#volunteerHandbookURL").text("AY " + response["academicYear"] + " - CELTS Student Handbook")
-        $("#volunteerHandbookURL").removeAttr("hidden");
-      } else {
-        $("#volunteerHandbookURL").attr("hidden", true);
-      }
-      if(response["laborHandbook"]) {
-        $("#laborHandbookURL").text("AY " + response["academicYear"] + " - CELTS Labor Handbook")
-        $("#laborHandbookURL").removeAttr("hidden");
-      } else {
-        $("#laborHandbookURL").attr("hidden", true);
-      }      
+      reloadWithAccordion("term")
     },
     error: function(error, status){
-        msgFlash("Current term was not changed. Please reload the page and try again.", "warning")
+      msgFlash("Current term was not changed. Please reload the page and try again.", "warning")
+      console.log(error, status)
     }
   })
 }
@@ -289,7 +270,8 @@ function addNewTerm(){
       reloadWithAccordion("term")
     },
     error: function(error, status){
-        console.log(error, status)
+      msgFlash("Failure adding new term. Please reload the page and try again.", "warning")
+      console.log(error, status)
     }
   })
 }

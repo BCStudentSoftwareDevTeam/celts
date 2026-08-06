@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 
 
 from app import app
+from app.logic.term import changeCurrentTerm
 from app.controllers.admin import admin_bp
 from app.logic.fileHandler import FileHandler
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff, createSpreadsheetForRosters,removeCeltsAdmin,removeCeltsStudentStaff
@@ -139,15 +140,16 @@ def userManagement():
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
-    termData = request.form
-    term = int(termData["id"])
-    newTerm = changeCurrentTerm(term)
-    return model_to_dict(newTerm)
+    newTerm = changeCurrentTerm(int(request.form.get('id')))
+    flash(f"Current term successfully changed to {newTerm.description}", "success")
+
+    return ""
 
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
 def addNewTerm():
-    addNextTerm()
-    flash("New term added", "success")
+    newTerm = addNextTerm()
+    flash(f"Successfully added {newTerm.description}", "success")
+
     return ""
 
 @admin_bp.route('/upload/<userFileCategory>/<userTermId>', methods = ['POST'])
@@ -176,6 +178,9 @@ def upload(userFileCategory, userTermId):
     for ayTerm in Term.select().where(Term.academicYear == handbookTerm.academicYear):
         setattr(ayTerm, fileCategory, newFilename)
         ayTerm.save()
+
+    # refresh the session with the new object
+    changeCurrentTerm(g.current_term, refreshOnly=True)
 
     flash(f"Handbook saved successfully to {ayTerm.description}!", "success")
     return redirect(request.referrer)

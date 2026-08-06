@@ -151,35 +151,38 @@
 
           <div class="container-fluid col-md-6">      
             <h5>AY {{g.current_term.academicYear}} files</h5>
+
+            {% set btnText = "Replace" if g.current_term.volunteerHandbook else "Upload" %}
             <div class="row">
               <form class="uploaders" method="POST" action="/upload/volunteerHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <label for="volunteerHandbook"><strong>Volunteer Handbook:</strong></label>
+                <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not g.current_term.volunteerHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Student Handbook</a>            
                 <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
                   <div class="col-8">
-                    <label for="handbookUploader"><strong>Volunteer Handbook:</strong></label>
                     <input class="form-control" type="file" id="volunteerHandbook" name="volunteerHandbook" accept=".pdf,.doc,.docx" required></input>
                   </div>
                   <div class="col-4">
-                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
+                      <button class="btn btn-success" id="uploadHandbook" role ="button" type="submit">{{btnText}}</button>
                   </div>
                   <span class="sr-only visually-hidden">{{g.current_term}}</span>
                 </div>                      
-                  <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not g.current_term.volunteerHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Student Handbook</a>            
               </form>
             </div>
 
+            {% set btnText = "Replace" if g.current_term.laborHandbook else "Upload" %}
             <div class="row">
               <form class="uploaders" method="POST" action="/upload/laborHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <label for="laborHandbook"><strong>CELTS Labor Handbook:</strong></label>
+                <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not g.current_term.laborHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Labor Handbook</a>                
                 <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
                   <div class="col-8">
-                    <label for="laborUploader"><strong>CELTS Labor Handbook:</strong></label>
                     <input class="form-control" type="file" id="laborHandbook" name="laborHandbook" accept=".pdf,.doc,.docx" required></input>
                   </div>
                   <div class="col-4">
-                    <button class="btn btn-success uploaderButtons" id="uploadHandbook" role ="button" type="submit">Upload</button>
+                      <button class="btn btn-success" id="uploadHandbook" role ="button" type="submit">{{btnText}}</button>
                   </div>
                   <span class="sr-only visually-hidden">{{g.current_term}}</span>
                 </div>                                      
-                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not g.current_term.laborHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Labor Handbook</a>                
               </form>
             </div>            
           </div>

@@ -60,13 +60,21 @@ def addPastTerm(description):
     createdOldTerm.save() 
     return createdOldTerm
 
-def changeCurrentTerm(term):
-    activeTerms = Term.select().where(Term.isCurrentTerm)    
-    nterms = (Term.update(isCurrentTerm = False).where(Term.isCurrentTerm).execute())    
+def changeCurrentTerm(term, refreshOnly=False):
+    switchTerm = not refreshOnly
+    # change old terms
+    if switchTerm:
+        activeTerms = Term.select().where(Term.isCurrentTerm)    
+        nterms = (Term.update(isCurrentTerm = False).where(Term.isCurrentTerm).execute())    
+
+    # get new term data
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
-    newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createActivityLog(f"Changed Current Term to {newCurrentTerm.description}")
+
+    # finalize switch
+    if switchTerm:
+        newCurrentTerm.save()
+        createActivityLog(f"Changed Current Term to {newCurrentTerm.description}")
 
     return newCurrentTerm
