@@ -461,6 +461,12 @@
                   </td>
 
                   <td>
+                    {% if row.isCCEMinorNote %}
+                      <span class="badge bg-info ">CCE </span>
+                    {% endif %}
+                    {% if row.isBonnerNote %}
+                      <span class="badge bg-primary ">Bonner</span>
+                    {% endif %}
                     {% if row.viewTier == 3 %}
                       Admins
                     {% elif row.viewTier == 2 %}
