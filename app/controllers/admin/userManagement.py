@@ -1,17 +1,15 @@
 import os
 from pathlib import Path
-
-from app.models.term import Term
-from flask import render_template,request, flash, g, abort, redirect, send_file, url_for, jsonify, session
-from playhouse.shortcuts import model_to_dict
-from peewee import fn, JOIN, DoesNotExist
 import re
+
+from flask import render_template,request, flash, g, abort, redirect, send_file, url_for, jsonify, session
+from peewee import fn, JOIN, DoesNotExist
+from playhouse.shortcuts import model_to_dict
 from werkzeug.utils import secure_filename
 
 
+from app import app
 from app.controllers.admin import admin_bp
-from app.models.user import User
-from app.models.program import Program
 from app.logic.fileHandler import FileHandler
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff, createSpreadsheetForRosters,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeProgramInfo
@@ -24,6 +22,9 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
 from app.models.programBan import ProgramBan
 from app.models.user import User
+from app.models.term import Term
+from app.models.user import User
+from app.models.program import Program
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
@@ -123,18 +124,16 @@ def userManagement():
     if not g.current_user.isCeltsAdmin:
         currentPrograms = currentPrograms.where(ProgramManager.user == g.current_user.username)
 
-    currentPrograms = currentPrograms.group_by(Program.id)
-    
+    currentPrograms = list(currentPrograms.group_by(Program.id))
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    currentTerm = Term.get(Term.isCurrentTerm)
+
     if g.current_user.isCeltsAdmin or g.current_user.isProgramManager:
         return render_template('admin/userManagement.html',
                                 terms = terms,
-                                programs = list(currentPrograms),
+                                programs = currentPrograms,
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
-                                currentTerm = currentTerm
                                 )
     abort(403)
 
@@ -151,30 +150,34 @@ def addNewTerm():
     flash("New term added", "success")
     return ""
 
-@admin_bp.route('/upload/<fileCategory>/<currentTerm>', methods = ['POST'])
-def upload(fileCategory, currentTerm):
-    term = Term.select().where(Term.id == currentTerm).get()
-    allAYterm = Term.select().where(Term.academicYear == term.academicYear)
-    if not fileCategory in ["laborHandbook", "volunteerHandbook"]:
+@admin_bp.route('/upload/<userFileCategory>/<userTermId>', methods = ['POST'])
+def upload(userFileCategory, userTermId):
+    try:
+        handbookTerm = Term.get_by_id(userTermId)
+    except DoesNotExist:
         abort(405)
-    dir_path = Path("app/static/files/", fileCategory)
-    dir_path.mkdir(parents=True, exist_ok=True)
+
+    if userFileCategory not in ["laborHandbook", "volunteerHandbook"]:
+        abort(405)
+    fileCategory = userFileCategory
+
+    # Save file to fs
     file = request.files[fileCategory]
-    filename = g.current_term.academicYear + "-" + fileCategory + "." + secure_filename(file.filename).split(".")[-1]
-    full_path = os.path.join(dir_path, filename)
+    newFilename = g.current_term.academicYear + "-" + fileCategory + "." + secure_filename(file.filename).split(".")[-1]
+
+    dir_path = Path(app.config['files']['base_path'], fileCategory)
+    dir_path.mkdir(parents=True, exist_ok=True)
+    full_path = os.path.join(dir_path, newFilename)
     if os.path.exists(full_path):
         os.remove(full_path)
     file.save(full_path)
-    for t in allAYterm:
-        if fileCategory == "volunteerHandbook":
-            t.volunteerHandbook = filename
-        elif fileCategory == "laborHandbook":
-            t.laborHandbook = filename        
-        else:
-            abort(405)
-        t.save()
-    g.current_term = term
-    flash(f"Handbook saved successfully to {term.description}!", "success")
+
+    # Update all terms in the Academic Year with the handbook filename
+    for ayTerm in Term.select().where(Term.academicYear == handbookTerm.academicYear):
+        setattr(ayTerm, fileCategory, newFilename)
+        ayTerm.save()
+
+    flash(f"Handbook saved successfully to {ayTerm.description}!", "success")
     return redirect(request.referrer)
 
 @admin_bp.route('/viewRoster/<programID>', methods = ['GET'])

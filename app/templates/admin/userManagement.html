@@ -163,7 +163,7 @@
                   </div>
                   <span class="sr-only visually-hidden">{{g.current_term}}</span>
                 </div>                      
-                  <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not currentTerm.volunteerHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Student Handbook</a>            
+                  <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not g.current_term.volunteerHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Student Handbook</a>            
               </form>
             </div>
 
@@ -179,7 +179,7 @@
                   </div>
                   <span class="sr-only visually-hidden">{{g.current_term}}</span>
                 </div>                                      
-                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not currentTerm.laborHandbook %} hidden {% endif %}/>AY {{currentTerm.academicYear}} - CELTS Labor Handbook</a>                
+                  <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not g.current_term.laborHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Labor Handbook</a>                
               </form>
             </div>            
           </div>
