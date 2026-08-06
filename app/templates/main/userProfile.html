@@ -460,13 +460,7 @@
                     {{ row.note.noteContent }}
                   </td>
 
-                  <td>
-                    {% if row.isCCEMinorNote %}
-                      <span class="badge bg-info ">CCE </span>
-                    {% endif %}
-                    {% if row.isBonnerNote %}
-                      <span class="badge bg-primary ">Bonner</span>
-                    {% endif %}
+                  <td> 
                     {% if row.viewTier == 3 %}
                       Admins
                     {% elif row.viewTier == 2 %}
@@ -476,7 +470,15 @@
                     {% else %}
                       Everyone
                     {% endif %}
-                  </td>
+                     <div class="note-badges">
+                    {% if row.isCCEMinorNote %}
+                      <span class="badge rounded-pill note-badge cce-badge ">CCE </span>
+                    {% endif %}
+                    {% if row.isBonnerNote %}
+                      <span class="badge rounded-pill note-badge bonner-badge "> Bonner</span>
+                    {% endif %}
+                  </div>
+                </td>
 
                   <td class="text-nowrap">
                     {% if
