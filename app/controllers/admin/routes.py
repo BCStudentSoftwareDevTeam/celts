@@ -693,13 +693,12 @@ def displayEventFile():
 
 @admin_bp.route("/handbookSignature", methods=["POST"])
 def handbookSignature():
-    data = request.get_json()
-    if not (g.current_user.username == data.get('studentID')):
+    if not (g.current_user.username == request.form.get('studentUsername')):
         abort(403)
-    signer = User.get(User.username == g.current_user.username)
-    if signer:
-        signer.lastHandbookSignature = datetime.now().strftime("%Y-%m-%d")
-        signer.signatureTerm = g.current_term
-        signer.save()
-        return "", 200
-    abort(403)
+
+    signer = g.current_user
+    signer.lastHandbookSignature = datetime.now()
+    signer.signatureTerm = g.current_term
+    signer.save()
+
+    return ""
