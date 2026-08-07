@@ -293,7 +293,7 @@
               {% endfor %}
             </div>
             {% endif %}
-            {% if volunteer.isCeltsStudentStaff %}
+            {% if volunteer.isCeltsStudentStaff and not volunteer.isCeltsOperationsTeam %}
             <div class="col-md-6">
                 <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the current manager of:</h5>
                 <ul class="list-unstyled">
@@ -303,6 +303,17 @@
                   {% endif %}
                 {% endfor %}
                 </ul>
+            </div>
+            <div>
+              {% if g.current_user.isCeltsAdmin %}
+                <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if volunteer.isCeltsOperationsTeam %}
+            <div class="col-md-6">
+                <h5>Operations Team Member:</h5>
+                <p>{{volunteer.firstName}} {{volunteer.lastName}} is currently an Operations Team member who manages all programs.</p>
             </div>
             <div>
               {% if g.current_user.isCeltsAdmin %}
@@ -332,7 +343,7 @@
             <thead>
               <tr>
                 <th scope="col">Description</th>
-                {% if g.current_user.isCeltsAdmin %}
+                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                   <th class="required" scope="col">Status</th>
                   <th class="required" scope="col">Date</th>
                   <th class="" id="displaySave" scope="col"></th>
@@ -342,7 +353,7 @@
             <tbody>
                 {% set ns = namespace(backgroundChecksExist=false) %}
                 {% for bgType in backgroundTypes %}
-                    {% if not g.current_user.isCeltsAdmin and not allBackgroundHistory[bgType.id] %}
+                    {% if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsOperationsTeam and not allBackgroundHistory[bgType.id] %}
                         {% continue %} 
                     {% endif %}
                     {% set ns.backgroundChecksExist = true %}
@@ -356,7 +367,7 @@
                                 {{ bgStatus.backgroundCheckStatus }}:
                                 {{ bgStatus.dateCompleted.strftime("%m/%d/%Y") }}
                               </span>
-                              {% if g.current_user.isCeltsAdmin %}
+                              {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                                 <button
                                   class="btn btn-sm btn-link text-danger p-0"
                                   id="deleteBgHistory"
@@ -369,7 +380,7 @@
                           {% endfor %}
                       </ul>
                     </td>
-                  {% if g.current_user.isCeltsAdmin %}
+                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                     <td>
                       <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                         <option value=''></option>
@@ -419,7 +430,7 @@
             </tr>
           </thead>
           <tbody>
-            {% if g.current_user.isCeltsAdmin %}
+            {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
               {% set userTier = 3 %}
             {% elif g.current_user.isCeltsStudentStaff %}
               {% set userTier = 2 %}
@@ -443,7 +454,7 @@
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
                   <td class ="text-nowrap">
-                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
+                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                      <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
