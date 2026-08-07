@@ -19,15 +19,10 @@
 <h1 class="text-center mb-3">Graduation Management</h1>
   <div class="row align-items-end pt-5 pb-2">
     <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
-        <div id="categoryDropdown">
-          <button type="button" class="btn btn-primary dropdown-toggle me-1" id="mainFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Filter
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item main-dropdown-item" data-filter="all">All</a>
-            <a class="dropdown-item main-dropdown-item" data-filter="bonner">Bonner Students</a>
-            <a class="dropdown-item main-dropdown-item" data-filter="cce" data-cce="{{CCEstudents}}">CCE Minor</a>
-          </div>
+        <div class="d-flex">
+          <button type="button" class="btn btn-primary main-dropdown-item me-2" data-filter="all"> All</button>
+          <button type="button" class="btn btn-primary main-dropdown-item me-2" data-filter="bonner"> Bonner Students </button>
+          <button type="button" class="btn btn-primary main-dropdown-item me-2" data-filter="cce" data-cce="{{ CCEstudents }}"> CCE Minor </button>
         </div>
         <div id="bonnerDropdown">
           <button type="button" class="btn btn-primary dropdown-toggle me-1" id="cohortFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

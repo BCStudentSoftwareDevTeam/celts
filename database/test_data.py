@@ -669,7 +669,7 @@ events = [
         "term": 2,
         "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
@@ -1640,8 +1640,14 @@ celtsLabor = [
     },
     {
         "user": "ayisie",
-        "positionTitle": "AGP Team Memeber",
+        "positionTitle": "AGP Team Member",
         "term": 2,
+        "isAcademicYear": True
+    },
+    {
+        "user": "neillz",
+        "positionTitle": "AGP Team Leader",
+        "term": 3,
         "isAcademicYear": True
     }
 ]
