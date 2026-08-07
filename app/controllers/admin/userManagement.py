@@ -81,7 +81,7 @@ def deleteProgramFile():
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID) or g.current_user.isCeltsOperationsTeam:
+    if g.current_user.canManagePrograms(programID):
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
@@ -97,7 +97,7 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
 def getProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID) or g.current_user.isCeltsOperationsTeam:
+    if g.current_user.canManagePrograms(programID):
         try:
             targetProgram = Program.get_by_id(programID)
             programInfo = model_to_dict(targetProgram, recurse=False)

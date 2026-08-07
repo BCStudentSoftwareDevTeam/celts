@@ -104,6 +104,9 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
+
+    def canManagePrograms(self, program):
+        return self.isCeltsAdmin or self.isCeltsOperationsTeam or (self.isCeltsStudentStaff and self.isProgramManager(program))
     
     @property
     def isProgramManager(self):
@@ -113,5 +116,3 @@ class User(baseModel):
             self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
             
         return self._isProgramManagerCache
-
-
