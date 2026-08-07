@@ -1,6 +1,10 @@
-$(document).ready(function(){
+$(document).ready(function(){  
+  
+  $('#editVolunteerModal').modal({
+    backdrop: 'static'
+  });
 
-   $("#checkDietRestriction").on("change",  function() {
+  $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
@@ -36,6 +40,7 @@ $(document).ready(function(){
   })
 
   $("#phoneInput").inputmask('(999)-999-9999');
+
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -166,45 +171,45 @@ $(document).ready(function(){
     /*
      * Note Functionality
      */
-    function bonnerNoteOff() {
-        $("#bonnerInput").prop("checked", false);
-        $("#noteDropdown").show()
-        $("#bonnerStatement").hide()
-        $("#visibilityLabel").show()
-    }
+  function bonnerNoteOff() {
+      $("#bonnerInput").prop("checked", false);
+      $("#noteDropdown").show()
+      $("#bonnerStatement").hide()
+      $("#visibilityLabel").show()
+  }
 
-    function bonnerNoteOn() {
-        $("#bonnerInput").prop("checked", true);
-        $("#noteDropdown").hide()
-        $("#bonnerStatement").show()
-        $("#visibilityLabel").hide()
-    }
+  function bonnerNoteOn() {
+      $("#bonnerInput").prop("checked", true);
+      $("#noteDropdown").hide()
+      $("#bonnerStatement").show()
+      $("#visibilityLabel").hide()
+  }
 
-    $("#addNoteButton").click(function() {
-        bonnerNoteOff()
-        $("#addNoteTextArea").val('')
-        $("#notesSaveButton").data('mode', 'add') 
-        $("#notesSaveButton").data('noteid', null) 
-        $("#noteModal").modal("toggle")
-    });
+  $("#addNoteButton").click(function() {
+      bonnerNoteOff()
+      $("#addNoteTextArea").val('')
+      $("#notesSaveButton").data('mode', 'add') 
+      $("#notesSaveButton").data('noteid', null) 
+      $("#noteModal").modal("toggle")
+  });
 
-    $("#addVisibility").click(function() {
-        var bonnerChecked = $("input[name='bonner']:checked").val()
+  $("#addVisibility").click(function() {
+      var bonnerChecked = $("input[name='bonner']:checked").val()
 
-        if (bonnerChecked == 'on') {
-            bonnerNoteOn()
-        } else {
-            bonnerNoteOff()
-        }
-    });
+      if (bonnerChecked == 'on') {
+          bonnerNoteOn()
+      } else {
+          bonnerNoteOff()
+      }
+  });
 
-    $("#addBonnerNoteButton").click(function() {
-        bonnerNoteOn()
-        $("#addNoteTextArea").val('')                   
-        $("#notesSaveButton").data('mode', 'add')       
-        $("#notesSaveButton").data('noteid', null)      
-        $("#noteModal").modal("toggle");
-    });
+  $("#addBonnerNoteButton").click(function() {
+      bonnerNoteOn()
+      $("#addNoteTextArea").val('')                   
+      $("#notesSaveButton").data('mode', 'add')       
+      $("#notesSaveButton").data('noteid', null)      
+      $("#noteModal").modal("toggle");
+  });
 
   $('#addNoteForm').submit(function(event) {
 
@@ -226,9 +231,9 @@ $(document).ready(function(){
       method: "POST",
       url:  "/profile/addNote",
       data: {"username": username,
-             "visibility": $("#noteDropdown").val(),
-             "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": isBonner ? "yes" : "no"},
+              "visibility": $("#noteDropdown").val(),
+              "noteTextbox": $("#addNoteTextArea").val(),
+              "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
           target = isBonner ? "bonner" : "notes"
           msgFlash("Successfully added a note", "success", 1300, true);
@@ -244,7 +249,7 @@ $(document).ready(function(){
     $("#confirmDeleteNote").data('username', $(this).data('username'))
     $("#confirmDeleteNote").data('noteid', $(this).data('noteid'))
     $("#deleteNoteWarning").modal("show")
-  
+
   });
 
   $("#confirmDeleteNote").click(function() { 
@@ -283,7 +288,8 @@ $(document).ready(function(){
 
    
     $("#noteModal").modal("toggle")
-});
+  
+  
     $.ajax({
       method: "POST",
       url:  "/" + username + "/editNote",
@@ -293,6 +299,7 @@ $(document).ready(function(){
       }
     });
   });
+}); 
   /*
     * Background Check Functionality
     */
@@ -371,14 +378,16 @@ $(document).ready(function(){
   });
 
   // Popover functionality
-  var requiredTraining = $(".trainingPopover");
-  requiredTraining.popover({
+  var requiredTraining = document.querySelectorAll(".trainingPopover");
+  requiredTraining.forEach(function(el) {
+    new bootstrap.Popover(el, {
       trigger: "hover",
       sanitize: false,
       html: true,
       content: function() {
-          return $(this).attr('data-content');
+        return this.getAttribute('data-content');
       }
+    });
   });
  
   setupPhoneNumber("#updatePhone", "#phoneInput")

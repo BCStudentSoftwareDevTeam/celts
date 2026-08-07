@@ -66,6 +66,7 @@ def test_getVolunteerOpportunities(training_events):
 
     training_events.term = 2
     training_events.isService = True
+    training_events.isTraining = False
     training_events.deletionDate = None
     training_events.save()
     training_events.program.save()
