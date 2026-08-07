@@ -12,7 +12,7 @@ from app import app
 from app.logic.term import changeCurrentTerm
 from app.controllers.admin import admin_bp
 from app.logic.fileHandler import FileHandler
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff, createSpreadsheetForRosters,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,createSpreadsheetForRosters,addCeltsOperationsTeam,removeCeltsAdmin,removeCeltsStudentStaff,removeCeltsOperationsTeam
 from app.logic.userManagement import changeProgramInfo
 from app.logic.participants import getTrainingsForInterestedParticipants, getParticipantsForProgramForAY
 from app.logic.utils import selectSurroundingTerms
@@ -59,14 +59,19 @@ def manageUsers():
             else:
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
+    elif method == "addCeltsOperationsTeam":
+        addCeltsOperationsTeam(user)
+        flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", "success")
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
-    return ("success")
-
+    elif method == "removeCeltsOperationsTeam":
+            removeCeltsOperationsTeam(user)
+            flash(user.firstName + " " + user.lastName + " is no longer a CELTS Operations Team member", "success")    
+    return ("success", 200)
 
 @admin_bp.route('/deleteProgramFile', methods=['POST'])
 def deleteProgramFile():
@@ -76,7 +81,7 @@ def deleteProgramFile():
 
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID):
+    if g.current_user.canManageProgram(programID):
         try:
             programInfo = request.form # grabs user inputs
             uploadedFile = request.files.get('modalProgramImage')
@@ -92,7 +97,7 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin/getProgramInfo/<programID>', methods = ['GET'])
 def getProgramInfo(programID):
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programID):
+    if g.current_user.canManageProgram(programID):
         try:
             targetProgram = Program.get_by_id(programID)
             programInfo = model_to_dict(targetProgram, recurse=False)
@@ -122,14 +127,13 @@ def userManagement():
             .join(User, JOIN.LEFT_OUTER, on=(ProgramManager.user == User.username))
     )
 
-    if not g.current_user.isCeltsAdmin:
+    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsOperationsTeam: #Allows CELTS Operations Team to view all programs.
         currentPrograms = currentPrograms.where(ProgramManager.user == g.current_user.username)
 
     currentPrograms = list(currentPrograms.group_by(Program.id))
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-
-    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager:
+    if g.current_user.isCeltsAdmin or g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam:
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = currentPrograms,
