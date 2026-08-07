@@ -90,7 +90,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not g.current_user.canManagePrograms(programid):
+    if not g.current_user.canManageProgram(programid):
         abort(403)
 
     # Validate given URL

@@ -56,7 +56,7 @@ def manageVolunteersPage(eventID):
     
     # ------------ GET request ------------
     elif request.method == "GET":
-        if not (g.current_user.canManagePrograms(event.program)):
+        if not (g.current_user.canManageProgram(event.program)):
             abort(403)
 
         # ------- Grab the different lists of participants -------
@@ -98,7 +98,7 @@ def volunteerDetailsPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
 
-    if not g.current_user.canManagePrograms(event.program):
+    if not g.current_user.canManageProgram(event.program):
         abort(403)
 
     eventRsvpData = list(EventRsvp.select(EmergencyContact, InsuranceInfo, EventRsvp)
@@ -165,7 +165,7 @@ def addVolunteer(eventId):
 def rsvpFromWaitlist(username, eventId):
     event = Event.get_by_id(eventId)
     isProgramManager = g.current_user.isProgramManagerFor(event.program)
-    if g.current_user.canManagePrograms(event.program) or isProgramManager: 
+    if g.current_user.canManageProgram(event.program) or isProgramManager: 
         waitlistUsers = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventId).execute()
         if (waitlistUsers):
             createRsvpLog(event.id, f"Moved {waitlistUsers[0].user.fullName} from waitlist to RSVP.")

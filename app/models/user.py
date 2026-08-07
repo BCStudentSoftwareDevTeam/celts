@@ -105,7 +105,7 @@ class User(baseModel):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
 
-    def canManagePrograms(self, program):
+    def canManageProgram(self, program):
         return self.isCeltsAdmin or self.isCeltsOperationsTeam or (self.isCeltsStudentStaff and self.isProgramManager(program))
     
     @property
