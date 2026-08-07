@@ -82,8 +82,6 @@ class Event(baseModel):
                 return False
         return True
 
-
-                
     @property
     def isDeleted(self):
         return self.deletionDate is not None

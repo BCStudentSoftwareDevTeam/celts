@@ -188,10 +188,11 @@ def upload(userFileCategory, userTermId):
 @admin_bp.route('/viewRoster/<programID>', methods = ['GET'])
 def viewRoster(programID):
     program = Program.get_by_id(programID)
+
     interestedUsers = list(getProgramInterest(program)) 
-    trainedAndInterested = getTrainingsForInterestedParticipants(programID, interestedUsers)
-    lastYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.previousAcademicYear)
-    currentYearsParticipants = getParticipantsForProgramForAY(programID, g.current_term.academicYear)
+    trainedAndInterested = getTrainingsForInterestedParticipants(program, interestedUsers)
+    lastYearsParticipants = getParticipantsForProgramForAY(program, g.current_term.previousAcademicYear)
+    currentYearsParticipants = getParticipantsForProgramForAY(program, g.current_term.academicYear)
     return render_template('admin/viewRoster.html',
                            program = program,
                            interestedUsers = interestedUsers, 

@@ -16,7 +16,8 @@ class Term(baseModel):
         """
         Returns the previous academic year.
         """
-        return f"{int(self.academicYear.split('-')[0])-1}-{int(self.academicYear.split('-')[1])-1}"
+        years = self.academicYear.split('-')
+        return f"{int(years[0])-1}-{int(years[1])-1}"
     
     @property
     def academicYearStartingTerm(self):

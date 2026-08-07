@@ -235,7 +235,6 @@ def viewUsersProfile(username):
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
         handbookOverdue = getHandbookStatus(volunteer)
-        currentTerm = Term.get(Term.isCurrentTerm)
 
         training = hasGoneToTraining(g.current_user, g.current_term)
 
@@ -259,13 +258,11 @@ def viewUsersProfile(username):
                                 totalSustainedEngagements = totalSustainedEngagements,
                                 handbookOverdue = handbookOverdue,
                                 training = training,
-                                currentTerm = currentTerm
                             )
     abort(403)
 
 def getHandbookStatus(volunteer):
     handbookOverdue = False
-    
     if not volunteer.signatureTerm or volunteer.signatureTerm.academicYear != g.current_term.academicYear:
         handbookOverdue = True
     return handbookOverdue

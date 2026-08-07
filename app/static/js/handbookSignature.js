@@ -44,7 +44,6 @@ $('#save-btn').on('click', function () {
         $.ajax({
             url: `/handbookSignature`,
             type: "POST",
-            headers: {'Content-Type': 'application/json'},
             data: {studentUsername: $('#handbook-signature-pad').data('student')},
             success: function(s){            
                 signaturePad.off();

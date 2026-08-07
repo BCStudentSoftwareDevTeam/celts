@@ -231,24 +231,17 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             
     return trainedAndInterested
 
-def getParticipantsForProgramForAY(programID, academicYear):    
-    participants = (User.select(User.username,
-                                User.bnumber,
-                                User.email,
-                                User.phoneNumber,
-                                User.firstName,
-                                User.lastName,
-                                User.cpoNumber,
-                                User.major,
-                                User.rawClassLevel,
-                                User.dietRestriction,
-                                User.lastHandbookSignature)
+def getParticipantsForProgramForAY(program, academicYear):    
+    participants = (User.select()
                             .join(EventParticipant)
                             .join(Event)
                             .join(Program)
                             .switch(Event)
                             .join(Term)
-                            .where(Program.id == programID, Term.academicYear == academicYear, User.hasGraduated == False, EventParticipant.hoursEarned > 0)
+                            .where(Program.id == program, 
+                                   Term.academicYear == academicYear, 
+                                   User.hasGraduated == False, 
+                                   EventParticipant.hoursEarned > 0)
                             .distinct()
                             )
     return participants
