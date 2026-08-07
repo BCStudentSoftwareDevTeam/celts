@@ -119,8 +119,19 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     seriesId = calculateNewSeriesId()
 
     # Create separate event data for each event in the series, inheriting from the original eventData
+    
+    # Reformat dates from Jul 10, 2026 to 2026-07-10 for easier sorting
+    eventData2 = []
+    for ed in eventData['seriesData']:
+        try:
+            ed['eventDate'] = datetime.strptime(ed['eventDate'], "%b %d, %Y").strftime("%Y-%m-%d")
+        except:
+            pass    # eventDate comes into the system differently for recurring weekly events and recurring events (non-weekly). This should format it correctly for both cases
+        eventData2.append(ed)    
+    eventData['seriesData'] = eventData2
+
     seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
- # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
+    # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -164,7 +175,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
-        
     newEventData = preprocessEventData(eventData)
     
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -185,40 +195,42 @@ def saveEventToDb(newEventData, renewedEvent = False):
         raise Exception("Unvalidated data passed to saveEventToDb")
     
     isNewEvent = ('id' not in newEventData)
-
     eventRecords = []
     with mainDB.atomic():
-        
         eventData = {
-                "term": newEventData['term'],
-                "name": newEventData['name'],
-                "description": newEventData['description'],
-                "timeStart": newEventData['timeStart'],
-                "timeEnd": newEventData['timeEnd'],
-                "location": newEventData['location'],
-                "isFoodProvided" : newEventData['isFoodProvided'],
-                "isLaborOnly" : newEventData['isLaborOnly'],
-                "isTraining": newEventData['isTraining'],
-                "isEngagement": newEventData['isEngagement'],
-                "isRsvpRequired": newEventData['isRsvpRequired'],
-                "isService": newEventData['isService'],
-                "startDate": newEventData['startDate'],
-                "rsvpLimit": newEventData['rsvpLimit'],
-                "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName'],
+                "term":             newEventData['term'],
+                "name":             newEventData['name'],
+                "description":      newEventData['description'],
+                "timeStart":        newEventData['timeStart'],
+                "timeEnd":          newEventData['timeEnd'],
+                "location":         newEventData['location'],
+                "isFoodProvided" :  newEventData['isFoodProvided'],                
+                "isLaborOnly" :     newEventData['isLaborOnly'],                
+                "allowsLabor" :     newEventData['allowsLabor'],
+                "isTraining":       newEventData['isTraining'],
+                "isEngagement":     newEventData['isEngagement'],
+                "isRsvpRequired":   newEventData['isRsvpRequired'],
+                "isService":        newEventData['isService'],
+                "startDate":        newEventData['startDate'],
+                "rsvpLimit":        newEventData['rsvpLimit'],
+                "contactEmail":     newEventData['contactEmail'],
+                "contactName":      newEventData['contactName'],
             }
         
-        # The three fields below are only relevant during event creation so we only set/change them when 
+        # These fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
         if isNewEvent:
             eventData['program'] = newEventData['program']
             eventData['seriesId'] = newEventData.get('seriesId')
             eventData['isRepeating'] = bool(newEventData.get('isRepeating'))
             eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
-            eventRecord = Event.create(**eventData)
+            eventData["isCeltsTraining"] = bool(newEventData.get('isCeltsTraining', False))
+            eventRecord = Event.create(**eventData)            
         else:
             eventRecord = Event.get_by_id(newEventData['id'])
-            Event.update(**eventData).where(Event.id == eventRecord).execute()
+            for key, value in eventData.items():
+                setattr(eventRecord, key, value)
+            eventRecord.save()            
 
         if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
             updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
@@ -230,9 +242,9 @@ def getVolunteerOpportunities(term):
     volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
                                  .where((Event.term == term) &
-                                        (Event.deletionDate.is_null(True)) &
+                                        (Event.deletionDate.is_null()) &
                                         (Event.isService == True) &
-                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True))
+                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null())
                                  )
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
@@ -399,17 +411,15 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    eventName = fn.LOWER(Event.name)
-    checkIfLaborMeeting = eventName.contains("labor meeting")
-
+    # Does this handle labor only and/or includes labor events?
     participatedEvents = (Event.select(Event, Program.programName, Case(None, (
-                               ((Event.isLaborOnly | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),                                
-                               ((Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                               ((Event.allowsLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"), 
+                               ((Event.allowsLabor | Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
                                (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, ~checkIfLaborMeeting)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, Event.isCeltsTraining == False)
                                .order_by(Event.startDate, Event.name))
     allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
@@ -428,7 +438,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['isLaborOnly']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['allowsLabor']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -506,9 +516,10 @@ def preprocessEventData(eventData):
         - seriesData should be a JSON string
         - Look up matching certification requirement if necessary
     """
-    ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'isLaborOnly']
 
+    ## Process checkboxes and templateData
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining']
+    
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
@@ -551,8 +562,8 @@ def preprocessEventData(eventData):
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
     if 'timeEnd' in eventData:
-        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
-
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])    
+    
     return eventData
 
 def getTomorrowsEvents():
@@ -736,5 +747,3 @@ def updateEventCohorts(event, cohortYears):
     except Exception as e:
         print(f"Error updating cohorts for event: {e}")
         return False, f"Error updating cohorts for event: {e}", []
-
-

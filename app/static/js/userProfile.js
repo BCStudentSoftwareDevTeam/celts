@@ -1,6 +1,10 @@
-$(document).ready(function(){
+$(document).ready(function(){  
+  
+  $('#editVolunteerModal').modal({
+    backdrop: 'static'
+  });
 
-   $("#checkDietRestriction").on("change",  function() {
+  $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
@@ -36,6 +40,7 @@ $(document).ready(function(){
   })
 
   $("#phoneInput").inputmask('(999)-999-9999');
+
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -263,7 +268,7 @@ $(document).on("click", ".editNoteButton", function () {
 
     const isCCEMinor =
         String($(this).data("cceminor")) === "yes";
-
+    $("#cceMinorInput").prop("checked", isCCEMinor);
     $("#addNoteTextArea").val(noteText);
     $("#noteDropdown").val(visibility);
 
@@ -392,14 +397,16 @@ $("#confirmDeleteNote").click(function () {
   });
 
   // Popover functionality
-  var requiredTraining = $(".trainingPopover");
-  requiredTraining.popover({
+  var requiredTraining = document.querySelectorAll(".trainingPopover");
+  requiredTraining.forEach(function(el) {
+    new bootstrap.Popover(el, {
       trigger: "hover",
       sanitize: false,
       html: true,
       content: function() {
-          return $(this).attr('data-content');
+        return this.getAttribute('data-content');
       }
+    });
   });
  
   setupPhoneNumber("#updatePhone", "#phoneInput")

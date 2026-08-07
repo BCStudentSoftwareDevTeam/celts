@@ -4,6 +4,8 @@ from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
+from dateutil.relativedelta import relativedelta
+
 
 from app.controllers.main import main_bp
 from app import app
@@ -36,8 +38,8 @@ from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import  addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory,addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote, getProfileNoteData
+from app.logic.participants import hasGoneToTraining, unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.users import  addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory,addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote, getProfileNoteData, isBannedFromEvent, trainedParticipants
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -196,7 +198,6 @@ def viewUsersProfile(username):
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
         
-        
 
         eligibilityTable = []
         
@@ -233,6 +234,9 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
+        handbookOverdue = getHandbookStatus(volunteer)
+
+        training = hasGoneToTraining(g.current_user, g.current_term)
 
         return render_template ("/main/userProfile.html",
                                 username=username,
@@ -252,8 +256,16 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
+                                handbookOverdue = handbookOverdue,
+                                training = training,
                             )
     abort(403)
+
+def getHandbookStatus(volunteer):
+    handbookOverdue = False
+    if not volunteer.signatureTerm or volunteer.signatureTerm.academicYear != g.current_term.academicYear:
+        handbookOverdue = True
+    return handbookOverdue
 
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
 def emergencyContactInfo(username):
@@ -464,21 +476,24 @@ def unban(program_id, username):
         flash("Failed to mark the volunteer as eligible", "danger")
         return "Failed to mark the volunteer as eligible", 500
 
-
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
-def addInterest(program_id, username):
+@main_bp.route('/<username>/addInterest/<program_id>/<showFlash>', methods=['POST'])
+def addInterest(program_id, username, showFlash = True):
     """
     This function adds a program to the list of programs a user interested in
     program_id: the primary id of the program the student is adding interest of
     username: unique value of a user to correctly identify them
-    """
+    """    
+    showFlash = False if showFlash == "False" else True
     try:
         success = addUserInterest(program_id, username)
         if success:
-            flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
-            return ""
+            if bool(showFlash):                
+                flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
+            return jsonify(model_to_dict(User.get_or_none(User.username == username)))
         else:
-            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            if bool(showFlash):
+                flash("Was unable to add " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
 
     except Exception as e:
         print(e)
@@ -511,8 +526,8 @@ def volunteerRegister():
     event = Event.get_by_id(request.form['id'])
     program = event.program
     user = g.current_user
-
-    isEligible = isEligibleForProgram(program, user)
+    now = datetime.datetime.now()
+    isEligible = False if isBannedFromEvent(user, event) else True
 
     personAdded = False
     if isEligible:
@@ -655,3 +670,28 @@ def updateMinorDeclaration(username):
     tab = request.args.get("tab", "interested")
     return redirect(url_for('admin.manageMinor', tab=tab))
 
+@main_bp.route('/extravaganza', methods=['GET'])
+def extravaganza():
+    programs = Program.select().where(Program.isOtherCeltsSponsored == False, 
+                                      Program.programName != "Hunger Initiatives", 
+                                      Program.programName != "Bonner Scholars")
+    interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
+    programsInterested = [interest.program for interest in interests]
+
+    upcomingAllVolunteers = Event.select().join(Term).where(Event.isAllVolunteerTraining, Term.academicYear == g.current_term.academicYear)
+    for training in upcomingAllVolunteers:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
+
+    upcomingTrainings = Event.select().join(Term).where(Event.isTraining, Term.academicYear == g.current_term.academicYear)
+
+    for training in upcomingTrainings:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
+
+    return render_template("main/extravanganzaWelcome.html",
+                           programs = programs,
+                           programsInterested = programsInterested,
+                           upcomingTrainings = upcomingTrainings,
+                           upcomingAllVolunteers = upcomingAllVolunteers
+                           )

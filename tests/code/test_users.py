@@ -6,22 +6,26 @@ from app import app
 from flask import g, request, session
 
 from app.models import mainDB
+from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
+from app.models.term import Term
 from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData, updateProfileNote
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
+from playhouse.shortcuts import model_to_dict
 
 @pytest.mark.integration
 def test_deleteUserBackgroundCheck():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
+            g.current_term = Term.get_by_id(1)
 
             # Create a test user to run background checks on
             testUser = User.create(username = 'zawn',
@@ -69,19 +73,56 @@ def test_user_model():
 
 @pytest.mark.integration
 def test_isEligibleForProgram():
+    with mainDB.atomic() as transaction:
+        with app.app_context():            
+            g.current_term = Term.get_by_id(1)            
 
-    # user has attended all required events
-    user = User.get(User.username == "lamichhanes2")
-    program = Program.get(Program.id == 2)
+            # Test user Sandesh's eligibility for program 2
+            user = User.get(User.username == "lamichhanes2")
+            program = Program.get(Program.id == 2)
 
-    eligible = isEligibleForProgram(2, "lamichhanes2")
-    assert eligible
-    eligible = isEligibleForProgram(program, user)
-    assert eligible
+            # Sandesh is ineligible at first (tests id's and obj's)
+            eligible = isEligibleForProgram(2, "lamichhanes2")
+            assert not eligible
+            eligible = isEligibleForProgram(program, user)
+            assert not eligible
+        
+            # Sandesh completes All Volunteers training (he is still ineligible)  
+            avt = Event.get(Event.isAllVolunteerTraining)
+            EventParticipant.create(user=user, event=avt)
+            eligible = isEligibleForProgram(2, user)
+            assert not eligible
 
-    # there are no required events
-    eligible = isEligibleForProgram(4, "ayisie")
-    assert eligible
+        
+            # Sandesh attends Program-specific training (still not eligible!)
+            programSpecificTraining = Event.create(
+                    name="Program Specific Training",
+                    term=g.current_term,
+                    description="Program Specific Training",
+                    timeStart="18:00:00",
+                    timeEnd="21:00:00",
+                    location="The moon",
+                    startDate="2021-12-15",
+                    isAllVolunteerTraining=True,
+                    isLaborOnly=False,
+                    isTraining=True,
+                    program=program
+                )
+            EventParticipant.create(user=user, event=programSpecificTraining)
+            eligible = isEligibleForProgram(2, user)
+            assert not eligible
+
+            # Sandesh signs the handbook (he is NOW eligible)
+            user.lastHandbookSignature = "2026-07-21"
+            user.signatureTerm = g.current_term
+            user.save()
+            print(user.signatureTerm.academicYear)
+            print(g.current_term.academicYear)
+            eligible = isEligibleForProgram(2, user)
+            assert eligible
+
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_addUserInterest():
@@ -390,6 +431,7 @@ def test_getUserBGCheckHistory():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
+            g.current_term = Term.get_by_id(1)
 
             # Create a test user to run background checks on
             testusr = User.create(username = 'usrtst',
@@ -450,25 +492,27 @@ def test_getBannedUsers():
 @pytest.mark.integration
 def test_isBannedFromEvent():
     with mainDB.atomic() as transaction:
-        userToBan = User.create(username = 'usrtst', # Test banned user
-                              firstName = 'Test',
-                              lastName = 'User',
-                              bnumber = '03522492',
-                              email = 'usert@berea.deu',
-                              isStudent = True)
-        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
-        assert isBannedFromEvent("usrtst", 1)
+        with app.app_context():        
+            g.current_term = Term.get_by_id(1)
+            userToBan = User.create(username = 'usrtst', # Test banned user
+                                firstName = 'Test',
+                                lastName = 'User',
+                                bnumber = '03522492',
+                                email = 'usert@berea.deu',
+                                isStudent = True)
+            banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
+            assert isBannedFromEvent("usrtst", 1)
 
-        unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user
-        assert not isBannedFromEvent("usrtst", 1)
+            unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user
+            assert not isBannedFromEvent("usrtst", 1)
 
-        notBannedUser = User.create(username = 'usrtst2', # Test eligible user
-                              firstName = 'Test',
-                              lastName = 'User 2',
-                              bnumber = '03522493',
-                              email = 'usert2@berea.deu',
-                              isStudent = True)
-        assert not isBannedFromEvent("usrtst2", 1)
+            notBannedUser = User.create(username = 'usrtst2', # Test eligible user
+                                firstName = 'Test',
+                                lastName = 'User 2',
+                                bnumber = '03522493',
+                                email = 'usert2@berea.deu',
+                                isStudent = True)
+            assert not isBannedFromEvent("usrtst2", 1)
         transaction.rollback()
 
 @pytest.mark.integration
