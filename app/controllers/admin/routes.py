@@ -198,7 +198,7 @@ def createEvent(templateid, programid):
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program) or g.current_user.isCeltsOperationsTeam):
+    if g.current_user.canManageProgram(event.program):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
@@ -274,7 +274,7 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event) or g.current_user.isCeltsOperationsTeam)
+    notPermitted = not g.current_user.canManageProgram(event.program)
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 
