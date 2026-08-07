@@ -180,7 +180,7 @@ def isVolunteerBanned(username, eventId):
 def removeVolunteerFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
-    if g.current_user.isAdmin: # Unsure if I should add isOnOperationsTeam to this check.
+    if g.current_user.isAdmin:
         userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == user, EventRsvp.event==eventID).execute()
         if (userInRsvpTable):
             rsvpUser = userInRsvpTable[0]

@@ -19,7 +19,7 @@ def addCeltsAdmin(user):
 
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
-    user.isCeltsStudentStaff = True # May change to account for Operations Team rules. (Ex and user.isCeltsOperationsTeam == False)
+    user.isCeltsStudentStaff = True
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
 
@@ -48,7 +48,7 @@ def removeCeltsStudentStaff(user):
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
 
-def removeCeltsOperationsTeam(user): # May need more detail.
+def removeCeltsOperationsTeam(user):
     user = User.get_by_id(user)
     user.isCeltsOperationsTeam = False
     user.save()
