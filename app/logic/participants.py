@@ -1,44 +1,29 @@
 from flask import g
 from peewee import fn, JOIN
-from datetime import date
+from playhouse.shortcuts import model_to_dict
+from datetime import date, datetime
+from app.logic.users import isEligibleForProgram
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
+from app.models.programBan import ProgramBan
 from app.models.eventParticipant import EventParticipant
-from app.logic.users import isEligibleForProgram
+from app.models.backgroundCheck import BackgroundCheck
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 from collections import defaultdict
+from app import app
 
-def trainedParticipants(programID, targetTerm):
-    """
-    This function tracks the users who have attended every Prerequisite
-    event and adds them to a list that will not flag them when tracking hours.
-    Returns a list of user objects who've completed all training events.
-    """
 
-    # Reset program eligibility each term for all other trainings
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
-    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
-    allTrainings = (Event.select()
-                         .join(Term)
-                         .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
-                                Event.isCanceled == False))
-
-    fullyTrainedUsers = (User.select()
-                             .join(EventParticipant)
-                             .where(EventParticipant.event.in_(allTrainings))
-                             .group_by(EventParticipant.user)
-                             .having(fn.Count(EventParticipant.user) == len(allTrainings)).order_by(User.username))
-
-    return list(fullyTrainedUsers)
 
 def addBnumberAsParticipant(bnumber, eventId):
-    """Accepts scan input and signs in the user. If user exists or is already
-    signed in will return user and login status"""
+    """
+    Accepts scan input and signs in the user. If user exists or is already
+    signed in will return user and login status
+    """
     try:
         kioskUser = User.get(User.bnumber == bnumber)
     except Exception as e:
@@ -46,7 +31,7 @@ def addBnumberAsParticipant(bnumber, eventId):
         return None, "does not exist"
 
     event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(event.program, kioskUser):
+    if (ProgramBan.select().where(ProgramBan.user == kioskUser, ProgramBan.program == event.program, ProgramBan.endDate > datetime.now(), ProgramBan.unbanNote == None).exists()):
         userStatus = "banned"
 
     elif checkUserVolunteer(kioskUser, event):
@@ -106,7 +91,6 @@ def addPersonToEvent(user, event):
     return True
 
 def unattendedRequiredEvents(program, user):
-
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
                            .where(Event.isTraining == True, Event.program == program))
@@ -114,7 +98,9 @@ def unattendedRequiredEvents(program, user):
     if requiredEvents:
         attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
+            attendedRequirement = (EventParticipant.select()
+                                                   .join(User)
+                                                   .where(EventParticipant.user == User.username, EventParticipant.event == event))
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
@@ -130,14 +116,14 @@ def getEventParticipants(event):
 
     return [p for p in eventParticipants]
 
-def getParticipationStatusForTrainings(program, userList, term):
+def getParticipationStatusForTrainings(program, userList, term, returnStr = True):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    isRelevantTraining = ((Event.isAllVolunteerTraining | ((Event.isTraining) & (Event.program == program))) & 
+    isRelevantTraining = ((Event.isAllVolunteerTraining | Event.isCeltsTraining | ((Event.isTraining) & (Event.program == program))) & 
                               (Event.term.academicYear == term.academicYear))
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
@@ -165,8 +151,100 @@ def getParticipationStatusForTrainings(program, userList, term):
         for user in userList:
             if training.name not in userParticipationStatus[user.username] or user.username in attendeeList:
                 userParticipationStatus[user.username][training.name] = [training, user.username in attendeeList]
-    
-    return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
+    if returnStr:
+        return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
+    else:
+        return {user: list(userParticipationStatus[user.username].values()) for user in userList}
+
+def getTrainingsForInterestedParticipants(programID, interestedUsers):
+    """
+    Takes in a programID and a list of interested users, and returns all of the trainings and background checks they have completed. 
+    Returns a nested dictionary which looks like the following: 
+    {'userID1': {'userObj': <User>,
+                 'allVolunteer': True,
+                 'programSpecific': False,
+                 'bgCheck': '0/22/2026',
+                 'eligible': True, 
+                 'star': False
+                 },                
+     'userID2': {'userObj': <User>,
+                 'allVolunteer': True,
+                 'programSpecific': True,
+                 'bgCheck': '0/22/2026',
+                 'eligible': True, 
+                 'star': True
+                 }
+    }
+
+    Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)
+    """
+    trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
+    now = datetime.now()
+    bannedUsers = list(User
+               .select(User.username)
+               .join(ProgramBan)
+               .where(ProgramBan.program == programID,
+                      ProgramBan.endDate > now,
+                      ProgramBan.unbanNote == None, 
+                      User.username << [user.username for user in interestedUsers]))
+    bgCheckSubmitted = (User.select(User.username, BackgroundCheck.dateCompleted)
+                                         .join(BackgroundCheck)
+                                         .where(BackgroundCheck.user == User.username,
+                                                BackgroundCheck.deletionDate.is_null())
+                                         .distinct())
+    trainedAndInterested = {}
+    for interestedUser in interestedUsers:
+        if interestedUser in trainedUsers:
+            trainedAndInterested[interestedUser.username] = {}
+            trainedAndInterested[interestedUser.username]["userObj"] = interestedUser
+            trainedAndInterested[interestedUser.username]['allVolunteer'] = False
+            trainedAndInterested[interestedUser.username]['programSpecific'] = False
+            trainedAndInterested[interestedUser.username]['bgCheck'] = "Not submitted"
+            trainedAndInterested[interestedUser.username]["eligible"] = True
+            trainedAndInterested[interestedUser.username]["star"] = False
+            
+            # Go through the trainings
+            for event in trainedUsers[interestedUser]:
+                if not event[1]: # they didn't attend this training
+                    continue
+                elif event[0].isAllVolunteerTraining:   # They attended AVT
+                    trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
+                elif event[0].isTraining:           # They attended the Program-specific training
+                    trainedAndInterested[interestedUser.username]["programSpecific"] = True                    
+            # They are banned
+            if interestedUser in bannedUsers:
+                trainedAndInterested[interestedUser.username]["eligible"] = False
+            # They submitted their background check
+            if interestedUser in bgCheckSubmitted:
+                trainedAndInterested[interestedUser.username]['bgCheck'] = "Submitted"
+            
+            # NOTE: Handbook signature already tracked inside the user object
+
+            # Give them a star if they have met all the requirements
+            if ( trainedAndInterested[interestedUser.username]["allVolunteer"] and
+                 trainedAndInterested[interestedUser.username]["programSpecific"] and 
+                 trainedAndInterested[interestedUser.username]["eligible"] and
+                 trainedAndInterested[interestedUser.username]['bgCheck'] == "Submitted" and
+                 trainedAndInterested[interestedUser.username]['userObj'].lastHandbookSignature is not None and 
+                 trainedAndInterested[interestedUser.username]['userObj'].signatureTerm.academicYear == g.current_term.academicYear):
+                trainedAndInterested[interestedUser.username]["star"] = True
+            
+    return trainedAndInterested
+
+def getParticipantsForProgramForAY(program, academicYear):    
+    participants = (User.select()
+                            .join(EventParticipant)
+                            .join(Event)
+                            .join(Program)
+                            .switch(Event)
+                            .join(Term)
+                            .where(Program.id == program, 
+                                   Term.academicYear == academicYear, 
+                                   User.hasGraduated == False, 
+                                   EventParticipant.hoursEarned > 0)
+                            .distinct()
+                            )
+    return participants
 
 
 def sortParticipantsByStatus(event):
@@ -198,3 +276,31 @@ def sortParticipantsByStatus(event):
         eventNonAttendedData = []
     
     return eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants
+
+def hasGoneToTraining(participant, term):
+    """
+    Taken in a User object, and returns which training (specifically, All volunteers training or All CELTS labor training) they attended for this term.
+    This is necessary for delivering the correct handbook to the student for signing. 
+    
+    return: A single event object of, in this order of precedence:
+                1) the All Celts training, if they attended,
+                2) the All Volunteers training, if they attended, 
+                3) None 
+    """
+    attended = (EventParticipant.select()
+                                .join(User)
+                                .switch(EventParticipant)                                
+                                .join(Event)
+                                .join(Term)
+                                .where(User.username == participant.username,
+                                       Term.id == term.id,
+                                       Event.isAllVolunteerTraining | Event.isCeltsTraining)
+                                .order_by(Event.isCeltsTraining)
+                )
+    
+    if not attended:
+        return None
+    if len(attended) > 1:
+        attended = attended[-1]
+    return attended.get().event
+    
