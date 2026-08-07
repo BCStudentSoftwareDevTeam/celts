@@ -98,13 +98,11 @@ def test_modifyCeltsOperationsTeam():
 
             userInTest = User.get(User.username == username)
             assert userInTest.isCeltsOperationsTeam == True
-            assert userInTest.isOnOperationsTeam == True
 
             removeCeltsOperationsTeam(userInTest)
 
             userInTest = User.get(User.username == username)
             assert userInTest.isCeltsOperationsTeam == False
-            assert userInTest.isOnOperationsTeam == False
 
         transaction.rollback()
 

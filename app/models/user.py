@@ -52,10 +52,6 @@ class User(baseModel):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
 
     @property
-    def isOnOperationsTeam(self):
-        return self.isCeltsStudentStaff and self.isCeltsOperationsTeam
-
-    @property
     def isBonnerScholar(self):
         from app.models.bonnerCohort import BonnerCohort
         if self._bsCache is None:

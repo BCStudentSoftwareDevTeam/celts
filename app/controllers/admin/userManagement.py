@@ -60,14 +60,8 @@ def manageUsers():
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
     elif method == "addCeltsOperationsTeam":
-        if not user.isCeltsStudentStaff:
-            flash(username + " cannot be added as CELTS Operations Team", "danger")
-        else:
-            if user.isCeltsOperationsTeam:
-                flash(user.firstName + " " + user.lastName +" is already a CELTS Operations Team member", "danger")
-            else:
-                addCeltsOperationsTeam(user)
-                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", "success")
+        addCeltsOperationsTeam(user)
+        flash(user.firstName + " " + user.lastName + " has been added as a CELTS Operations Team member", "success")
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
@@ -75,9 +69,6 @@ def manageUsers():
         removeCeltsStudentStaff(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
     elif method == "removeCeltsOperationsTeam":
-        if not user.isCeltsOperationsTeam:
-            flash(user.firstName + " " + user.lastName +" is not a CELTS Operations Team member", "danger")
-        else:
             removeCeltsOperationsTeam(user)
             flash(user.firstName + " " + user.lastName + " is no longer a CELTS Operations Team member", "success")    
     return ("success", 200)
