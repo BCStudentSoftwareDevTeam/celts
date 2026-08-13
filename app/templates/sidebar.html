@@ -29,7 +29,7 @@
         </a>
       </li>
       {% endif %}
-      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager %}
+      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event    
@@ -90,7 +90,7 @@
       </li>
 
       {% endif %}
-      {% if g.current_user.isProgramManager %}
+      {% if g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
         <a href="/admin"
            class="nav-link text-white {{'active' if request.path == '/admin'}}"
            {% if request.path == '/admin' %}aria-current="page"{% endif %}>

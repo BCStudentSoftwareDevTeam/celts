@@ -5,10 +5,15 @@
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script type="module" src="/static/js/handbookSignature.js"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
+
+
 {% endblock %}
 
 {% block styles %}
   {{super()}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
@@ -18,11 +23,11 @@
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
 </div>
 <div class="row mb-2">
-  <div class="col-md-6 col-lg-3">
+  <div class="col-md-6 col-lg-4">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
   </div>
-  <div class="col-md-6 col-lg-3">
+  <div class="col-md-6 col-lg-4">
     {% if volunteer.major -%}
     <div>{{volunteer.major}}</div>
     {% endif %}
@@ -37,6 +42,7 @@
     {%endif%}
   </div>
 </div>
+
 <div class="profile-links">
   <a class="btn btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#editVolunteerModal">Edit Personal Information</a>
 
@@ -186,7 +192,7 @@
       </div>
     </div>
   </div>
-<!-- ################# Participation History ################ -->
+<!-- ################# End Participation History ################ -->
 
 <!-- ################# Program Table ################ -->
   <div class="accordion-item">
@@ -204,7 +210,7 @@
             <thead>
               <tr>
                 <th scope="col">Program</th>
-                <th scope="col">Notify</th>
+                <th scope="col">Interest</th>
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
@@ -234,10 +240,10 @@
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
                       <td class="programBan pt-3"> Eligible
-                      {% set label = "Ban" %}
+                      {% set label = "Ineligible" %}
                     {% else %}
-                      <td class="programBan text-danger pt-3"> Banned
-                      {% set label = "Unban" %}
+                      <td class="programBan text-danger pt-3"> Ineligible
+                      {% set label = "Eligible" %}
                     {% endif %}
 
                     {% if g.current_user.isCeltsAdmin %}
@@ -265,7 +271,7 @@
       </div>
     </div>
   </div>
-<!-- ################# Program Table ################ -->
+<!-- ################# End Program Table ################ -->
 
 <!-- ################# CELTS Labor Section ################ -->
   {% if participatedInLabor or volunteer.isCeltsStudentStaff%}
@@ -287,7 +293,7 @@
               {% endfor %}
             </div>
             {% endif %}
-            {% if volunteer.isCeltsStudentStaff %}
+            {% if volunteer.isCeltsStudentStaff and not volunteer.isCeltsOperationsTeam %}
             <div class="col-md-6">
                 <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the current manager of:</h5>
                 <ul class="list-unstyled">
@@ -297,6 +303,17 @@
                   {% endif %}
                 {% endfor %}
                 </ul>
+            </div>
+            <div>
+              {% if g.current_user.isCeltsAdmin %}
+                <a href="/admin?accordion=program" class="btn btn-primary btn-sm">Update Program Managers</a>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if volunteer.isCeltsOperationsTeam %}
+            <div class="col-md-6">
+                <h5>Operations Team Member:</h5>
+                <p>{{volunteer.firstName}} {{volunteer.lastName}} is currently an Operations Team member who manages all programs.</p>
             </div>
             <div>
               {% if g.current_user.isCeltsAdmin %}
@@ -326,7 +343,7 @@
             <thead>
               <tr>
                 <th scope="col">Description</th>
-                {% if g.current_user.isCeltsAdmin %}
+                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                   <th class="required" scope="col">Status</th>
                   <th class="required" scope="col">Date</th>
                   <th class="" id="displaySave" scope="col"></th>
@@ -336,7 +353,7 @@
             <tbody>
                 {% set ns = namespace(backgroundChecksExist=false) %}
                 {% for bgType in backgroundTypes %}
-                    {% if not g.current_user.isCeltsAdmin and not allBackgroundHistory[bgType.id] %}
+                    {% if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsOperationsTeam and not allBackgroundHistory[bgType.id] %}
                         {% continue %} 
                     {% endif %}
                     {% set ns.backgroundChecksExist = true %}
@@ -350,7 +367,7 @@
                                 {{ bgStatus.backgroundCheckStatus }}:
                                 {{ bgStatus.dateCompleted.strftime("%m/%d/%Y") }}
                               </span>
-                              {% if g.current_user.isCeltsAdmin %}
+                              {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                                 <button
                                   class="btn btn-sm btn-link text-danger p-0"
                                   id="deleteBgHistory"
@@ -363,7 +380,7 @@
                           {% endfor %}
                       </ul>
                     </td>
-                  {% if g.current_user.isCeltsAdmin %}
+                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                     <td>
                       <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                         <option value=''></option>
@@ -413,7 +430,7 @@
             </tr>
           </thead>
           <tbody>
-            {% if g.current_user.isCeltsAdmin %}
+            {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
               {% set userTier = 3 %}
             {% elif g.current_user.isCeltsStudentStaff %}
               {% set userTier = 2 %}
@@ -437,7 +454,7 @@
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
                   <td class ="text-nowrap">
-                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
+                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam %}
                      <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
@@ -639,8 +656,8 @@
           <h6 align="left">Email Address: {{volunteer.email}}</h6>
           <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
           <div id="banNoteDiv">
-            <h6 align="left">Reason for ban:</h6>
-            <p align="left" id="banNote">Why the student was banned</p>
+            <h6 align="left">Reason for ineligibility:</h6>
+            <p align="left" id="banNote">Why the student is ineligible</p>
           </div>
           <div id="banEndDate">
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6><span class="text-danger">*</span>
@@ -654,7 +671,7 @@
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
+          <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Mark Ineligible/Eligible</button>
         </div>
       </div>
     </div>
@@ -699,15 +716,69 @@
           <input class="form-check-input" type="checkbox" id="checkDietRestriction" name="DietRestriction" {{"checked" if norestrictions}} />
           <span id="saveNotification" class="text-success" style="display:none"> Saved!</span>
         </div>
-          <div class="container" id="dietContainer" {%if norestrictions%} style="display:none" {%endif%}>
-            <div class="form-group">
-              <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
-            </div>
+        <div class="container" id="dietContainer" {%if norestrictions %} style="display:none" {%endif%}>
+          <div class="form-group">
+            <textarea class="form-control" id="diet" data-user="{{volunteer.username}}" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
+          </div>
         </div>
+
+        <br>
+        
+        <h5>AY {{g.current_term.academicYear}} Handbook</h5>
+        <div class="row mb-3">          
+          {# All CELTS Training #}
+          {% if training.isCeltsTraining %}
+            {% if not g.current_term.laborHandbook %}
+              <p>No CELTS Labor Handbook available for {{g.current_term.description}} yet.</p>
+            {% else %}
+            <p><a href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
+            {% endif %}
+
+          {# All Volunteer Training #}
+          {% else %}
+            {% if not g.current_term.volunteerHandbook %}
+              <p>No Volunteer Handbook available for {{g.current_term.description}} yet.</p>
+            {% else %}
+              <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
+            {% endif %}
+          {% endif %}                    
+        </div>
+        
+        {% if g.current_user.signatureTerm.academicYear != g.current_term.academicYear and not training %}
+        <p>To volunteer, you must sign the CELTS handbook for {{g.current_term.academicYear}}, and you must do this at an All Volunteers Training.</p>
+        {% else %}    
+          {% if volunteer.signatureTerm.academicYear != g.current_term.academicYear %}
+            <h5 id="signatureHeader">Sign the handbook</h5>    
+          {% else %}          
+            <p> Your handbook signature is good for AY {{volunteer.signatureTerm.academicYear}}.</p>
+          {% endif %}
+          
+          {% if g.current_term.volunteerHandbook %}
+            {% if handbookOverdue and g.current_user.username == volunteer.username %}
+              <div class="row mb-3">
+                <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
+              </div>
+              <div class="row mb-3" id="signatureButtons">
+                <p><i class="bi bi-exclamation-diamond" style="color: red;"> </i>By saving your signature, you agree to adhere to <em>all</em> of the guidelines outlined in the handbook.</p>
+                <div class="col-md-6">
+                  <button id="clear-btn" class="btn btn-danger btn-sm w-100">Clear</button>
+                </div>
+                <div class="col-md-6">
+                  <button id="save-btn" class="btn btn-primary btn-sm w-100" type = "button">Save Signature</button>
+                </div>              
+              </div>
+              <div class="row mb-3" id="signatureConfirmation" style="display: none;">
+                <div class="col-md-12 center-block text-center">
+                  <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
+                </div>              
+              </div>
+            {% endif %}
+          {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

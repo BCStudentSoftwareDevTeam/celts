@@ -34,7 +34,7 @@ def fixture_info():
             isCanceled=False,
             deletionDate=None,
             isService=True,
-            isLaborOnly=True
+            isLaborOnly=False
         )
         event2 = Event.create(
             name='Event2',
@@ -44,7 +44,7 @@ def fixture_info():
             isCanceled=False,
             deletionDate=None,
             isService=True,
-            isLaborOnly=True
+            isLaborOnly=False
         )
         event3 = Event.create(
             name='Event3',
