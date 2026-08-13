@@ -7,6 +7,8 @@ support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
 test_entry: "Default"
 
+lsf_url: "REPLACE"
+
 db:
     name: "celts"
     host: "db"
