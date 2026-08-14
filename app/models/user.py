@@ -106,11 +106,7 @@ class User(baseModel):
         return self.isProgramManagerFor(event.program)
 
     def canManageProgram(self, program):
-        return self.isCeltsAdmin or self.isCeltsOperationsTeam or (self.isCeltsStudentStaff and self.managesProgram(program))
-
-    def managesProgram(self, program):
-        from app.models.programManager import ProgramManager
-        return ProgramManager.select().where(ProgramManager.user == self,ProgramManager.program == program).exists()
+        return self.isCeltsAdmin or self.isCeltsOperationsTeam or self.isProgramManagerFor(program)
 
     @property
     def isProgramManager(self):
