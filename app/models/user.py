@@ -1,4 +1,5 @@
 from app.models import *
+from app.models.term import Term
 
 class User(baseModel):
     username = CharField(primary_key=True)
@@ -15,10 +16,13 @@ class User(baseModel):
     isStaff = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
+    isCeltsOperationsTeam = BooleanField(default=False) # A user MUST be a CELTS Student Staff member to be a CELTS Operations Team member.
     dietRestriction = TextField(null=True)
     minorInterest = BooleanField(null=True)
     hasGraduated = BooleanField(default=False)
     declaredMinor = BooleanField(default=False)
+    lastHandbookSignature = DateTimeField(null=True)
+    signatureTerm = ForeignKeyField(Term, null = True)
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
     def __init__(self,*args, **kwargs):
@@ -100,14 +104,16 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
-    
+
+    def canManageProgram(self, program):
+        return self.isCeltsAdmin or self.isCeltsOperationsTeam or self.isProgramManagerFor(program)
+
     @property
     def isProgramManager(self):
         from app.models.programManager import ProgramManager
-
         if self._isProgramManagerCache is None:
             self._isProgramManagerCache = ProgramManager.select().where(ProgramManager.user == self).exists()
             
         return self._isProgramManagerCache
 
-
+   

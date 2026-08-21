@@ -1,6 +1,6 @@
 from flask import request, render_template, url_for, g, redirect
 from flask import flash, abort, jsonify, session, send_file
-from peewee import DoesNotExist, fn, IntegrityError
+from peewee import DoesNotExist, IntegrityError
 from playhouse.shortcuts import model_to_dict
 import json
 from datetime import datetime
@@ -27,6 +27,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventViews import EventView
 from app.models.courseStatus import CourseStatus
+from app.models.programManager import ProgramManager
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createActivityLog
@@ -75,6 +76,13 @@ def templateSelect():
     if not programs:
         abort(403)
     visibleTemplates = getAllowedTemplates(g.current_user)
+    
+    # Create extravaganza QR code if it doesn't exist
+    imgPath = app.config["files"]["image_path"] + "/extravaganza_qr.png"
+    if not os.path.exists(imgPath):
+        import qrcode
+        img = qrcode.make(request.url.split("/")[-2] + "/extravaganza")
+        img.save(imgPath)
     return render_template("/events/templateSelector.html",
                             programs=programs,
                             celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
@@ -82,7 +90,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerFor(programid)):
+    if not g.current_user.canManageProgram(programid):
         abort(403)
 
     # Validate given URL
@@ -97,7 +105,7 @@ def createEvent(templateid, programid):
         return redirect(url_for("admin.program_picker"))
 
     # Get the data from the form or from the template
-    eventData = template.templateData
+    eventData = template.templateData    
     eventData['program'] = program
 
     if request.method == "GET":
@@ -113,9 +121,8 @@ def createEvent(templateid, programid):
     # Try to save the form
     if request.method == "POST":
         savedEvents = None
-        eventData.update(request.form.copy())
+        eventData.update(request.form.copy())        
         eventData = preprocessEventData(eventData)
-
         if eventData.get('isSeries'):
             eventData['seriesData'] = json.loads(eventData['seriesData'])
             succeeded, savedEvents, failedSavedOfferings = attemptSaveMultipleOfferings(eventData, getFilesFromRequest(request))
@@ -128,9 +135,8 @@ def createEvent(templateid, programid):
             try:
                 savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
             except Exception as e:
-                print("Failed saving regular event", e)
+                print("Failed saving regular event: ", e)
                 validationErrorMessage = "Failed to save event."
-
         if savedEvents:
             rsvpCohorts = request.form.getlist("cohorts[]")
             if rsvpCohorts:
@@ -144,10 +150,10 @@ def createEvent(templateid, programid):
            
             if program:
                 if len(savedEvents) > 1 and eventData.get('isRepeating'):
-                    createActivityLog(f"Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name[:-7]}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createActivityLog(f'''Created a repeating series, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name[:-7]}</a>, for {program.programName}, with a start date of {datetime.strftime(savedEvents[0].startDate, '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.''')
                 elif len(savedEvents) >= 1 and eventData.get('isSeries'):
                     eventDates = [eventData.startDate.strftime('%m/%d/%Y') for eventData in savedEvents]
-                    eventList = ', '.join(f"<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>" for event in savedEvents)
+                    eventList = ', '.join(f'''<a href=\"{url_for('admin.eventDisplay', eventId=event.id)}\">{event.name}</a>''' for event in savedEvents)
 
                     if len(savedEvents) > 1:
                         #creates list of events created in a multiple series to display in the logs
@@ -159,9 +165,9 @@ def createEvent(templateid, programid):
                     createActivityLog(f"Created series {eventList} for {program.programName}, with start dates of {eventDates}.")
                     
                 else:
-                    createActivityLog(f"Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createActivityLog('''Created event <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.''')
             else:
-                createActivityLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createActivityLog(f'''Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.''')
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -180,8 +186,6 @@ def createEvent(templateid, programid):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-                
-            
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -194,7 +198,7 @@ def createEvent(templateid, programid):
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
+    if g.current_user.canManageProgram(event.program):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User, on=(EventRsvpLog.createdBy == User.username)).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
@@ -239,7 +243,7 @@ def renewEvent(eventId):
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
         copyRsvpToNewEvent(priorEvent, newEvent[0])
-        createActivityLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        createActivityLog(f'''Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.''')
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
 
@@ -270,7 +274,7 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    notPermitted = not g.current_user.canManageProgram(event.program)
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 
@@ -289,10 +293,14 @@ def eventDisplay(eventId):
 
                 
     if request.method == "POST": # Attempt to save form
-        eventData = request.form.copy()
+        eventData = request.form.copy()        
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
+        except IntegrityError as e:
+            print("Error saving event:", e)
+            savedEvents = False
+            validationErrorMessage = "This combination of settings is not allowed."
         except Exception as e:
             print("Error saving event:", e)
             savedEvents = False
@@ -688,4 +696,16 @@ def displayEventFile():
     eventfile = FileHandler(eventId=fileData["id"])
     isChecked = fileData.get('checked') == 'true'
     eventfile.changeDisplay(fileData['id'], isChecked)
+    return ""
+
+@admin_bp.route("/handbookSignature", methods=["POST"])
+def handbookSignature():
+    if not (g.current_user.username == request.form.get('studentUsername')):
+        abort(403)
+
+    signer = g.current_user
+    signer.lastHandbookSignature = datetime.now()
+    signer.signatureTerm = g.current_term
+    signer.save()
+
     return ""
