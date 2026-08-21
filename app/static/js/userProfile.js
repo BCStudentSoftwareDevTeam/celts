@@ -96,14 +96,13 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-  $(function(){
-    var banEndDatepicker = $("#banEndDatepicker");
-    banEndDatepicker.datepicker({
-      changeYear: true,
-      changeMonth: true,
-      minDate:+1,
-      dateFormat: "yy-mm-dd",
-    }).attr('readonly','readonly');
+  $(function () {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    $("#banEndDatepicker").attr("min",`${year}-${month}-${day}`);
   });
 
     /*
