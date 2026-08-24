@@ -122,7 +122,6 @@ $(document).ready(function(){
     banButton.data("programID", programID)
     banButton.data("username", $(".banEdit").data("username"))
     banButton.data("banOrUnban", banValue);
-    console.log(banButton)
     banEndDateDiv.show();
     banEndDatepicker.val("")
     $(".modal-title-ban").text("Mark Volunteer as " + banValue +  " from "+ $(this).data("name") + "?");
