@@ -122,6 +122,7 @@ $(document).ready(function(){
     banButton.data("programID", programID)
     banButton.data("username", $(".banEdit").data("username"))
     banButton.data("banOrUnban", banValue);
+    console.log(banButton)
     banEndDateDiv.show();
     banEndDatepicker.val("")
     $(".modal-title-ban").text("Mark Volunteer as " + banValue +  " from "+ $(this).data("name") + "?");
@@ -144,7 +145,14 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
-     $("#banButton").prop("disabled", true)
+    if ($("#banButton").data('banOrUnban') == "Ineligible"){
+      const endDateInput = $("#banEndDatepicker")[0];
+      if (!endDateInput.checkValidity()) {
+        endDateInput.reportValidity();
+        return;
+      };
+    };
+    $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
 
