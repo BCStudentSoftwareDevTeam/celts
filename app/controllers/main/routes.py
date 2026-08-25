@@ -666,12 +666,24 @@ def extravaganza():
     interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
     programsInterested = [interest.program for interest in interests]
 
-    upcomingAllVolunteers = Event.select().join(Term).where(Event.isAllVolunteerTraining, Term.academicYear == g.current_term.academicYear)
+    upcomingAllVolunteers = (Event.select()
+                                 .join(Term)
+                                 .where(Event.isAllVolunteerTraining, 
+                                        Term.academicYear == g.current_term.academicYear,
+                                        Event.deletionDate == None, 
+                                        Event.isCanceled == False)
+                             )
     for training in upcomingAllVolunteers:
         training.startDate = training.startDate.strftime("%b %d")
         training.timeStart = training.timeStart.strftime("%I:%M %p")
 
-    upcomingTrainings = Event.select().join(Term).where(Event.isTraining, Term.academicYear == g.current_term.academicYear)
+    upcomingTrainings = (Event.select()
+                             .join(Term)
+                             .where(Event.isTraining, 
+                                    Term.academicYear == g.current_term.academicYear,
+                                    Event.deletionDate == None, 
+                                    Event.isCanceled == False)
+                        )
 
     for training in upcomingTrainings:
         training.startDate = training.startDate.strftime("%b %d")
