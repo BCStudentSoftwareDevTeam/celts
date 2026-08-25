@@ -91,7 +91,7 @@ def getProgramInterest(program):
     Parameters:
     program: Program object
     """
-    return User.select().join(Interest).where(Interest.program == program)
+    return User.select().join(Interest).where(Interest.program == program, User.rawClassLevel.in_(["Freshman", "Sophomore", "Junior", "Senior"]))
 
 def getBannedUsers(program):
     """
