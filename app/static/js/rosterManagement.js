@@ -3,7 +3,7 @@ import searchUser from './searchUser.js'
 $(document).ready(function(){
     var dt = $('#rosterTable').DataTable();
 
-    searchUser("searchStudentsInput", callback, "searchStudentsInput");   // initialize ONCE
+    searchUser("searchStudentsInput", callback, true, null, "currentStudents");   // initialize ONCE
 
   $("#searchIcon").click(function (e) {
     e.preventDefault();
