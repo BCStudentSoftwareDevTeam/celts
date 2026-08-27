@@ -79,7 +79,7 @@ from app.logic.loginManager import getCurrentTerm
 def load_currentTerm():
     # An exception handles both current_term not being set and a mismatch between models
     try:
-        g.current_term = Term.get_by_id(session["current_term"])
+        g.current_term = getCurrentTerm()
     except Exception as e:
         term = getCurrentTerm()
         session['current_term'] = model_to_dict(term)
