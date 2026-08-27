@@ -297,10 +297,8 @@ def hasGoneToTraining(participant, term):
                                        Event.isAllVolunteerTraining | Event.isCeltsTraining)
                                 .order_by(Event.isCeltsTraining)
                 )
-    
     if not attended:
         return None
-    if len(attended) > 1:
-        attended = attended[-1]
-    return attended.get().event
+    attended = attended[-1] if len(attended) > 1 else attended[0]
+    return attended.event
     
