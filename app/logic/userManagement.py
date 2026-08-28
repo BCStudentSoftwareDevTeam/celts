@@ -3,10 +3,12 @@ from flask import abort, g, session
 from playhouse.shortcuts import DoesNotExist, model_to_dict
 import xlsxwriter
 
+
 from app import app
 from app.logic.participants import getParticipantsForProgramForAY, getTrainingsForInterestedParticipants
 from app.logic.users import getProgramInterest
 from app.logic.volunteerSpreadsheet import makeDataXls
+from app.models import user
 from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
@@ -22,13 +24,19 @@ def addCeltsAdmin(user):
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS admin member.')
 
-
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True
     user.save()
     createActivityLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
 
+def addCeltsOperationsTeam(username):
+    user = User.get_by_id(username)
+    if not user.isCeltsStudentStaff:
+        raise ValueError("A user must be CELTS Student Staff before joining the Operations Team.")
+    user.isCeltsOperationsTeam = True
+    user.save()
+    createActivityLog(f"Made {user.fullName} a CELTS operations team member.")
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -46,6 +54,12 @@ def removeCeltsStudentStaff(user):
     user.save()
     createActivityLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
                    (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
+
+def removeCeltsOperationsTeam(user):
+    user = User.get_by_id(user)
+    user.isCeltsOperationsTeam = False
+    user.save()
+    createActivityLog(f'Removed {user.firstName} {user.lastName} from CELTS operations team members.')
 
 def changeProgramInfo(programId, 
                       attachment, 
@@ -98,7 +112,7 @@ def changeProgramInfo(programId,
 
 def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
-    if currentUser.isCeltsAdmin:
+    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam:
         return Program.select().order_by(Program.programName)
     else:
         return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
@@ -107,7 +121,7 @@ def getAllowedPrograms(currentUser):
 
 def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
-    if currentUser.isCeltsAdmin:
+    if currentUser.isCeltsAdmin or currentUser.isCeltsOperationsTeam:
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []  
