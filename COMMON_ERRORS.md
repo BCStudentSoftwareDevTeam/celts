@@ -1,7 +1,9 @@
 # Common Terminal Errors and Solutions
 
-## Error: Access Denied for MySQL Root User
+<details>
+<summary>Error: Access Denied for MySQL Root User</summary>
 
+## Error: Access Denied for MySQL Root User
 ### When This Happens
 
 This error occurs when MySQL rejects the username, password, or authentication method being used.
@@ -37,6 +39,10 @@ db:
     username: "celts_user"
     password: "root" # use the password configured for this MySQL user 
 ```
+</details>
+
+<details>
+<summary>Error: pem: command not found</summary>
 
 ## Error: pem: command not found
 
@@ -78,6 +84,11 @@ Afterward, Peewee migration commands should work.
 
 Note: Make sure peewee-migrations is installed in the same Python environment being used by the project.
 
+</details>
+
+<details>
+<summary>Error: `venv/bin/activate: No such file or directory` and `externally-managed-environment`</summary>
+
 ## Error: `venv/bin/activate: No such file or directory` and `externally-managed-environment`
 
 ### When This Happens
@@ -103,5 +114,38 @@ error: externally-managed-environment
 ### Possible Solution
 Make sure the Python virtual environment package is installed:
 
+```
 sudo apt update
 sudo apt install python3.14-venv
+```
+
+Create the virtual environment manually: ```python3 -m venv venv```
+
+Verify that it was created: ```ls venv```
+
+You should see directories such as:
+
+```bash
+bin  include  lib  lib64  pyvenv.cfg
+```
+
+Activate the environment: ```source venv/bin/activate```
+
+Then run the setup script again: ```source setup.sh```
+
+Once the virtual environment is active, pip installs packages inside venv instead of attempting to modify the system Python installation.
+
+Note: Avoid using --break-system-packages for this project. The dependencies should be installed inside the project's virtual environment.
+</details>
+
+<details>
+<summary>Error: `(venv)` Is Active but `externally-managed-environment` Still Appears</summary>
+</details>
+
+<details>
+<summary>Error: Virtual Environment Fails Inside `/mnt/c/...` on WSL</summary>
+</details>
+
+<details>
+<summary>Error: Forgot MySQL Root Password / `Access denied for user 'root'@'localhost'`</summary>
+</details>
