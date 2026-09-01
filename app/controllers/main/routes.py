@@ -39,7 +39,7 @@ from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import hasGoneToTraining, unattendedRequiredEvents, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import  addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory,addProfileNote, deleteProfileNote, updateDietInfo, updateProfileNote, getProfileNoteData, isBannedFromEvent, trainedParticipants
+from app.logic.users import *
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
