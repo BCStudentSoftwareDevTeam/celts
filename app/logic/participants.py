@@ -207,7 +207,7 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             for event in trainedUsers[interestedUser]:
                 if not event[1]: # they didn't attend this training
                     continue
-                elif event[0].isAllVolunteerTraining:   # They attended AVT
+                elif event[0].isAllVolunteerTraining or event[0].isCeltsTraining:   # They attended AVT or ACT
                     trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
                 elif event[0].isTraining:           # They attended the Program-specific training
                     trainedAndInterested[interestedUser.username]["programSpecific"] = True                    
