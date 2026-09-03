@@ -167,7 +167,6 @@
                         {% endif %}
                     {% endif %}
 
-                
                     {% if filepaths.keys()|count %}
                     <div class="form-group mt-5 ml-5>
                         <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
@@ -214,5 +213,8 @@
                     {% endif %}
                 </div>
             </div>
+        </div>
+        <div style="text-align: center;">
+            <a href="{{ url_for('main.events', selectedTerm=g.current_term) }}" class="btn btn-secondary m-2">Back</a>
         </div>
 {% endblock %}
