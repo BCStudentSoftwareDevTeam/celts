@@ -96,14 +96,13 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-  $(function(){
-    var banEndDatepicker = $("#banEndDatepicker");
-    banEndDatepicker.datepicker({
-      changeYear: true,
-      changeMonth: true,
-      minDate:+1,
-      dateFormat: "yy-mm-dd",
-    }).attr('readonly','readonly');
+  $(function () {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    $("#banEndDatepicker").attr("min",`${year}-${month}-${day}`);
   });
 
     /*
@@ -145,7 +144,14 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
-     $("#banButton").prop("disabled", true)
+    if ($("#banButton").data('banOrUnban') == "Ineligible"){
+      const endDateInput = $("#banEndDatepicker")[0];
+      if (!endDateInput.checkValidity()) {
+        endDateInput.reportValidity();
+        return;
+      };
+    };
+    $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
 
