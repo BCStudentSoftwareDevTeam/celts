@@ -29,6 +29,15 @@ div.profile-links a:not(:first-child) {
     padding: 5px; 
     padding-top:0px; 
 }
+.note-badges {
+    margin-top: 4px;
+}
+.note-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 0.2rem 0.45rem;
+
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
