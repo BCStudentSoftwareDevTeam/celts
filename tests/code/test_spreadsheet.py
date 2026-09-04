@@ -700,7 +700,6 @@ def test_laborAttendanceByTerm(fixture_info):
             event.isService = False
             event.isLaborOnly = True
             event.save()
-
     columns, results = laborAttendanceByTerm(fixture_info['term1'])
     results = list(results)
 
