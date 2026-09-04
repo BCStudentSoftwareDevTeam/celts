@@ -63,8 +63,23 @@
                         <div>
                             <h5 id="location"style="margin: 0;">Location:</h5>   
                             <p style="margin: 0;">{{eventData.location}}</p> 
-                        </div>            
+                        </div>                                    
                     </div>
+                    <br>                    
+                    <div class="d-flex align-top">
+                        <i class="bi bi-arrow-bar-right" style="margin-right: 10px;"></i>
+                        <div>
+                            <h5 id="location" style="margin: 0;">CampusGroups:</h5>
+                            {% if eventData.campusGroupsId %}
+                            <p style="margin: 0;"><a href="{{eventData.campusGroupsURL|safe}}" target="_blank" >CampusGroups Event</a></p>
+                                {% if not eventData.isCampusGroupsSynced %}
+                                    <i class="bi bi-arrow-up-circle" style="color: red;">  </i>Update event changes to CampusGroups? <button type="button" class="btn btn-primary" value="{{eventData.id}}" id="pushToCampusGroupsBtn">Push</button>
+                                {% endif %}
+                            {% else %}
+                                Add this event to CampusGroups? <button type="button" class="btn btn-primary" value="{{eventData.id}}" id="pushToCampusGroupsBtn">Push</button>
+                            {% endif %}
+                        </div>
+                    </div>                    
                     <br>
                     <div>
                         {% if eventData.isRsvpRequired %}

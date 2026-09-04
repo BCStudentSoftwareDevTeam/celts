@@ -1,4 +1,6 @@
-from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session
+from app.logic.campusGroups import CampusGroups
+from flask import Flask, redirect, flash, url_for, request, render_template, g, json, abort, session, jsonify
+import requests, xmltodict
 from datetime import datetime
 from peewee import DoesNotExist
 
@@ -11,6 +13,9 @@ from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
+
+from app import app
+
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
 def loadKiosk(eventid):
@@ -48,3 +53,31 @@ def kioskSignin():
     except Exception as e:
         print("Error in Kiosk Page", e)
         return "", 500
+
+@events_bp.route('/retrieveEvents', methods=['GET'])
+def retrieveEvents():
+    try:
+        cg = CampusGroups()
+        events = cg.getEvents()
+        return events
+    except requests.exceptions.RequestException as e:
+        print("Error retrieving data from campusgroups: \n", e)
+        return "", 500
+
+
+@events_bp.route('/addEventToCampusGroups/<event_id>', methods=['GET'])
+def addEventToCampusGroups(event_id):
+    if app.env == "production":
+        campusGroupsEnv = "production"
+    else:
+        campusGroupsEnv = "sandbox"
+
+    try:
+        cg = CampusGroups(campusGroupsEnv)
+        data = cg.parseEventData(event_id)
+        response = cg.addEvent(data)
+        return response  # FIXME Return a better response, or parse this in the front end
+    except requests.exceptions.RequestException as e:
+        print("Error retrieving data from campusgroups: \n", e)
+        return "", 500
+	
