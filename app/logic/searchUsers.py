@@ -7,31 +7,19 @@ def searchUsers(query, category=None):
 
         MySQL LIKE is case insensitive
     '''
-    # add wildcards to each piece of the query
     splitSearch = query.strip().split()
     if not splitSearch:
         return User.select().where(False)
-    fullSearch = " ".join(splitSearch) + "%"
-    searchWhere = (User.firstName ** fullSearch | User.lastName ** fullSearch | User.username ** fullSearch)
-    for splitIndex in range(1, len(splitSearch)):
-        firstName = " ".join(splitSearch[:splitIndex]) + "%"
-        lastName = " ".join(splitSearch[splitIndex:]) + "%"
-
-        searchWhere |= (
-            (User.firstName ** firstName) &
-            (User.lastName ** lastName)
-        )
-
-    # Also allow individual pieces of the name to match
+    searchWhere = None
     for namePart in splitSearch:
         nameSearch = namePart + "%"
+        namePartWhere = (
+            User.firstName.contains(namePart) | User.lastName.contains(namePart) | User.username.contains(namePart))
+        if searchWhere is None:
+            searchWhere = namePartWhere
+        else:
+            searchWhere &= namePartWhere
 
-        searchWhere |= (
-            (User.firstName ** nameSearch) |
-            (User.lastName ** nameSearch) |
-            (User.username ** nameSearch)
-        )
-    
     if category == "instructor":
         userWhere = (User.isFaculty | User.isStaff)
     elif category == "admin":
@@ -50,9 +38,7 @@ def searchUsers(query, category=None):
     fullSearchText = " ".join(splitSearch)
     # Combine into query
     searchResults = User.select().where(searchWhere, userWhere).order_by(
-        fn.CONCAT(User.firstName, " ", User.lastName)
-            .contains(fullSearchText)
-            .desc(),
+        fn.CONCAT(User.firstName, " ", User.lastName).contains(fullSearchText).desc(),
         User.firstName.startswith(fullSearchText).desc(),
         User.lastName.startswith(fullSearchText).desc(),
         User.lastName,
