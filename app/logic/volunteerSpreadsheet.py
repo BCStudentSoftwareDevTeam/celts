@@ -319,7 +319,7 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     if type(dataRows) == list:
         for row, rowData in enumerate(dataRows):
             col_idx = 0
-            for column, value in rowData.items():
+            for value in rowData:
                 # dates and times should use their text representation
                 if isinstance(value, (datetime, date, time)):
                     value = str(value)
