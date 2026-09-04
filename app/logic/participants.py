@@ -116,7 +116,7 @@ def getEventParticipants(event):
 
     return [p for p in eventParticipants]
 
-def getParticipationStatusForTrainings(program, userList, term, returnStr = True):
+def getParticipationStatusForTrainings(program, userList, term, includeFutureEvents = True):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
@@ -130,7 +130,10 @@ def getParticipationStatusForTrainings(program, userList, term, returnStr = True
                              .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                              .join(Term)
                              .where(isRelevantTraining, (Event.isCanceled != True)).order_by(Event.startDate))
-
+    if not includeFutureEvents:
+        programTrainings = programTrainings.where(
+            (Event.startDate < datetime.now().date()) | 
+            ((Event.startDate == datetime.now().date()) & (Event.timeStart <= datetime.now().time())))
     # Create a dictionary where the keys are trainings and values are a set of those who attended
     trainingData = defaultdict(set)
     for training in programTrainings:
@@ -151,7 +154,7 @@ def getParticipationStatusForTrainings(program, userList, term, returnStr = True
         for user in userList:
             if training.name not in userParticipationStatus[user.username] or user.username in attendeeList:
                 userParticipationStatus[user.username][training.name] = [training, user.username in attendeeList]
-    if returnStr:
+    if includeFutureEvents:
         return {user.username: list(userParticipationStatus[user.username].values()) for user in userList}
     else:
         return {user: list(userParticipationStatus[user.username].values()) for user in userList}
@@ -178,7 +181,7 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
 
     Gracefully handles multiple trainings of the same type (e.g., two All Volunteers Trainings)
     """
-    trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, returnStr = False)
+    trainedUsers = getParticipationStatusForTrainings(programID, interestedUsers, g.current_term, includeFutureEvents = False)
     now = datetime.now()
     bannedUsers = list(User
                .select(User.username)
@@ -207,7 +210,7 @@ def getTrainingsForInterestedParticipants(programID, interestedUsers):
             for event in trainedUsers[interestedUser]:
                 if not event[1]: # they didn't attend this training
                     continue
-                elif event[0].isAllVolunteerTraining:   # They attended AVT
+                elif event[0].isAllVolunteerTraining or event[0].isCeltsTraining:   # They attended AVT or ACT
                     trainedAndInterested[interestedUser.username]["allVolunteer"] = True                    
                 elif event[0].isTraining:           # They attended the Program-specific training
                     trainedAndInterested[interestedUser.username]["programSpecific"] = True                    
