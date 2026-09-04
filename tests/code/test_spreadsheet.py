@@ -697,9 +697,9 @@ def test_getUniqueVolunteers(fixture_info):
 @pytest.mark.integration
 def test_laborAttendanceByTerm(fixture_info):
     for event in (fixture_info['event1'], fixture_info['event2'], fixture_info['event3']):
-        event.isService = False
-        event.isLaborOnly = True
-        event.save()
+            event.isService = False
+            event.isLaborOnly = True
+            event.save()
 
     columns, results = laborAttendanceByTerm(fixture_info['term1'])
     results = list(results)
