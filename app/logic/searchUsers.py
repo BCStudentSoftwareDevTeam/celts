@@ -1,3 +1,4 @@
+from peewee import fn
 from playhouse.shortcuts import model_to_dict
 from app.models.user import User
 def searchUsers(query, category=None):
@@ -6,15 +7,18 @@ def searchUsers(query, category=None):
 
         MySQL LIKE is case insensitive
     '''
-    # add wildcards to each piece of the query
     splitSearch = query.strip().split()
-    firstName = splitSearch[0] + "%"
-    lastName = " ".join(splitSearch[1:]) +"%"
-
-    if len(splitSearch) == 1: # search for query in first OR last name
-        searchWhere = (User.firstName ** firstName | User.lastName ** firstName | User.username ** splitSearch)
-    else:                     # search for first AND last name
-        searchWhere = (User.firstName ** firstName & User.lastName ** lastName)
+    if not splitSearch:
+        return User.select().where(False)
+    searchWhere = None
+    for namePart in splitSearch:
+        nameSearch = namePart + "%"
+        namePartWhere = (
+            User.firstName.contains(namePart) | User.lastName.contains(namePart) | User.username.contains(namePart))
+        if searchWhere is None:
+            searchWhere = namePartWhere
+        else:
+            searchWhere &= namePartWhere
 
     if category == "instructor":
         userWhere = (User.isFaculty | User.isStaff)
@@ -31,7 +35,14 @@ def searchUsers(query, category=None):
     else:
         userWhere = (User.isStudent)
 
+    fullSearchText = " ".join(splitSearch)
     # Combine into query
-    searchResults = User.select().where(searchWhere, userWhere)
+    searchResults = User.select().where(searchWhere, userWhere).order_by(
+        fn.CONCAT(User.firstName, " ", User.lastName).contains(fullSearchText).desc(),
+        User.firstName.startswith(fullSearchText).desc(),
+        User.lastName.startswith(fullSearchText).desc(),
+        User.lastName,
+        User.firstName
+    )
 
     return { user.username : model_to_dict(user) for user in searchResults }

@@ -29,6 +29,9 @@ def viewCceMinor(username):
     """
     Load minor management page with community engagements and summer experience
     """
+    if not (g.current_user.isAdmin or g.current_user.username == username or g.current_user.isCeltsStudentStaff):
+        return abort(403)
+
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
 
     activeTab = request.args.get("tab", "sustainedCommunityEngagements")
