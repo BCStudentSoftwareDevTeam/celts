@@ -617,6 +617,13 @@
   {% endif %}
 <!-- ################# Bonner Scholar ################ -->
 
+{% if volunteer != g.current_user %}
+<div class="text-center mt-3">
+  <a href="{{ url_for('admin.studentSearchPage') }}" class="btn btn-secondary">Back</a>
+</div>
+{% endif %}
+
+
 </div>
 <!-- ################# Add/Edit Notes Modal ################# -->
 <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" >
@@ -865,3 +872,4 @@
 <!-- ################# Edit Personal Information Modal ################ -->
 
 {% endblock %}
+
