@@ -1034,6 +1034,7 @@ INSERT INTO `profilenote` VALUES (1,'ackermanc',1,0,1),(2,'mooref',2,0,1),(3,'zu
 /*!40000 ALTER TABLE `profilenote` ENABLE KEYS */;
 UNLOCK TABLES;
 
+ALTER TABLE `profilenote` ADD isCCEMinorNote BOOLEAN NOT NULL DEFAULT FALSE;
 --
 -- Table structure for table `program`
 --
