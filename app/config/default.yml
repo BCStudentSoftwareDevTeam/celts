@@ -7,7 +7,7 @@ support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
 test_entry: "Default"
 
-lsf_url: "REPLACE"
+lsf_url: "USE local-override.yml"
 
 db:
     name: "celts"

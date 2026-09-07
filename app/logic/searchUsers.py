@@ -13,12 +13,13 @@ def searchUsers(query, category=None):
     searchWhere = None
     for namePart in splitSearch:
         nameSearch = namePart + "%"
-        namePartWhere = (
-            User.firstName.contains(namePart) | User.lastName.contains(namePart) | User.username.contains(namePart))
+        # This individual search term can match the user's first name, last name, or username.
+        namePartWhere = (User.firstName.contains(namePart) | User.lastName.contains(namePart) | User.username.contains(namePart))
+        # For the first search term, initialize the WHERE condition.
         if searchWhere is None:
             searchWhere = namePartWhere
         else:
-            searchWhere &= namePartWhere
+            searchWhere &= namePartWhere # Require every search term to match at least one of the first name, last name, or username fields.
 
     if category == "instructor":
         userWhere = (User.isFaculty | User.isStaff)
