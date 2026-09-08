@@ -97,10 +97,10 @@
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming"  else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Upcoming Events</button>
     </h3>
-    {% set show = "show" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else ""%}
+    {% set show = "show" if visibleAccordion == "upcoming" else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive" style="flex-direction: column">
@@ -167,12 +167,14 @@
               <thead>
                 <th scope="col">Program</th>
                 <th scope="col">Event Name</th>
+                <th scope="col">Participation Type</th>
                 <th scope="col">Event Date</th>
               </thead>
               {% for event in participatedEvents %}
               <tr>
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                <td>{{event.participatedType}}</td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
               </tr>
               {% endfor %}
@@ -189,12 +191,12 @@
 <!-- ################# Program Table ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable"  else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "" %}
+    {% set show = "show" if visibleAccordion == "programTable"  else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
@@ -206,7 +208,9 @@
                 <th scope="col">Training</th>
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
                   <th scope="col">Eligibility</th>
-                  <th scope="col">On Transcript</th>
+                  {% if g.current_user.isCeltsAdmin%}
+                    <th scope="col">On Transcript</th>
+                    {% endif %}
                 {% endif %}
 
               </tr>
@@ -285,7 +289,7 @@
             {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
             <div class="col-md-6">
-                <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
+                <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the current manager of:</h5>
                 <ul class="list-unstyled">
                 {% for program in programs %}
                   {% if program.id in permissionPrograms %}
@@ -340,14 +344,23 @@
                     <td>
                       <h6>{{bgType.description}}</h6>
                       <ul class="mb-0" id="bgHistory{{bgType.id}}">
-                        {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                          <li>
-                            {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
-                            {% if g.current_user.isCeltsAdmin %}
-                            <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
-                            {% endif %}
-                          </li>
-                        {% endfor %}
+                         {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                            <li class="d-flex align-items-center">
+                              <span class="me-2">
+                                {{ bgStatus.backgroundCheckStatus }}:
+                                {{ bgStatus.dateCompleted.strftime("%m/%d/%Y") }}
+                              </span>
+                              {% if g.current_user.isCeltsAdmin %}
+                                <button
+                                  class="btn btn-sm btn-link text-danger p-0"
+                                  id="deleteBgHistory"
+                                  data-id="{{ bgStatus.id }}"
+                                  title="Delete">
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                              {% endif %}
+                            </li>
+                          {% endfor %}
                       </ul>
                     </td>
                   {% if g.current_user.isCeltsAdmin %}
@@ -423,12 +436,13 @@
                     {% else %}
                       {{ "Bonner Scholar " if row.isBonnerNote else "Everyone"}}
                     {% endif %}
-                  </td>
-                  <td>
+                  <td class ="text-nowrap">
                     {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                     <button type="button" class="btn btn-sm btn-primary me-1 editNoteButton"data-noteid="{{ row.id }}"data-notetext="{{ row.note.noteContent }}"data-username="{{ volunteer.username }}"data-visibility="{{ row.viewTier }}"data-bonner="{{ 'yes' if row.isBonnerNote else 'no' }}">Edit</button>
+                     <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{ row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
-                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                      <button type="button" class="btn btn-sm btn-primary me-1" disabled>Edit</button>
+                      <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
                     {% endif %}
                   </td>
                 </tr>
@@ -484,7 +498,19 @@
               {% if bonnerNotes|length %}
               <dl class="bonnerNotes">
                 {% for row in profileNotes|selectattr("isBonnerNote") %}
-                    <dt>{{row.note.noteContent}}</dd>
+                    <dt>{{row.note.noteContent}}
+                      <span class="float-end">
+                        <i class="bi bi-pencil text-primary editNoteButton me-2" 
+                          data-notetext="{{row.note.noteContent}}"
+                          data-visibility="{{row.note.visibility}}"
+                          data-bonner="yes"
+                          data-noteid="{{row.note.id}}"
+                          data-username="{{volunteer.username}}"
+                          style="cursor:pointer"></i>
+                       <i class="bi bi-trash text-danger deleteNoteButton"
+                          data-noteid="{{row.note.id}}"
+                          data-username="{{volunteer.username}}"
+                          style="cursor:pointer"></i>
                     <dd class='text-muted'>{{row.note.createdBy.fullName}} <span class="float-end">{{row.note.createdOn.strftime('%m/%d/%Y')}}</span></dt>
                 {% endfor %}
               </dl>
@@ -522,7 +548,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Notes</h5>
+          <h5 class="modal-title">Notes</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
@@ -563,7 +589,7 @@
             <div class="form-group input-group-x form-outline ui-widget">
               <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
             </div>
-          </div>
+          </div> 
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -574,6 +600,29 @@
   </form>
 </div>
 <!-- ################# Add Notes Modal ################ -->
+
+
+<!-- ################# Delete Note Warning Modal ################ -->
+<div class="modal fade" id="deleteNoteWarning" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This action is irreversible.</p>
+                <p>By deleting this note, all information regarding this note will be removed.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteNote">Delete Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ################# Delete Note Warning Modal ################ -->
+ 
 
 <!-- ################# Ban or Unban Modal ################ -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
@@ -594,7 +643,7 @@
             <p align="left" id="banNote">Why the student was banned</p>
           </div>
           <div id="banEndDate">
-            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6><span class="text-danger">*</span>
           </div>
          
           <div class="input-group">

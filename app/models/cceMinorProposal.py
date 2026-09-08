@@ -22,13 +22,16 @@ class CCEMinorProposal(baseModel):
     supervisorEmail = CharField()
     totalHours = IntegerField(null=True)
     totalWeeks = IntegerField(null=True)
-    description = TextField()
     createdOn = DateTimeField(default=datetime.datetime.now)
     createdBy = ForeignKeyField(User)
-    status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])
+    status = CharField(constraints=[Check("status in ('Draft', 'Submitted', 'Approved', 'Denied', 'Completed')")])
 
     @property
     def isOver300Hours(self):
         if not int(self.totalHours) or (int(self.totalHours) and int(self.totalHours) >= 300):
             return True
         return False
+    
+    @property
+    def isApproved(self):
+        return self.status in ['Approved', 'Completed']

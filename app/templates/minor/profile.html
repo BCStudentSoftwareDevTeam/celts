@@ -4,6 +4,7 @@
 {% block scripts %}
   {{ super() }}
   <script type="module" src="/static/js/minorProfilePage.js"></script>
+  <script type="module" src="/static/js/cceMinorProposalManagement.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
@@ -14,6 +15,7 @@
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/minor.css') }}?u={{ lastStaticUpdate }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cceMinorManagement.css') }}?u={{ lastStaticUpdate }}">
 {% endblock %}
 
 {% block app_content %}

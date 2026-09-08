@@ -26,7 +26,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingStudentLedCount, getStudentLedEvents, getBonnerEvents, getOtherEvents, getEngagementEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents, getPastVolunteerOpportunitiesCount
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -69,49 +69,56 @@ def landingPage():
 def goToEventsList(programID):
     return {"activeTab": getActiveEventTab(programID)}
 
-@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents", 'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "volunteerOpportunities", 'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>/', methods=['GET'], defaults={'activeTab': "volunteerOpportunities", 'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
 @main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
-    currentTerm = g.current_term
-    if selectedTerm:
-        currentTerm = selectedTerm
-        
+
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select().order_by(Term.termOrder)
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term: Term = Term.get_by_id(currentTerm)
+    term = g.current_term
+    if selectedTerm:
+        term = selectedTerm
+        
+    # Make sure we have a Term object
+    term = Term.get_or_none(Term.id == term)
+    if term is None:
+        term = Term.get(Term.isCurrentTerm == True)
 
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
-    studentLedEvents = getStudentLedEvents(term)
-    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
+    volunteerOpportunities = getVolunteerOpportunities(term)
+    countUpcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(term, currentTime)
+    countPastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
-    otherEvents = getOtherEvents(term)
+    celtsLabor = getCeltsLabor(term)
 
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     # Fetch toggle state from session    
     toggleState = request.args.get('toggleState', 'unchecked')
 
-    # compile all student led events into one list
+    # compile all volunteer opportunitiesevents into one list
     studentEvents = []
-    for studentEvent in studentLedEvents.values():
+    for studentEvent in volunteerOpportunities.values():
         studentEvents += studentEvent # add all contents of studentEvent to the studentEvents list
 
     # Get the count of all term events for each category to display in the event list page.
-    studentLedEventsCount: int = len(studentEvents)
+    volunteerOpportunitiesCount: int = len(studentEvents)
+    countUpcomingVolunteerOpportunitiesCount: int = len(countUpcomingVolunteerOpportunities)
+    countPastVolunteerOpportunitiesCount: int = len(countPastVolunteerOpportunities)
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
-    otherEventsCount: int = len(otherEvents)
+    celtsLaborCount: int = len(celtsLabor)
 
     # gets only upcoming events to display in indicators
     if (toggleState == 'unchecked'):
-        studentLedEventsCount: int = sum(list(countUpcomingStudentLedEvents.values()))
         for event in trainingEvents:
             if event.isPastEnd:
                 trainingEventsCount -= 1
@@ -121,28 +128,29 @@ def events(selectedTerm, activeTab, programID):
         for event in bonnerEvents:
             if event.isPastEnd:
                 bonnerEventsCount -= 1
-        for event in otherEvents:
+        for event in celtsLabor:
             if event.isPastEnd:
-                otherEventsCount -= 1
-
+                celtsLaborCount -= 1
+            
     # Handle ajax request for Event category header number notifiers and toggle
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            "studentLedEventsCount": studentLedEventsCount,
+            "volunteerOpportunitiesCount": volunteerOpportunitiesCount,
+            "countPastVolunteerOpportunitiesCount": countPastVolunteerOpportunitiesCount,
+            "countUpcomingVolunteerOpportunitiesCount": countUpcomingVolunteerOpportunitiesCount,
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
-            "otherEventsCount": otherEventsCount,
+            "celtsLaborCount": celtsLaborCount,
             "toggleStatus": toggleState
         })
-    
     return render_template("/events/eventList.html",
                             selectedTerm = term,
-                            studentLedEvents = studentLedEvents,
+                            volunteerOpportunities = volunteerOpportunities,
                             trainingEvents = trainingEvents,
                             engagementEvents = engagementEvents,
                             bonnerEvents = bonnerEvents,
-                            otherEvents = otherEvents,
+                            celtsLabor = celtsLabor,
                             listOfTerms = listOfTerms,
                             rsvpedEventsID = rsvpedEventsID,
                             currentEventRsvpAmount = currentEventRsvpAmount,
@@ -151,7 +159,8 @@ def events(selectedTerm, activeTab, programID):
                             activeTab = activeTab,
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
-                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents,
+                            countUpcomingVolunteerOpportunities = countUpcomingVolunteerOpportunities,
+                            countPastVolunteerOpportunities = countPastVolunteerOpportunities,
                             toggleState = toggleState,
                             )
 
@@ -384,6 +393,7 @@ def addNote():
         flash("Failed to add profile note", "danger")
         return "Failed to add profile note", 500
 
+    
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):
     """
@@ -490,23 +500,17 @@ def volunteerRegister():
     program = event.program
     user = g.current_user
 
-    isAdded = checkUserRsvp(user, event)
     isEligible = isEligibleForProgram(program, user)
-    listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
     if isEligible:
         personAdded = addPersonToEvent(user, event)
-        if personAdded and listOfRequirements:
-            reqListToString = ', '.join(listOfRequirements)
-            flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
-        elif personAdded:
+        if personAdded:
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")
     else:
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
-
 
     if 'from' in request.form:
         if request.form['from'] == 'ajax':
@@ -542,9 +546,11 @@ def serviceTranscript(username):
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
+    zeroHourEvents = getZeroHourEvents(username)
     startDate = getStartYear(username)
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
+                            zeroHourEvents = zeroHourEvents,
                             slCourses = slCourses.objects(),
                             totalHours = totalHours,
                             startDate = startDate,

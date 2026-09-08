@@ -43,9 +43,9 @@ $('.remove_minor_candidate').on('click', function() {
     emailMinorCandidates($("#declaredStudentEmails").val())
   });
 
-  $('#emailAll').on('click', emailAll);
-
-  $(".updateMinorInterestButton").on("click", function(e){
+  $('#emailAll').on('click', emailAll); 
+  // this was done to fix a bug where the declare student button would not work on the second page.
+  $(document).on("click", ".updateMinorInterestButton", function(e){
     e.preventDefault();
     let interestForm = $("#updateMinorInterestForm");
     let url = $(this).data("url");

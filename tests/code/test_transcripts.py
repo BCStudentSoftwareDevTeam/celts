@@ -179,6 +179,39 @@ def testingProgram():
     assert not emptyProgramDict
 
 @pytest.mark.integration
+def testingZeroHourEvents():
+    username = "namet"
+    adminName = "ramsayb2"
+
+    with mainDB.atomic() as transaction:
+        zeroHourEvent = Event.create(name = "Test Zero Hour Event",
+                                     term = 1,
+                                     description = "Event for testing zero hours",
+                                     timeStart = "18:00:00",
+                                     timeEnd = "21:00:00",
+                                     location = "The testing lab",
+                                     isRsvpRequired = 0,
+                                     isPrerequisiteForProgram = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2021-12-12",
+                                     recurringId = None,
+                                     program = 9)
+
+        EventParticipant.create(user = username,
+                                event = zeroHourEvent,
+                                attended = True,
+                                hoursEarned = 0)
+
+        zeroHourEvents = getZeroHourEvents(username)
+        emptyZeroHourEvents = getZeroHourEvents(adminName)
+
+        assert emptyZeroHourEvents == []
+        assert zeroHourEvent in zeroHourEvents
+
+        transaction.rollback()
+
+@pytest.mark.integration
 def testingTotalHours():
 
     totalHours = getTotalHours("namet")

@@ -35,8 +35,10 @@ $(document).ready(function(){
     var tableRows = $(".showlist");
     if (isChecked) {
       tableRows.show();
+      $(".no-upcoming").hide()
     } else {
       tableRows.hide();
+      $(".no-upcoming").show()
     }
   }
 });
@@ -84,21 +86,44 @@ function updateIndicatorCounts(isChecked){
       toggleState: isChecked ? "checked" : "unchecked",
     },
     success: function(eventsCount) {
-      const studentLedEventsCount = Number(eventsCount.studentLedEventsCount);
+      const volunteerOpportunitiesCount = Number(eventsCount.volunteerOpportunitiesCount);
+      const upcomingVolunteerCount = Number(eventsCount.countUpcomingVolunteerOpportunitiesCount);
       const trainingEventsCount = Number(eventsCount.trainingEventsCount);
       const engagementEventsCount = Number(eventsCount.engagementEventsCount);
       const bonnerEventsCount = Number(eventsCount.bonnerEventsCount);
-      const otherEventsCount = Number(eventsCount.otherEventsCount);
+      const celtsLaborCount = Number(eventsCount.celtsLaborCount);
       const toggleStatus = eventsCount.toggleStatus;
       
-      $("#viewPastEventsToggle").prop(toggleStatus, true);
+      $("#viewPastEventsToggle").prop("checked", toggleStatus === "checked");
+      
+      // Update tab labels with event counts:
+      // - When toggle is ON, show total volunteer opportunities (upcoming + past)
+      // - When toggle is OFF, show upcoming volunteer opportunities only
+      // - For all tabs, show counts only if greater than zero; otherwise show the label without a count
 
-      // use ternary operators to populate the tab with a number if there are events, and clear the count if there are none
-      studentLedEventsCount > 0 ? $("#studentLedEvents").html(`Student-Led Services (${studentLedEventsCount})`) : $("#studentLedEvents").html(`Student-Led Services`)
+      if (toggleStatus === "checked") {
+        // Toggle ON: show total (upcoming + past)
+        if (volunteerOpportunitiesCount > 0) {
+          $("#volunteerOpportunities").html(
+            `Volunteer Opportunities (${volunteerOpportunitiesCount})`
+          );
+        } else {
+          $("#volunteerOpportunities").html(`Volunteer Opportunities`);
+        }
+      } else {
+        // Toggle OFF: show upcoming only
+        if (upcomingVolunteerCount > 0) {
+          $("#volunteerOpportunities").html(
+            `Volunteer Opportunities (${upcomingVolunteerCount})`
+          );
+        } else {
+          $("#volunteerOpportunities").html(`Volunteer Opportunities`);
+        }
+      }
       trainingEventsCount > 0 ? $("#trainingEvents").html(`Trainings (${trainingEventsCount})`) : $("#trainingEvents").html(`Trainings`)
       engagementEventsCount > 0 ? $("#engagementEvents").html(`Education and Engagement (${engagementEventsCount})`) : $("#engagementEvents").html('Education and Engagement')
       bonnerEventsCount > 0 ? $("#bonnerScholarsEvents").html(`Bonner Scholars (${bonnerEventsCount})`) : $("#bonnerScholarsEvents").html(`Bonner Scholars`)
-      otherEventsCount > 0 ? $("#otherEvents").html(`Other Events (${otherEventsCount})`) : $("#otherEvents").html(`Other Events`)
+      celtsLaborCount > 0 ? $("#celtsLabor").html(`Celts Labor (${celtsLaborCount})`) : $("#celtsLabor").html(`Celts Labor`)
     },
     error: function(request, status, error) {
       console.log(status,error);

@@ -27,3 +27,13 @@
 .step.finish {
   background-color: #0d6efd;
 }
+
+@media (max-width: 767.98px) {
+  #proposalButtonControls {
+    --bs-gutter-y: 0.5rem;
+  }
+
+  #proposalButtonControls .proposal-button-group {
+    display: contents;
+  }
+}
