@@ -35,7 +35,7 @@ def test_searchUsers():
         searchResults = searchUsers('sa')
         assert len(searchResults) == 2
         assert searchResults['lamichhanes2'] == model_to_dict(User.get_by_id('lamichhanes2'))
-        assert searchResults["sawconc"] == model_to_dict(secondUser)
+        assert searchResults["sawconc"] == model_to_dict (User.get_by_id('sawconc'))
         assert '(555)555-5555' in searchResults["lamichhanes2"].values()
 
         transaction.rollback()
@@ -52,6 +52,8 @@ def test_searchUser_categories():
     assert len(searchResults) == 0
     searchResults = searchUsers('sreyn', 'celtsLinkAdmin')
     assert len(searchResults) == 0
+    searchResults = searchUsers('Qasem', 'currentStudents')
+    assert len(searchResults) == 0
 
     # tests that the search categories include properly
     searchResults = searchUsers('sco', 'instructor') # faculty
@@ -63,6 +65,8 @@ def test_searchUser_categories():
     searchResults = searchUsers('zach', 'studentstaff')
     assert searchResults['neillz'] == model_to_dict(User.get_by_id('neillz'))
     searchResults = searchUsers('za', 'celtsLinkAdmin')
+    assert searchResults['neillz'] == model_to_dict(User.get_by_id('neillz'))
+    searchResults = searchUsers('zach', 'currentStudents')
     assert searchResults['neillz'] == model_to_dict(User.get_by_id('neillz'))
 
     # Make sure we are getting into these cases for a non-default category

@@ -1,5 +1,5 @@
 from flask import  url_for, g, session
-from peewee import DoesNotExist, fn, JOIN
+from peewee import DoesNotExist, fn, JOIN, Case, Value
 from dateutil import parser
 from datetime import timedelta, date, datetime
 from dateutil.relativedelta import relativedelta
@@ -118,8 +118,20 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
     
     seriesId = calculateNewSeriesId()
 
-    # Create separate event data inheriting from the original eventData
-    seriesData = eventData.get('seriesData')
+    # Create separate event data for each event in the series, inheriting from the original eventData
+    
+    # Reformat dates from Jul 10, 2026 to 2026-07-10 for easier sorting
+    eventData2 = []
+    for ed in eventData['seriesData']:
+        try:
+            ed['eventDate'] = datetime.strptime(ed['eventDate'], "%b %d, %Y").strftime("%Y-%m-%d")
+        except:
+            pass    # eventDate comes into the system differently for recurring weekly events and recurring events (non-weekly). This should format it correctly for both cases
+        eventData2.append(ed)    
+    eventData['seriesData'] = eventData2
+
+    seriesData = sorted(eventData.get('seriesData'), key=lambda x: datetime.strptime(x['eventDate'].split(' ')[0] + ' ' + x['startTime'], '%Y-%m-%d %H:%M'))
+    # sorts the events in the series by date and time so that the events are created in order and the naming convention of Week 1, Week 2, etc. is consistent with the order of the events.
     isRepeating = bool(eventData.get('isRepeating'))
     with mainDB.atomic() as transaction:
         for index, event in enumerate(seriesData):
@@ -129,8 +141,9 @@ def attemptSaveMultipleOfferings(eventData, attachmentFiles = None):
                 'startDate': event['eventDate'],
                 'timeStart': event['startTime'],
                 'timeEnd': event['endTime'],
+                'location': event['eventLocation'],
                 'seriesId': seriesId,
-                'isRepeating': bool(isRepeating)
+                'isRepeating': bool(isRepeating), 
                 })
             # Try to save each offering
             savedEvents, validationErrorMessage = attemptSaveEvent(eventInfo, attachmentFiles)
@@ -162,7 +175,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
-        
     newEventData = preprocessEventData(eventData)
     
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -173,7 +185,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     if attachmentFiles:
         for event in events:
             addFile = FileHandler(attachmentFiles, eventId=event.id)
-            addFile.saveFiles(saveOriginalFile=events[0])
+            addFile.saveFiles(parentEvent=events[0])
     return events, ""
 
 
@@ -183,40 +195,42 @@ def saveEventToDb(newEventData, renewedEvent = False):
         raise Exception("Unvalidated data passed to saveEventToDb")
     
     isNewEvent = ('id' not in newEventData)
-
     eventRecords = []
     with mainDB.atomic():
-        
         eventData = {
-                "term": newEventData['term'],
-                "name": newEventData['name'],
-                "description": newEventData['description'],
-                "timeStart": newEventData['timeStart'],
-                "timeEnd": newEventData['timeEnd'],
-                "location": newEventData['location'],
-                "isFoodProvided" : newEventData['isFoodProvided'],
-                "isLaborOnly" : newEventData['isLaborOnly'],
-                "isTraining": newEventData['isTraining'],
-                "isEngagement": newEventData['isEngagement'],
-                "isRsvpRequired": newEventData['isRsvpRequired'],
-                "isService": newEventData['isService'],
-                "startDate": newEventData['startDate'],
-                "rsvpLimit": newEventData['rsvpLimit'],
-                "contactEmail": newEventData['contactEmail'],
-                "contactName": newEventData['contactName'],
+                "term":             newEventData['term'],
+                "name":             newEventData['name'],
+                "description":      newEventData['description'],
+                "timeStart":        newEventData['timeStart'],
+                "timeEnd":          newEventData['timeEnd'],
+                "location":         newEventData['location'],
+                "isFoodProvided" :  newEventData['isFoodProvided'],                
+                "isLaborOnly" :     newEventData['isLaborOnly'],                
+                "allowsLabor" :     newEventData['allowsLabor'],
+                "isTraining":       newEventData['isTraining'],
+                "isEngagement":     newEventData['isEngagement'],
+                "isRsvpRequired":   newEventData['isRsvpRequired'],
+                "isService":        newEventData['isService'],
+                "startDate":        newEventData['startDate'],
+                "rsvpLimit":        newEventData['rsvpLimit'],
+                "contactEmail":     newEventData['contactEmail'],
+                "contactName":      newEventData['contactName'],
             }
         
-        # The three fields below are only relevant during event creation so we only set/change them when 
+        # These fields below are only relevant during event creation so we only set/change them when 
         # it is a new event. 
         if isNewEvent:
             eventData['program'] = newEventData['program']
             eventData['seriesId'] = newEventData.get('seriesId')
             eventData['isRepeating'] = bool(newEventData.get('isRepeating'))
             eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
-            eventRecord = Event.create(**eventData)
+            eventData["isCeltsTraining"] = bool(newEventData.get('isCeltsTraining', False))
+            eventRecord = Event.create(**eventData)            
         else:
             eventRecord = Event.get_by_id(newEventData['id'])
-            Event.update(**eventData).where(Event.id == eventRecord).execute()
+            for key, value in eventData.items():
+                setattr(eventRecord, key, value)
+            eventRecord.save()            
 
         if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
             updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
@@ -224,17 +238,20 @@ def saveEventToDb(newEventData, renewedEvent = False):
         eventRecords.append(eventRecord)
     return eventRecords
 
-def getStudentLedEvents(term):
-    studentLedEvents = list(Event.select(Event, Program)
+def getVolunteerOpportunities(term):
+    volunteerOpportunities = list(Event.select(Event, Program)
                                  .join(Program)
-                                 .where(Program.isStudentLed,
-                                        Event.term == term, Event.deletionDate == None)
+                                 .where((Event.term == term) &
+                                        (Event.deletionDate.is_null()) &
+                                        (Event.isService == True) &
+                                        ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null())
+                                 )
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
 
     programs = {}
 
-    for event in studentLedEvents:
+    for event in volunteerOpportunities:
         programs.setdefault(event.program, []).append(event)
 
     return programs
@@ -242,28 +259,61 @@ def getStudentLedEvents(term):
 def getEngagementEvents(term):
     engagementEvents = list(Event.select(Event, Program)
                                  .join(Program)
-                                 .where(Event.isEngagement,
+                                 .where(Event.isEngagement, Event.isLaborOnly == False,
                                         Event.term == term, Event.deletionDate == None)
                                  .order_by(Event.startDate, Event.timeStart)
                                  .execute())
     return engagementEvents
 
-def getUpcomingStudentLedCount(term, currentTime):
+def getUpcomingVolunteerOpportunitiesCount(term, currentDate):
     """
-        Return a count of all upcoming events for each student led program.
+        Return a count of all upcoming events for each volunteer opportunitiesprogram.
     """
     
-    upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
-                            .join(Event, on=(Program.id == Event.program_id))
-                            .where(Program.isStudentLed,
-                                    Event.term == term, Event.deletionDate == None,
-                                    (Event.startDate > currentTime) | ((Event.startDate == currentTime) & (Event.timeEnd >= currentTime)),
-                                    Event.isCanceled == False)
-                            .group_by(Program.id))
-    
-    programCountDict = {}
+    upcomingCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate > currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeEnd >= currentDate.time()))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
 
+    programCountDict = {}
     for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
+
+def getPastVolunteerOpportunitiesCount(term, currentDate):
+    """
+        Return a count of all past events for each volunteer opportunities program.
+    """
+    
+    pastCount = (
+        Program
+        .select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+        .join(Event, on=(Program.id == Event.program_id))
+        .where(
+            (Event.term == term) &
+            (Event.deletionDate.is_null(True)) &
+            (Event.isService == True) &
+            ((Event.isLaborOnly == False) | Event.isLaborOnly.is_null(True)) &
+            ((Event.startDate < currentDate) |
+             ((Event.startDate == currentDate) & (Event.timeStart <= currentDate.time()))) &
+            (Event.isCanceled == False)
+        )
+        .group_by(Program.id)
+    )
+
+    programCountDict = {}
+    for programCount in pastCount:
         programCountDict[programCount.id] = programCount.eventCount
     return programCountDict
 
@@ -279,7 +329,7 @@ def getTrainingEvents(term, user):
     """
     trainingQuery = (Event.select(Event).distinct()
                           .join(Program, JOIN.LEFT_OUTER)
-                          .where(Event.isTraining == True,
+                          .where(Event.isTraining == True, Event.isLaborOnly == False,
                                  Event.term == term, Event.deletionDate == None)
                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
@@ -290,36 +340,28 @@ def getTrainingEvents(term, user):
     return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
-    bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
-                                     .join(Program)
-                                     .where(Program.isBonnerScholars,
-                                            Event.term == term, Event.deletionDate == None)
-                                     .order_by(Event.startDate, Event.timeStart)
-                                     .execute())
+    bonnerScholarsEvents = list(
+        Event.select(Event, Program.id.alias("program_id"))
+            .join(Program)
+            .where(
+                Program.isBonnerScholars,
+                Event.term == term,
+                Event.deletionDate == None
+            )
+            .order_by(Event.startDate, Event.timeStart)
+            .execute()
+    )
     return bonnerScholarsEvents
 
-def getOtherEvents(term):
+def getCeltsLabor(term):
     """
-    
-    Get the list of the events not caught by other functions to be displayed in
-    the Other Events section of the Events List page.
-    :return: A list of Other Event objects
+    Labor tab: events explicitly marked as Labor Only.
     """
-    # Gets all events that are not associated with a program and are not trainings
-    # Gets all events that have a program but don't fit anywhere
-    
-    otherEvents = list(Event.select(Event, Program)
-                            .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.term == term, Event.deletionDate == None,
-                                   Event.isTraining == False,
-                                   Event.isAllVolunteerTraining == False,
-                                   ((Program.isOtherCeltsSponsored) |
-                                   ((Program.isStudentLed == False) &
-                                   (Program.isBonnerScholars == False))))
+    celtsLabor = list(Event.select()
+                            .where(Event.term == term, Event.deletionDate == None, Event.isLaborOnly == True)
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
-
-    return otherEvents
+    return celtsLabor
 
 def getUpcomingEventsForUser(user, asOf=datetime.now(), program=None):
     """
@@ -369,20 +411,22 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    participatedEvents = (Event.select(Event, Program.programName)
+    # Does this handle labor only and/or includes labor events?
+    participatedEvents = (Event.select(Event, Program.programName, Case(None, (
+                               ((Event.allowsLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"), 
+                               ((Event.allowsLabor | Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                               (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, Event.isCeltsTraining == False)
                                .order_by(Event.startDate, Event.name))
-
-    allVolunteer = (Event.select(Event, "")
+    allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
-
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
@@ -394,7 +438,7 @@ def validateNewEventData(data):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['isLaborOnly']]:
+    if 'on' in [data['isFoodProvided'], data['isRsvpRequired'], data['isTraining'], data['isEngagement'], data['isService'], data['isRepeating'], data['allowsLabor']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['timeEnd'] <= data['timeStart']:
@@ -456,7 +500,9 @@ def getRepeatingEventsData(eventData):
     
     return [ {'name': f"{eventData['name']} Week {counter+1}",
               'date': eventData['startDate'] + timedelta(days=7*counter),
-              "week": counter+1}
+              "week": counter+1,
+              'location': eventData['location']
+            }
             for counter in range(0, ((eventData['endDate']-eventData['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
@@ -470,9 +516,10 @@ def preprocessEventData(eventData):
         - seriesData should be a JSON string
         - Look up matching certification requirement if necessary
     """
-    ## Process checkboxes
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'isLaborOnly']
 
+    ## Process checkboxes and templateData
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining']
+    
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
@@ -515,8 +562,8 @@ def preprocessEventData(eventData):
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
     if 'timeEnd' in eventData:
-        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
-
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])    
+    
     return eventData
 
 def getTomorrowsEvents():
@@ -700,5 +747,3 @@ def updateEventCohorts(event, cohortYears):
     except Exception as e:
         print(f"Error updating cohorts for event: {e}")
         return False, f"Error updating cohorts for event: {e}", []
-
-

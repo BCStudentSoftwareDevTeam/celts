@@ -1,16 +1,16 @@
 import searchUser from './searchUser.js'
+
 function callback(selected) {
-  $("#searchStudent").submit();
+  $("#searchStudentsInput").submit();
 }
+
 $(document).ready(function() {
-  $("#searchStudentsInput").on("input", function() {
-    searchUser("searchStudentsInput", callback);
-  });
-  
+  searchUser("searchStudentsInput", callback);   // initialize ONCE
+
   $("#searchIcon").click(function (e) {
     e.preventDefault();
     callback($("#searchStudentsInput").val());
   });
-  $("#searchStudentsInput").focus() 
-})
 
+  $("#searchStudentsInput").focus();
+});

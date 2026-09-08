@@ -21,7 +21,7 @@ $(document).ready(function(){
       url: "/goToEventsList/"+programID,
       type: "GET",
       success: function(response) {
-        if (response.activeTab === "studentLedEvents"){
+        if (response.activeTab === "volunteerOpportunities"){
           window.location.href += "eventsList/"+term+"/"+response.activeTab+"/"+programID
         } else {
           window.location.href += "eventsList/"+term+"/"+response.activeTab

@@ -2,6 +2,7 @@
 
 {% set isNewEvent = 'create' in request.path %}
 {% set showRecurringToggle = True %}
+{% set showEventTypeOptions = True %}
 {% if isNewEvent %}
   {% if template.tag == 'single-program' %}
     {% set programName = eventData.program.programName %}
@@ -15,14 +16,26 @@
   {% elif eventData["program"].programName == 'CELTS-Sponsored Event' and template.tag == 'all-volunteer' %}
     {% set page_title = 'Create All Volunteer Training' %}
     {% set showRecurringToggle = False %}
+    {% set showEventTypeOptions = False %}
 
+  {% elif template.tag == 'all-celts-training' %}
+    {% set page_title = 'Create All CELTS Training (Labor)' %}
+    {% set showRecurringToggle = False %}
+    {% set showEventTypeOptions = False %}
+  
+  {% elif template.tag == 'labor-meeting' %}
+    {% set page_title = 'Create Weekly Labor Meeting' %}
+    {% set showRecurringToggle = True %}
+    {% set showEventTypeOptions = False %}
+  
   {% elif template.tag == 'no-program' %}
     {% set page_title = 'Create Other CELTS-Sponsored Event' %}
 
   {% else %}
     {% set page_title = 'Create ' + template.name + ' Event' %}
   {% endif %}
-{% extends "base.html" %}
+
+  {% extends "base.html" %}
 {% else %}
   {% set page_title = eventData.name %}
   {% extends "events/eventNav.html"%}
@@ -56,7 +69,7 @@
         {% endblock %}
         {{super()}}
       {% else %}
-        <div class="text-center">
+        <div class="text-center" id="pageTitle" name="{{template.tag}}">
           <h1 id="pageTitle">{{page_title}}</h1>
         </div>
       {% endif %}
@@ -64,7 +77,7 @@
     {% endblock %}
 
     {% macro locationTimeMacro(eventData, pageLocation) %}
-<div class="form-group mb-4">
+<div class="form-group mb-4" id="eventLocation-{{pageLocation}}">
   <label class="required form-label" for='inputEventLocation-{{pageLocation}}'><strong>Location</strong></label>
   <input class="form-control needsValidation all" id='inputEventLocation-{{pageLocation}}' placeholder="Enter location" name="location"
     value="{{eventData.location}}" required>
@@ -90,7 +103,7 @@
           <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
             {{"checked" if eventData.isSeries}} />
-        </fieldset>
+        </fieldset> 
       </div>
   {% endif %}
     </div>
@@ -213,6 +226,7 @@
               <th>Date</th>
               <th>Start Time</th>
               <th>End Time</th>
+              <th>Location</th>
             </tr>
           </thead>
 
@@ -278,63 +292,65 @@
           </div>
         </div>
       </div>
-      {% if page_title != 'Create All Volunteer Training' %}
+      {% if showEventTypeOptions %}
       <div class="pt-4 mb-4">
-  <div class="row">
-    <div class="form-group col-xl-6">
-      <label class="label required toggleHeader">(Must Select One)</label>
-      <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
-      </div>
-      <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkServiceHours"><strong>This event earns service hours.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}} />
-      </div>
-      <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkEngagement"><strong>This event is engagement or education.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
-      </div>
-      {% if eventData['program'].isBonnerScholars %}
-      <div class="form-check form-switch">
-        <label class="custom-control-label" for="checkBonners"><strong>This is a Bonner Scholars event.</strong></label>
-        <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkBonners" name="isBonnersChecked" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
+        <div class="row">
+          <div class="form-group col-xl-6">
+            <label class="label required toggleHeader">(Must Select One)</label>
+            <div class="form-check form-switch">
+              <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
+            </div>
+            <div class="form-check form-switch">
+              <label class="custom-control-label" for="checkServiceHours"><strong>This event earns service hours.</strong></label>
+              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}} />
+            </div>
+            <div class="form-check form-switch">
+              <label class="custom-control-label" for="checkEngagement"><strong>This event is for education or participation only.</strong></label>
+              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkEngagement" name="isEngagement" {{"checked" if eventData.isEngagement}} />
+            </div>
+            {% if eventData['program'].isBonnerScholars %}
+            <div class="form-check form-switch">
+              <label class="custom-control-label" for="checkBonners"><strong>This is a Bonner Scholars event.</strong></label>
+              <input class="form-check-input main series seriesWeekly" type="checkbox" id="checkBonners" name="isBonnersChecked" {{"checked" if eventData['program'].isBonnerScholars and not eventData.isService and not eventData.isTraining}} />
+            </div>
+            {% endif %}
+          </div>
+          
+          <div class="col-xl-1 columnDivide d-none d-xl-block"></div>
+          
+          <div class="form-group col-xl-5">
+            <label class="label toggleHeader">(Optional)</label>
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}} />
+              <label class="form-check-label" for="checkRSVP"><strong>This event requires RSVP.</strong></label>
+            </div>
+            <div class="form-group mb-3">
+                {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+                <div class="form-group" id="limitGroup" style="{{hide}}">
+                  <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+                  <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit"
+                    value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
+                </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}} />
+                <label class="custom-control-label" for="checkFood"><strong>This event provides food.</strong></label>
+              </div>
+              {% if not eventData.isLaborOnly %}
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="checkAllowsLabor" name="allowsLabor" {{"checked" if eventData.allowsLabor}}/>
+                <label class="custom-control-label" for="checkAllowsLabor"><strong>This event includes labor.</strong></label>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
       {% endif %}
-    </div>
-    
-    <div class="col-xl-1 columnDivide d-none d-xl-block"></div>
-    
-    <div class="form-group col-xl-5">
-      <label class="label toggleHeader">(Optional)</label>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}} />
-        <label class="form-check-label" for="checkRSVP"><strong>This event requires RSVP.</strong></label>
+      <div class="form-group mb-5">
+        <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
+        <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" />
       </div>
-      <div class="form-group mb-3">
-          {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
-          <div class="form-group" id="limitGroup" style="{{hide}}">
-            <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-            <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit"
-              value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit" pattern="^[0-9]+$"></input>
-          </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}} />
-          <label class="custom-control-label" for="checkFood"><strong>This event provides food.</strong></label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="checkLaborOnly" name="isLaborOnly" {{"checked" if eventData.isLaborOnly}}/>
-          <label class="custom-control-label" for="checkLaborOnly"><strong>This event is for labor only.</strong></label>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-<div class="form-group mb-5">
-  <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
-  <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" />
-</div>
 
       {% if filepaths %}
       <div class="form-group mb-5">
@@ -367,6 +383,8 @@
   </div>
   </div>
 </form>
+
+
 <!-- Modal for Cancel Event -->
 <div class="modal fade" id="cancelWarning" tabindex="-1" aria-labelledby="cancelModel" aria-hidden="true">
   <div class="modal-dialog">
@@ -475,24 +493,31 @@
           <br>
         </div>
         
-        <!-- Template eventOffering row -->
+        <!-- Template eventOffering row -->         
         {% if showRecurringToggle %}
             <div class="d-flex justify-content-start ms-1 form-check form-switch">
               <input class="form-check-input align-items-center" type="checkbox" id="checkIsRepeating" name="isRepeating" />
               <label class="ms-2" for="checkIsRepeating"><strong>This series repeats weekly</strong></label>
             </div>
         {% endif %}
-        
         <div class="d-none mb-2" id="repeatingEventsDiv">
           <div class="row col-md-12 my-3">
-
-            <div class="form-group mb-3">
+            <div class="form-group mb-3 col-md-6">
               <label class="required form-label me-2 mb-0" for="repeatingEventsNamePicker"><strong>Event Name</strong></label>
               <div class='input-group date'>
                 <input autocomplete="off" type='text'
                   class="form-control repeatingEventsField"
                   name="repeatingEventsName" placeholder="Enter name"
                   id='repeatingEventsNamePicker' />
+              </div>
+            </div>
+            <div class="form-group mb-3 col-md-6">
+              <label class="required form-label me-2 mb-0" for="repeatingEventsLocationPicker"><strong>Location</strong></label>
+              <div class='input-group date'>
+                <input autocomplete="off" type='text'
+                  class="form-control repeatingEventsField"
+                  name="repeatingEventsLocation" placeholder="Enter Location"
+                  id='repeatingEventsLocationPicker' />
               </div>
             </div>
 
@@ -558,6 +583,7 @@
               <tr>
                 <th>Event Name</th>
                 <th>Date</th>
+                <th>Location</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -568,10 +594,15 @@
         <!--non repeating series -->
         <div class="eventOffering row mb-2 divStripes pt-3 pb-4 d-none" id="multipleOfferingEvent">
           <br>
-          <div class="form-group mb-3">
+          <div class="form-group mb-3 col-md-6">
             <label class="form-label required" for="eventName"><strong>Event Name</strong></label>
             <input type="text" class="form-control multipleOfferingNameField" id="eventName" name="eventName"
               placeholder="Enter event name" required>
+          </div>
+          <div class="form-group mb-3 col-md-6">
+            <label class="form-label required" for="eventName"><strong>Event Location</strong></label>
+            <input type="text" class="form-control multipleOfferingLocationField" name="eventLocation"
+              placeholder="Enter Location" required>
           </div>
 
           <!--series date datepicker-->
