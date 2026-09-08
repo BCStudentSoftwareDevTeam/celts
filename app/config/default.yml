@@ -17,11 +17,11 @@ tracy:
     name: "UTE"
     host: "timemachine1sql.berea.edu"
     user: "ute_limited"
-    password: "OVERRIDE"
+    password: "Edit local-override.yml"
 
 ldap:
     user: "BPLP"
-    password: "OVERRIDE"
+    password: "Edit local-override.yml"
 
 files:
   base_path: 'app/static/files'
@@ -33,16 +33,11 @@ files:
   proposal_attachment_path: 'proposalattachments'
 
 campusgroups:
-  sandbox:
-    url: https://berea-sandbox.campusgroups.com
-    secret: 'addkeyhere' 
-    key: 'addkeyhere'  
-    school: 'berea-sandbox'
-  production:
-    url: https://berea.campusgroups.com
-    secret: 'addkeyhere' 
-    key: 'addkeyhere'  
-    school: 'berea'
+  url: https://berea-sandbox.campusgroups.com
+  api_path: WebServices/campusgroups.asmx
+  secret: 'Edit local-override.yml'
+  key: 'Edit local-override.yml'
+  school: 'berea-sandbox'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea

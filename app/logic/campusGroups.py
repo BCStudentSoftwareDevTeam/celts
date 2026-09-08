@@ -46,12 +46,12 @@ REQUIRED_FIELDS = [
     # "school",               			# String[30]
 
 class CampusGroups:
-	def __init__(self, campusGroupsEnv = "sandbox"):
-		self.url = app.config["campusgroups"][campusGroupsEnv]["url"]
-		self.secret = app.config["campusgroups"][campusGroupsEnv]["secret"]
-		self.key = app.config["campusgroups"][campusGroupsEnv]["key"]
-		self.school = app.config["campusgroups"][campusGroupsEnv]["school"]
-		self.headers = {'X-CG-API-Secret': self.secret}
+    def __init__(self):
+		self.url = app.config["campusgroups"]["url"]
+		self.api_path = app.config["campusgroups"]["api_path"]
+		self.key = app.config["campusgroups"]["key"]
+		self.school = app.config["campusgroups"]["school"]
+		self.headers = {'X-CG-API-Secret': app.config["campusgroups"]["secret"]}
 		self.event = None
 
 	def getEvents(self):
@@ -71,12 +71,11 @@ class CampusGroups:
 		"""
 		Add or update an event in CampusGroups using the CreateUpdateEvent SOAP API.
 		"""
-		createUpdateEvent_url = "https://berea-sandbox.campusgroups.com/WebServices/campusgroups.asmx?op=CreateUpdateEvent"
+		createUpdateEvent_url = f'{self.url}/{self.api_path}?op=CreateUpdateEvent'
 		xmlOut = self.build_event_xml(eventData)
 		
 		self.headers["SOAPAction"] = "http://campusgroups.com/CreateUpdateEvent"
 		self.headers["Content-Type"] = "text/xml; charset=utf-8"
-
 	
 		response = requests.post(createUpdateEvent_url, data=xmlOut, headers=self.headers, timeout=15)
 		response.raise_for_status()

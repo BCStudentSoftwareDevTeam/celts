@@ -60,6 +60,7 @@ def retrieveEvents():
         cg = CampusGroups()
         events = cg.getEvents()
         return events
+
     except requests.exceptions.RequestException as e:
         print("Error retrieving data from campusgroups: \n", e)
         return "", 500
@@ -67,17 +68,12 @@ def retrieveEvents():
 
 @events_bp.route('/addEventToCampusGroups/<event_id>', methods=['GET'])
 def addEventToCampusGroups(event_id):
-    if app.env == "production":
-        campusGroupsEnv = "production"
-    else:
-        campusGroupsEnv = "sandbox"
-
     try:
-        cg = CampusGroups(campusGroupsEnv)
+        cg = CampusGroups()
         data = cg.parseEventData(event_id)
         response = cg.addEvent(data)
         return response  # FIXME Return a better response, or parse this in the front end
+
     except requests.exceptions.RequestException as e:
         print("Error retrieving data from campusgroups: \n", e)
         return "", 500
-	
