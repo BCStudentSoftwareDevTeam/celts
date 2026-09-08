@@ -186,11 +186,9 @@ def createEvent(templateid, programid):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort
-<<<<<<< HEAD
                 
-    trainingEvents = Event.select().where(Event.isTraining == True).order_by(Event.name)        
-=======
->>>>>>> development
+    trainingEvents = Event.select().where(Event.isTraining == True).order_by(Event.name)  
+          
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
