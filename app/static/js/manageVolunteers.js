@@ -160,23 +160,21 @@ $(document).ready(function() {
     });
   });
 
-$(".attendanceCheck").on("change", function() {
-    // find checkbox/hours row
-    let $row = $(this).closest("tr");
-    let $hoursInput = $row.find("input[name^='inputHours_']");  
-    let eventLength = $("#eventLength").text();     
+
+  $(".attendanceCheck").on("change", function() {
+    let username =  this.name.substring(9) //get everything after the 9th character;
+    let inputFieldID = `inputHours_${username}`
 
     if (this.checked) {
-      $hoursInput.prop('disabled', false);
-      if (!$hoursInput.val()) {
-        $hoursInput.val(eventLength);  // pre-fill with event length if empty
-      }
+      $(`#${inputFieldID}`).prop('disabled', false);
+      let eventLength = $("#eventLength").text();
+      $(`#${inputFieldID}`).val(eventLength);
+
     } else {
-      // clear value, diable input
-      $hoursInput.prop('disabled', true);     
-      $hoursInput.val(null);                    
+      $(`#${inputFieldID}`).prop('disabled', true);
+      $(`#${inputFieldID}`).val(null);
     }
-});
+  });
 
   $("#selectAllVolunteers").click(function(){
       $("#addVolunteerModal input[type=checkbox]").prop('checked', true);

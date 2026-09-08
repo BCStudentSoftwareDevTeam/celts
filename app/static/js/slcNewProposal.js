@@ -183,7 +183,7 @@ function disableInput() {
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#syllabusUploadButton").prop("disabled", true);
-    $("#submitAndApproveButtonWrapper").addClass("d-none");
+    $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
     $(".slcQuestionWordCounter").replaceWith(" ");
@@ -194,7 +194,6 @@ function disableInput() {
 function readOnly() {
     return window.location.href.includes("view");
 }
-
 
 function fixStepIndicator(navigateTab) {
   // This function updates the active step indicator
@@ -231,51 +230,51 @@ function showTab(currentTab) {
 
   switch(currentTab) {
     case 0: // First page
-        $("#cancelButtonWrapper").removeClass("d-none");
-        $("#previousButtonWrapper").addClass("d-none");
-        $("#submitAndApproveButtonWrapper").addClass("d-none");
+        $("#cancelButton").show();
+        $("#previousButton").hide();
+        $("#submitAndApproveButton").hide();
         $("#nextButton").text("Next");
-        $("#nextButtonWrapper").removeClass("d-none");
-        $("#saveContinueWrapper").addClass("d-none");
-        $("#exitButtonWrapper").addClass("d-none")
-        $("#saveExitWrapper").removeClass("d-none");
+        $("#nextButton").show();
+        $("#saveContinue").hide();
+        $("#exitButton").hide()
+        $("#saveExit").show();
         if(readOnly()) {
-            $("#saveExitWrapper").addClass("d-none");
-            $("#exitButtonWrapper").removeClass("d-none")
+            $("#saveExit").hide();
+            $("#exitButton").show()
         }
         break;
     case 1: // Second page
-        $("#cancelButtonWrapper").addClass("d-none");
-        $("#previousButtonWrapper").removeClass("d-none");
-        $("#submitAndApproveButtonWrapper").addClass("d-none");
-        $("#nextButtonWrapper").addClass("d-none");
-        $("#saveContinueWrapper").removeClass("d-none");
+        $("#cancelButton").hide();
+        $("#previousButton").show();
+        $("#submitAndApproveButton").hide();
+        $("#nextButton").hide();
+        $("#saveContinue").show();
         $("#saveContinue").text("Next");
-        $("#saveExitWrapper").removeClass("d-none")
-        $("#exitButtonWrapper").addClass("d-none")
+        $("#saveExit").show()
+        $("#exitButton").hide()
         if(readOnly()) {
-            $("#nextButtonWrapper").removeClass("d-none");
-            $("#saveContinueWrapper").addClass("d-none");
-            $("#saveExitWrapper").addClass("d-none")
+            $("#nextButton").show();
+            $("#saveContinue").hide();
+            $("#saveExit").hide()
             $(".removeAttachment").hide()
-            $("#exitButtonWrapper").removeClass("d-none")
+            $("#exitButton").show()
         }
         break;
     case 2: // Third page
-        $("#cancelButtonWrapper").addClass("d-none");
-        $("#previousButtonWrapper").removeClass("d-none");
-        $("#submitAndApproveButtonWrapper").removeClass("d-none");
+        $("#cancelButton").hide();
+        $("#previousButton").show();
+        $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit Proposal");
-        $("#nextButtonWrapper").removeClass("d-none");
-        $("#saveContinueWrapper").addClass("d-none");
-        $("#exitButtonWrapper").addClass("d-none")
-        $("#saveExitWrapper").removeClass("d-none")
+        $("#nextButton").show();
+        $("#saveContinue").hide();
+        $("#exitButton").hide()
+        $("#saveExit").show()
         if(readOnly()) {
             $("#nextButton").text("Next");
-            $("#nextButtonWrapper").addClass("d-none");
-            $("#saveExitWrapper").addClass("d-none");
-            $("#submitAndApproveButtonWrapper").addClass("d-none");
-            $("#exitButtonWrapper").removeClass("d-none")
+            $("#nextButton").hide();
+            $("#saveExit").hide();
+            $("#submitAndApproveButton").hide();
+            $("#exitButton").show()
           }
         break;
     }

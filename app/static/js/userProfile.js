@@ -176,9 +176,6 @@ $(document).ready(function(){
 
     $("#addNoteButton").click(function() {
         bonnerNoteOff()
-        $("#addNoteTextArea").val('')
-        $("#notesSaveButton").data('mode', 'add') 
-        $("#notesSaveButton").data('noteid', null) 
         $("#noteModal").modal("toggle")
     });
 
@@ -194,9 +191,6 @@ $(document).ready(function(){
 
     $("#addBonnerNoteButton").click(function() {
         bonnerNoteOn()
-        $("#addNoteTextArea").val('')                   
-        $("#notesSaveButton").data('mode', 'add')       
-        $("#notesSaveButton").data('noteid', null)      
         $("#noteModal").modal("toggle");
     });
 
@@ -205,17 +199,6 @@ $(document).ready(function(){
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
     let isBonner = $("#bonnerInput").is(":checked")
-    let mode = $("#notesSaveButton").data('mode')
-    let noteid = $("#notesSaveButton").data('noteid')
-
-    // If we're editing, delete the old note first
-    if (mode === 'edit') {
-        $.ajax({
-            method: "POST",
-            url: "/" + username + "/deleteNote",
-            data: { "id": noteid }
-        })
-    }
     $.ajax({
       method: "POST",
       url:  "/profile/addNote",
@@ -235,13 +218,6 @@ $(document).ready(function(){
   });
 
   $(".deleteNoteButton").click(function() {
-    $("#confirmDeleteNote").data('username', $(this).data('username'))
-    $("#confirmDeleteNote").data('noteid', $(this).data('noteid'))
-    $("#deleteNoteWarning").modal("show")
-  
-  });
-
-  $("#confirmDeleteNote").click(function() { 
     let username = $(this).data('username')
     let noteid = $(this).data('noteid')
     $.ajax({
@@ -249,44 +225,11 @@ $(document).ready(function(){
       url:  "/" + username + "/deleteNote",
       data: {"id": noteid},
       success: function(response) {
-         msgFlash("Successfully deleted note", "success", 1300, true)
         reloadWithAccordion("notes")
       }
     });
   });
-  
-  $(".editNoteButton").click(function() {
-    let noteText = $(this).data('notetext')
-    let visibility = $(this).data('visibility')
-    let isBonner = $(this).data('bonner')
-    let noteid = $(this).data('noteid')
-    
-    
-    $("#addNoteTextArea").val(noteText)
-    $("#noteDropdown").val(visibility)
 
-   
-    if (isBonner === 'yes') {
-        bonnerNoteOn()
-    } else {
-        bonnerNoteOff()
-    }
-    
-    $("#notesSaveButton").data('noteid', $(this).data('noteid'))
-    $("#notesSaveButton").data('mode', 'edit')
-
-   
-    $("#noteModal").modal("toggle")
-});
-    $.ajax({
-      method: "POST",
-      url:  "/" + username + "/editNote",
-      data: {"id": noteid},
-      success: function(response) {
-        reloadWithAccordion("notes")
-      }
-    });
-  });
   /*
     * Background Check Functionality
     */
@@ -412,8 +355,8 @@ $(document).ready(function(){
       typingTimer = setTimeout(saveDiet, saveInterval);
     });
   });
- // end document.ready()
 
+}); // end document.ready()
 
 // Update program manager status
 function updateManagers(el, volunteerUsername ) {

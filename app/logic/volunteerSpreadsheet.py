@@ -1,11 +1,12 @@
+from importlib.abc import ResourceReader
 from os import major
-import xlsxwriter 
+import xlsxwriter
 from peewee import fn, Case, JOIN, SQL, Select
 from collections import defaultdict
 from datetime import date, datetime,time
+
 from app import app
 from app.models import mainDB
-from app.models.celtsLabor import CeltsLabor
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.program import Program
@@ -46,19 +47,12 @@ def getBaseQuery(academicYear):
 def getUniqueVolunteers(academicYear):
     base = getBaseQuery(academicYear)
 
-    columns = ["Full Name", "Email", "B-Number", "Term"]
-    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'),
-                            fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
-                            User.bnumber,
-                            Term.description.alias("term"))
-                    .where(Event.isService == True)).alias('subq')
+    columns = ["Full Name", "Email", "B-Number"]
+    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'), fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"), User.bnumber)
+                 .where(Event.isService == True)).alias('subq')
+    query = Select().from_(subquery).select(subquery.c.fullname, fn.CONCAT(subquery.c.user_id,'@berea.edu'), subquery.c.bnumber)
 
-    query = Select().from_(subquery).select(subquery.c.fullname, 
-                                            fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
-                                            subquery.c.bnumber,
-                                            subquery.c.term)
-
-    return (columns, query.tuples().execute(mainDB))
+    return (columns,query.tuples().execute(mainDB))
 
 
 def volunteerProgramHours(academicYear):
@@ -214,29 +208,6 @@ def termParticipation(term):
 
     return dict(programParticipationDict)
 
-def graduatingSeniorsVolunteerHours(academicYear):
-    columns = ["Full Name", "Email", "B-Number", "Unique Volunteer Semesters", "Total Volunteer Hours"]
-
-    currentSeniors = (User.select().where(User.rawClassLevel.in_(["Senior", "Graduating"])))
-
-    query = (EventParticipant
-             .select(fn.CONCAT(User.firstName, ' ', User.lastName),
-                     fn.CONCAT(User.username, '@berea.edu'),
-                     User.bnumber,
-                     fn.COUNT(fn.DISTINCT(Event.term)).alias("semester_count"),
-                     fn.SUM(EventParticipant.hoursEarned).alias("total_hours"))
-             .join(User).switch(EventParticipant)
-             .join(Event)
-             .where(Event.isService == True,
-                    Event.deletionDate == None,
-                    Event.isCanceled == False,
-                    EventParticipant.user_id.in_(currentSeniors))
-             .group_by(User.bnumber)
-             .having(fn.COUNT(fn.DISTINCT(Event.term)) >= 4)
-             .order_by(SQL("semester_count").desc()))
-
-    return (columns, query.tuples())
-
 
 def removeNullParticipants(participantList):
     return list(filter(lambda participant: participant, participantList))
@@ -256,51 +227,6 @@ def calculateRetentionRate(fallDict, springDict):
 
     return retentionDict
 
-def laborAttendanceByTerm(term):
-    fullName = fn.CONCAT(User.firstName, ' ', User.lastName).alias('fullName')
-    email = fn.CONCAT(User.username, '@berea.edu').alias('email')
-    meetingsAttended = fn.COUNT(fn.DISTINCT(Event.id)).alias('meetingsAttended')
-
-    validEvent = (
-        (EventParticipant.event == Event.id) &
-        (Event.term == term) &
-        (Event.isLaborOnly == True) &
-        (Event.deletionDate.is_null()) &
-        (Event.isCanceled == False))
-
-    CLTerm = Term.alias()
-    laborMembers = (
-        CeltsLabor
-        .select(fn.DISTINCT(CeltsLabor.user_id))
-        .join(CLTerm, on=(CeltsLabor.term == CLTerm.id))
-        .where(
-            (CeltsLabor.term == term) |
-            ((CLTerm.academicYear == term.academicYear) & (CeltsLabor.isAcademicYear == True))
-        ))
-
-    laborQuery = (
-        CeltsLabor
-        .select(fullName, User.bnumber, email, meetingsAttended)
-        .join(User)
-        .switch(CeltsLabor)
-        .join(EventParticipant, JOIN.LEFT_OUTER, on=(CeltsLabor.user == EventParticipant.user))
-        .join(Event, JOIN.LEFT_OUTER,on=validEvent)
-        .where(CeltsLabor.user.in_(laborMembers))
-        .group_by(CeltsLabor.user))
-
-    nonLaborQuery = (
-        EventParticipant
-        .select(fullName, User.bnumber, email, meetingsAttended)
-        .join(User)
-        .switch(EventParticipant)
-        .join(Event,on=validEvent)
-        .where(EventParticipant.user.not_in(laborMembers))
-        .group_by(EventParticipant.user))
-
-    query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
-    columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
-
-    return (columns, query.tuples())
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
@@ -344,16 +270,12 @@ def createSpreadsheet(academicYear):
     makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
     makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
     makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
-    makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event per term during {academicYear}.")
+    makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event during {academicYear}.")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-    makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
-    makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    
     makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
     makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
 

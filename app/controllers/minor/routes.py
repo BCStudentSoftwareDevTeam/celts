@@ -3,35 +3,24 @@ from peewee import DoesNotExist
 
 from app.controllers.minor import minor_bp
 from app.models.user import User
-from app.models.cceMinorProposal import CCEMinorProposal
-from app.models.term import Term
 from app.models.attachmentUpload import AttachmentUpload
+from app.models.term import Term
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.minor import (
-    changeProposalStatus,
-    createOtherEngagement,
-    updateOtherEngagementRequest,
-    setCommunityEngagementForUser,
-    getEngagementTotal,
-    createSummerExperience,
-    updateSummerExperience,
-    getProgramEngagementHistory, 
-    getCourseInformation,
-    getCommunityEngagementByTerm,
-    getMinorSpreadsheet,
-    getCCEMinorProposals,
-    removeProposal
-)
+from app.logic.minor import createOtherEngagementRequest, setCommunityEngagementForUser, getSummerExperience, getEngagementTotal, createSummerExperience, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, getCCEMinorProposals, createOtherEngagementRequest, removeProposal, getMinorSpreadsheet
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
     """
-    Load minor management page with community engagements and summer experience
+        Load minor management page with community engagements and summer experience
     """
+    if not (g.current_user.isAdmin):
+        return abort(403)
+
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
 
     activeTab = request.args.get("tab", "sustainedCommunityEngagements")
+
     return render_template("minor/profile.html",
                             user = User.get_by_id(username),
                             proposalList = getCCEMinorProposals(username),
@@ -40,94 +29,55 @@ def viewCceMinor(username):
                             activeTab=activeTab)
     
 @minor_bp.route('/cceMinor/<username>/otherEngagement', methods=['GET', 'POST'])
-def createOtherEngagementRequest(username):
+def requestOtherEngagement(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
     
+
     # once we submit the form for creation
     if request.method == "POST":
-        createOtherEngagement(username, request)
-        flash("Proposal successfully created.", "success")
-        return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
+        createdProposal = createOtherEngagementRequest(username, request.form)
+        attachment = request.files.get("attachmentObject")
+        if attachment:
+            addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+            addFile.saveFiles()
+
+        return redirect(url_for('minor.viewCceMinor', username=username))
     
     return render_template("minor/requestOtherEngagement.html",
-                            editable = True,
                             user = User.get_by_id(username),
                             selectableTerms = selectSurroundingTerms(g.current_term),
-                            postRoute = f"/cceMinor/{username}/otherEngagement", # when form is submitted, what POST route is it being submitted to.
-                            attachmentFilePath = "",
-                            attachmentFileName = "",
-                            proposal = None)
+                            allTerms = getSummerExperience(username))
 
-@minor_bp.route('/cceMinor/viewOtherEngagement/<proposalID>', methods=['GET'])
-@minor_bp.route('/cceMinor/viewSummerExperience/<proposalID>', methods=['GET'])
-@minor_bp.route('/cceMinor/editOtherEngagement/<proposalID>', methods=['GET', 'POST'])
-@minor_bp.route('/cceMinor/editSummerExperience/<proposalID>', methods=['GET', 'POST'])
-def editOrViewProposal(proposalID: int):
-    proposal = CCEMinorProposal.get_by_id(int(proposalID))
-    if not (g.current_user.isAdmin or g.current_user.username == proposal.student.username):
-        return abort(403)
-    
-    editProposal = 'view' not in request.path
-
-    # if proposal is approved or completed, only admins can edit, but not if the admin is the student
-    if proposal.isApproved and editProposal:
-        if g.current_user.username == proposal.student.username or not g.current_user.isAdmin:
-            return abort(403)
-    
-    attachmentObject = AttachmentUpload.get_or_none(proposal=proposalID)
-    attachmentFilePath = ""
-    attachmentFileName = ""
-
-    if attachmentObject:
-        fileHandler = FileHandler(proposalId=proposalID)
-        attachmentFilePath = fileHandler.getFileFullPath(attachmentObject.fileName).lstrip("app/") # we need to remove app/ from the url because it prevents it from displaying
-        attachmentFileName = attachmentObject.fileName
-    
-    if request.method == "GET":
-        selectedTerm = Term.get_by_id(proposal.term)
-        flash("Once approved, a proposal can only be edited by an admin.", 'warning')
-        return render_template("minor/requestOtherEngagement.html" if 'OtherEngagement' in request.path else "minor/summerExperience.html",
-                                editable = editProposal,
-                                selectedTerm = selectedTerm,
-                                contentAreas = proposal.contentAreas.split(", ") if proposal.contentAreas else [],
-                                selectableTerms = selectSurroundingTerms(g.current_term, summerOnly=False if 'OtherEngagement' not in request.path else True),
-                                user = User.get_by_id(proposal.student),
-                                postRoute = f"/cceMinor/editSummerExperience/{proposal.id}" if "SummerExperience" in request.path else f"/cceMinor/editOtherEngagement/{proposal.id}",
-                                proposal = proposal,
-                                attachmentFilePath = attachmentFilePath,
-                                attachmentFileName = attachmentFileName
-        )
-    
-    if "OtherEngagement" in request.path:
-        updateOtherEngagementRequest(proposalID, request)
-    else:
-        updateSummerExperience(proposalID, request.form)
- 
-    flash("Proposal updated", "success")
-    return redirect(url_for('minor.viewCceMinor', username=proposal.student, tab='manageProposals'))
 
 @minor_bp.route('/cceMinor/<username>/summerExperience', methods=['GET', 'POST'])
-def createSummerExperienceRequest(username):
+def requestSummerExperience(username):
+    """
+        Load minor management page with community engagements and summer experience
+    """
     if not (g.current_user.isAdmin or g.current_user.username == username):
         return abort(403)
     
     # once we submit the form for creation
     if request.method == "POST":
         createSummerExperience(username, request.form)
-        flash("Proposal successfully created.", "success")
-        return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
+        return redirect(url_for('minor.viewCceMinor', username=username))
     
     summerTerms = selectSurroundingTerms(g.current_term, summerOnly=True)
 
     return render_template("minor/summerExperience.html",
-                            selectableTerms = summerTerms,
-                            contentAreas = [],
+                            summerTerms = summerTerms,
                             user = User.get_by_id(username),
                             )
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
+    """
+        For a particular engagement activity (program or course), get the participation history or course information respectively.
+    """
     if type == "program":
         information = getProgramEngagementHistory(id, username, term)
     else:
@@ -136,38 +86,19 @@ def getEngagementInformation(username, type, id, term):
     return information
 
 
-@minor_bp.route('/cceMinor/<action>/<username>/<proposalId>', methods=['POST'])
-def updateProposal(action, username, proposalId):
+@minor_bp.route('/cceMinor/withdraw/<username>/<proposalID>', methods = ['POST'])
+def withdrawProposal(username, proposalID):
     try:
-        if not (g.current_user.isAdmin or g.current_user.isFaculty or g.current_user.username == username):
-            flash("Unauthorized to perform this action", "warning")
-            return ""
-
-        actionMap = {
-            "withdraw": ("Withdrawn", "Proposal successfully withdrawn"),
-            "complete": ("Completed", "Proposal successfully completed"),
-            "approve": ("Approved", "Proposal approved"),
-            "unapprove": ("Submitted", "Proposal unapproved"),
-        }
-
-        if action not in actionMap:
-            flash("Invalid action", "warning")
-            return ""
-
-        newStatus, message = actionMap[action]
-
-        if action == "withdraw":
-            removeProposal(proposalId)
+        if g.current_user.isAdmin or g.current_user.isFaculty or g.current_user == username:
+            removeProposal(proposalID)
+            flash("Experience successfully withdrawn", 'success')
         else:
-            changeProposalStatus(proposalId, newStatus)
-        flash(message, "success")
-
+            flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         print(e)
-        flash("Proposal status could not be changed", "warning")
-
+        flash("Withdrawal Unsuccessful", 'warning')
     return ""
-
+    
 
 @minor_bp.route('/cceMinor/getMinorSpreadsheet', methods=['GET'])
 def returnMinorSpreadsheet():
