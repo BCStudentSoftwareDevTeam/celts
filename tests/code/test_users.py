@@ -6,22 +6,26 @@ from app import app
 from flask import g, request, session
 
 from app.models import mainDB
+from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
+from app.models.term import Term
 from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData, updateProfileNote
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
+from playhouse.shortcuts import model_to_dict
 
 @pytest.mark.integration
 def test_deleteUserBackgroundCheck():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
+            g.current_term = Term.get_by_id(1)
 
             # Create a test user to run background checks on
             testUser = User.create(username = 'zawn',
@@ -69,19 +73,56 @@ def test_user_model():
 
 @pytest.mark.integration
 def test_isEligibleForProgram():
+    with mainDB.atomic() as transaction:
+        with app.app_context():            
+            g.current_term = Term.get_by_id(1)            
 
-    # user has attended all required events
-    user = User.get(User.username == "lamichhanes2")
-    program = Program.get(Program.id == 2)
+            # Test user Sandesh's eligibility for program 2
+            user = User.get(User.username == "lamichhanes2")
+            program = Program.get(Program.id == 2)
 
-    eligible = isEligibleForProgram(2, "lamichhanes2")
-    assert eligible
-    eligible = isEligibleForProgram(program, user)
-    assert eligible
+            # Sandesh is ineligible at first (tests id's and obj's)
+            eligible = isEligibleForProgram(2, "lamichhanes2")
+            assert not eligible
+            eligible = isEligibleForProgram(program, user)
+            assert not eligible
+        
+            # Sandesh completes All Volunteers training (he is still ineligible)  
+            avt = Event.get(Event.isAllVolunteerTraining)
+            EventParticipant.create(user=user, event=avt)
+            eligible = isEligibleForProgram(2, user)
+            assert not eligible
 
-    # there are no required events
-    eligible = isEligibleForProgram(4, "ayisie")
-    assert eligible
+        
+            # Sandesh attends Program-specific training (still not eligible!)
+            programSpecificTraining = Event.create(
+                    name="Program Specific Training",
+                    term=g.current_term,
+                    description="Program Specific Training",
+                    timeStart="18:00:00",
+                    timeEnd="21:00:00",
+                    location="The moon",
+                    startDate="2021-12-15",
+                    isAllVolunteerTraining=True,
+                    isLaborOnly=False,
+                    isTraining=True,
+                    program=program
+                )
+            EventParticipant.create(user=user, event=programSpecificTraining)
+            eligible = isEligibleForProgram(2, user)
+            assert not eligible
+
+            # Sandesh signs the handbook (he is NOW eligible)
+            user.lastHandbookSignature = "2026-07-21"
+            user.signatureTerm = g.current_term
+            user.save()
+            print(user.signatureTerm.academicYear)
+            print(g.current_term.academicYear)
+            eligible = isEligibleForProgram(2, user)
+            assert eligible
+
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_addUserInterest():
@@ -136,23 +177,53 @@ def test_removeUserInterestt():
         assert result == True
 
         transaction.rollback()
-
+@pytest.mark.integration
+def test_getProfileNoteData():
+    formData = { "visibility": "3","bonner": "yes", "cceMinor": "no",  "noteTextbox": "  Test profile note  ",  "username": "ramsayb2",  "id": "12", }
+    noteData = getProfileNoteData(  formData, includeUsername=True, includeId=True, )
+    assert noteData == {"visibility": 3,"bonner": True,   "cceMinor": False,"noteTextbox": "Test profile note", "username": "ramsayb2", "profileNoteID": "12",  }
+    invalidData = [
+        ({}, "Note cannot be empty"),
+        ( {"noteTextbox": "Test note"}, "Missing username" ),
+        ( {"noteTextbox": "Test note",  "username": "ramsayb2",  },  "Missing profile note ID", ),
+    ]
+    for formData, errorMessage in invalidData:
+        with pytest.raises(ValueError) as error:
+            getProfileNoteData(formData,  includeUsername=True, includeId=True,)
+        assert str(error.value) == errorMessage
 @pytest.mark.integration
 def test_addUserProfileNote():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
-            profileNote = addProfileNote(1, True, "Test profile note", "neillz")
+            profileNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert profileNote == ProfileNote.get_by_id(profileNote.id)
 
-            profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            profileNote2 = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
             assert profileNote2.viewTier == 3
 
-            profileNote3 = addProfileNote(3, True, "Test profile note 3", "ramsayb2")
-            assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
-            assert profileNote3.viewTier == 1
+            profileNote3 = addProfileNote(3, True, True, "Test Bonner and CCE Minor note", "ramsayb2")
+            savedProfileNote = ProfileNote.get_by_id(profileNote3.id)
+            assert profileNote3 == savedProfileNote
+            assert savedProfileNote.isBonnerNote is True
+            assert savedProfileNote.isCCEMinorNote is True
+            assert savedProfileNote.viewTier == 1
         transaction.rollback()
+@pytest.mark.integration
+def test_updateUserProfileNote():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            profileNote = addProfileNote( 3, False,False,"Original note","ramsayb2", )
+            updatedNote = updateProfileNote( profileNote.id, 3, True, True,"Updated Bonner and CCE Minor note", )
+            savedNote = ProfileNote.get_by_id(profileNote.id)
+            assert updatedNote == savedNote
+            assert savedNote.note.noteContent == ( "Updated Bonner and CCE Minor note" )
+            assert savedNote.isBonnerNote is True
+            assert savedNote.isCCEMinorNote is True
+            assert savedNote.viewTier == 1
+        transaction.rollback()       
 
 @pytest.mark.integration
 def test_deleteUserProfileNote():
@@ -160,7 +231,7 @@ def test_deleteUserProfileNote():
         with app.app_context():
             g.current_user = "ramsayb2"
 
-            addedNote = addProfileNote(1, True, "Test profile note", "neillz")
+            addedNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert addedNote.isBonnerNote == True
             assert addedNote.viewTier == 1
             assert addedNote.user == User.get_by_id("neillz")
@@ -169,7 +240,7 @@ def test_deleteUserProfileNote():
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote)
 
-            addedNote = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            addedNote = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             profileNote = deleteProfileNote(addedNote)
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote.id)
@@ -275,7 +346,6 @@ def test_getStudentManagerForEvent():
         {
         "id":13,
         "programName":"testProgram",
-        "isStudentLed": False,
         "isBonnerScholars":False,
         }
         ]
@@ -361,6 +431,7 @@ def test_getUserBGCheckHistory():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
+            g.current_term = Term.get_by_id(1)
 
             # Create a test user to run background checks on
             testusr = User.create(username = 'usrtst',
@@ -421,25 +492,27 @@ def test_getBannedUsers():
 @pytest.mark.integration
 def test_isBannedFromEvent():
     with mainDB.atomic() as transaction:
-        userToBan = User.create(username = 'usrtst', # Test banned user
-                              firstName = 'Test',
-                              lastName = 'User',
-                              bnumber = '03522492',
-                              email = 'usert@berea.deu',
-                              isStudent = True)
-        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
-        assert isBannedFromEvent("usrtst", 1)
+        with app.app_context():        
+            g.current_term = Term.get_by_id(1)
+            userToBan = User.create(username = 'usrtst', # Test banned user
+                                firstName = 'Test',
+                                lastName = 'User',
+                                bnumber = '03522492',
+                                email = 'usert@berea.deu',
+                                isStudent = True)
+            banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
+            assert isBannedFromEvent("usrtst", 1)
 
-        unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user
-        assert not isBannedFromEvent("usrtst", 1)
+            unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user
+            assert not isBannedFromEvent("usrtst", 1)
 
-        notBannedUser = User.create(username = 'usrtst2', # Test eligible user
-                              firstName = 'Test',
-                              lastName = 'User 2',
-                              bnumber = '03522493',
-                              email = 'usert2@berea.deu',
-                              isStudent = True)
-        assert not isBannedFromEvent("usrtst2", 1)
+            notBannedUser = User.create(username = 'usrtst2', # Test eligible user
+                                firstName = 'Test',
+                                lastName = 'User 2',
+                                bnumber = '03522493',
+                                email = 'usert2@berea.deu',
+                                isStudent = True)
+            assert not isBannedFromEvent("usrtst2", 1)
         transaction.rollback()
 
 @pytest.mark.integration
@@ -455,5 +528,188 @@ def test_updateDietInfo():
         newDiet = User.select().where(User.username == "khatts")
         newContent = [list.dietRestriction for list in newDiet]
         assert newContent == ["Beef"]
+
+        transaction.rollback()
+@pytest.mark.integration
+# Test hasCurrentCeltsLabor property that checks if someone has current Celts Labor position
+def test_hasCurrentCeltsLabor():
+    from app.models.user import User
+    from app.models.term import Term
+    from app.models.celtsLabor import CeltsLabor
+
+    with mainDB.atomic() as transaction:
+        # Create a test user
+        testUser = User.create(username='testuser',
+                               firstName='Test',
+                               lastName='User',
+                               bnumber='B00000001',
+                               email='testuser@berea.edu',
+                               isStudent=True)
+        currentTerm = Term.create(termName='Fall 2023', isCurrentTerm=True)
+        CeltsLabor.create(user=testUser, term=currentTerm, position='Test Position')
+        # Check if the user has current Celts Labor
+        assert testUser.hasCurrentCeltsLabor is True
+
+        pastTerm = Term.create(termName='Spring 2023', isCurrentTerm=False)
+        # Create a CeltsLabor entry for the test user in the past term
+        CeltsLabor.create(user=testUser, term=pastTerm, position='Past Position')
+        # Check if the user still has current Celts Labor
+        assert testUser.hasCurrentCeltsLabor is True
+
+        # Create a new user without any Labor position
+        newUser = User.create(username='newuser',
+                                firstName='New',
+                                lastName='User',
+                                bnumber='B00000002',
+                                email='newuser@berea.edu',
+                                isStudent=True)
+        # Check if the new user has current Celts Labor
+        assert newUser.hasCurrentCeltsLabor is False
+        transaction.rollback()
+ 
+    
+@pytest.mark.integration
+def test_isCurrentlyEnrolled():
+    #testing the isCurrentlyEnrolled property of User
+    with mainDB.atomic() as transaction:
+        # Currently enrolled student
+        enrolledUser = User.create(
+            username="enrolleduser",
+            firstName="Enrolled",
+            lastName="Student",
+            bnumber="B10000004",
+            email="enrolled@berea.edu",
+            isStudent=True,
+            hasGraduated=False,
+            rawClassLevel="Junior"
+        )
+        assert enrolledUser.isCurrentlyEnrolled is True
+
+        # Alumni (graduated)
+        alumniUser = User.create(
+            username="alumniuser",
+            firstName="Alumni",
+            lastName="User",
+            bnumber="B10000005",
+            email="alumni@berea.edu",
+            isStudent=False,
+            hasGraduated=True,
+            rawClassLevel="Graduated"
+        )
+        assert alumniUser.isCurrentlyEnrolled is False
+
+        # Fall graduate (Graduating → Alumni)
+        fallGradUser = User.create(
+            username="fallgraduser",
+            firstName="Fall",
+            lastName="Grad",
+            bnumber="B10000006",
+            email="fall@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel="Graduating"
+        )
+        assert fallGradUser.isCurrentlyEnrolled is False
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_isAlumni():
+    with mainDB.atomic() as transaction:
+        # User who has graduated
+        graduatedUser = User.create(
+            username="graduser",
+            firstName="Grad",
+            lastName="User",
+            bnumber="B10000001",
+            email="grad@berea.edu",
+            isStudent=False,
+            hasGraduated=True,
+            rawClassLevel="Graduated"
+        )
+        assert graduatedUser.isAlumni is True
+
+        # User marked as "Graduating" (Fall graduate)
+        graduatingUser = User.create(
+            username="graduatinguser",
+            firstName="Fall",
+            lastName="Grad",
+            bnumber="B10000002",
+            email="fallgrad@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel="Graduating"
+        )
+        assert graduatingUser.isAlumni is True
+
+        # Current senior graduating in spring
+        seniorUser = User.create(
+            username="senioruser",
+            firstName="Spring",
+            lastName="Senior",
+            bnumber="B10000003",
+            email="senior@berea.edu",
+            isStudent=True,
+            hasGraduated=False,
+            rawClassLevel="Senior"
+        )
+        assert seniorUser.isAlumni is False
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_processedClassLevel():
+    with mainDB.atomic() as transaction:
+        # Graduated user
+        graduatedUser = User.create(
+            username="procgrad",
+            firstName="Proc",
+            lastName="Grad",
+            bnumber="B10000007",
+            email="procgrad@berea.edu",
+            isStudent=False,
+            hasGraduated=True,
+            rawClassLevel="Graduated"
+        )
+        assert graduatedUser.processedClassLevel == "Alumni"
+
+        # Fall graduate marked as "Graduating"
+        graduatingUser = User.create(
+            username="procgraduating",
+            firstName="Proc",
+            lastName="Graduating",
+            bnumber="B10000008",
+            email="procgraduating@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel="Graduating"
+        )
+        assert graduatingUser.processedClassLevel == "Alumni"
+
+        # Current senior
+        seniorUser = User.create(
+            username="procsenior",
+            firstName="Proc",
+            lastName="Senior",
+            bnumber="B10000009",
+            email="procsenior@berea.edu",
+            isStudent=True,
+            hasGraduated=False,
+            rawClassLevel="Senior"
+        )
+        assert seniorUser.processedClassLevel == "Senior"
+
+        # Not enrolled user
+        notEnrolledUser = User.create(
+            username="procnotenrolled",
+            firstName="Proc",
+            lastName="None",
+            bnumber="B10000010",
+            email="procnone@berea.edu",
+            isStudent=False,
+            hasGraduated=False,
+            rawClassLevel=None
+        )
+        assert notEnrolledUser.processedClassLevel == "Not Enrolled"
 
         transaction.rollback()

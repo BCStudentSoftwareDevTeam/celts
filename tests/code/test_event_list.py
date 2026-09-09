@@ -9,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents, getEngagementEvents, getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
+from app.logic.events import getVolunteerOpportunities, getEngagementEvents, getTrainingEvents, getBonnerEvents, getCeltsLabor, addEventView, getUpcomingVolunteerOpportunitiesCount, getPastVolunteerOpportunitiesCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -47,7 +47,7 @@ def special_bonner():
 
 @pytest.mark.integration
 @pytest.fixture
-def special_otherEvents():
+def special_celtsLabor():
         nonProgramEvent = Event.create(name = "Test for nonProgram",
                                        term = 4,
                                        description = "Special event test for nonProgram",
@@ -62,84 +62,181 @@ def special_otherEvents():
         nonProgramEvent.delete_instance()
 
 @pytest.mark.integration
-def test_getStudentLedEvents(training_events):
-    studentLed = training_events
-    allStudentLedProgram = {studentLed.program: [studentLed]}
-    assert allStudentLedProgram == getStudentLedEvents(2)
+def test_getVolunteerOpportunities(training_events):
+
+    training_events.term = 2
+    training_events.isService = True
+    training_events.isTraining = False
+    training_events.deletionDate = None
+    training_events.save()
+    training_events.program.save()
+
+    expected = {training_events.program: [training_events]}
+    actual = getVolunteerOpportunities(2)
+    assert expected == actual
 
 @pytest.mark.integration
-def test_getUpcomingStudentLedCount():
+def test_getUpcomingVolunteerOpportunitiesCount():
     with mainDB.atomic() as transaction: 
-        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("08/01/2021 05:00","%m/%d/%Y %H:%M")
         currentTestTerm = Term.get_by_id(5)
 
         # In case any events are put in term 5 in testData, put them into the past.
         Event.update(startDate = date(2021,7,1)).where(Event.term_id == 5).execute()
 
-        # Student Led event in the future
+        # Volunteer Opportunitiesevent in the future
         futureAgpEvent = Event.create(name = "Test future AGP event",
                                       term = currentTestTerm,
-                                      description = "Test future student led (AGP) event.",
+                                      description = "Test future volunteer opportunities(AGP) event.",
                                       timeStart = "05:00:00",
                                       timeEnd = "06:00:00",
                                       location = "The Moon",
                                       isTraining = False,
+                                      isService = True,
                                       startDate = "2021-08-02",
                                       program = 3)
          
-        # Student Led event to be canceled 
-        cancelStudentLed = Event.create(name = "Test AGP event to cancel",
+        # Volunteer Opportunitiesevent to be canceled 
+        cancelVolunteerOpportunities = Event.create(name = "Test AGP event to cancel",
                                         term = currentTestTerm,
-                                        description = "Test student led (AGP) event that will be canceled.",
+                                        description = "Test volunteer opportunities(AGP) event that will be canceled.",
                                         timeStart = "05:00:00",
                                         timeEnd = "06:00:00",
                                         location = "The Sun",
                                         isTraining = False,
+                                        isService = True,
                                         startDate = "2021-08-02",
                                         program = 3)
         
-        # Student Led event that start in the future but will be moved to the past
-        pastStudentLed = Event.create(name = "Test past AGP event",
+        # Volunteer Opportunitiesevent that start in the future but will be moved to the past
+        pastVolunteerOpportunities = Event.create(name = "Test past AGP event",
                                         term = currentTestTerm,
-                                        description = "Test student led (AGP) event that will be moved to the past.",
+                                        description = "Test volunteer opportunities(AGP) event that will be moved to the past.",
                                         timeStart = "05:00:00",
                                         timeEnd = "06:00:00",
                                         location = "Mars",
                                         isTraining = False,
+                                        isService = True,
                                         startDate = "2021-08-02",
                                         program = 3)
         
         # verify that there are three upcoming events for AGP (program id 3)
-        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
-        assert upcomingStudentLed == {3:3}
+        upcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(currentTestTerm, testDate)
+        assert upcomingVolunteerOpportunities == {3:3}
 
-        # Cancel cancelStudentLed and verify there are only two upcoming events for AGP
-        Event.update(isCanceled = True).where(Event.id == cancelStudentLed.id).execute()
-        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
-        assert upcomingStudentLed == {3:2}
+        # Cancel cancelVolunteerOpportunities and verify there are only two upcoming events for AGP
+        Event.update(isCanceled = True).where(Event.id == cancelVolunteerOpportunities.id).execute()
+        upcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(currentTestTerm, testDate)
+        assert upcomingVolunteerOpportunities == {3:2}
 
-        # Move pastStudentLed start date to the same day as testDate and set timeEnd to the time on testDate
+        # Move pastVolunteerOpportunities start date to the same day as testDate and set timeEnd to the time on testDate
         (Event.update(timeStart = datetime.strptime("03:00", "%H:%M").time(), 
                       timeEnd = datetime.strptime("04:00", "%H:%M").time(), 
                       startDate = date(2021,8,1))
-              .where(Event.id == pastStudentLed.id)).execute()
+              .where(Event.id == pastVolunteerOpportunities.id)).execute()
         
-        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
-        assert upcomingStudentLed == {3:1}
+        upcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(currentTestTerm, testDate)
+        assert upcomingVolunteerOpportunities == {3:1}
 
         # Create another event in the future for a different program (Buddies)
         futureBuddiesEvent = Event.create(name = "Test future AGP event",
                                           term = currentTestTerm,
-                                          description = "Test future student led (AGP) event.",
+                                          description = "Test future volunteer opportunities(AGP) event.",
                                           timeStart = "05:00:00",
                                           timeEnd = "06:00:00",
                                           location = "The Moon",
                                           isTraining = False,
+                                          isService = True,
                                           startDate = "2021-08-02",
                                           program = 2)
         
-        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
-        assert upcomingStudentLed == {2:1, 3:1}
+        upcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(currentTestTerm, testDate)
+        assert upcomingVolunteerOpportunities == {2:1, 3:1}
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getPastVolunteerOpportunitiesCount():
+    with mainDB.atomic() as transaction:
+        testDate = datetime.strptime("2021-08-01 05:00", "%Y-%m-%d %H:%M")
+        currentTestTerm = Term.get_by_id(5)
+
+        # Move any existing term-5 events into the future
+        Event.update(startDate=date(2021, 8, 5)).where(Event.term_id == 5).execute()
+
+        # Past Volunteer Opportunity (AGP)
+        pastAgpEvent = Event.create(
+            name="Test past AGP event",
+            term=currentTestTerm,
+            description="Past volunteer opportunity (AGP).",
+            timeStart="03:00:00",
+            timeEnd="04:00:00",
+            location="Mars",
+            isTraining=False,
+            isService=True,
+            startDate="2021-07-31",
+            program=3
+        )
+
+        # Past Volunteer Opportunity (same day, before test time)
+        Event.create(
+            name="Test same-day past AGP event",
+            term=currentTestTerm,
+            description="Same day but earlier time.",
+            timeStart="04:00:00",
+            timeEnd="04:30:00",
+            location="Venus",
+            isTraining=False,
+            isService=True,
+            startDate="2021-08-01",
+            program=3
+        )
+
+        # Future Volunteer Opportunity (should NOT be counted)
+        Event.create(
+            name="Test future AGP event",
+            term=currentTestTerm,
+            description="Future volunteer opportunity.",
+            timeStart="06:00:00",
+            timeEnd="07:00:00",
+            location="Moon",
+            isTraining=False,
+            isService=True,
+            startDate="2021-08-02",
+            program=3
+        )
+
+        # Verify two past AGP events
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {3: 2}
+
+        # Cancel one past event → should reduce count
+        Event.update(isCanceled=True).where(Event.id == pastAgpEvent.id).execute()
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {3: 1}
+
+        # Create past event for another program (Buddies)
+        pastBuddiesEvent = Event.create(
+            name="Test past Buddies event",
+            term=currentTestTerm,
+            description="Past volunteer opportunity (Buddies).",
+            timeStart="02:00:00",
+            timeEnd="03:00:00",
+            location="Earth",
+            isTraining=False,
+            isService=True,
+            startDate="2021-07-30",
+            program=2
+        )
+
+        pastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(
+            currentTestTerm, testDate
+        )
+        assert pastVolunteerOpportunities == {2: 1, 3: 1}
 
         transaction.rollback()
 
@@ -154,14 +251,12 @@ def test_getTrainingEvents(training_events):
        
         testBonnerProgram = Program.create(programName = "Test Bonner",
                                            partner = None,
-                                           isStudentLed = False,
                                            isBonnerScholars = True,
                                            contactName = "Jesus Christ",
                                            contactEmail = "christj@test.com",)
         
         testNotBonnerProgram = Program.create(programName = "Test Not Bonner",
                                               partner = None,
-                                              isStudentLed = False,
                                               isBonnerScholars = False,
                                               contactName = "Jesus Christ",
                                               contactEmail = "christj@test.com")
@@ -292,10 +387,12 @@ def test_getEngagementEvents():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getOtherEvents(special_otherEvents):
-    otherEvent = special_otherEvents
-    otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    assert otherEvents == getOtherEvents(4)
+def test_getCeltsLabor(special_celtsLabor):
+    expected = list(
+    Event.select()
+    .where(Event.term == 4, Event.deletionDate == None, Event.isLaborOnly == True)
+    .order_by(Event.startDate, Event.timeStart, Event.id))
+    assert expected == getCeltsLabor(4)
 
 @pytest.mark.integration
 def test_eventViewCount():

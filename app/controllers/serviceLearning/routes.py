@@ -205,12 +205,16 @@ def withdrawCourse(courseID):
         if g.current_user.isAdmin or g.current_user.isFaculty:
             withdrawProposal(courseID)
             flash("Course successfully withdrawn", 'success')
+            return ""
         else:
             flash("Unauthorized to perform this action", 'warning')
+            return "", 403
     except Exception as e:
         print(e)
-        flash("Withdrawal Unsuccessful", 'warning')
-    return ""
+        flash("Error: Failed to withdraw course", 'alert')
+
+
+    return "", 500
 
         
 @serviceLearning_bp.route('/proposalReview/', methods = ['GET', 'POST'])
