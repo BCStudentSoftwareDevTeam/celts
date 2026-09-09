@@ -24,7 +24,6 @@ from app.models.certification import Certification
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.emergencyContact import EmergencyContact
-from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
@@ -234,8 +233,8 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-        handbookOverdue = getHandbookStatus(volunteer)
 
+        handbookOverdue = getHandbookStatus(volunteer)
         training = hasGoneToTraining(g.current_user, g.current_term)
 
         return render_template ("/main/userProfile.html",
