@@ -183,7 +183,7 @@
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td>{{event.participatedType}}</td>
                 {% if event.isService %}
-                  <td>{{eventParticipant[loop.index0].hoursEarned}}</td>
+                  <td>{{event.hoursEarned}}</td>
                 {% else %}
                   <td>N/A</td>
                 {% endif %}

@@ -24,7 +24,6 @@ from app.models.certification import Certification
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.emergencyContact import EmergencyContact
-from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
@@ -234,10 +233,6 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-        eventParticipant = list(EventParticipant.select(EventParticipant.hoursEarned)
-                                                .join(Event)
-                                                .where(EventParticipant.user == volunteer, EventParticipant.event == Event.id,)
-                                                .order_by(Event.id.asc()))
 
         handbookOverdue = getHandbookStatus(volunteer)
         training = hasGoneToTraining(g.current_user, g.current_term)
@@ -260,7 +255,6 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
-                                eventParticipant = eventParticipant,
                                 handbookOverdue = handbookOverdue,
                                 training = training,
                             )
