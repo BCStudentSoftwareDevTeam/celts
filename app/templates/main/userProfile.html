@@ -621,9 +621,18 @@
       </div>
     </div>
   {% endif %}
-<!-- ################# Bonner Scholar ################ -->
 
+</div> <!-- End accordion container -->
+
+{% if volunteer != g.current_user %}
+<div class="text-center mt-3">
+  <a href="{{ url_for('admin.studentSearchPage') }}" class="btn btn-secondary">Back</a>
 </div>
+{% endif %}
+
+</div> <!-- not sure where this is coming from -->
+
+
 <!-- ################# Add/Edit Notes Modal ################# -->
 <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" >
   <div class="modal-dialog">
@@ -871,3 +880,4 @@
 <!-- ################# Edit Personal Information Modal ################ -->
 
 {% endblock %}
+
