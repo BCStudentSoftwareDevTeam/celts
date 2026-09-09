@@ -288,7 +288,7 @@
             {% if participatedInLabor %}
             <div class="col-md-6">
               <h5>CELTS Labor History:</h5>
-              {% for positionTitle, term in participatedInLabor.values() %}
+              {% for positionTitle, term in participatedInLabor %}
                 <p>{{term}}: {{positionTitle}}</p>
               {% endfor %}
             </div>

@@ -97,13 +97,16 @@ def refreshCeltsLaborRecords(laborDict):
         for positionTitle, termNames in value.items():
             for term in termNames: 
                 termTableMatch = Term.select() 
-                if term[0].isalpha(): 
+                isAcademicYear = False
+
+                if term[0].isalpha(): # Fall, Spring, Summer
                     termTableMatch = termTableMatch.where(Term.description == term)
-                else:
+                else: # e.g., 2025-2026
                     termTableMatch = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
+                    isAcademicYear = True
+
                 try:
                     laborTerm = termTableMatch.get()
-                    isAcademicYear = not laborTerm.isSummer
                     celtsLabor.append({"user": key,
                                        "positionTitle": positionTitle,
                                        "term": laborTerm,
@@ -118,36 +121,12 @@ def getCeltsLaborHistory(volunteer):
     
     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
                                               CeltsLabor.id,
+                                              CeltsLabor.isAcademicYear,
                                               Term.description, 
                                               Term.academicYear, 
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
                                       .where(CeltsLabor.user == volunteer)
                                       .order_by(Term.termOrder.asc()))
-    termsByAcademicYear = {}
-    for position in laborHistoryList:
-        if position.term.isSummer:
-            continue
-        academicYear = position.term.academicYear
-        description = position.term.description
-        if academicYear not in termsByAcademicYear:
-            termsByAcademicYear[academicYear] = {"Fall": False,"Spring": False}
-        if "Fall" in description:
-            termsByAcademicYear[academicYear]["Fall"] = True
-        elif "Spring" in description:
-            termsByAcademicYear[academicYear]["Spring"] = True
-    laborHistoryDict= {}
-    for position in laborHistoryList:
-        description = position.term.description
-        academicYear = position.term.academicYear
-        if position.term.isSummer:
-            positionTerm = description
-        else:
-            hasFall = termsByAcademicYear[academicYear]["Fall"]
-            hasSpring = termsByAcademicYear[academicYear]["Spring"]
-            if hasFall and hasSpring:
-                positionTerm = description
-            else:
-                positionTerm = f"AY {academicYear}"
-        laborHistoryDict[position.id] = (position.positionTitle,positionTerm)
-    return laborHistoryDict
+
+    return [(p.positionTitle, f"AY {p.term.academicYear}" if p.isAcademicYear else p.term.description) for p in laborHistoryList]
