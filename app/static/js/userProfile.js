@@ -1,6 +1,10 @@
-$(document).ready(function(){
+$(document).ready(function(){  
+  
+  $('#editVolunteerModal').modal({
+    backdrop: 'static'
+  });
 
-   $("#checkDietRestriction").on("change",  function() {
+  $("#checkDietRestriction").on("change",  function() {
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
@@ -36,6 +40,7 @@ $(document).ready(function(){
   })
 
   $("#phoneInput").inputmask('(999)-999-9999');
+
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -91,19 +96,16 @@ $(document).ready(function(){
   }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
-  $(function(){
-    var banEndDatepicker = $("#banEndDatepicker");
-    banEndDatepicker.datepicker({
-      changeYear: true,
-      changeMonth: true,
-      minDate:+1,
-      dateFormat: "yy-mm-dd",
-    }).attr('readonly','readonly');
+  $(function () {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    $("#banEndDatepicker").attr("min",`${year}-${month}-${day}`);
   });
 
-    /*
-     * Ban Functionality
-     */
+  // Ban Functionality
   $(".banEdit").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -113,19 +115,19 @@ $(document).ready(function(){
     var banNote = $("#banNote")
     var banValue = $(this).val()
 
-    banButton.text(banValue + " Volunteer");
+    banButton.text("Set " + banValue);
     programID = $(this).data("programid"); // Assign value to programID variable
     banButton.data("programID", programID)
     banButton.data("username", $(".banEdit").data("username"))
     banButton.data("banOrUnban", banValue);
     banEndDateDiv.show();
     banEndDatepicker.val("")
-    $(".modal-title-ban").text(banValue + " Volunteer from "+ $(this).data("name") + "?");
+    $(".modal-title-ban").text("Mark Volunteer as " + banValue +  " from "+ $(this).data("name") + "?");
     $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
-    if(banValue == "Unban"){
+    if(banValue == "Eligible"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
@@ -140,9 +142,22 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
-     $("#banButton").prop("disabled", true)
+    if ($("#banButton").data('banOrUnban') == "Ineligible"){
+      const endDateInput = $("#banEndDatepicker")[0];
+      if (!endDateInput.checkValidity()) {
+        endDateInput.reportValidity();
+        return;
+      };
+    };
+    $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
+
+    if(route =="eligible"){ // This handles the case where the user is being marked as eligible/ineligible and changes to ban and unban status for the route
+      route= 'unban'
+    }else{
+      route= 'ban'
+    }
     var program = $(this).data("programID") //Expected to be a program's primary ID
    
     $.ajax({
@@ -157,136 +172,159 @@ $(document).ready(function(){
     });
   });
 
-    /*
-     * Note Functionality
-     */
-    function bonnerNoteOff() {
-        $("#bonnerInput").prop("checked", false);
-        $("#noteDropdown").show()
-        $("#bonnerStatement").hide()
-        $("#visibilityLabel").show()
-    }
+//  Note Functionality
 
-    function bonnerNoteOn() {
-        $("#bonnerInput").prop("checked", true);
-        $("#noteDropdown").hide()
-        $("#bonnerStatement").show()
-        $("#visibilityLabel").hide()
-    }
+function bonnerNoteOff() {
+    $("#bonnerInput").prop("checked", false);
+    $("#noteDropdown").show();
+    $("#bonnerStatement").hide();
+    $("#visibilityLabel").show();
+}
 
-    $("#addNoteButton").click(function() {
-        bonnerNoteOff()
-        $("#addNoteTextArea").val('')
-        $("#notesSaveButton").data('mode', 'add') 
-        $("#notesSaveButton").data('noteid', null) 
-        $("#noteModal").modal("toggle")
-    });
+function bonnerNoteOn() {
+    $("#bonnerInput").prop("checked", true);
+    $("#noteDropdown").hide();
+    $("#bonnerStatement").show();
+    $("#visibilityLabel").hide();
+}
 
-    $("#addVisibility").click(function() {
-        var bonnerChecked = $("input[name='bonner']:checked").val()
+function resetNoteModal() {
+    bonnerNoteOff();
 
-        if (bonnerChecked == 'on') {
-            bonnerNoteOn()
-        } else {
-            bonnerNoteOff()
-        }
-    });
+    $("#cceMinorInput").prop("checked", false);
+    $("#addNoteTextArea").val("");
+    $("#noteDropdown").val("1");
 
-    $("#addBonnerNoteButton").click(function() {
-        bonnerNoteOn()
-        $("#addNoteTextArea").val('')                   
-        $("#notesSaveButton").data('mode', 'add')       
-        $("#notesSaveButton").data('noteid', null)      
-        $("#noteModal").modal("toggle");
-    });
+    $("#notesSaveButton").data("mode", "add");
+    $("#notesSaveButton").data("noteid", null);
+    $("#notesSaveButton").prop("disabled", false);
+}
 
-  $('#addNoteForm').submit(function(event) {
-
-    event.preventDefault()
-    let username = $("#notesSaveButton").data('username')
-    let isBonner = $("#bonnerInput").is(":checked")
-    let mode = $("#notesSaveButton").data('mode')
-    let noteid = $("#notesSaveButton").data('noteid')
-
-    // If we're editing, delete the old note first
-    if (mode === 'edit') {
-        $.ajax({
-            method: "POST",
-            url: "/" + username + "/deleteNote",
-            data: { "id": noteid }
-        })
-    }
-    $.ajax({
-      method: "POST",
-      url:  "/profile/addNote",
-      data: {"username": username,
-             "visibility": $("#noteDropdown").val(),
-             "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": isBonner ? "yes" : "no"},
-      success: function(response) {
-          target = isBonner ? "bonner" : "notes"
-          msgFlash("Successfully added a note", "success", 1300, true);
-          location.reload()
-      },
-      error: function(error) {
-        console.log("error")
-      }
-    });
-  });
-
-  $(".deleteNoteButton").click(function() {
-    $("#confirmDeleteNote").data('username', $(this).data('username'))
-    $("#confirmDeleteNote").data('noteid', $(this).data('noteid'))
-    $("#deleteNoteWarning").modal("show")
-  
-  });
-
-  $("#confirmDeleteNote").click(function() { 
-    let username = $(this).data('username')
-    let noteid = $(this).data('noteid')
-    $.ajax({
-      method: "POST",
-      url:  "/" + username + "/deleteNote",
-      data: {"id": noteid},
-      success: function(response) {
-         msgFlash("Successfully deleted note", "success", 1300, true)
-        reloadWithAccordion("notes")
-      }
-    });
-  });
-  
-  $(".editNoteButton").click(function() {
-    let noteText = $(this).data('notetext')
-    let visibility = $(this).data('visibility')
-    let isBonner = $(this).data('bonner')
-    let noteid = $(this).data('noteid')
-    
-    
-    $("#addNoteTextArea").val(noteText)
-    $("#noteDropdown").val(visibility)
-
-   
-    if (isBonner === 'yes') {
-        bonnerNoteOn()
-    } else {
-        bonnerNoteOff()
-    }
-    
-    $("#notesSaveButton").data('noteid', $(this).data('noteid'))
-    $("#notesSaveButton").data('mode', 'edit')
-
-   
-    $("#noteModal").modal("toggle")
+//  Open the modal for a normal new note.
+$("#addNoteButton").click(function () {
+    resetNoteModal();
+    $("#noteModal").modal("toggle");
 });
+
+//  Open the modal from the Bonner Notes area. Bonner is selected by default, but CCE Minor stays independent.
+$("#addBonnerNoteButton").click(function () {
+    resetNoteModal();
+    bonnerNoteOn();
+    $("#noteModal").modal("toggle");
+});
+
+//  Show or hide visibility whenever Bonner changes.
+$("#bonnerInput").on("change", function () {
+    if ($(this).is(":checked")) {
+        bonnerNoteOn();
+    } else {
+        bonnerNoteOff();
+    }
+});
+
+//  Add or update a note.
+$("#addNoteForm").submit(function (event) {
+    event.preventDefault();
+
+    const saveButton = $("#notesSaveButton");
+
+    const username = saveButton.data("username");
+    const mode = saveButton.data("mode");
+    const noteid = saveButton.data("noteid");
+
+    const noteTextbox = $("#addNoteTextArea").val().trim();
+    const visibility = $("#noteDropdown").val();
+
+    const isBonner = $("#bonnerInput").is(":checked");
+    const isCCEMinor = $("#cceMinorInput").is(":checked");
+
+    if (!noteTextbox) {
+        $("#addNoteTextArea").focus();
+        return;
+    }
+
+    const requestData = { username: username, visibility: visibility, noteTextbox: noteTextbox, bonner: isBonner ? "yes" : "no", cceMinor: isCCEMinor ? "yes" : "no" };
+    let requestURL = "/profile/addNote";
+    let successMessage = "Successfully added note";
+
+    if (mode === "edit") { requestURL = "/" + username + "/editNote";
+        requestData.id = noteid;
+        successMessage = "Successfully updated note";
+    }
+
+    saveButton.prop("disabled", true);
+
     $.ajax({
-      method: "POST",
-      url:  "/" + username + "/editNote",
-      data: {"id": noteid},
-      success: function(response) {
-        reloadWithAccordion("notes")
-      }
+        method: "POST",
+        url: requestURL,
+        data: requestData,
+        success: function () {location.reload();},
+      error: function (xhr) { const errorMessage = xhr.responseText || "Unable to save profile note"; msgFlash( errorMessage, "danger", 3000, true ); saveButton.prop("disabled", false);}
     });
-  });
+});
+
+// Open an existing note for editing.
+$(document).on("click", ".editNoteButton", function () {
+    const noteText = $(this).data("notetext");
+    const visibility = String($(this).data("visibility"));
+    const noteid = $(this).data("noteid");
+
+    const isBonner =
+        String($(this).data("bonner")) === "yes";
+
+    const isCCEMinor =
+        String($(this).data("cceminor")) === "yes";
+    $("#cceMinorInput").prop("checked", isCCEMinor);
+    $("#addNoteTextArea").val(noteText);
+    $("#noteDropdown").val(visibility);
+
+    if (isBonner) {  bonnerNoteOn(); }
+    else {
+        bonnerNoteOff();
+        $("#noteDropdown").val(visibility);
+    }
+
+    
+//  This is the part that restores the CCE Minor toggle.
+  
+    $("#cceMinorInput").prop( "checked", isCCEMinor);
+    $("#notesSaveButton").data( "noteid", noteid );
+    $("#notesSaveButton").data( "mode", "edit" );
+    $("#notesSaveButton").prop( "disabled",  false );
+    $("#noteModal").modal("toggle");
+});
+
+
+//  Open the delete confirmation.
+$(document).on("click", ".deleteNoteButton", function () {
+    $("#confirmDeleteNote").data(
+        "username",
+        $(this).data("username")
+    );
+
+    $("#confirmDeleteNote").data(
+        "noteid",
+        $(this).data("noteid")
+    );
+
+    $("#deleteNoteWarning").modal("show");
+});
+
+// Confirm note deletion.
+$("#confirmDeleteNote").click(function () {
+    const username = $(this).data("username");
+    const noteid = $(this).data("noteid");
+
+    $.ajax({method: "POST", url: "/" + username + "/deleteNote", data: {  id: noteid  },
+        success: function () { msgFlash("Successfully deleted note",  "success", 1300, true );
+            reloadWithAccordion("notes");
+        },
+
+        error: function (xhr) { console.error("Unable to delete note:", xhr.responseText  );
+          
+          }
+    });
+});
   /*
     * Background Check Functionality
     */
@@ -365,14 +403,16 @@ $(document).ready(function(){
   });
 
   // Popover functionality
-  var requiredTraining = $(".trainingPopover");
-  requiredTraining.popover({
+  var requiredTraining = document.querySelectorAll(".trainingPopover");
+  requiredTraining.forEach(function(el) {
+    new bootstrap.Popover(el, {
       trigger: "hover",
       sanitize: false,
       html: true,
       content: function() {
-          return $(this).attr('data-content');
+        return this.getAttribute('data-content');
       }
+    });
   });
  
   setupPhoneNumber("#updatePhone", "#phoneInput")
@@ -412,7 +452,7 @@ $(document).ready(function(){
       typingTimer = setTimeout(saveDiet, saveInterval);
     });
   });
- // end document.ready()
+}); // end document.ready()
 
 
 // Update program manager status

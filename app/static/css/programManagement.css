@@ -36,3 +36,13 @@
   right: 10px; /* Added px to right */
 }
 
+form.uploaders {
+  margin-bottom: 1em;
+}
+form.uploaders label {
+  margin-bottom: .25rem;
+}
+
+#collapseTwo div.card {
+  margin-bottom: 40px;
+}

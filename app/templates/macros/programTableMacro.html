@@ -1,0 +1,66 @@
+{% macro programTable(eligibilityTable, volunteer) %}
+    <div class="table-responsive">
+        <table class="table table-striped banTable">
+        <thead>
+            <tr>
+            <th scope="col">Program</th>
+            <th scope="col">Indicated Interested</th>
+            <th scope="col">Training</th>
+            {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+                <th scope="col">Eligibility</th>
+                {% if g.current_user.isCeltsAdmin%}
+                <th scope="col">On Transcript</th>
+                {% endif %}
+            {% endif %}
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in eligibilityTable %}
+            {% set trainingList = row['trainingList'][volunteer.username] %}
+            {% set checked = "" %}
+            {% if row.program in programsInterested %}
+                {% set checked = "checked" %}
+            {% endif %}
+            {% from 'macros/trainingsHoverMacro.html' import trainingsHover %}
+            <tr>
+                <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
+                <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                <td>
+                {% set hasCompletedAllTrainings = row.completedTraining %}
+                <i class="bi bi-{{'check' if hasCompletedAllTrainings or not trainingList else 'x'}}-lg"></i> &nbsp&nbsp
+                <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
+                </td>
+                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                {% if row.isNotBanned %}
+                    <td class="programBan pt-3"> Eligible
+                    {% set label = "Ban" %}
+                {% else %}
+                    <td class="programBan text-danger pt-3"> Banned
+                    {% set label = "Unban" %}
+                {% endif %}
+
+                {% if g.current_user.isCeltsAdmin %}
+                    <button type="button" class="banEdit btn btn-link" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">
+                    <i class="bi bi-pencil editIcon"></i></button>
+                {% endif %}
+                </td>
+                
+                {% if g.current_user.isCeltsAdmin %}
+                    <td class="onTranscript">
+                        <input class="form-check-input onTranscriptCheckbox ms-5" name="onTranscriptCheckbox" id="onTranscriptCheckbox" type="checkbox" data-programid="{{row.program.id}}"
+                        data-username="{{volunteer.username}}" {% if row.isNotBanned %}checked disabled{% endif %} {% if row.onTranscript %} checked {% endif %}/>
+                        <div id="transcriptStatus-{{row.program.id}}" class="transcriptStatus"></div>
+                    </td>
+                {% endif %}
+                
+                
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <a href="https://next.berea.edu/centers/center-for-excellence-in-learning-through-service">For more information about CELTS opportunities, click here.</a>
+    </div>
+
+{% endmacro %}

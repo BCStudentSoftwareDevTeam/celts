@@ -15,9 +15,14 @@ def addNextTerm():
     
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear   
+    volunteerHandbook = None
+    laborHandbook = None
     if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
+    else:   # if the previous term is fall or spring, make sure we copy the handbook
+        volunteerHandbook = prevTerm.volunteerHandbook
+        laborHandbook = prevTerm.laborHandbook
 
     semester = newDescription.split()[0]
     summer= "Summer" in semester
@@ -25,7 +30,11 @@ def addNextTerm():
                           year=newYear,
                           academicYear=newAY,
                           isSummer= summer,
-                          termOrder=Term.convertDescriptionToTermOrder(newDescription))
+                          termOrder=Term.convertDescriptionToTermOrder(newDescription),                          
+                          volunteerHandbook=volunteerHandbook,
+                          laborHandbook=laborHandbook
+                         )
+
     newTerm.save()
 
     return newTerm
@@ -51,12 +60,21 @@ def addPastTerm(description):
     createdOldTerm.save() 
     return createdOldTerm
 
-def changeCurrentTerm(term):
-    oldCurrentTerm = Term.get_by_id(g.current_term)
-    oldCurrentTerm.isCurrentTerm = False
-    oldCurrentTerm.save()
+def changeCurrentTerm(term, refreshOnly=False):
+    switchTerm = not refreshOnly
+    # change old terms
+    if switchTerm:
+        activeTerms = Term.select().where(Term.isCurrentTerm)    
+        nterms = (Term.update(isCurrentTerm = False).where(Term.isCurrentTerm).execute())    
+
+    # get new term data
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
-    newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createActivityLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+
+    # finalize switch
+    if switchTerm:
+        newCurrentTerm.save()
+        createActivityLog(f"Changed Current Term to {newCurrentTerm.description}")
+
+    return newCurrentTerm
