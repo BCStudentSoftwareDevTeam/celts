@@ -176,7 +176,7 @@
                 <td>{{event.programName}}</td>
                 <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td>{{event.participatedType}}</td>
-                {% if event.participatedType == 'Volunteer' %}
+                {% if event.isService %}
                   <td>{{eventParticipant[loop.index0].hoursEarned}}</td>
                 {% else %}
                   <td>N/A</td>
