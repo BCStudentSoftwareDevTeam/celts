@@ -436,7 +436,7 @@ def getParticipatedEventsForUser(user):
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType, union.c.hoursEarned).order_by(union.c.startDate, union.c.name).execute())
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.isService, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType, union.c.hoursEarned).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
