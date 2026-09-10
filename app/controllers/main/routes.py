@@ -24,7 +24,6 @@ from app.models.certification import Certification
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.emergencyContact import EmergencyContact
-from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
@@ -39,7 +38,7 @@ from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import hasGoneToTraining, unattendedRequiredEvents, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import addUserInterest, isBannedFromEvent, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo, trainedParticipants
+from app.logic.users import *
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -234,8 +233,8 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-        handbookOverdue = getHandbookStatus(volunteer)
 
+        handbookOverdue = getHandbookStatus(volunteer)
         training = hasGoneToTraining(g.current_user, g.current_term)
 
         return render_template ("/main/userProfile.html",
@@ -390,22 +389,34 @@ def eventTravelForm(eventID):
                            userList = userList,
                            )
 
-@main_bp.route('/profile/addNote', methods=['POST'])
+@main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
-    """
-    This function adds a note to the user's profile.
-    """
-    postData = request.form
     try:
-        note = addProfileNote(postData["visibility"], postData["bonner"] == "yes", postData["noteTextbox"], postData["username"])
+        noteData = getProfileNoteData(
+            request.form,
+            includeUsername=True,
+        )
+        addProfileNote(**noteData)
         flash("Successfully added profile note", "success")
-        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
-    except Exception as e:
-        print("Error adding note", e)
+    except Exception as error:
+        print("Error adding profile note:", error)
         flash("Failed to add profile note", "danger")
-        return "Failed to add profile note", 500
-
-    
+        return str(error), 500
+    return "success"
+@main_bp.route("/<username>/editNote", methods=["POST"])
+def editProfileNote(username):
+    try:
+        noteData = getProfileNoteData( request.form,  includeId=True, )
+        profileNote = ProfileNote.get_by_id(noteData["profileNoteID"]  )
+        if (profileNote.user.username != username or (profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin) ):
+            abort(403)
+        updateProfileNote(**noteData)
+        flash("Successfully updated profile note", "success")
+    except Exception as error:
+        print("Error updating profile note:", error)
+        flash("Failed to update profile note", "danger")
+        return str(error), 500
+    return "success"  
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):
     """
