@@ -1,6 +1,9 @@
 import pytest
+from types import SimpleNamespace
+
 from app.models import mainDB
 from app.models.term import Term
+from app.logic.utils import selectAllSummerTerms
 
 
 
@@ -78,3 +81,48 @@ def test_isFutureTerm():
         # current term
         assert testCurrentTerm.isFutureTerm == False
         transaction.rollback()
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "class_level, current_description, current_year, expected_years",
+    [
+        ("Freshman", "Fall 2090", 2090, [2091, 2092, 2093]),
+        ("Sophomore", "Summer 2091", 2091, [2090, 2091, 2092]),
+        ("Senior", "Fall 2090", 2090, [2088, 2089, 2090]),
+    ],
+)
+def test_selectAllSummerTerms_uses_estimated_enrollment_window(
+        class_level, current_description, current_year, expected_years):
+    with mainDB.atomic() as transaction:
+        for year in range(2087, 2096):
+            Term.create(description=f"Summer {year}",
+                        year=year,
+                        academicYear=f"{year - 1}-{year}",
+                        isSummer=True,
+                        isCurrentTerm=False,
+                        termOrder=f"{year}-2")
+
+        student = SimpleNamespace(rawClassLevel=class_level,
+                                  hasGraduated=False)
+        currentTerm = SimpleNamespace(description=current_description,
+                                      year=current_year)
+
+        assert expected_years == [
+            term.year for term in selectAllSummerTerms(currentTerm, student)
+        ]
+        transaction.rollback()
+
+
+def test_selectAllSummerTerms_excludes_graduated_students():
+    student = SimpleNamespace(rawClassLevel="Senior", hasGraduated=True)
+    currentTerm = SimpleNamespace(description="Summer 2090", year=2090)
+
+    assert selectAllSummerTerms(currentTerm, student) == []
+
+
+def test_selectAllSummerTerms_excludes_unknown_class_levels():
+    student = SimpleNamespace(rawClassLevel=None, hasGraduated=False)
+    currentTerm = SimpleNamespace(description="Summer 2090", year=2090)
+
+    assert selectAllSummerTerms(currentTerm, student) == []

@@ -495,6 +495,33 @@ terms = [
         "termOrder": "2022-1"
     },
     {
+        "id": 11,
+        "description": "Summer 2018",
+        "year": 2018,
+        "academicYear": "2017-2018",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2018-2"
+    },
+    {
+        "id": 12,
+        "description": "Summer 2019",
+        "year": 2019,
+        "academicYear": "2018-2019",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2019-2"
+    },
+    {
+        "id": 13,
+        "description": "Summer 2020",
+        "year": 2020,
+        "academicYear": "2019-2020",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2020-2"
+    },
+    {
         "id": 9,
         "description": "Spring 2024",
         "year": 2024,
