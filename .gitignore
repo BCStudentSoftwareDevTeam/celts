@@ -1,3 +1,4 @@
+.DS_Store
 .idea/
 *.pyc
 venv/
@@ -7,6 +8,7 @@ venv/
 *.swo
 old/
 app/static/files/
+extravaganza_qr.png
 local-override.yml
 geckodriver.log
 .coverage
