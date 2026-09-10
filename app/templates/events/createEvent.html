@@ -71,6 +71,7 @@
       {% else %}
         <div class="text-center" id="pageTitle" name="{{template.tag}}">
           <h1 id="pageTitle">{{page_title}}</h1>
+      
         </div>
       {% endif %}
 
@@ -325,10 +326,13 @@
       {% endif %}
     </div>
   </div>
-  <div class="row justify-content-left mt-2">
+  <div class="row justify-content-center mt-2">
     <div class="col-md-6 offset-md-3">
-      <div class="text-center mb-2">
+      <div class="w-100 m-auto">
         <!--Submission buttons-->
+            {% if not event %}
+         <a href="{{ url_for('admin.templateSelect') }}" class="btn btn-secondary m-2">Back</a>
+            {% endif %}
         {% if event %}
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete
           Event</button>
@@ -341,7 +345,7 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew
           Event</button>
         {% endif %}
-        <input type="button" class="btn btn-primary" id="saveButton" value="Save" />
+            <input type="button" class="btn btn-primary" id="saveButton" value="Save" /> 
       </div>
     </div>
   </div>
