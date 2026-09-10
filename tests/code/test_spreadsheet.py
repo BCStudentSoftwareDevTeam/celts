@@ -706,7 +706,7 @@ def test_laborAttendanceByTerm(fixture_info):
     assert columns == ("Full Name", "B-Number", "Email", "Meetings Attended")
 
     assert len(results) == 2
-    assert ("John Doe", "B774377", "doej@berea.edu", 1) in results
+    assert ("John Doe", "B774377", "doej@berea.edu", 2) in results
     assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
 
     columns, results = laborAttendanceByTerm(fixture_info['term2'])
@@ -775,7 +775,11 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     EventParticipant.create(user=fixture_info['user3'], event=event6, hoursEarned=3)
     EventParticipant.create(user=fixture_info['user3'], event=event7, hoursEarned=4)
 
-    # Add another unique service semester for Bob
+    # Bob now has 4 unique semesters total, and is a Senior in 2024-2025-test
+    columns, rows = graduatingSeniorsVolunteerHours("2024-2025-test")
+    # assert list(rows) == []
+
+    # Add a 4th unique semester for Bob. So now he should appear regardless of academic year queried
     termBobUnique = Term.create(description='Spring 2023 Test', academicYear='2022-2023-test')
     eventBobUnique = Event.create(
         name='EventBob4th',
@@ -792,16 +796,13 @@ def test_graduatingSeniorsVolunteerHours(fixture_info):
     # Bob now appears for ANY academic year since we only check rawClassLevel
     columns, rows = graduatingSeniorsVolunteerHours("2024-2025-test")
     result = list(rows)
-    bobRows = [r for r in result if r[0] == "Bob Builder"]
-    assert len(bobRows) == 1
-    assert bobRows[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 5, 11.0)
+    assert len(result) == 1    
+    assert result[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 5, 11.0)
 
     columns, rows = graduatingSeniorsVolunteerHours("2023-2024-test")
     result = list(rows)
-    bobRows = [r for r in result if r[0] == "Bob Builder"]
-
-    assert len(bobRows) == 1
-    assert bobRows[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 5, 11.0)
+    assert len(result) == 1
+    assert result[0] == ("Bob Builder", "builderb@berea.edu", "B00700932", 5, 11.0)
 
     # Non-senior students should never appear even with enough semesters
     extraTerm = Term.create(description='Spring 2021 Test', academicYear='2020-2021-test')

@@ -41,7 +41,26 @@ $(document).ready(function(){
       $(".no-upcoming").show()
     }
   }
+
+  
 });
+
+$("#pushToCampusGroupsBtn").on("click", function(){
+    $.ajax({
+        url: "/addEventToCampusGroups/" + $("#pushToCampusGroupsBtn").val(),
+        type: "GET",
+        success: function(response) {
+          console.log(response)
+          alert("Event pushed to CampusGroups successfully!");
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+            var response = JSON.parse(xhr.responseText);
+            alert("Error pushing event to CampusGroups: " + response);
+            }
+        })
+    });
+
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,

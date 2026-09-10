@@ -27,12 +27,21 @@ else
     exit;
 fi
 
+# Determine SSL option - try --skip-ssl first, fall back to --ssl-mode=DISABLED if unsupported
+# MariaDB and older MySQL versions support --skip-ssl
+# Newer MySQL 8.0.26+ use --ssl-mode=DISABLED
+SSL_OPTION="--skip-ssl"
+mysql -u root -proot --skip-ssl --execute="SELECT 1;" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	SSL_OPTION="--ssl-mode=DISABLED"
+fi
+
 ########### Recreate Database Schema ###########
 echo "Dropping databases"
-mysql -u root -proot --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';"
+mysql -u root -proot $SSL_OPTION --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';"
 
 echo "Recreating databases and users"
-mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE USER IF NOT EXISTS 'celts_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'celts_user'@'%';"
+mysql -u root -proot $SSL_OPTION --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE USER IF NOT EXISTS 'celts_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'celts_user'@'%';"
 
 
 # remove ahead of time in case we didn't clean up last time
@@ -42,7 +51,7 @@ rm -rf migrations.json
 echo -n "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo " from backup"
-    mysql -u root -proot celts < prod-backup.sql
+    mysql -u root -proot $SSL_OPTION celts < prod-backup.sql
 else
     echo " empty"
     ./migrate_db.sh no-backup
