@@ -100,7 +100,7 @@
   {% if isNewEvent %}
       <div class="form-check form-switch pb-1">
         <fieldset>
-          <label class="custom-control-label" for='checkIsSeries'><strong>Series of Events</strong></label>
+          <label class="custom-control-label" for='checkIsSeries'><strong>This is a series of events.</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsSeries" name="isSeries"
             {{"checked" if eventData.isSeries}} />
         </fieldset> 
@@ -148,7 +148,6 @@
     </div>
   </div>
 </div>
-
 
 <p class="text-danger fw-bold" id="pastDateWarningText"> </p>  <!-- This is the text for the Event to show if it ended. The text will be filled out using JS function. -->
 
