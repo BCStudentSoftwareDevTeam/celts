@@ -29,6 +29,7 @@ class Event(baseModel):
     isCanceled = BooleanField(default=False)
     deletionDate = DateTimeField(null=True)
     deletedBy = TextField(null=True)
+    requiresProgramTraining = BooleanField(default=False)
     eventFlagsMatrix = {'isAllVolunteerTraining':   {'isAllVolunteerTraining', 
                                                      'isTraining'},
                         'isCeltsTraining':          {'isCeltsTraining',
