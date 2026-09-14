@@ -481,6 +481,14 @@
 
                   <td>
                     {{ row.note.noteContent }}
+                    <div class="note-badges">
+                    {% if row.isCCEMinorNote %}
+                      <span class="badge rounded-pill note-badge bg-primary "> CCE </span>
+                    {% endif %}
+                    {% if row.isBonnerNote %}
+                      <span class="badge rounded-pill note-badge bg-primary "> Bonner</span>
+                    {% endif %}
+                    </div>
                   </td>
 
                   <td> 
@@ -493,14 +501,6 @@
                     {% else %}
                       Everyone
                     {% endif %}
-                     <div class="note-badges">
-                    {% if row.isCCEMinorNote %}
-                      <span class="badge rounded-pill note-badge bg-primary ">CCE </span>
-                    {% endif %}
-                    {% if row.isBonnerNote %}
-                      <span class="badge rounded-pill note-badge bg-primary "> Bonner</span>
-                    {% endif %}
-                  </div>
                 </td>
 
                   <td class="text-nowrap">
