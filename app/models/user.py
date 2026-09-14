@@ -12,6 +12,7 @@ class User(baseModel):
     isStudent = BooleanField(default=False)
     major = CharField(null=True)
     rawClassLevel = CharField(null=True)
+    isActive = BooleanField(default=False)
     isFaculty = BooleanField(default=False)
     isStaff = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
@@ -35,17 +36,14 @@ class User(baseModel):
     
     @property
     def processedClassLevel(self):
-        if self.isAlumni:
+        if self.hasGraduated:
             return "Alumni"
+
         return self.rawClassLevel or "Not Enrolled"
 
-    @property
-    def isAlumni(self):
-        return self.hasGraduated or self.rawClassLevel == "Graduating"
-    
     @property 
     def isCurrentlyEnrolled(self):
-        return self.isStudent and not self.isAlumni
+        return self.isStudent and self.isActive
 
     @property
     def isAdmin(self):

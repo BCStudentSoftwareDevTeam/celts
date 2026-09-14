@@ -6,6 +6,7 @@ from ldap3 import Server, Connection, ALL
 import peewee
 
 from app import app
+from app.models import mainDB
 from app.models.user import User
 from app.logic.utils import getUsernameFromEmail
 
@@ -43,19 +44,33 @@ def main():
     logger.debug("Script started.")
     logger.debug("Don't forget to put the correct Tracy and LDAP passwords in app/config/local-override.yml")
     
+
     logger.info("Getting Updated Names, Majors, and Class Levels")
-    
-    studentData = addToDb(getStudentData())
-    studentAdded = studentData[0]
-    studentUpdated = studentData[1]
-    logger.info(f"  {studentAdded} students were added.")
-    logger.info(f"  {studentUpdated} students were updated.")
-    
-    facultyStaffData = addToDb(getFacultyStaffData())
-    facultyStaffAdded = facultyStaffData[0]
-    facultyStaffUpdated = facultyStaffData[1]
-    logger.info(f"  {facultyStaffAdded} faculties/staffs were added.")
-    logger.info(f"  {facultyStaffUpdated} faculties/staffs were updated.")
+    with mainDB.atomic():
+        # mark students as graduated if they are gone and were supposed to graduate
+        prevGrads = User.select(User.bnumber).where(User.rawClassLevel == 'Graduating').scalars()
+        studentData = getStudentData()
+        newGrads = set(prevGrads) - set([ u["bnumber"] for u in studentData ])
+        count=User.update(hasGraduated = True).where(User.bnumber.in_(newGrads)).execute()
+        logger.info(f"  {count} students marked as graduated")
+
+        # reset isActive and rawClassLevel before importing users
+        User.update(isActive=False, rawClassLevel=None).execute()
+
+        # Import student data
+        studentData = addToDb(studentData)
+        studentAdded = studentData[0]
+        studentUpdated = studentData[1]
+        logger.info(f"  {studentAdded} students were added.")
+        logger.info(f"  {studentUpdated} students were updated.")
+
+        # Import faculty data
+        facultyStaffData = addToDb(getFacultyStaffData())
+        facultyStaffAdded = facultyStaffData[0]
+        facultyStaffUpdated = facultyStaffData[1]
+        logger.info(f"  {facultyStaffAdded} faculty/staff were added.")
+        logger.info(f"  {facultyStaffUpdated} faculty/staff were updated.")
+
 
     logger.info("Getting Preferred Names from LDAP")
     ldap = getLdapConn()
@@ -114,7 +129,7 @@ def updateFromLdap(people):
 
             except Exception as e:
                 logger.error(f" Failed to update user {bnumber} with preferred name {preferred}: {e}")
-    logger.info(f"  Updated {total_updates} names.")
+    logger.info(f"  {total_updates} names were updated.")
 
 def get_key(entry, key):
     if key in entry:
@@ -129,7 +144,7 @@ def getMssqlCursor():
         "host": app.config["tracy"]["host"],
         "db": app.config["tracy"]["name"]
     }
-    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(
+    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=7.4;'.format(
         details['host'], details['db'], details['user'], details['password']
     )
     try:
@@ -157,6 +172,7 @@ def addToDb(userList):
                         email=user['email'],
                         major=user['major'],
                         rawClassLevel=user['rawClassLevel'],
+                        isActive=True,
                         cpoNumber=user['cpoNumber']
                     ).where(User.bnumber == user['bnumber'])).execute()
                     logger.debug(f" Updated user {user['bnumber']}")
