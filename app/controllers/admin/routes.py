@@ -187,7 +187,7 @@ def createEvent(templateid, programid):
             if cohort:
                 bonnerCohorts[year] = cohort
     
-    isRelevantTraining = ((Event.isAllVolunteerTraining | Event.isCeltsTraining | ((Event.isTraining) & (Event.program == program))))
+    isRelevantTraining = ((Event.isAllVolunteerTraining | Event.isCeltsTraining | Event.isTraining) & ~Event.isLaborOnly & (Event.term == Term.get(Term.year == 2024)))
     trainingEvents = Event.select().where(isRelevantTraining).order_by(Event.name)  
           
     return render_template(f"/events/{template.templateFile}",
@@ -346,7 +346,9 @@ def eventDisplay(eventId):
     
     rule = request.url_rule
 
-    trainingEvents = Event.select().where(Event.isTraining == True).order_by(Event.name)
+    isRelevantTraining = ((Event.isAllVolunteerTraining | Event.isCeltsTraining | Event.isTraining) & ~Event.isLaborOnly & (Event.term == Term.get(Term.year == 2024)))
+    trainingEvents = Event.select().where(isRelevantTraining).order_by(Event.name)
+    
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
