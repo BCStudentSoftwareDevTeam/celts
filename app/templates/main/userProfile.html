@@ -820,7 +820,8 @@
         <br>
         
         <h5>AY {{g.current_term.academicYear}} Handbook</h5>
-        <div class="row mb-3">          
+        <div class="row mb-3">  
+          {{training.isCeltsTraining}} {{training.isAllVolunteerTraining}}      
           {# All CELTS Training #}
           {% if training.isCeltsTraining %}
             {% if not g.current_term.laborHandbook %}
@@ -829,6 +830,14 @@
             <p><a href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
             {% endif %}
 
+          {# Celts Labor #}
+          {% elif g.current_user.canManageProgram or g.current_user.isCeltsStudentStaff %}
+            {% if not g.current_term.laborHandbook %}
+              <p>No CELTS Labor Handbook available for {{g.current_term.description}} yet.</p>
+            {% else %}
+            <p><a href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank"/>hyyyyyyyyCELTS Labor Handbook {{g.current_user.canManageProgram}}</a></p>
+            {% endif %}
+            
           {# All Volunteer Training #}
           {% else %}
             {% if not g.current_term.volunteerHandbook %}
