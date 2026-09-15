@@ -66,14 +66,18 @@ def retrieveEvents():
         return "", 500
 
 
-@events_bp.route('/addEventToCampusGroups/<event_id>', methods=['GET'])
-def addEventToCampusGroups(event_id):
+@events_bp.route('/addEventToCampusGroups', methods=['POST'])
+def addEventToCampusGroups():
     try:
         cg = CampusGroups()
-        data = cg.parseEventData(event_id)
+        data = cg.parseEventData(request.form.get("eventId"))
         response = cg.addEvent(data)
+        flash("Event pushed to CampusGroups successfully.", "success")
+
         return response  # FIXME Return a better response, or parse this in the front end
 
-    except requests.exceptions.RequestException as e:
-        print("Error retrieving data from campusgroups: \n", e)
+    except Exception as e:
+        print("Error pushing event to campusgroups: \n", e)
+        flash("Error pushing event to CampusGroups.", "danger")
+
         return "", 500
