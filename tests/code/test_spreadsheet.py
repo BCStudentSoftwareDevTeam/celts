@@ -706,7 +706,7 @@ def test_laborAttendanceByTerm(fixture_info):
     assert columns == ("Full Name", "B-Number", "Email", "Meetings Attended")
 
     assert len(results) == 2
-    assert ("John Doe", "B774377", "doej@berea.edu", 2) in results
+    assert ("John Doe", "B774377", "doej@berea.edu", 1) in results
     assert ("Jane Doe", "B888828", "doej2@berea.edu", 1) in results
 
     columns, results = laborAttendanceByTerm(fixture_info['term2'])

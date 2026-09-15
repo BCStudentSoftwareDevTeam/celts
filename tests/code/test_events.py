@@ -1601,6 +1601,6 @@ def test_campusGroups():
                                     </soap:Body>
                                 </soap:Envelope>"""
             
-            assert Event.get_by_id(event.id).campusGroupsURL == f"{app.config['campusgroups']['sandbox']['url']}/celts/rsvp_boot?id=374950"
+            assert Event.get_by_id(event.id).campusGroupsURL == f"{app.config['campusgroups']['url']}/celts/rsvp_boot?id=374950"
 
             transaction.rollback()
