@@ -50,7 +50,8 @@ class Event(baseModel):
                         'isService':                {'isService',
                                                      'allowsLabor'},
                         'isEngagement':             {'isEngagement',
-                                                     'allowsLabor'}
+                                                     'allowsLabor'},
+                        'rrequiresProgramTraining': {'requiresProgramTraining'}
                         }
 
     _spCache = "Empty"

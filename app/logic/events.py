@@ -215,6 +215,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "rsvpLimit":        newEventData['rsvpLimit'],
                 "contactEmail":     newEventData['contactEmail'],
                 "contactName":      newEventData['contactName'],
+                "requiresProgramTraining": newEventData['requiresProgramTraining'],
             }
         
         # These fields below are only relevant during event creation so we only set/change them when 
@@ -518,7 +519,7 @@ def preprocessEventData(eventData):
     """
 
     ## Process checkboxes and templateData
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining', 'allVolunteerTraining', 'requiresProgramTraining']
     
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
