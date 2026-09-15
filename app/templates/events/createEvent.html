@@ -316,7 +316,7 @@
       <div class="form-group mb-4">
           <label class="form-label" for="requiredTrainings"><strong>Required Trainings</strong></label>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="allVolunteerTraining" name="allVolunteerTraining" {{"checked" if eventData.isService or eventData["allVolunteerTraining"] }}>
+            <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="requiresAllVolunteerTraining" name="requiresAllVolunteerTraining" {{"checked" if eventData.isService or eventData["requiresAllVolunteerTraining"] }}>
             <label class="form-check-label" for="noTrainingRequired"> All Volunteer Training </label>
         </div>
         <div class="form-check">

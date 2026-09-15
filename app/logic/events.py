@@ -198,24 +198,25 @@ def saveEventToDb(newEventData, renewedEvent = False):
     eventRecords = []
     with mainDB.atomic():
         eventData = {
-                "term":             newEventData['term'],
-                "name":             newEventData['name'],
-                "description":      newEventData['description'],
-                "timeStart":        newEventData['timeStart'],
-                "timeEnd":          newEventData['timeEnd'],
-                "location":         newEventData['location'],
-                "isFoodProvided" :  newEventData['isFoodProvided'],                
-                "isLaborOnly" :     newEventData['isLaborOnly'],                
-                "allowsLabor" :     newEventData['allowsLabor'],
-                "isTraining":       newEventData['isTraining'],
-                "isEngagement":     newEventData['isEngagement'],
-                "isRsvpRequired":   newEventData['isRsvpRequired'],
-                "isService":        newEventData['isService'],
-                "startDate":        newEventData['startDate'],
-                "rsvpLimit":        newEventData['rsvpLimit'],
-                "contactEmail":     newEventData['contactEmail'],
-                "contactName":      newEventData['contactName'],
-                "requiresProgramTraining": newEventData['requiresProgramTraining'],
+                "term":                         newEventData['term'],
+                "name":                         newEventData['name'],
+                "description":                  newEventData['description'],
+                "timeStart":                    newEventData['timeStart'],
+                "timeEnd":                      newEventData['timeEnd'],
+                "location":                     newEventData['location'],
+                "isFoodProvided" :              newEventData['isFoodProvided'],                
+                "isLaborOnly" :                 newEventData['isLaborOnly'],                
+                "allowsLabor" :                 newEventData['allowsLabor'],
+                "isTraining":                   newEventData['isTraining'],
+                "isEngagement":                 newEventData['isEngagement'],
+                "isRsvpRequired":               newEventData['isRsvpRequired'],
+                "isService":                    newEventData['isService'],
+                "startDate":                    newEventData['startDate'],
+                "rsvpLimit":                    newEventData['rsvpLimit'],
+                "contactEmail":                 newEventData['contactEmail'],
+                "contactName":                  newEventData['contactName'],
+                "requiresAllVolunteerTraining": newEventData['requiresAllVolunteerTraining'],
+                "requiresProgramTraining":      newEventData['requiresProgramTraining'],
             }
         
         # These fields below are only relevant during event creation so we only set/change them when 
@@ -519,7 +520,7 @@ def preprocessEventData(eventData):
     """
 
     ## Process checkboxes and templateData
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining', 'allVolunteerTraining', 'requiresProgramTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining', 'requiresAllVolunteerTraining', 'requiresProgramTraining']
     
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
