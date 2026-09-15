@@ -375,7 +375,7 @@ def eventDisplay(eventId):
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
-        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term, includeFutureEvents = False)
 
         # CampusGroups integration        
         if event.campusGroupsId:

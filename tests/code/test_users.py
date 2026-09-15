@@ -16,7 +16,7 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo, getProfileNoteData, updateProfileNote
 from app.logic.volunteers import addUserBackgroundCheck, deleteUserBackgroundCheck
 from playhouse.shortcuts import model_to_dict
 
@@ -116,8 +116,6 @@ def test_isEligibleForProgram():
             user.lastHandbookSignature = "2026-07-21"
             user.signatureTerm = g.current_term
             user.save()
-            print(user.signatureTerm.academicYear)
-            print(g.current_term.academicYear)
             eligible = isEligibleForProgram(2, user)
             assert eligible
 
@@ -177,23 +175,53 @@ def test_removeUserInterestt():
         assert result == True
 
         transaction.rollback()
-
+@pytest.mark.integration
+def test_getProfileNoteData():
+    formData = { "visibility": "3","bonner": "yes", "cceMinor": "no",  "noteTextbox": "  Test profile note  ",  "username": "ramsayb2",  "id": "12", }
+    noteData = getProfileNoteData(  formData, includeUsername=True, includeId=True, )
+    assert noteData == {"visibility": 3,"bonner": True,   "cceMinor": False,"noteTextbox": "Test profile note", "username": "ramsayb2", "profileNoteID": "12",  }
+    invalidData = [
+        ({}, "Note cannot be empty"),
+        ( {"noteTextbox": "Test note"}, "Missing username" ),
+        ( {"noteTextbox": "Test note",  "username": "ramsayb2",  },  "Missing profile note ID", ),
+    ]
+    for formData, errorMessage in invalidData:
+        with pytest.raises(ValueError) as error:
+            getProfileNoteData(formData,  includeUsername=True, includeId=True,)
+        assert str(error.value) == errorMessage
 @pytest.mark.integration
 def test_addUserProfileNote():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
-            profileNote = addProfileNote(1, True, "Test profile note", "neillz")
+            profileNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert profileNote == ProfileNote.get_by_id(profileNote.id)
 
-            profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            profileNote2 = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
             assert profileNote2.viewTier == 3
 
-            profileNote3 = addProfileNote(3, True, "Test profile note 3", "ramsayb2")
-            assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
-            assert profileNote3.viewTier == 1
+            profileNote3 = addProfileNote(3, True, True, "Test Bonner and CCE Minor note", "ramsayb2")
+            savedProfileNote = ProfileNote.get_by_id(profileNote3.id)
+            assert profileNote3 == savedProfileNote
+            assert savedProfileNote.isBonnerNote is True
+            assert savedProfileNote.isCCEMinorNote is True
+            assert savedProfileNote.viewTier == 1
         transaction.rollback()
+@pytest.mark.integration
+def test_updateUserProfileNote():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            profileNote = addProfileNote( 3, False,False,"Original note","ramsayb2", )
+            updatedNote = updateProfileNote( profileNote.id, 3, True, True,"Updated Bonner and CCE Minor note", )
+            savedNote = ProfileNote.get_by_id(profileNote.id)
+            assert updatedNote == savedNote
+            assert savedNote.note.noteContent == ( "Updated Bonner and CCE Minor note" )
+            assert savedNote.isBonnerNote is True
+            assert savedNote.isCCEMinorNote is True
+            assert savedNote.viewTier == 1
+        transaction.rollback()       
 
 @pytest.mark.integration
 def test_deleteUserProfileNote():
@@ -201,7 +229,7 @@ def test_deleteUserProfileNote():
         with app.app_context():
             g.current_user = "ramsayb2"
 
-            addedNote = addProfileNote(1, True, "Test profile note", "neillz")
+            addedNote = addProfileNote(1, True, False, "Test profile note", "neillz")
             assert addedNote.isBonnerNote == True
             assert addedNote.viewTier == 1
             assert addedNote.user == User.get_by_id("neillz")
@@ -210,7 +238,7 @@ def test_deleteUserProfileNote():
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote)
 
-            addedNote = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            addedNote = addProfileNote(3, False, False, "Test profile note 2", "ramsayb2")
             profileNote = deleteProfileNote(addedNote)
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote.id)
@@ -550,80 +578,36 @@ def test_isCurrentlyEnrolled():
             bnumber="B10000004",
             email="enrolled@berea.edu",
             isStudent=True,
-            hasGraduated=False,
+            isActive=True,
             rawClassLevel="Junior"
         )
         assert enrolledUser.isCurrentlyEnrolled is True
 
-        # Alumni (graduated)
-        alumniUser = User.create(
-            username="alumniuser",
-            firstName="Alumni",
+        # inactive user
+        inactiveUser = User.create(
+            username="inactiveuser",
+            firstName="inactive",
             lastName="User",
             bnumber="B10000005",
-            email="alumni@berea.edu",
-            isStudent=False,
-            hasGraduated=True,
+            email="inactive@berea.edu",
+            isStudent=True,
+            isActive=False,
             rawClassLevel="Graduated"
         )
-        assert alumniUser.isCurrentlyEnrolled is False
+        assert inactiveUser.isCurrentlyEnrolled is False
 
-        # Fall graduate (Graduating → Alumni)
-        fallGradUser = User.create(
+        # Non-student active user
+        nonstudentUser = User.create(
             username="fallgraduser",
             firstName="Fall",
             lastName="Grad",
             bnumber="B10000006",
             email="fall@berea.edu",
             isStudent=False,
-            hasGraduated=False,
+            isActive=True,
             rawClassLevel="Graduating"
         )
-        assert fallGradUser.isCurrentlyEnrolled is False
-
-        transaction.rollback()
-
-@pytest.mark.integration
-def test_isAlumni():
-    with mainDB.atomic() as transaction:
-        # User who has graduated
-        graduatedUser = User.create(
-            username="graduser",
-            firstName="Grad",
-            lastName="User",
-            bnumber="B10000001",
-            email="grad@berea.edu",
-            isStudent=False,
-            hasGraduated=True,
-            rawClassLevel="Graduated"
-        )
-        assert graduatedUser.isAlumni is True
-
-        # User marked as "Graduating" (Fall graduate)
-        graduatingUser = User.create(
-            username="graduatinguser",
-            firstName="Fall",
-            lastName="Grad",
-            bnumber="B10000002",
-            email="fallgrad@berea.edu",
-            isStudent=False,
-            hasGraduated=False,
-            rawClassLevel="Graduating"
-        )
-        assert graduatingUser.isAlumni is True
-
-        # Current senior graduating in spring
-        seniorUser = User.create(
-            username="senioruser",
-            firstName="Spring",
-            lastName="Senior",
-            bnumber="B10000003",
-            email="senior@berea.edu",
-            isStudent=True,
-            hasGraduated=False,
-            rawClassLevel="Senior"
-        )
-        assert seniorUser.isAlumni is False
+        assert nonstudentUser.isCurrentlyEnrolled is False
 
         transaction.rollback()
 
@@ -654,7 +638,7 @@ def test_processedClassLevel():
             hasGraduated=False,
             rawClassLevel="Graduating"
         )
-        assert graduatingUser.processedClassLevel == "Alumni"
+        assert graduatingUser.processedClassLevel == "Graduating"
 
         # Current senior
         seniorUser = User.create(

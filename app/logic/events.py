@@ -411,22 +411,32 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    # Does this handle labor only and/or includes labor events?
-    participatedEvents = (Event.select(Event, Program.programName, Case(None, (
-                               ((Event.allowsLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"), 
-                               ((Event.allowsLabor | Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
-                               (Event.isService, "Volunteer")), "Attendee").alias("participatedType"))
+    eventName = fn.LOWER(Event.name)
+    checkIfLaborMeeting = eventName.contains("labor meeting")
+
+    participatedEvents = (Event.select(Event, 
+                                       Program.programName, 
+                                       Case(None,
+                                            (
+                                              ((Event.allowsLabor | Event.name.contains("Labor")) & Event.isService, "Labor & Volunteer"),
+                                              ((Event.allowsLabor | Event.isLaborOnly | Event.name.contains("Labor")), "Labor"),
+                                              (Event.isService, "Volunteer")
+                                            ), 
+                                            "Attendee").alias("participatedType"), 
+                                       EventParticipant.hoursEarned
+                                      )
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
                                       Event.isAllVolunteerTraining == False, Event.deletionDate == None, Event.isCeltsTraining == False)
                                .order_by(Event.startDate, Event.name))
-    allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"))
+
+    allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"), Value(0).alias("hoursEarned"))
                          .join(EventParticipant)
                          .where(Event.isAllVolunteerTraining == True,
                                 EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType).order_by(union.c.startDate, union.c.name).execute())
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.isService, union.c.programName, union.c.startDate, union.c.name, union.c.participatedType, union.c.hoursEarned).order_by(union.c.startDate, union.c.name).execute())
     return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
