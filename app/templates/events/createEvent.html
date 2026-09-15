@@ -314,14 +314,14 @@
 
       <!--Required Trainings-->
       <div class="form-group mb-4">
-          <label class="form-label" for="requiredTraining"><strong>Required Trainings</strong></label>
+          <label class="form-label" for="requiredTrainings"><strong>Required Trainings</strong></label>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="noTrainingRequired" name="requiredTraining[]" checked>
+            <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="allVolunteerTraining" name="requiredTraining" {{"checked" if eventData.isService}}>
             <label class="form-check-label" for="noTrainingRequired"> All Volunteer Training </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="noTrainingRequired" name="requiredTraining[]" checked>
-            <label class="form-check-label" for="noTrainingRequired"> {{" ".join(page_title.split(" ")[2:-1])}} Training </label>
+            <input class="form-check-input" type="checkbox" value="{{ eventData['program'] }}" id="programSpecificTraining" name="requiredTraining" {{"checked" if eventData.isService}}>
+            <label class="form-check-label" for="noTrainingRequired"> {{eventData['program'].programName}} Training </label>
         </div>
       </div>
       <br>
