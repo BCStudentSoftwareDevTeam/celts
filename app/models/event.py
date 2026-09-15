@@ -52,7 +52,6 @@ class Event(baseModel):
                                                      'allowsLabor'},
                         'isEngagement':             {'isEngagement',
                                                      'allowsLabor'},
-                        'rrequiresProgramTraining': {'requiresProgramTraining'}
                         }
 
     _spCache = "Empty"
