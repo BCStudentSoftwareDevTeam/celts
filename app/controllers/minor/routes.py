@@ -121,9 +121,7 @@ def createSummerExperienceRequest(username):
         flash("Proposal successfully created.", "success")
         return redirect(url_for('minor.viewCceMinor', username=username, tab="manageProposals"))
 
-    student   = User.get_by_id(username)
-    year_name = User.rawClassLevel
-    
+    student = User.get(User.username == username, User.isStudent == True)
     summerTerms = selectAllSummerTerms(g.current_term, student)
 
     return render_template("minor/summerExperience.html",
