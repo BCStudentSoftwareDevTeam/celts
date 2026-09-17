@@ -24,7 +24,6 @@ from app.models.certification import Certification
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.emergencyContact import EmergencyContact
-from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
@@ -234,8 +233,8 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
-        handbookOverdue = getHandbookStatus(volunteer)
 
+        handbookOverdue = getHandbookStatus(volunteer)
         training = hasGoneToTraining(g.current_user, g.current_term)
 
         return render_template ("/main/userProfile.html",
@@ -678,12 +677,24 @@ def extravaganza():
     interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
     programsInterested = [interest.program for interest in interests]
 
-    upcomingAllVolunteers = Event.select().join(Term).where(Event.isAllVolunteerTraining, Term.academicYear == g.current_term.academicYear)
+    upcomingAllVolunteers = (Event.select()
+                                 .join(Term)
+                                 .where(Event.isAllVolunteerTraining, 
+                                        Term.academicYear == g.current_term.academicYear,
+                                        Event.deletionDate == None, 
+                                        Event.isCanceled == False)
+                             )
     for training in upcomingAllVolunteers:
         training.startDate = training.startDate.strftime("%b %d")
         training.timeStart = training.timeStart.strftime("%I:%M %p")
 
-    upcomingTrainings = Event.select().join(Term).where(Event.isTraining, Term.academicYear == g.current_term.academicYear)
+    upcomingTrainings = (Event.select()
+                             .join(Term)
+                             .where(Event.isTraining, 
+                                    Term.academicYear == g.current_term.academicYear,
+                                    Event.deletionDate == None, 
+                                    Event.isCanceled == False)
+                        )
 
     for training in upcomingTrainings:
         training.startDate = training.startDate.strftime("%b %d")

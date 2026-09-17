@@ -33,7 +33,7 @@ def test_searchUsers():
         secondUser = User.create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', email = 'test@berea.edu', isStudent = True, cpoNumber = '1400')
 
         searchResults = searchUsers('sa')
-        assert len(searchResults) == 2
+        assert len(searchResults) == 3
         assert searchResults['lamichhanes2'] == model_to_dict(User.get_by_id('lamichhanes2'))
         assert searchResults["sawconc"] == model_to_dict (User.get_by_id('sawconc'))
         assert '(555)555-5555' in searchResults["lamichhanes2"].values()

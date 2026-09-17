@@ -959,6 +959,7 @@ def test_volunteerHistory():
                                                 startDate = "2021-12-12",
                                                 isAllVolunteerTraining = False,
                                                 program = participatedProgram)
+
         # Create a non-program event in the past that the test user will have
         # participated in
         participatedEvent = Event.create(name = "Attended event",
@@ -1024,7 +1025,7 @@ def test_calculateNewSeriesId():
     assert calculateNewSeriesId() == maxSeriesId
 
 @pytest.mark.integration
-def test_getParticipatedEventsForUser_participatedTypes():
+def test_getParticipatedEventsForUser_typesAndHours():
     with mainDB.atomic() as transaction:
         user = User.create(
             username='usrtst2',
@@ -1105,8 +1106,8 @@ def test_getParticipatedEventsForUser_participatedTypes():
 
         EventParticipant.create(user=user, event=allVolunteerTrainingEvent)
         EventParticipant.create(user=user, event=laborEvent)
-        EventParticipant.create(user=user, event=volunteerEvent)
-        EventParticipant.create(user=user, event=laborVolunteerEvent)
+        EventParticipant.create(user=user, event=volunteerEvent, hoursEarned=5)
+        EventParticipant.create(user=user, event=laborVolunteerEvent, hoursEarned=3)
 
         result = getParticipatedEventsForUser(user)
 
@@ -1114,10 +1115,21 @@ def test_getParticipatedEventsForUser_participatedTypes():
             event.name: event.participatedType for event in result
         }
 
+        serviceHoursEarned = {
+            event.name: event.hoursEarned for event in result
+        }
+
         assert participatedTypes["Labor shift"] == "Labor"
+        assert serviceHoursEarned["Labor shift"] == 0
+
         assert participatedTypes["Volunteer event"] == "Volunteer"
+        assert serviceHoursEarned["Volunteer event"] == 5
+
         assert participatedTypes["Labor volunteer event"] == "Labor & Volunteer"
+        assert serviceHoursEarned["Labor volunteer event"] == 3
+
         assert participatedTypes["All Volunteer Training"] == "Volunteer"
+        assert serviceHoursEarned["All Volunteer Training"] == 0
 
         transaction.rollback()
 
