@@ -185,7 +185,7 @@ def createEvent(templateid, programid):
         
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
-                bonnerCohorts[year] = cohort 
+                bonnerCohorts[year] = cohort
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
