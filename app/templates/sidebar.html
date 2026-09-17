@@ -29,7 +29,7 @@
         </a>
       </li>
       {% endif %}
-      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager %}
+      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event    
@@ -90,7 +90,7 @@
       </li>
 
       {% endif %}
-      {% if g.current_user.isProgramManager %}
+      {% if g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
         <a href="/admin"
            class="nav-link text-white {{'active' if request.path == '/admin'}}"
            {% if request.path == '/admin' %}aria-current="page"{% endif %}>
@@ -105,7 +105,7 @@
           <select name="newuser" class="form-select" style="margin-bottom: 10px" onchange="this.form.submit()">>
             <option {{"selected" if g.current_user.username == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
             <option {{"selected" if g.current_user.username == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
-            <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Student Staff: neillz</option>
+            <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Program Manager: neillz</option>
             <option {{"selected" if g.current_user.username == "ayisie"}} value="ayisie">Student: ayisie</option>
             <option {{"selected" if g.current_user.username == "heggens"}} value="heggens">Faculty: heggens</option>
           </select>

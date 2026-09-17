@@ -233,19 +233,18 @@ def test_preprocessEventData_requirement():
 def test_correctValidateNewEventData():
 
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True,'isEngagement': False,'isRepeating': False, 'isLaborOnly': True, 'startDate': parser.parse('1999-12-12'),
+                  'isTraining': True,'isEngagement': False,'isRepeating': False, 'isLaborOnly': True, 'allowsLabor': False,
                   'programId': 1,'location': "a big room",
-                  'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
+                  'startDate': parser.parse('1999-12-12'), 'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
-    eventData['isRepeating'] = False
     isValid, eventErrorMessage = validateNewEventData(eventData)
-    assert isValid == True
+    assert isValid
     assert eventErrorMessage == "All inputs are valid."
 
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
-    eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isLaborOnly': True,
+    eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isLaborOnly': True, 'allowsLabor': False,
                   'isTraining':True,'isEngagement': False, 'isRepeating':False, 'isSeries': False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
@@ -436,7 +435,7 @@ def test_attemptSaveMultipleOfferings():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                   'isTraining':True, 'isEngagement': False,'isRepeating': False,'isAllVolunteerTraining': True, 
                   'seriesId':None, 'startDate': parser.parse('2021-12-12'), 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -471,21 +470,21 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_repeating():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None,  'isLaborOnly': True,
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None,  'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False, 'isRepeating': True, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
@@ -519,21 +518,21 @@ def test_saveEventToDb_repeating():
 def test_saveEventToDb_nonRepeatingSeries():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
+            eventInfo_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
+            eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
                             'isEngagement': False, 'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': True,
+            eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
                             'isEngagement': False,'isRepeating': False, 'seriesId':1, 
                             'startDate': parser.parse('12-12-2021'),'location':"this is only a test",
@@ -590,6 +589,7 @@ def test_saveEventToDb_update():
                         'isEngagement': False,
                         'isRsvpRequired': True,
                         'isLaborOnly': True,
+                        'allowsLabor': False,
                         'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
@@ -683,20 +683,20 @@ def test_deleteEvent():
         transaction.rollback()
 
         # create repeating events
-        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
+        event_1 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
                     'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
                     'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
                     'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
+        event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
                     'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
                     'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
             
-        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': True,
+        event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
@@ -959,6 +959,7 @@ def test_volunteerHistory():
                                                 startDate = "2021-12-12",
                                                 isAllVolunteerTraining = False,
                                                 program = participatedProgram)
+
         # Create a non-program event in the past that the test user will have
         # participated in
         participatedEvent = Event.create(name = "Attended event",
@@ -1024,7 +1025,7 @@ def test_calculateNewSeriesId():
     assert calculateNewSeriesId() == maxSeriesId
 
 @pytest.mark.integration
-def test_getParticipatedEventsForUser_participatedTypes():
+def test_getParticipatedEventsForUser_typesAndHours():
     with mainDB.atomic() as transaction:
         user = User.create(
             username='usrtst2',
@@ -1053,6 +1054,7 @@ def test_getParticipatedEventsForUser_participatedTypes():
             startDate="2021-12-12",
             isAllVolunteerTraining=False,
             isLaborOnly=True,
+            allowsLabor=False,
             isService=False,
             program=program
         )
@@ -1067,6 +1069,7 @@ def test_getParticipatedEventsForUser_participatedTypes():
             startDate="2021-12-13",
             isAllVolunteerTraining=False,
             isLaborOnly=False,
+            allowsLabor=False,
             isService=True,
             program=program
         )
@@ -1080,7 +1083,8 @@ def test_getParticipatedEventsForUser_participatedTypes():
             location="The moon",
             startDate="2021-12-14",
             isAllVolunteerTraining=False,
-            isLaborOnly=True,
+            isLaborOnly=False,
+            allowsLabor=True,
             isService=True,
             program=program
         )
@@ -1095,14 +1099,15 @@ def test_getParticipatedEventsForUser_participatedTypes():
             startDate="2021-12-15",
             isAllVolunteerTraining=True,
             isLaborOnly=False,
+            allowsLabor=False,
             isService=False,
             program=program
         )
 
         EventParticipant.create(user=user, event=allVolunteerTrainingEvent)
         EventParticipant.create(user=user, event=laborEvent)
-        EventParticipant.create(user=user, event=volunteerEvent)
-        EventParticipant.create(user=user, event=laborVolunteerEvent)
+        EventParticipant.create(user=user, event=volunteerEvent, hoursEarned=5)
+        EventParticipant.create(user=user, event=laborVolunteerEvent, hoursEarned=3)
 
         result = getParticipatedEventsForUser(user)
 
@@ -1110,10 +1115,21 @@ def test_getParticipatedEventsForUser_participatedTypes():
             event.name: event.participatedType for event in result
         }
 
+        serviceHoursEarned = {
+            event.name: event.hoursEarned for event in result
+        }
+
         assert participatedTypes["Labor shift"] == "Labor"
+        assert serviceHoursEarned["Labor shift"] == 0
+
         assert participatedTypes["Volunteer event"] == "Volunteer"
+        assert serviceHoursEarned["Volunteer event"] == 5
+
         assert participatedTypes["Labor volunteer event"] == "Labor & Volunteer"
+        assert serviceHoursEarned["Labor volunteer event"] == 3
+
         assert participatedTypes["All Volunteer Training"] == "Volunteer"
+        assert serviceHoursEarned["All Volunteer Training"] == 0
 
         transaction.rollback()
 

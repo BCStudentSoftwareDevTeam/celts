@@ -1,0 +1,174 @@
+{% set title = "Roster Management" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}  
+  <script src="https://cdn.datatables.net/v/dt/dt-2.3.8/r-3.0.8/datatables.min.js" integrity="sha384-eipZfAkielQNS2ZpCdLQjRSMr5lEzXO+G95xGKbCV3eda5FGsfPjAp5r3yfRfvdP" crossorigin="anonymous"></script>  
+  <script type="module" src="/static/js/rosterManagement.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link href="https://cdn.datatables.net/v/dt/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-xvaWqQ6yNt3Nps5orN0cPJA3lEDUfOpxonnUWSyXh6pWYusQXk6vp6ndFMAdNBZJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/viewRoster.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block app_content %}
+<div class="container mt-50 text-center ">
+    <div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <h1>{{program.programName}} Rosters</h1>
+    </div>
+    <div class="col-2">
+        <button class='btn btn-primary' type="button" id="exportRoster" data-program="{{program.id}}" data-year="{{g.current_term.academicYear}}"><img class="me-2" src="{{url_for('static', filename='xls-icon-3379.png')}}" alt="Export Rosters" height="24" width="24">Export Rosters</button>
+    </div>
+    </div>
+</div>
+<div class="accordion" id="rosterMain">
+    <div class="accordion-item">
+        <h3 class="accordion-header" id="headingZero">
+            <button class="accordion-button open" type="button" data-bs-toggle="collapse" data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">Interested Volunteers</button>
+        </h3>
+        <div id="collapseZero" class="accordion-collapse show" aria-labelledby="headingZero" data-bs-parent="#rosterMain">
+            <div class="accordion-body">
+                <div class="row">
+                    <div class="justify-content-evenly col-12">
+                        <p>The following table includes all students who have indicated they are interested in {{program.programName}} on their profile.</p>
+                        <table class="table table-striped table-bordered" id="rosterTable">
+                            <thead>
+                                <tr>
+                                    <th>Potential Volunteer</th>
+                                    <th>Email</th>
+                                    <th>Eligible</th>
+                                    <th>All Volunteers Training</th>
+                                    <th>Program Specific Training</th>
+                                    <th>AY {{g.current_term.academicYear}} Handbook Signed</th>
+                                    <th>Background Check</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prospectiveVolunteer in trainedAndInterested %}                
+                                <tr>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['star']%}<i class="bi bi-star" style="color:green;"> </i>{% endif %}<a href="{{ url_for('main.viewUsersProfile', username=prospectiveVolunteer) }}" >{{trainedAndInterested[prospectiveVolunteer]["userObj"].fullName}}</a></td>
+                                    <td><a href="mailto:{{trainedAndInterested[prospectiveVolunteer]['userObj'].email}}">{{trainedAndInterested[prospectiveVolunteer]["userObj"].email}}</a></td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['eligible'] %} <i class="bi bi-check-square" style="color:green;"></i> Yes {% else %} <i class="bi bi-ban" style="color:red;"></i> No {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['allVolunteer'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['programSpecific'] %} <i class="bi bi-calendar2-check" style="color:green;"></i> Attended {% else %} <i class="bi bi-calendar2-x" style="color:red;"></i> Not attended {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]["userObj"].signatureTerm.academicYear == g.current_term.academicYear %} <i class="bi bi-patch-check" style="color:green;"></i> Signed {% else %} <i class="bi bi-patch-minus" style="color: red;"></i> Not signed {% endif %}</td>
+                                    <td>{% if trainedAndInterested[prospectiveVolunteer]['bgCheck'] == "Not submitted" %}<i class="bi bi-patch-minus" style="color: red;"> {% else %} <i class="bi bi-patch-check" style="color:green;"> </i>{% endif %}</i>{{trainedAndInterested[prospectiveVolunteer]['bgCheck']}}</td>
+                                </tr>
+                                {% endfor %}             
+                            </tbody>
+                        </table>                        
+                        <button class='btn btn-outline-primary' type="button" data-bs-toggle="modal" data-bs-target="#searchStudentModal"><i class="bi bi-plus-circle" style="color:green;"></i> Add an interested student</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="accordion-item">
+        <h3 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Engaged Volunteers (AY {{g.current_term.academicYear}})</button>
+        </h3>
+        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#rosterMain">
+            <div class="accordion-body">
+                <div class="row">
+                    <div class="justify-content-evenly col-12">
+                        <p>The following table includes all current students who have participated in at least one {{program.programName}} event in AY {{g.current_term.academicYear}}.</p>
+                        {% if currentYearsParticipants|length == 0%}
+                            <p>There are no participants currently in {{program.programName}} for AY {{g.current_term.academicYear}}</p>
+                        {% else %}
+                        <table class="table table-striped table-bordered" id="lastAYrosterTable">
+                            <thead>
+                                <tr>
+                                    <th>Volunteer Name</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                {% for currentYearparticipant in currentYearsParticipants %}
+                                <tr>
+                                    <td><a href="{{ url_for('main.viewUsersProfile', username=currentYearparticipant) }}" >{{currentYearparticipant.fullName}}</a></td>
+                                    <td><a href="mailto:{{currentYearparticipant.email}}">{{currentYearparticipant.email}}</a></td>
+                                </tr>
+                                {% endfor %}             
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <h3 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Last Year's Volunteers (AY {{g.current_term.previousAcademicYear}})</button>
+        </h3>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#rosterMain">
+            <div class="accordion-body">
+                <div class="row">
+                    <div class="justify-content-evenly col-12">
+                        <p>The following table includes all current students who participated in at least one {{program.programName}} event in AY {{g.current_term.previousAcademicYear}}.</p>
+                        {% if lastYearsParticipants|length == 0%}
+                            <p>There were no participants in {{program.programName}} during AY {{g.current_term.previousAcademicYear}}</p>
+                        {% else %}
+                        <table class="table table-striped table-bordered" id="lastAYrosterTable">
+                            <thead>
+                                <tr>
+                                    <th>Volunteer Name</th>
+                                    <th>Email</th>                                
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                {% for lastYearparticipant in lastYearsParticipants %}                
+                                <tr>
+                                    <td><a href="{{ url_for('main.viewUsersProfile', username=lastYearparticipant.username) }}" >{{lastYearparticipant.fullName}}</a></td>
+                                    <td><a href="mailto:{{lastYearparticipant.email}}">{{lastYearparticipant.email}}</a></td>                                    
+                                </tr>
+                                {% endfor %}             
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="searchStudentModal">
+    <form id= "searchStudentForm" data-program="{{program.id}}" method="POST">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> Add an interested student</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12 col-sm-offset-3 m-auto">
+                    <div class="row">
+                        <div class="form-group ui-widget" id="searchTarget">
+                            <div class="input-group">
+                                <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
+                                <span class="input-group-text" id="searchIcon"><span class="bi bi-plus-circle" style="color:green;"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="addedNameDivTarget">
+                        <p></p>
+                        <p id="addedNameToClone" hidden><span class="addedNameTarget"></span>'s interest added!</p>
+                    </div>
+                </div>                 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="dismissModal">Close</button>                
+            </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

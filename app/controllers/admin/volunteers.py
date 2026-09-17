@@ -11,12 +11,12 @@ from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, deleteUserBackgroundCheck
-from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
+from app.logic.participants import addPersonToEvent, getParticipationStatusForTrainings, sortParticipantsByStatus
 from app.logic.events import getPreviousSeriesEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.logic.createLogs import createActivityLog, createRsvpLog
-from app.logic.users import getBannedUsers, isBannedFromEvent
+from app.logic.users import getBannedUsers, isBannedFromEvent, trainedParticipants
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -56,7 +56,7 @@ def manageVolunteersPage(eventID):
     
     # ------------ GET request ------------
     elif request.method == "GET":
-        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+        if not (g.current_user.canManageProgram(event.program)):
             abort(403)
 
         # ------- Grab the different lists of participants -------
@@ -98,7 +98,7 @@ def volunteerDetailsPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
 
-    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+    if not g.current_user.canManageProgram(event.program):
         abort(403)
 
     eventRsvpData = list(EventRsvp.select(EmergencyContact, InsuranceInfo, EventRsvp)
@@ -165,7 +165,7 @@ def addVolunteer(eventId):
 def rsvpFromWaitlist(username, eventId):
     event = Event.get_by_id(eventId)
     isProgramManager = g.current_user.isProgramManagerFor(event.program)
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager): 
+    if g.current_user.canManageProgram(event.program) or isProgramManager: 
         waitlistUsers = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventId).execute()
         if (waitlistUsers):
             createRsvpLog(event.id, f"Moved {waitlistUsers[0].user.fullName} from waitlist to RSVP.")
@@ -195,7 +195,7 @@ def removeVolunteerFromEvent():
 
 @admin_bp.route('/addBackgroundCheck', methods = ['POST'])
 def addBackgroundCheck():
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam:
         eventData = request.form
         user = eventData['user']
         bgStatus = eventData['bgStatus']
@@ -206,7 +206,7 @@ def addBackgroundCheck():
 
 @admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
 def deleteBackgroundCheck():
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsOperationsTeam:
         backgroundData = request.form
         bgToDelete = BackgroundCheck.get_by_id(backgroundData['bgID'])
         session["lastDeletedBgCheck"] = bgToDelete.id

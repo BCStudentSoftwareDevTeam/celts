@@ -433,7 +433,7 @@ function updateOfferingsTable() {
     var endTime = format24to12HourTime(offering.endTime);
     offeringsTable.append(`<tr class="${offering.isDuplicate ? "border-red" : ""}">` +
       "<td>" + offering.eventName + "</td>" +
-      "<td>" + formattedEventDate + "</td>" +
+      "<td val='" + offering.eventDate + "'>" + formattedEventDate + "</td>" +
       "<td>" + startTime + "</td>" +
       "<td>" + endTime + "</td>" +
       "<td>" + (offering.eventLocation || offering.location || "") + "</td>" +
@@ -503,7 +503,11 @@ function checkValidation() {
   let allFieldFilled = true;
   let seriesEvent = $("#checkIsSeries").is(":checked");
   let seriesWeeklyId = $("#checkIsRepeating").is(":checked");
-  let isAllVolunteer = $("#pageTitle").text() == 'Create All Volunteer Training';
+  var pageId = $("#pageTitle").attr('name');
+
+  let isAllVolunteer = pageId == "all-volunteer";
+  let isLaborOnly = (pageId == "labor-meeting" || pageId == "all-celts-training");
+  
   enableLiveCustomValidityClearing([".all", ".series", ".seriesWeekly", ".main", ".allV"]);
 
   // Always validate common fields (.all class)
@@ -513,6 +517,9 @@ function checkValidation() {
     // Validate all volunteer specific fields
     allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
 
+  } else if (isLaborOnly) {
+    allFieldFilled = validateFieldGroup(".allV", allFieldFilled);
+  
   } else if (seriesEvent) {
     // Validate series-specific fields
     allFieldFilled = validateFieldGroup(".series", allFieldFilled);
@@ -587,33 +594,33 @@ $(document).ready(function () {
   });
 
   //to show the msgFlash message when the event is canceled
-$("#cancelEvent").on('click', function (event) {
-    event.preventDefault(); // Prevent normal form submission
-    
-    // Get the form action URL
-    let formAction = $(this).closest('form').attr('action');
-    
-    // Submit via AJAX
-    $.ajax({
-        url: formAction,
-        method: 'POST',
-        success: function(response) {
-            msgFlash("You have successfully canceled the event", "success", 5000);
-            $('#cancelWarning').modal('hide');
-            // Optionally refresh the page or update the UI
-            location.reload(); // or update specific elements
-        },
-        error: function() {
-            msgFlash("Failed to cancel the event", "error");
-        }
-    });
-});
+  $("#cancelEvent").on('click', function (event) {
+      event.preventDefault(); // Prevent normal form submission
+      
+      // Get the form action URL
+      let formAction = $(this).closest('form').attr('action');
+      
+      // Submit via AJAX
+      $.ajax({
+          url: formAction,
+          method: 'POST',
+          success: function(response) {
+              msgFlash("You have successfully canceled the event", "success", 5000);
+              $('#cancelWarning').modal('hide');
+              // Optionally refresh the page or update the UI
+              location.reload(); // or update specific elements
+          },
+          error: function() {
+              msgFlash("Failed to cancel the event", "error");
+          }
+      });
+  });
 
   // When Save buttton is clicked, check if required are filled and then submit
   $("#saveButton").on('click', function (event) {
     event.preventDefault(); //prevents from submitting
     checkValidation();
-});
+  });
   
   updateOfferingsTable();
 
@@ -704,7 +711,7 @@ $("#cancelEvent").on('click', function (event) {
     "#repeatingEventsEndDate, " +
     "#repeatingEventsStartTime, " +
     "#repeatingEventsEndTime").on("change", handleRepeatingEventsChange);
-// this handels start date, end date, last event date, start time, and end time 
+  // this handels start date, end date, last event date, start time, and end time 
   function handleRepeatingEventsChange() {
     if (!verifyRepeatingFields()) {
       let table = $("#generatedEventsList").children();
@@ -757,7 +764,7 @@ $("#cancelEvent").on('click', function (event) {
     let mainTime = $("#startTime-main").val();
     let endTime = $("#endTime-main").val();
     createOfferingModalRow({ eventLocation: mainLocation, eventDate: mainDate, startTime: mainTime, endTime: endTime });
-});
+  });
 
   var minDate = new Date('10/25/1999')
   $("#startDatePicker-main").datepicker("option", "minDate", minDate)
@@ -883,4 +890,4 @@ $("#cancelEvent").on('click', function (event) {
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
-  });
+});

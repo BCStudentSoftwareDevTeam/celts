@@ -110,32 +110,6 @@
           {% endif %}
         {% endfor %}
 
-        {% if zeroHourEvents %}
-          {% set ns = namespace(filtered=[]) %}
-          {% for event in zeroHourEvents %}
-            {% if event.program.programName != "Bonner Scholars" %}
-              {% set _ = ns.filtered.append(event) %}
-            {% endif %}
-          {% endfor %}
-
-          {% if ns.filtered %}
-            <div class="mb-4 p-3" style="page-break-inside: avoid;">
-              <h6 class="fw-bold" style="color: #005c90">Events with No Hours Earned</h6>
-              {% for event in ns.filtered %}
-                <div class="mb-2">
-                  <small class="text-muted">
-                    {{ event.term.description }} — {{ event.name }} - 0 hour
-                  </small>
-                  {% if event.program.programName != "CELTS Sponsored Events" %}
-                    <p class="text-muted small mb-2">{{ event.program.description }}</p>
-                    <a class="d-print-none small" href="{{ event.program.url }}" target="_blank">More Information</a>
-                  {% endif %}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endif %}
-
       {% else %}
         <div class="text-center py-4">
           <h6 class="text-muted">No Volunteer Record</h6>
@@ -143,6 +117,41 @@
       {% endif %}
     </div>
   </div>
+
+      {% if zeroHourEvents %}
+      {% set ns = namespace(filtered=[]) %}
+
+      {% for event in zeroHourEvents %}
+        {% if event.program.programName != "Bonner Scholars" %}
+          {% set _ = ns.filtered.append(event) %}
+        {% endif %}
+      {% endfor %}
+
+      {% if ns.filtered %}
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Education &amp; Training</h5>
+          </div>
+
+          <div class="card-body">
+            {% for event in ns.filtered %}
+              <div class="mb-4 p-3 {% if loop.index0 % 2 == 1 %}bg-light{% endif %}" style="page-break-inside: avoid;">
+                <h6 class="fw-bold" style="color: #005c90">{{ event.name }}</h6>
+
+                <small class="text-muted">
+                  {{ event.term.description }} — Attendance recorded, 0 service hours
+                </small>
+
+                {% if event.program.programName != "CELTS Sponsored Events" %}
+                  <p class="text-muted small mb-2">{{ event.program.description }}</p>
+                  <a class="d-print-none small" href="{{ event.program.url }}" target="_blank">More Information</a>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      {% endif %}
 
   {% if slCourses.exists() %}
 <div class="card mb-4" style="page-break-inside: avoid;">

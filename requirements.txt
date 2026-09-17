@@ -66,6 +66,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 python-editor==1.0.4
 PyYAML==6.0.2
+qrcode[pil]==8.2
 regex==2025.7.34
 requests==2.32.4
 selenium==4.34.2

@@ -28,15 +28,18 @@
     <span class="form-label borderless fs-5">{{ program.programName }}</span>
   </div>
   <div class="d-flex gap-2">
+    <a class="btn btn-success btn-sm viewRoster" href="viewRoster/{{program.id}}" data-programid="{{program.id}}">
+      View Roster
+    </a>
     <button class="btn btn-success btn-sm editDetails" 
             role="button" 
             id="programManagementButton{{ loop_index }}"  
             loop-index="{{ loop_index }}"
             data-programid="{{program.id}}">
-        <span style="display: none;" id="editDetailsButtonSpinner{{ loop_index }}">
-          Edit Details
-        </span>
-        <span id="editDetailsButtonText{{ loop_index }}">Edit Details</span>
+      <span style="display: none;" id="editDetailsButtonSpinner{{ loop_index }}">
+        Edit Details
+      </span>
+      <span id="editDetailsButtonText{{ loop_index }}">Edit Details</span>
     </button>
     {% if show_edit_managers %}
     <button class ="btn btn-success btn-sm editProgramManagersButton"
@@ -94,13 +97,27 @@
               <table class="table mb-3">
                 <thead>
                   <tr>
-                    <th colspan="2" scope="col">Current Student Staff</th>
+                    <th scope="col">Current Student Staff</th>
+                    <th scope="col" class="text-center">Operations Team</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for studentStaff in currentStudentStaff %}
                     <tr>
                       <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
+                      <td class="text-center">
+                          <label class="checkbox-inline">
+                            <input
+                                type="checkbox"
+                                class="operations-team-checkbox"
+                                data-username="{{ studentStaff.username }}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Check to add or remove this student staff member to the CELTS Operations Team."
+                                {% if studentStaff.isCeltsOperationsTeam %}checked{% endif %}>
+                            </label>
+                        </td>
                       <td class="text-end"><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
                      </tr>
                   {% endfor %}
@@ -127,8 +144,8 @@
             <div class="text-center">
               <div class="card">
                 <div class="card-header"><strong>Select the Current Term</strong></div>
-                  <ul class="list-group" name="currentTermList" id="currentTermList">
-                  {% for term in terms %}
+                  <ul class="list-group" name="currentTermList" id="currentTermList">                  
+                  {% for term in terms %}                    
                     <li class="term-btn list-group-item list-group-item-action {{'active' if g.current_term == term}}"
                       id="termFormID_{{ loop.index }}"
                       aria-label="{{'Current term' if g.current_term == term}}"
@@ -141,9 +158,47 @@
                   </ul>
                 <div class="card-footer">
                   <button class="btn btn-success w-100" id="addNewTerm" role ="button">Add New Term</button>
-                </div>
+                </div>                
               </div>
             </div>
+          </div>
+
+          <div class="container-fluid col-md-6">      
+            <h5>AY {{g.current_term.academicYear}} files</h5>
+
+            {% set btnText = "Replace" if g.current_term.volunteerHandbook else "Upload" %}
+            <div class="row">
+              <form class="uploaders" method="POST" action="/upload/volunteerHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <label for="volunteerHandbook"><strong>Volunteer Handbook:</strong></label>
+                <a id="volunteerHandbookURL" href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"  {% if not g.current_term.volunteerHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Student Handbook</a>            
+                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
+                  <div class="col-8">
+                    <input class="form-control" type="file" id="volunteerHandbook" name="volunteerHandbook" accept=".pdf,.doc,.docx" required></input>
+                  </div>
+                  <div class="col-4">
+                      <button class="btn btn-success" id="uploadHandbook" role ="button" type="submit">{{btnText}}</button>
+                  </div>
+                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                </div>                      
+              </form>
+            </div>
+
+            {% set btnText = "Replace" if g.current_term.laborHandbook else "Upload" %}
+            <div class="row">
+              <form class="uploaders" method="POST" action="/upload/laborHandbook/{{g.current_term}}" enctype="multipart/form-data">
+                <label for="laborHandbook"><strong>CELTS Labor Handbook:</strong></label>
+                <a id="laborHandbookURL" href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank" {% if not g.current_term.laborHandbook %} hidden {% endif %}/>AY {{g.current_term.academicYear}} - CELTS Labor Handbook</a>                
+                <div class="row" aria-label="{{g.current_term.description}}" name="handbookUploadList" id="handbookUploadList">
+                  <div class="col-8">
+                    <input class="form-control" type="file" id="laborHandbook" name="laborHandbook" accept=".pdf,.doc,.docx" required></input>
+                  </div>
+                  <div class="col-4">
+                      <button class="btn btn-success" id="uploadHandbook" role ="button" type="submit">{{btnText}}</button>
+                  </div>
+                  <span class="sr-only visually-hidden">{{g.current_term}}</span>
+                </div>                                      
+              </form>
+            </div>            
           </div>
         </div>
       </div>
