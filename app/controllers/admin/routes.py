@@ -186,7 +186,6 @@ def createEvent(templateid, programid):
         for year, cohort in rawBonnerCohorts.items():
             if cohort:
                 bonnerCohorts[year] = cohort 
-          
     return render_template(f"/events/{template.templateFile}",
                            template = template,
                            eventData = eventData,
@@ -341,7 +340,7 @@ def eventDisplay(eventId):
         requirements, bonnerCohorts, invitedYears = [], [], []
     
     rule = request.url_rule
-    
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("events/createEvent.html",
