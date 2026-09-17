@@ -38,54 +38,40 @@ def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
 
 def selectAllSummerTerms(currentTerm, student):
     """
-    Selects all summer terms for CCE Minor. 
+    Select the summer terms during which a CCE Minor student could be enrolled.
+
+    The user record does not store an admission date, so the admission academic
+    year is inferred from the student's current class level. The range never
+    extends beyond the student's inferred final school year; students marked as
+    ``Graduating`` are treated as fifth-year/fall-graduating students.
     """
-    year_name = student.rawClassLevel
-    order = currentTerm.termOrder.split('-')
+    classYears = {
+        "Freshman": 1,
+        "Sophomore": 2,
+        "Junior": 3,
+        "Senior": 4,
+        "Graduating": 5,
+    }
 
-    match year_name: 
-        case "Freshman":
-            year = 1
-        case "Sophomore":
-            year = 2
-        case "Junior":
-            year = 3
-        case "Senior":
-            year = 4
-        case _: 
-            year = 5
-
-    match order[1]: 
-        case "1": 
-            timeOfTheYear = "Fall"
-        case "2": 
-            timeOfTheYear = "Spring"
-        case "3": 
-            timeOfTheYear = "Summer"
-    
-
-    if student.hasGraduated: 
+    if student.hasGraduated or student.rawClassLevel not in classYears:
         return []
-    elif timeOfTheYear == "Fall":
-        firstSummer = currentTerm.year - year + 2
-        lastSummer = currentTerm.year + (4 + 1 - year) 
-        # because we do not know whether the student came to Berea in the Fall or in the Spring, 
-        # we have an extra summer (+1) in the list just in case. 
-    else: 
-        firstSummer = currentTerm.year - year + 1
-        lastSummer = currentTerm.year + (3 + 1 - year) 
-        # because we do not know whether the student came to Berea in the Fall or in the Spring, 
-        # we have an extra summer (+1) in the list just in case.
 
-        # this condition assumes that your raw class level changes every fall, so
-        # your academic year is the same for the spring and summer. 
-    
-    surroundingTerms = (Term.select()
-                            .where(Term.year >= firstSummer, Term.year <= lastSummer)
-                            .order_by(Term.termOrder)
-                            .where(Term.isSummer))
+    classYear = classYears[student.rawClassLevel]
+    # A Spring/Summer term belongs to the academic year that began the prior fall.
+    academicYearStart = (currentTerm.year if currentTerm.description.startswith("Fall")
+                         else currentTerm.year - 1)
+    inferredAdmissionYear = academicYearStart - (classYear - 1)
 
-    return surroundingTerms
+    firstSummer = inferredAdmissionYear + 1
+    lastSummer = inferredAdmissionYear + max(4, classYear) - 1
+    if currentTerm.description.startswith("Summer"):
+        lastSummer = max(lastSummer, currentTerm.year)
+
+    return (Term.select()
+                .where(Term.isSummer,
+                       Term.year >= firstSummer,
+                       Term.year <= lastSummer)
+                .order_by(Term.termOrder))
 
 def getStartofCurrentAcademicYear(currentTerm):
     if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
@@ -148,4 +134,3 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
-
