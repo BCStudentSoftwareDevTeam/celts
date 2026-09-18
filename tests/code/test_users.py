@@ -116,8 +116,6 @@ def test_isEligibleForProgram():
             user.lastHandbookSignature = "2026-07-21"
             user.signatureTerm = g.current_term
             user.save()
-            print(user.signatureTerm.academicYear)
-            print(g.current_term.academicYear)
             eligible = isEligibleForProgram(2, user)
             assert eligible
 
@@ -580,80 +578,36 @@ def test_isCurrentlyEnrolled():
             bnumber="B10000004",
             email="enrolled@berea.edu",
             isStudent=True,
-            hasGraduated=False,
+            isActive=True,
             rawClassLevel="Junior"
         )
         assert enrolledUser.isCurrentlyEnrolled is True
 
-        # Alumni (graduated)
-        alumniUser = User.create(
-            username="alumniuser",
-            firstName="Alumni",
+        # inactive user
+        inactiveUser = User.create(
+            username="inactiveuser",
+            firstName="inactive",
             lastName="User",
             bnumber="B10000005",
-            email="alumni@berea.edu",
-            isStudent=False,
-            hasGraduated=True,
+            email="inactive@berea.edu",
+            isStudent=True,
+            isActive=False,
             rawClassLevel="Graduated"
         )
-        assert alumniUser.isCurrentlyEnrolled is False
+        assert inactiveUser.isCurrentlyEnrolled is False
 
-        # Fall graduate (Graduating → Alumni)
-        fallGradUser = User.create(
+        # Non-student active user
+        nonstudentUser = User.create(
             username="fallgraduser",
             firstName="Fall",
             lastName="Grad",
             bnumber="B10000006",
             email="fall@berea.edu",
             isStudent=False,
-            hasGraduated=False,
+            isActive=True,
             rawClassLevel="Graduating"
         )
-        assert fallGradUser.isCurrentlyEnrolled is False
-
-        transaction.rollback()
-
-@pytest.mark.integration
-def test_isAlumni():
-    with mainDB.atomic() as transaction:
-        # User who has graduated
-        graduatedUser = User.create(
-            username="graduser",
-            firstName="Grad",
-            lastName="User",
-            bnumber="B10000001",
-            email="grad@berea.edu",
-            isStudent=False,
-            hasGraduated=True,
-            rawClassLevel="Graduated"
-        )
-        assert graduatedUser.isAlumni is True
-
-        # User marked as "Graduating" (Fall graduate)
-        graduatingUser = User.create(
-            username="graduatinguser",
-            firstName="Fall",
-            lastName="Grad",
-            bnumber="B10000002",
-            email="fallgrad@berea.edu",
-            isStudent=False,
-            hasGraduated=False,
-            rawClassLevel="Graduating"
-        )
-        assert graduatingUser.isAlumni is True
-
-        # Current senior graduating in spring
-        seniorUser = User.create(
-            username="senioruser",
-            firstName="Spring",
-            lastName="Senior",
-            bnumber="B10000003",
-            email="senior@berea.edu",
-            isStudent=True,
-            hasGraduated=False,
-            rawClassLevel="Senior"
-        )
-        assert seniorUser.isAlumni is False
+        assert nonstudentUser.isCurrentlyEnrolled is False
 
         transaction.rollback()
 
@@ -684,7 +638,7 @@ def test_processedClassLevel():
             hasGraduated=False,
             rawClassLevel="Graduating"
         )
-        assert graduatingUser.processedClassLevel == "Alumni"
+        assert graduatingUser.processedClassLevel == "Graduating"
 
         # Current senior
         seniorUser = User.create(
