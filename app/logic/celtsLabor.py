@@ -97,13 +97,16 @@ def refreshCeltsLaborRecords(laborDict):
         for positionTitle, termNames in value.items():
             for term in termNames: 
                 termTableMatch = Term.select() 
-                if term[0].isalpha(): 
+                isAcademicYear = False
+
+                if term[0].isalpha(): # Fall, Spring, Summer
                     termTableMatch = termTableMatch.where(Term.description == term)
-                else:
+                else: # e.g., 2025-2026
                     termTableMatch = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
+                    isAcademicYear = True
+
                 try:
                     laborTerm = termTableMatch.get()
-                    isAcademicYear = not laborTerm.isSummer
                     celtsLabor.append({"user": key,
                                        "positionTitle": positionTitle,
                                        "term": laborTerm,
@@ -117,14 +120,13 @@ def refreshCeltsLaborRecords(laborDict):
 def getCeltsLaborHistory(volunteer):
     
     laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+                                              CeltsLabor.id,
+                                              CeltsLabor.isAcademicYear,
                                               Term.description, 
                                               Term.academicYear, 
                                               Term.isSummer)
                                       .join(Term, on=(CeltsLabor.term == Term.id))
-                                      .where(CeltsLabor.user == volunteer))
-    
-    laborHistoryDict= {}
-    for position in laborHistoryList: 
-        laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
+                                      .where(CeltsLabor.user == volunteer)
+                                      .order_by(Term.termOrder.asc()))
 
-    return laborHistoryDict
+    return [(p.positionTitle, f"AY {p.term.academicYear}" if p.isAcademicYear else p.term.description) for p in laborHistoryList]
