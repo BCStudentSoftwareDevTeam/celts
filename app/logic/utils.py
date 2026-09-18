@@ -36,6 +36,42 @@ def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
 
     return surroundingTerms
 
+def selectAllSummerTerms(currentTerm, student):
+    """
+    Selects the summer terms during which a CCE Minor student could be enrolled.
+    """
+
+    # The year when the student was admitted is inferred from their current class level. 
+    classYears = {
+        "Freshman": 1,
+        "Sophomore": 2,
+        "Junior": 3,
+        "Senior": 4,
+        "Graduating": 5, 
+        # Students marked as "Graduating" are treated as fifth-year/fall-graduating students.
+    }
+
+    if student.hasGraduated or student.rawClassLevel not in classYears:
+        return []
+
+    classYear = classYears[student.rawClassLevel]
+    
+    # A Spring/Summer term belongs to the academic year that began the prior fall.
+    academicYearStart = (currentTerm.year if currentTerm.description.startswith("Fall")
+                         else currentTerm.year - 1)
+
+    firstSummer = academicYearStart - classYear + 2
+    lastSummer = academicYearStart - classYear + max(4, classYear)
+
+    if currentTerm.isSummer:
+        lastSummer = max(lastSummer, currentTerm.year)
+
+    return (Term.select()
+                .where(Term.isSummer,
+                       Term.year >= firstSummer,
+                       Term.year <= lastSummer)
+                .order_by(Term.termOrder))
+
 def getStartofCurrentAcademicYear(currentTerm):
     if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
@@ -97,4 +133,3 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
-
