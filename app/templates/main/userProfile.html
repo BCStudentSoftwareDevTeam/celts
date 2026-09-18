@@ -818,38 +818,37 @@
         </div>
 
         <br>
-        
-        <h5>AY {{g.current_term.academicYear}} Handbook</h5>
-        <div class="row mb-3">          
-          {# All CELTS Training #}
-          {% if training.isCeltsTraining %}
-            {% if not g.current_term.laborHandbook %}
-              <p>No CELTS Labor Handbook available for {{g.current_term.description}} yet.</p>
-            {% else %}
-            <p><a href="{{ url_for('static', filename='files/laborHandbook/' + g.current_term.laborHandbook|default('', true))}}" target="_blank"/>CELTS Labor Handbook</a></p>
-            {% endif %}
 
-          {# All Volunteer Training #}
+        {% set isOwnProfile = volunteer.bnumber == g.current_user.bnumber %}
+        {% set isLaborViewer = g.current_user.isAdmin or g.current_user.hasCurrentCeltsLabor %}
+        {% set isLaborHandbook = training.isCeltsTraining or volunteer.isAdmin or volunteer.hasCurrentCeltsLabor %}
+        {% set handbookAvailable = g.current_term.laborHandbook if isLaborHandbook else g.current_term.volunteerHandbook %}
+
+        <h5>AY {{g.current_term.academicYear}} Handbook</h5>
+        <div class="row mb-3">  
+          {# All CELTS Training #}
+          {% if not handbookAvailable %}
+              <p>No {{ "CELTS Labor" if isLaborHandbook else "Volunteer" }} Handbook available for {{ g.current_term.description }} yet.</p>
           {% else %}
-            {% if not g.current_term.volunteerHandbook %}
-              <p>No Volunteer Handbook available for {{g.current_term.description}} yet.</p>
-            {% else %}
-              <p><a href="{{ url_for('static', filename='files/volunteerHandbook/' + g.current_term.volunteerHandbook|default('', true))}}" target="_blank"/>CELTS Student Handbook</a></p>
-            {% endif %}
-          {% endif %}                    
+          <p>
+            <a href="{{ url_for( 'static', filename=( 'files/laborHandbook/' + g.current_term.laborHandbook if isLaborHandbook else 'files/volunteerHandbook/' + g.current_term.volunteerHandbook ))}}" target="_blank">
+              {{ "CELTS Labor Handbook" if isLaborHandbook else "CELTS Student Handbook" }}
+            </a>
+          </p>
+          {% endif %}                 
         </div>
         
-        {% if g.current_user.signatureTerm.academicYear != g.current_term.academicYear and not training %}
-        <p>To volunteer, you must sign the CELTS handbook for {{g.current_term.academicYear}}, and you must do this at an All Volunteers Training.</p>
-        {% else %}    
-          {% if volunteer.signatureTerm.academicYear != g.current_term.academicYear %}
-            <h5 id="signatureHeader">Sign the handbook</h5>    
-          {% else %}          
-            <p> Your handbook signature is good for AY {{volunteer.signatureTerm.academicYear}}.</p>
+        {% if handbookOverdue and not training%}
+          {% if isOwnProfile %}
+          <p>To volunteer, you must sign the CELTS handbook for {{g.current_term.academicYear}}, and you must do this at an All Volunteers Training or All CELTS Training (Labor).</p>
+          {% elif isLaborViewer %}
+          <p>To volunteer, {{volunteer.fullName}} must sign the CELTS handbook for {{g.current_term.academicYear}}, and they must do this at an All Volunteers Training or All CELTS Training (Labor).</p>
           {% endif %}
-          
-          {% if g.current_term.volunteerHandbook %}
-            {% if handbookOverdue and g.current_user.username == volunteer.username %}
+
+        {% elif handbookOverdue %}
+          <h5 id="signatureHeader">Sign the handbook</h5>    
+          {% if handbookAvailable %}
+            {% if isOwnProfile %}
               <div class="row mb-3">
                 <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
               </div>
@@ -867,13 +866,19 @@
                   <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
                 </div>              
               </div>
+              {% else %}
+              <p>{{ volunteer.fullName }} has attended the training but they still need to sign the CELTS handbook for {{ g.current_term.academicYear }}. </p>
             {% endif %}
           {% endif %}
+        {% else %}
+          <p>
+            {% if isOwnProfile %} Your handbook signature is good for AY {% else %} {{ volunteer.fullName }}'s handbook signature is good for AY {% endif %} {{ volunteer.signatureTerm.academicYear }}.
+          </p>
+        {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
       </div>
-      {% endif %}
     </div>
   </div>
 </div>
