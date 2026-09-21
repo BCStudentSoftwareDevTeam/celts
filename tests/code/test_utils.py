@@ -1,8 +1,8 @@
 import pytest
-from types import SimpleNamespace
 
 from app.models import mainDB
 from app.models.term import Term
+from app.models.user import User
 from app.logic.utils import selectAllSummerTerms
 
 
@@ -103,10 +103,8 @@ def test_selectAllSummerTerms_uses_estimated_enrollment_window(
                         isCurrentTerm=False,
                         termOrder=f"{year}-2")
 
-        student = SimpleNamespace(rawClassLevel=class_level,
-                                  hasGraduated=False)
-        currentTerm = SimpleNamespace(description=current_description,
-                                      year=current_year)
+        student, _ = User.get_or_create(rawClassLevel=class_level, hasGraduated=False)
+        currentTerm, _ = Term.get_or_create(year=current_year, description=current_description)
 
         assert expected_years == [
             term.year for term in selectAllSummerTerms(currentTerm, student)
@@ -115,14 +113,18 @@ def test_selectAllSummerTerms_uses_estimated_enrollment_window(
 
 
 def test_selectAllSummerTerms_excludes_graduated_students():
-    student = SimpleNamespace(rawClassLevel="Senior", hasGraduated=True)
-    currentTerm = SimpleNamespace(description="Summer 2090", year=2090)
+    with mainDB.atomic() as transaction:
+        student, _ = User.get_or_create(rawClassLevel="Graduating", hasGraduated=True)
+        currentTerm, _ = Term.get_or_create(description="Summer 2090", year=2090)
 
-    assert selectAllSummerTerms(currentTerm, student) == []
+        assert selectAllSummerTerms(currentTerm, student) == []
+        transaction.rollback()
 
 
 def test_selectAllSummerTerms_excludes_unknown_class_levels():
-    student = SimpleNamespace(rawClassLevel=None, hasGraduated=False)
-    currentTerm = SimpleNamespace(description="Summer 2090", year=2090)
+    with mainDB.atomic() as transaction:
+        student, _ = User.get_or_create(rawClassLevel=None, hasGraduated=False)
+        currentTerm, _ = Term.get_or_create(description="Summer 2090", year=2090)
 
-    assert selectAllSummerTerms(currentTerm, student) == []
+        assert selectAllSummerTerms(currentTerm, student) == []
+        transaction.rollback()
