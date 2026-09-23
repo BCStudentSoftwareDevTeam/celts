@@ -47,24 +47,30 @@ def selectAllSummerTerms(currentTerm, student):
         "Sophomore": 2,
         "Junior": 3,
         "Senior": 4,
-        "Graduating": 5, 
-        # Students marked as "Graduating" are treated as fifth-year/fall-graduating students.
+        "Graduating": 4 # "Graduating" students are seniors graduating at the end of the current term. 
     }
 
     if student.hasGraduated or student.rawClassLevel not in classYears:
         return []
 
     classYear = classYears[student.rawClassLevel]
-    
-    # A Spring/Summer term belongs to the academic year that began the prior fall.
-    academicYearStart = (currentTerm.year if currentTerm.description.startswith("Fall")
-                         else currentTerm.year - 1)
 
-    firstSummer = academicYearStart - classYear + 2
-    lastSummer = academicYearStart - classYear + max(4, classYear)
+    if currentTerm.description.startswith("Spring"): 
+        # first summer you can request a Summer experience for
+        firstSummer = currentTerm.year - classYear + 1
 
-    if currentTerm.isSummer:
-        lastSummer = max(lastSummer, currentTerm.year)
+        if student.rawClassLevel == "Graduating": 
+            # last summer you can request a Summer experience for
+            lastSummer = currentTerm.year - 1 
+        else: 
+            lastSummer = currentTerm.year 
+    else: 
+        lastSummer  = currentTerm.year
+
+        if student.rawClassLevel == "Graduating": 
+            firstSummer = currentTerm.year - classYear + 1
+        else:
+            firstSummer = currentTerm.year - classYear + 2
 
     return (Term.select()
                 .where(Term.isSummer,

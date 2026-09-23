@@ -87,15 +87,18 @@ def test_isFutureTerm():
 @pytest.mark.parametrize(
     "class_level, current_description, current_year, expected_years",
     [
-        ("Freshman", "Fall 2090", 2090, [2091, 2092, 2093]),
-        ("Sophomore", "Summer 2091", 2091, [2090, 2091, 2092]),
+        ("Freshman", "Fall 2090", 2090, []),
+        ("Sophomore", "Summer 2091", 2091, [2091]),
+        ("Junior", "Spring 2090", 2090, [2088, 2089, 2090]),
         ("Senior", "Fall 2090", 2090, [2088, 2089, 2090]),
+        ("Graduating", "Spring 2090", 2090, [2087, 2088, 2089]),
+        ("Graduating", "Fall 2091", 2091, [2088, 2089, 2090, 2091]),
     ],
 )
 def test_selectAllSummerTerms_uses_estimated_enrollment_window(
         class_level, current_description, current_year, expected_years):
     with mainDB.atomic() as transaction:
-        for year in range(2087, 2096):
+        for year in range(2084, 2094):
             Term.create(description=f"Summer {year}",
                         year=year,
                         academicYear=f"{year - 1}-{year}",
