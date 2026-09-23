@@ -139,4 +139,4 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
-    
+
