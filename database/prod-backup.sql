@@ -633,6 +633,12 @@ INSERT INTO `event` VALUES (1,'Stephenson Open House ',8,'17:00:00','19:00:00','
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
+ALTER TABLE `event`
+ADD COLUMN `requiresAllVolunteerTraining` tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE `event`
+ADD COLUMN `requiresProgramTraining` tinyint(1) NOT NULL DEFAULT 0;
+
 --
 -- Table structure for table `eventcohort`
 --

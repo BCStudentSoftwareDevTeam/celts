@@ -391,7 +391,7 @@ def eventDisplay(eventId):
                     
                 # include program training only when required 
                 elif (
-                    eventData['requiredProgramTraining']
+                    eventData['requiresrogramTraining']
                     and trainingEvent.isTraining
                     and trainingEvent.program == eventData['program']
                 ):
