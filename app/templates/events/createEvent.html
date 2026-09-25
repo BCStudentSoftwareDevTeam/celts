@@ -312,6 +312,22 @@
         </div>
       </div>
       {% endif %}
+
+      <!--Required Trainings-->
+      <div class="form-group mb-4">
+          <label class="form-label" for="requiredTrainings"><strong>Required Trainings</strong></label>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="requiresAllVolunteerTraining" name="requiresAllVolunteerTraining" {{"checked" if eventData.isService or eventData["requiresAllVolunteerTraining"] }}>
+            <label class="form-check-label" for="noTrainingRequired"> All Volunteer Training </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="{{ eventData['program'] }}" id="requiresProgramTraining" name="requiresProgramTraining" {{ "checked" if eventData.isService or eventData["requiresProgramTraining"] }}>
+            <label class="form-check-label" for="noTrainingRequired"> {{eventData['program'].programName}} Training </label>
+        </div>
+      </div>
+      <br>
+
+      <!--Add Files-->
       <div class="form-group mb-5">
         <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
         <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" />

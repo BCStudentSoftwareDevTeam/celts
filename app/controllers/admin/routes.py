@@ -374,12 +374,37 @@ def eventDisplay(eventId):
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term, includeFutureEvents = False)
+        
+        filteredTrainingEvents = {}
+        
+        for user, trainings in userParticipatedTrainingEvents.items():
+            
+            filteredTrainings = []
+            
+            for trainingEvent, attended in trainings:
+                # Include all volunteer training only when required
+                if (
+                    eventData['requiresAllVolunteerTraining']
+                    and trainingEvent.isAllVolunteerTraining
+                ):
+                    filteredTrainings.append([trainingEvent, attended])
+                    
+                # include program training only when required 
+                elif (
+                    eventData['requiresProgramTraining']
+                    and trainingEvent.isTraining
+                    and trainingEvent.program == eventData['program']
+                ):
+                    filteredTrainings.append([trainingEvent, attended])
+                    
+            if filteredTrainings:
+                filteredTrainingEvents[user] = filteredTrainings
 
         return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,
                                 userHasRSVPed=userHasRSVPed,
-                                programTrainings=userParticipatedTrainingEvents,
+                                programTrainings=filteredTrainingEvents,
                                 currentEventRsvpAmount=currentEventRsvpAmount,
                                 isProgramManager=isProgramManager,
                                 filepaths=filepaths,
