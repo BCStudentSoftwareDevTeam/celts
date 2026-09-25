@@ -55,22 +55,20 @@ def selectAllSummerTerms(currentTerm, student):
 
     classYear = classYears[student.rawClassLevel]
 
-    if currentTerm.description.startswith("Spring"): 
-        # first summer you can request a Summer experience for
+    isSpring = currentTerm.description.startswith("Spring")
+    isGraduating = student.rawClassLevel == "Graduating"
+
+    # First summer the student can request
+    if isSpring or isGraduating:
         firstSummer = currentTerm.year - classYear + 1
+    else:
+        firstSummer = currentTerm.year - classYear + 2
 
-        if student.rawClassLevel == "Graduating": 
-            # last summer you can request a Summer experience for
-            lastSummer = currentTerm.year - 1 
-        else: 
-            lastSummer = currentTerm.year 
-    else: 
-        lastSummer  = currentTerm.year
-
-        if student.rawClassLevel == "Graduating": 
-            firstSummer = currentTerm.year - classYear + 1
-        else:
-            firstSummer = currentTerm.year - classYear + 2
+    # Last summer the student can request
+    if isSpring and isGraduating:
+        lastSummer = currentTerm.year - 1
+    else:
+        lastSummer = currentTerm.year
 
     return (Term.select()
                 .where(Term.isSummer,
