@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h3>Description</h3><p>{{eventData.description|urlize}}</p><br>
+                    <h3>Description:</h3><p>{{eventData.description|urlize}}</p><br>
                     {% if eventData.isFoodProvided %}
                         <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><br><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
                     {% endif %}
@@ -152,18 +152,42 @@
                                 <div class="col-md-6">
                     {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3>Program Trainings:</h3>
-                            {% for training, events in programTrainings.items() %}
-                                {% for eventObj, attended in events %}
-                                    {% if g.current_user.isCeltsAdmin %}
-                                        <p>{{eventObj.name}}</p>
-                                    {% elif attended %}
-                                        <p><b>{{eventObj.name}}</b>: Attended</p>
-                                    {% else %}
-                                        <p><b>{{eventObj.name}}</b>: Not attended</p>
-                                    {% endif%}
-                                {% endfor %}
-                            {% endfor %}
+                            <h3>Required Trainings:</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>Training</td>
+                                        <td>Attended?</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if eventData["requiresAllVolunteerTraining"] %}
+                                        <tr>
+                                            <td>All Volunteer Training</td>
+                                            {% if True %} <!--FIXME: CURRENTLY HARDCODED-->
+                                                <td><i class="bi bi-check"></i></td>
+                                                <td></td> 
+                                            {% else %}
+                                                <td>&times;</td>
+                                                <td>See <a href="#">available events</a></td> <!--FIXME: CURRENTLY HARDCODED-->
+                                            {% endif %}
+                                        </tr>
+                                    {% endif %}
+                                    {% if eventData["requiresProgramTraining"] %}
+                                        <tr>
+                                            <td>{{eventData['program'].programName}} Training</td>
+                                            {% if True %} <!--FIXME: CURRENTLY HARDCODED-->
+                                                <td><i class="bi bi-check"></i></td>
+                                                <td></td>
+                                            {% else %}
+                                                <td>&times;</td> 
+                                                <td>See <a href="#">available events</a></td> <!--FIXME: CURRENTLY HARDCODED-->
+                                            {% endif %}
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
                         {% endif %}
                     {% endif %}
 
