@@ -948,6 +948,12 @@ def test_volunteerHistory():
                                              contactEmail = "test@email",
                                              contactName = "testName",)
         
+        participatedACTProgram = Program.create(id = 14,
+                                             programName = "ACT",
+                                             isBonnerScholars = False,
+                                             contactEmail = "test@email",
+                                             contactName = "testName",)
+
         # Create a program event in the past that the test user will have
         # participated in
         participatedProgramEvent = Event.create(name = "Attended program event",
@@ -959,6 +965,17 @@ def test_volunteerHistory():
                                                 startDate = "2021-12-12",
                                                 isAllVolunteerTraining = False,
                                                 program = participatedProgram)
+
+        participatedProgramACTEvent = Event.create(name = "All CELTS Training (Labor)",
+                                                term = 2,
+                                                description = "Test attended ACT program event.",
+                                                timeStart = "18:00:00",
+                                                timeEnd = "21:00:00",
+                                                location = "The moon",
+                                                startDate = "2021-12-12",
+                                                isAllVolunteerTraining = False,
+                                                isCeltsTraining = True,
+                                                program = participatedACTProgram)
 
         # Create a non-program event in the past that the test user will have
         # participated in
@@ -979,6 +996,10 @@ def test_volunteerHistory():
         # Add the created user as a participant to the create non-program event
         EventParticipant.create(user = user, event = participatedEvent.id)
         assert participatedEvent in getParticipatedEventsForUser(user)
+
+        # Add the created user as a participant to the created ALL CELTS Training (Labor) program event
+        EventParticipant.create(user = user, event = participatedProgramACTEvent.id)
+        assert participatedProgramACTEvent in getParticipatedEventsForUser(user)
 
         # Make sure an event that is not supposed to be returned isnt
         assert Event.get_by_id(1) not in getParticipatedEventsForUser(user)
