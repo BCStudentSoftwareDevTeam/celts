@@ -7,7 +7,7 @@ $(document).ready(function(){
       rsvpForEvent($("#rsvpBtn").val())
   })
   //ensure that toggle state is consistent across terms
-  if (!g_isPastTerm) {
+  if (typeof g_isPastTerm !== "undefined" && !g_isPastTerm) {
     var toggleState = sessionStorage.getItem('toggleState') || 'unchecked';
     var viewPastEventsToggle = $("#viewPastEventsToggle");
     viewPastEventsToggle.prop('checked', toggleState === 'checked');
@@ -41,7 +41,25 @@ $(document).ready(function(){
       $(".no-upcoming").show()
     }
   }
+
+  
 });
+
+// XXX This doesn't really need to be asynchronous
+$("#pushToCampusGroupsBtn").on("click", function(){
+    $.ajax({
+        url: "/addEventToCampusGroups",
+        type: "POST",
+        data: {"eventId": $("#pushToCampusGroupsBtn").val() },
+        complete: function() {
+          location.reload();
+        },
+        error: function(error, status) {
+            console.log(error, status)
+        }
+    });
+});
+
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
@@ -79,6 +97,9 @@ function removeRsvpForEvent(eventID){
 
 //gets number indicator of events in each event list category
 function updateIndicatorCounts(isChecked){
+  if(!$('#termID').length) {
+      return;
+  }
   $.ajax({
     url: "/eventsList/" + $('#termID').val(),
     type: "GET",
