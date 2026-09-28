@@ -374,37 +374,33 @@ def eventDisplay(eventId):
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term, includeFutureEvents = False)
+        allVolunteerTrainingAttended = False
+        programTrainingAttended = False
         
-        filteredTrainingEvents = {}
         
         for user, trainings in userParticipatedTrainingEvents.items():
             
-            filteredTrainings = []
             
             for trainingEvent, attended in trainings:
-                # Include all volunteer training only when required
-                if (
-                    eventData['requiresAllVolunteerTraining']
-                    and trainingEvent.isAllVolunteerTraining
-                ):
-                    filteredTrainings.append([trainingEvent, attended])
-                    
-                # include program training only when required 
+                if not attended: 
+                    continue 
+                
+                if trainingEvent.isAllVolunteerTraining:
+                    allVolunteerTrainingAttended = True
+               
                 elif (
-                    eventData['requiresProgramTraining']
-                    and trainingEvent.isTraining
-                    and trainingEvent.program == eventData['program']
-                ):
-                    filteredTrainings.append([trainingEvent, attended])
-                    
-            if filteredTrainings:
-                filteredTrainingEvents[user] = filteredTrainings
+                   trainingEvent.isTraining 
+                   and trainingEvent.program == eventData['program']
+                   
+               ):
+                    programTrainingAttended = True
 
         return render_template("events/eventView.html",
                                 eventData=eventData,
                                 event=event,
                                 userHasRSVPed=userHasRSVPed,
-                                programTrainings=filteredTrainingEvents,
+                                allVolunteerTrainingAttended = allVolunteerTrainingAttended, 
+                                programTrainingAttended=programTrainingAttended,
                                 currentEventRsvpAmount=currentEventRsvpAmount,
                                 isProgramManager=isProgramManager,
                                 filepaths=filepaths,
