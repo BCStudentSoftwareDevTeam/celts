@@ -172,6 +172,7 @@
                     <tr>
                         <td>Training</td>
                         <td>Attended?</td>
+                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -180,9 +181,14 @@
                         <td>All Volunteer Training</td>
                         <td>
                             {% if allVolunteerTrainingAttended %}
-                            <i class="bi bi-check" aria-label="Attended"></i>
+                                <i class="bi bi-check" aria-label="Attended"></i>
                             {% else %}
-                            <span aria-label="Not attended">&times;</span>
+                                <span aria-label="Not attended">&times;</span> 
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not allVolunteerTrainingAttended %}
+                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available All Volunteer Trainings</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -196,6 +202,11 @@
                             <i class="bi bi-check" aria-label="Attended"></i>
                             {% else %}
                             <span aria-label="Not attended">&times;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not programTrainingAttended %}
+                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Program Specific Trainings</a>
                             {% endif %}
                         </td>
                     </tr>
