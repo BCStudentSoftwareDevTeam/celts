@@ -171,7 +171,7 @@
                 <thead>
                     <tr>
                         <td>Training</td>
-                        <td>Attended?</td>
+                        <td class="text-center">Attended?</td>
                         <td></td>
                     </tr>
                 </thead>
@@ -179,14 +179,14 @@
                     {% if eventData["requiresAllVolunteerTraining"] %}
                     <tr>
                         <td>All Volunteer Training</td>
-                        <td>
+                        <td class="text-center">
                             {% if allVolunteerTrainingAttended %}
-                                <i class="bi bi-check" aria-label="Attended"></i>
+                                <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
                             {% else %}
-                                <span aria-label="Not attended">&times;</span> 
+                                <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-center">
                             {% if not allVolunteerTrainingAttended %}
                                 <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
@@ -197,14 +197,14 @@
                     {% if eventData["requiresProgramTraining"] %}
                     <tr>
                         <td>{{ eventData['program'].programName }} Training</td>
-                        <td>
+                        <td class="text-center">
                             {% if programTrainingAttended %}
-                            <i class="bi bi-check" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
                             {% else %}
-                            <span aria-label="Not attended">&times;</span>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-center">
                             {% if not programTrainingAttended %}
                                 <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
