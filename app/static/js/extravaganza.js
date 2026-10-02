@@ -1,4 +1,5 @@
 $(document).ready(function(){    
+    msgFlash();
 
     $(".interestedInput").click(function updateInterest(){
         var programID = $(this).data("programid");
@@ -11,6 +12,7 @@ $(document).ready(function(){
             method: "POST",
             url: interestUrl,
             success: function(response) {
+                msgFlash("Your program interest selection was saved.", "success", 5000, true);
                 window.location.reload();
             },
             error: function(request, status, error) {
