@@ -5,3 +5,6 @@ ADD COLUMN `requiresAllVolunteerTraining` tinyint(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE `event`
 ADD COLUMN `requiresProgramTraining` tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE `user`
+ADD COLUMN `isActive` TINYINT(1) NOT NULL DEFAULT 0;
