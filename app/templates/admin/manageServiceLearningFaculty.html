@@ -270,23 +270,23 @@
 
   {########################### Action Buttons #################################}
   {% set disable_button = "disabled" if approvedCourses | length == 0 else "" %}
-  <div class="mb-5">
-    <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
-        <button class="float-end btn btn-primary {{disable_button}}" 
+  <div class="mb-5 d-flex flex-wrap align-items-start gap-2">
+    <form class="mb-0" method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
+        <button class="btn btn-primary {{disable_button}}"
                 id="downloadApprovedCoursesBtn" 
                 value="{{term.id}}">Download Course List</button>
     </form>
 
     {% if term.isCurrentTerm or term.isFutureTerm %}
-        <a class="btn btn-primary float-end mr {{disable_button}}"
+        <a class="btn btn-primary {{disable_button}}"
           href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"
           target="_blank">Send Recommendation</a>
 
-        <a class="btn btn-primary mr float-end {{disable_button}}"
+        <a class="btn btn-primary {{disable_button}}"
           href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT"
           target="_blank">Email registrar</a>
     {% endif %}
-    <button class=" btn btn-primary mr" id="modalCourseParticipant" data-bs-toggle="modal" data-bs-target="#submitImportedCourses">Import Course Participants</button>
+    <button class="btn btn-primary" id="modalCourseParticipant" data-bs-toggle="modal" data-bs-target="#submitImportedCourses">Import Course Participants</button>
   </div>
 
   {###################### Service Learning Faculty ############################}
