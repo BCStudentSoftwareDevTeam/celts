@@ -4,17 +4,6 @@ $(document).ready(function(){
     backdrop: 'static'
   });
 
-  $("#checkDietRestriction").on("change",  function() {
-    let norestrict = $(this).is(':checked');
-    if (norestrict) {
-        $("#dietContainer").hide();
-        $("#diet").val("No dietary restrictions");
-
-    } else {
-        $("#dietContainer").show();
-    }
-  });
-
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -418,6 +407,9 @@ $("#confirmDeleteNote").click(function () {
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   // Dietary Restrictions
+  var typingTimer;
+  var saveInterval = 1000; //milliseconds
+
   function saveDiet() {
     let data = {
       dietInfo: $("#diet").val(),
@@ -435,22 +427,23 @@ $("#confirmDeleteNote").click(function () {
   }
 
   $("#checkDietRestriction").on("change",  function() {
+    clearTimeout(typingTimer);
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
-        saveDiet()
+        saveDiet();
+    } else {
+        $("#dietContainer").show();
     }
+  });
 
-    var typingTimer;
-    var saveInterval = 1000; //milliseconds
+  // Register once on page load so typing saves without first changing the switch.
+  $("#diet").on('input', function() {
+    clearTimeout(typingTimer);
+    $('#check-icon').remove();
 
-    $("#diet").on('input', function() {
-      clearTimeout(typingTimer);
-      $('#check-icon').remove();
-      
-      typingTimer = setTimeout(saveDiet, saveInterval);
-    });
+    typingTimer = setTimeout(saveDiet, saveInterval);
   });
 }); // end document.ready()
 
