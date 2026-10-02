@@ -165,7 +165,7 @@
             <br>
         </div>
         <div class="col-md-6">
-            {% if eventData["requiresAllVolunteerTraining"] or eventData["requiresProgramTraining"] %}
+            {% if eventData["requiresAllVolunteerTraining"] or not eventData["requiresAllCeltsTraining"] or eventData["requiresProgramTraining"]%}
             <h3>Required Trainings:</h3>
             <table class="table table-striped">
                 <thead>
@@ -188,6 +188,24 @@
                         </td>
                         <td class="text-center">
                             {% if not allVolunteerTrainingAttended %}
+                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    {% if not eventData["requiresAllCeltsTraining"] %}
+                    <tr>
+                        <td>All CELTS Training</td>
+                        <td class="text-center">
+                            {% if allCeltsTrainingAttended %}
+                                <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            {% else %}
+                                <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if not allCeltsTrainingAttended %}
                                 <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
                         </td>

@@ -30,6 +30,7 @@ class Event(baseModel):
     deletionDate = DateTimeField(null=True)
     deletedBy = TextField(null=True)
     requiresAllVolunteerTraining = BooleanField(default=False)
+    requiresAllCeltsTraining = BooleanField(default=False)
     requiresProgramTraining = BooleanField(default=False)
     eventFlagsMatrix = {'isAllVolunteerTraining':   {'isAllVolunteerTraining', 
                                                      'isTraining'},

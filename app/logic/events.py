@@ -216,6 +216,7 @@ def saveEventToDb(newEventData, renewedEvent = False):
                 "contactEmail":                 newEventData['contactEmail'],
                 "contactName":                  newEventData['contactName'],
                 "requiresAllVolunteerTraining": newEventData['requiresAllVolunteerTraining'],
+                "requiresAllCeltsTraining":     newEventData['requiresAllCeltsTraining'],
                 "requiresProgramTraining":      newEventData['requiresProgramTraining'],
             }
         
@@ -530,7 +531,7 @@ def preprocessEventData(eventData):
     """
 
     ## Process checkboxes and templateData
-    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining', 'requiresAllVolunteerTraining', 'requiresProgramTraining']
+    eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isEngagement', 'isRepeating', 'isAllVolunteerTraining', 'allowsLabor', 'isLaborOnly', 'isCeltsTraining', 'requiresAllVolunteerTraining', 'requiresAllCeltsTraining', 'requiresProgramTraining']
     
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
