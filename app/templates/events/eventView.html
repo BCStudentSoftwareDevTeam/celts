@@ -165,7 +165,7 @@
             <br>
         </div>
         <div class="col-md-6">
-            {% if eventData["requiresAllVolunteerTraining"] or not eventData["requiresAllCeltsTraining"] or eventData["requiresProgramTraining"]%}
+            {% if eventData["requiresAllVolunteerTraining"] or eventData["requiresAllCeltsTraining"] or eventData["requiresProgramTraining"]%}
             <h3>Required Trainings:</h3>
             <table class="table table-striped">
                 <thead>
@@ -194,7 +194,7 @@
                     </tr>
                     {% endif %}
 
-                    {% if not eventData["requiresAllCeltsTraining"] %}
+                    {% if eventData["requiresAllCeltsTraining"] %}
                     <tr>
                         <td>All CELTS Training</td>
                         <td class="text-center">

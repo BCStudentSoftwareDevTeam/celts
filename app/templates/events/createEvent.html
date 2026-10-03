@@ -318,7 +318,7 @@
           <label class="form-label" for="requiredTrainings"><strong>Required Trainings</strong></label>
         {% if eventData['program'].programName == "Bonner Scholars" %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="{{ eventData.isAllCeltsTraining }}" id="requiresAllCeltsTraining" name="requiresAllCeltsTraining" checked>
+                <input class="form-check-input" type="checkbox" value="{{ eventData.isCeltsTraining }}" id="requiresAllCeltsTraining" name="requiresAllCeltsTraining" {{"checked" if not eventData.name or eventData["requiresAllCeltsTraining"] }}>
                 <label class="form-check-label" for="noTrainingRequired"> All CELTS Training </label>
             </div>
         {% else %}
