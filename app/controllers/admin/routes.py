@@ -386,17 +386,13 @@ def eventDisplay(eventId):
                 if not attended: 
                     continue 
                 
-                if trainingEvent.isAllVolunteerTraining:
-                    allVolunteerTrainingAttended = True
+                if trainingEvent.isAllVolunteerTraining: allVolunteerTrainingAttended = True
 
-                elif trainingEvent.isCeltsTraining:
-                    allCeltsTrainingAttended = True
+                elif trainingEvent.isCeltsTraining: allCeltsTrainingAttended = True
                
                 elif (
                    trainingEvent.isTraining 
-                   and trainingEvent.program == eventData['program']
-                   
-               ):
+                   and trainingEvent.program == eventData['program']):
                     programTrainingAttended = True
 
         return render_template("events/eventView.html",
