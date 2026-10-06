@@ -314,7 +314,7 @@
       {% endif %}
 
       <!--Required Trainings-->
-      {% if not (eventData['isCeltsTraing'] or eventData['isAllVolunteerTraining'] or eventData['isLaborOnly']) %}
+      {% if not (eventData['isCeltsTraining'] or eventData['isAllVolunteerTraining'] or eventData['isLaborOnly']) %}
         <div class="form-group mb-4">
           <label class="form-label" for="requiredTrainings"><strong>Required Trainings</strong></label>
           {% if eventData['program'].programName == "Bonner Scholars" %}
