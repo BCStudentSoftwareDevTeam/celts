@@ -440,7 +440,7 @@ def test_saveEventToDb_create():
                   'seriesId':None, 'startDate': parser.parse('2021-12-12'), 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com', 
-                  'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False}
+                  'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': False}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -477,7 +477,7 @@ def test_saveEventToDb_repeating():
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com',
-                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False}
+                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': True}
             
             eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
@@ -485,7 +485,7 @@ def test_saveEventToDb_repeating():
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com',
-                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': True}
+                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': True, 'requiresAllCeltsTraining': True}
             
             eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
@@ -493,7 +493,7 @@ def test_saveEventToDb_repeating():
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Artemius Kurasius", 'contactEmail': 'artemiusKurasius@gmail.com',
-                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': True}
+                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': True, 'requiresAllCeltsTraining': False}
 
             eventInfo_1['valid'] = True
             eventInfo_2['valid'] = True
@@ -528,7 +528,7 @@ def test_saveEventToDb_nonRepeatingSeries():
                            'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com',
-                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': True}
+                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': True, 'requiresAllCeltsTraining': True}
             
             eventInfo_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True,
@@ -536,7 +536,7 @@ def test_saveEventToDb_nonRepeatingSeries():
                             'startDate': parser.parse('12-12-2021'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com',
-                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False}
+                           'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': False}
             
             eventInfo_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isLaborOnly': False, 'allowsLabor': False,
                             'isService':False, 'isAllVolunteerTraining': True, 'isTraining':True, 
@@ -544,7 +544,7 @@ def test_saveEventToDb_nonRepeatingSeries():
                             'startDate': parser.parse('12-12-2021'),'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                            'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com',
-                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': True}
+                           'requiresAllVolunteerTraining': False, 'requiresProgramTraining': True, 'requiresAllCeltsTraining': False}
 
             eventInfo_1['valid'] = True
             eventInfo_2['valid'] = True
@@ -600,11 +600,12 @@ def test_saveEventToDb_update():
                         'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
-                        "startDate": "2021-12-12",
-                        "contactName": "Monkey D. Luffy",
-                        "contactEmail": "goatpiece@berea.edu",
+                        'startDate': "2021-12-12",
+                        'contactName': "Monkey D. Luffy",
+                        'contactEmail': "goatpiece@berea.edu",
                         'requiresAllVolunteerTraining': True, 
                         'requiresProgramTraining': False,
+                        'requiresAllCeltsTraining': False,
                         "valid": True
                     }
         
@@ -696,21 +697,21 @@ def test_deleteEvent():
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 'location':"this is only a test", 'timeEnd':'09:00 PM', 
                     'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021", 
                     'name':'Empty Bowls Spring Week 1','term':1,'contactName':"Brianblius Ramsablius", 
-                    'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False}
+                    'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': True}
             
         event_2 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
                     'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 2','term':1,
-                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False}
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': True, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': False}
             
         event_3 =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isLaborOnly': False, 'allowsLabor': False,
                     'isAllVolunteerTraining': True, 'isTraining':True, 'isEngagement': False, 
                     'isRepeating': True, 'seriesId':1, 'startDate': parser.parse('12-12-2021'), 
                     'location':"this is only a test", 'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
                     'description':"Empty Bowls Spring 2021", 'name':'Empty Bowls Spring Week 3','term':1,
-                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False}
+                    'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com', 'requiresAllVolunteerTraining': False, 'requiresProgramTraining': False, 'requiresAllCeltsTraining': False}
 
         event_1['valid'] = True
         event_2['valid'] = True
