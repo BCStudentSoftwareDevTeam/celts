@@ -165,7 +165,20 @@
             <br>
         </div>
         <div class="col-md-6">
-            {% if eventData["requiresAllVolunteerTraining"] or eventData["requiresAllCeltsTraining"] or eventData["requiresProgramTraining"]%}
+            {% if eventData["requiresAllVolunteerTraining"] or eventData["requiresAllCeltsTraining"] or
+            eventData["requiresProgramTraining"]%}
+            {% if (eventData["requiresAllVolunteerTraining"] and not allVolunteerTrainingAttended)
+            or (eventData["requiresAllCeltsTraining"] and not allCeltsTrainingAttended)
+            or (eventData["requiresProgramTraining"] and not programTrainingAttended) %}
+
+            <div class="rsvp-btn text-center">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    You still need to complete the required training for this event.
+                </div>
+            </div>
+
+            {% endif %}
             <h3>Required Trainings:</h3>
             <table class="table table-striped">
                 <thead>
@@ -181,14 +194,14 @@
                         <td>All Volunteer Training</td>
                         <td class="text-center">
                             {% if allVolunteerTrainingAttended %}
-                                <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
                             {% else %}
-                                <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             {% if not allVolunteerTrainingAttended %}
-                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -199,14 +212,14 @@
                         <td>All CELTS Training</td>
                         <td class="text-center">
                             {% if allCeltsTrainingAttended %}
-                                <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
                             {% else %}
-                                <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             {% if not allCeltsTrainingAttended %}
-                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -224,7 +237,7 @@
                         </td>
                         <td class="text-center">
                             {% if not programTrainingAttended %}
-                                <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -232,7 +245,7 @@
                 </tbody>
             </table>
             {% endif %}
-    
+
 
             {% if filepaths.keys()|count %}
             <div class="form-group mt-5 ml-5>
