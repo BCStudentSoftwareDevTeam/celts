@@ -441,7 +441,11 @@ $("#confirmDeleteNote").click(function () {
     clearTimeout(typingTimer);
     $('#check-icon').remove();
 
-    typingTimer = setTimeout(saveDiet, saveInterval);
+    typingTimer = setTimeout(function() {
+      if (!$("#checkDietRestriction").is(':checked')) {
+        saveDiet();
+      }
+    }, saveInterval);
   });
 }); // end document.ready()
 
