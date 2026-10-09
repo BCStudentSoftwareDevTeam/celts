@@ -407,9 +407,6 @@ $("#confirmDeleteNote").click(function () {
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   // Dietary Restrictions
-  var typingTimer;
-  var saveInterval = 1000; //milliseconds
-
   function saveDiet() {
     let data = {
       dietInfo: $("#diet").val(),
@@ -427,7 +424,6 @@ $("#confirmDeleteNote").click(function () {
   }
 
   $("#checkDietRestriction").on("change",  function() {
-    clearTimeout(typingTimer);
     let norestrict = $(this).is(':checked');
     if (norestrict) {
         $("#dietContainer").hide();
@@ -438,7 +434,9 @@ $("#confirmDeleteNote").click(function () {
     }
   });
 
-  // Register once on page load so typing saves without first changing the switch.
+  var typingTimer;
+  var saveInterval = 1000; //milliseconds
+
   $("#diet").on('input', function() {
     clearTimeout(typingTimer);
     $('#check-icon').remove();
