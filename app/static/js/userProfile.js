@@ -4,17 +4,6 @@ $(document).ready(function(){
     backdrop: 'static'
   });
 
-  $("#checkDietRestriction").on("change",  function() {
-    let norestrict = $(this).is(':checked');
-    if (norestrict) {
-        $("#dietContainer").hide();
-        $("#diet").val("No dietary restrictions");
-
-    } else {
-        $("#dietContainer").show();
-    }
-  });
-
   $("#checkIsInterest").on("change", function() {
     let username = $(this).data('username')
     let isAdding = $(this).is(':checked');
@@ -439,18 +428,24 @@ $("#confirmDeleteNote").click(function () {
     if (norestrict) {
         $("#dietContainer").hide();
         $("#diet").val("No dietary restrictions");
-        saveDiet()
+        saveDiet();
+    } else {
+        $("#dietContainer").show();
     }
+  });
 
-    var typingTimer;
-    var saveInterval = 1000; //milliseconds
+  var typingTimer;
+  var saveInterval = 1000; //milliseconds
 
-    $("#diet").on('input', function() {
-      clearTimeout(typingTimer);
-      $('#check-icon').remove();
-      
-      typingTimer = setTimeout(saveDiet, saveInterval);
-    });
+  $("#diet").on('input', function() {
+    clearTimeout(typingTimer);
+    $('#check-icon').remove();
+
+    typingTimer = setTimeout(function() {
+      if (!$("#checkDietRestriction").is(':checked')) {
+        saveDiet();
+      }
+    }, saveInterval);
   });
 }); // end document.ready()
 
