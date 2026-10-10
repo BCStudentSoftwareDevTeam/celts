@@ -235,7 +235,7 @@ def viewUsersProfile(username):
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         handbookOverdue = getHandbookStatus(volunteer)
-        training = hasGoneToTraining(g.current_user, g.current_term)
+        training = hasGoneToTraining(volunteer, g.current_term)
 
         return render_template ("/main/userProfile.html",
                                 username=username,
