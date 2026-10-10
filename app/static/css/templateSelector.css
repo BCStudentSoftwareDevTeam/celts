@@ -1,0 +1,10 @@
+#extravaganzaURL {
+border-left: 1px solid #dee2e6; 
+padding-left: 8px;
+}
+
+#extravaganzaQR {
+height: 32px; 
+width: 32px; 
+display: block;
+}

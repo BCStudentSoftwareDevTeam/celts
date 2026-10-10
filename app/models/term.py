@@ -6,9 +6,19 @@ class Term(baseModel):
     isSummer = BooleanField(default=False)
     isCurrentTerm = BooleanField(default=False)
     termOrder = CharField()
+    volunteerHandbook = CharField(null=True)
+    laborHandbook = CharField(null=True)
 
     _cache = None
 
+    @property
+    def previousAcademicYear(self):
+        """
+        Returns the previous academic year.
+        """
+        years = self.academicYear.split('-')
+        return f"{int(years[0])-1}-{int(years[1])-1}"
+    
     @property
     def academicYearStartingTerm(self):
         """

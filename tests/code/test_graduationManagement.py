@@ -4,6 +4,8 @@ from app.logic.graduationManagement import setGraduatedStatus, getGraduationMana
 
 from app.models import mainDB
 from app.models.eventRsvp import EventRsvp
+from app.models.eventRsvpLog import EventRsvpLog
+from app.models.eventViews import EventView
 from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.models.celtsLabor import CeltsLabor
@@ -76,6 +78,8 @@ def test_getGraduationManagementUsers():
         ProfileNote.delete().execute()
         Note.delete().execute()
         ActivityLog.delete().execute()
+        EventRsvpLog.delete().execute()
+        EventView.delete().execute()
         User.delete().execute()
 
         testUser1 = User.create(username = 'usrtst1',
