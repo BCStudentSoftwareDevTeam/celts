@@ -88,7 +88,7 @@ $(document).ready(function() {
 
         sessionStorage.setItem('mainFilterState', filterType)
         $('#mainFilter').first().text(buttonText);
-        $('#cohortFilter').text('Select Cohort');
+        $('#cohortFilter').text('All Bonner cohorts');
 
         $('#exportFile').attr('href', `/gradStudentsxls/${filterType}`);
 
@@ -164,7 +164,7 @@ $(document).ready(function() {
         handleMainFilterChange(mainFilterState)
 
         if (mainFilterState == "bonner") {
-            var bonnerButtonText = "All"
+            var bonnerButtonText = "All Bonner cohorts"
             if (cohortFilterState != "all") {
                 cohortFilterState = Number(cohortFilterState) 
                 bonnerButtonText = `${cohortFilterState}-${cohortFilterState+1}`
