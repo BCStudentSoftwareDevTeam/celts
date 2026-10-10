@@ -38,7 +38,6 @@ $(document).ready(function(){
         }
     });
   })
-
   $("#phoneInput").inputmask('(999)-999-9999');
 
   $(".notifyInput").click(function updateInterest(){
@@ -401,20 +400,31 @@ $("#confirmDeleteNote").click(function () {
       }
     })
   });
-
   // Popover functionality
-  var requiredTraining = document.querySelectorAll(".trainingPopover");
-  requiredTraining.forEach(function(el) {
-    new bootstrap.Popover(el, {
-      trigger: "hover",
-      sanitize: false,
-      html: true,
-      content: function() {
-        return this.getAttribute('data-content');
-      }
+  $(function () {
+    $('.trainingPopover').each(function () {
+      new bootstrap.Popover(this, {
+        trigger: 'hover focus',
+        html: true,
+        sanitize: false,
+        placement: 'right',
+        content: function () {
+          return this.getAttribute('data-content');
+        }
+      });
     });
   });
- 
+  $(function () {
+    $('.bonnerCheckmark').each(function () {
+      new bootstrap.Popover(this, {
+        trigger: 'hover focus',
+        html: true,
+        sanitize: false,
+        placement: 'right',
+      });
+    });
+  });
+
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   // Dietary Restrictions
@@ -452,7 +462,10 @@ $("#confirmDeleteNote").click(function () {
       typingTimer = setTimeout(saveDiet, saveInterval);
     });
   });
-}); // end document.ready()
+  const bonnerStudent = $("#bonnerStudent").data('username')
+  if (bonnerStudent === "False"){
+    $("#bonnerStudent").prop("hidden", true)
+  }; // end document.ready()
 
 
 // Update program manager status
