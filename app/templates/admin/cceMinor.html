@@ -30,10 +30,11 @@
             <th>Sustained Engagements</th>
             <th>Summer Experience</th>
             <th>Requested Other Engagement</th>
+            <th>Remove from Minor</th>
         </tr>
     </thead>
     <tbody>
-        {% for student in sustainedEngagement %}
+        {% for student in cceMinorStudents %}
         <tr>
             <td>
                 {% from 'macros/graduationIconMacro.html' import graduationIcon %}
@@ -56,6 +57,12 @@
             {% else %}
                 No
             {% endif %}
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm remove_minor_candidate" 
+                        id="{{student.username}}" 
+                        aria-label="remove minor candidate">Remove
+                </button>
             </td>
         </tr>
         {% endfor %}
@@ -90,16 +97,7 @@
       'id': 'interested',
       'label': 'Interested',
       'students': interestedStudentsList,
-      'emailString': interestedStudentEmailString,
       'actionLabel': 'Declare Student',
-      'alwaysShow': true
-    },
-    {
-      'id': 'declared',
-      'label': 'Declared',
-      'students': declaredStudentsList,
-      'emailString': declaredStudentEmailString,
-      'actionLabel': 'Move To Interested',
       'alwaysShow': true
     }
   ] %}
@@ -107,6 +105,9 @@
   {{ minorCandidatesTab(tabsInfo, defaultActiveTab=activeTab )}}
 </div>
 
+<input type="hidden" id="interestedStudentEmails"  value="{{ interestedStudentEmailString }}">
+
+<input type="hidden"  id="declaredStudentEmails"  value="{{ declaredStudentEmailString }}">
 <!-- #################  Modal  ################# -->
 
 <div class="modal fade" id="addInterestedStudentsModal" tabindex="-1" aria-labelledby="addInterestedStudentsLbl" aria-hidden="true">

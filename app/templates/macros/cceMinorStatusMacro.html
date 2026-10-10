@@ -1,0 +1,17 @@
+{% macro minorStatusMacro(status) %}
+      <div class="container mt-2 mb-2">
+        <div class="col-10">
+            <ul class="timeline">
+                <li class="{{'completed' if status != 'Draft' else ''}}">
+                    <h6 class="{{'text-muted' if status == 'Draft' else ''}}">Proposal Submitted</h6>
+                </li>
+                <li class="{{'completed' if (status != 'Draft') and (status != 'Submitted') else ''}}">
+                    <h6 class="{{'text-muted' if (status == 'Draft') or (status == 'Submitted') else ''}}">Proposal Approved by Admin</h6>
+                </li>
+                <li class="{{'completed' if (status != 'Draft') and (status != 'Submitted') and (status != 'Approved') else ''}}">
+                    <h6 class="{{'text-muted' if (status == 'Draft') or (status == 'Submitted') or (status == 'Approved') else ''}}">Experience Marked Completed by Admin</h6>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endmacro %}

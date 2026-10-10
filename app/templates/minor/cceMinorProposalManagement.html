@@ -7,29 +7,40 @@
             <th scope="col">Created By</th>
             <th scope="col">Supervisor</th>
             <th scope="col">Term</th>
-            <th scope="col">Status</th>
             <th scope="col">Action</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
             {% for proposal in proposalList %}
                 <tr>
-                    <td id="type-{{ proposal['id'] }}">{{ proposal['type'] }}</td>
-                    <td id="creator-{{ proposal['id'] }}">{{proposal['createdBy'].firstName}} {{proposal['createdBy'].lastName}}</td>
-                    <td id="supervisor-{{ proposal['id'] }}">{{proposal['supervisor']}}</td>
-                    <td id="term-{{ proposal['id'] }}">{{ proposal['term'].description }}</td>
+                    <td id="type-{{ proposal.id }}">{{ proposal.proposalType }}</td>
+                    <td id="creator-{{ proposal.id }}">{{proposal.createdBy.firstName}} {{proposal.createdBy.lastName}}</td>
+                    <td id="supervisor-{{ proposal.id }}">{{proposal.supervisorName}}</td>
+                    <td id="term-{{ proposal.id }}">{{ proposal.term.description }}</td>
                     <td>
-                        <a class="status-key text-dark" id="status-{{proposal['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{proposal['status']}}">{{proposal['status']}}</a>
-                    </td>
-                    <td>
-                        <select class="form-select proposalData" id="{{proposal['id']}}" onchange='changeAction(this)'>
+                        <select class="form-select proposalData" id="{{proposal.id}}" data-type="{{proposal.proposalType}}" onchange='changeAction(this)'>
                         <option value="---" disabled selected>Select Action</option>
                         <option value="View">View</option>
-                        <option value="Withdraw">Withdraw</option>
-                        <option value="Edit">Edit</option>
-                        <option value="Notes">Notes</option>
-                        <option value="Print">Print</option>
+                        {% if not proposal.isApproved or g.current_user.isCeltsAdmin %}
+                            <option value="Edit">Edit</option>
+                        {% endif %}                         
+                        {% if g.current_user.isCeltsAdmin %}
+                            {% if proposal.isApproved %}
+                                <option value="Unapprove">Unapprove</option>
+                            {% else %}
+                                <option {{'disabled' if proposal.status != "Submitted" else ''}} value="Approve">Approve</option>
+                            {% endif %}
+                        {% endif %}                      
+                        <option value="withdraw">Withdraw</option>
+                        {% if g.current_user.isCeltsAdmin == True %}
+                            <option {{'disabled' if proposal.status != "Approved" else ''}} value="Complete">Mark as Completed</option>
+                        {% endif %}
                         </select>
+                    </td>
+                    <td>
+                        {% from 'macros/cceMinorStatusMacro.html' import minorStatusMacro %}
+                        {{ minorStatusMacro(proposal.status) }}
                     </td>
                 </tr>
             {% endfor %}

@@ -4,6 +4,8 @@ from peewee import JOIN, DoesNotExist
 from http import cookies
 from playhouse.shortcuts import model_to_dict
 from flask import request, render_template, jsonify, g, abort, flash, redirect, url_for, make_response, session, request
+from dateutil.relativedelta import relativedelta
+
 
 from app.controllers.main import main_bp
 from app import app
@@ -22,11 +24,10 @@ from app.models.certification import Certification
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.emergencyContact import EmergencyContact
-from app.models.eventParticipant import EventParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.backgroundCheckType import BackgroundCheckType
 
-from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents
+from app.logic.events import getUpcomingEventsForUser, getParticipatedEventsForUser, getTrainingEvents, getEventRsvpCountsForTerm, getUpcomingVolunteerOpportunitiesCount, getVolunteerOpportunities, getBonnerEvents, getCeltsLabor, getEngagementEvents, getPastVolunteerOpportunitiesCount
 from app.logic.transcript import *
 from app.logic.loginManager import logout
 from app.logic.searchUsers import searchUsers
@@ -36,8 +37,8 @@ from app.logic.createLogs import createRsvpLog, createActivityLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.minor import toggleMinorInterest, declareMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
+from app.logic.participants import hasGoneToTraining, unattendedRequiredEvents, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.users import *
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -92,6 +93,7 @@ def events(selectedTerm, activeTab, programID):
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     volunteerOpportunities = getVolunteerOpportunities(term)
     countUpcomingVolunteerOpportunities = getUpcomingVolunteerOpportunitiesCount(term, currentTime)
+    countPastVolunteerOpportunities = getPastVolunteerOpportunitiesCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     engagementEvents = getEngagementEvents(term)
     bonnerEvents = getBonnerEvents(term)
@@ -109,6 +111,8 @@ def events(selectedTerm, activeTab, programID):
 
     # Get the count of all term events for each category to display in the event list page.
     volunteerOpportunitiesCount: int = len(studentEvents)
+    countUpcomingVolunteerOpportunitiesCount: int = len(countUpcomingVolunteerOpportunities)
+    countPastVolunteerOpportunitiesCount: int = len(countPastVolunteerOpportunities)
     trainingEventsCount: int = len(trainingEvents)
     engagementEventsCount: int = len(engagementEvents)
     bonnerEventsCount: int = len(bonnerEvents)
@@ -133,6 +137,8 @@ def events(selectedTerm, activeTab, programID):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             "volunteerOpportunitiesCount": volunteerOpportunitiesCount,
+            "countPastVolunteerOpportunitiesCount": countPastVolunteerOpportunitiesCount,
+            "countUpcomingVolunteerOpportunitiesCount": countUpcomingVolunteerOpportunitiesCount,
             "trainingEventsCount": trainingEventsCount,
             "engagementEventsCount": engagementEventsCount,
             "bonnerEventsCount": bonnerEventsCount,
@@ -155,6 +161,7 @@ def events(selectedTerm, activeTab, programID):
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
                             countUpcomingVolunteerOpportunities = countUpcomingVolunteerOpportunities,
+                            countPastVolunteerOpportunities = countPastVolunteerOpportunities,
                             toggleState = toggleState,
                             )
 
@@ -189,7 +196,6 @@ def viewUsersProfile(username):
 
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
-        
         
 
         eligibilityTable = []
@@ -226,6 +232,9 @@ def viewUsersProfile(username):
         managersList = [id[1] for id in managersProgramDict.items()]
         totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
+        handbookOverdue = getHandbookStatus(volunteer)
+        training = hasGoneToTraining(g.current_user, g.current_term)
+
         return render_template ("/main/userProfile.html",
                                 username=username,
                                 programs = programs,
@@ -244,8 +253,16 @@ def viewUsersProfile(username):
                                 managersList = managersList,
                                 participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
+                                handbookOverdue = handbookOverdue,
+                                training = training,
                             )
     abort(403)
+
+def getHandbookStatus(volunteer):
+    handbookOverdue = False
+    if not volunteer.signatureTerm or volunteer.signatureTerm.academicYear != g.current_term.academicYear:
+        handbookOverdue = True
+    return handbookOverdue
 
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
 def emergencyContactInfo(username):
@@ -370,21 +387,34 @@ def eventTravelForm(eventID):
                            userList = userList,
                            )
 
-@main_bp.route('/profile/addNote', methods=['POST'])
+@main_bp.route("/profile/addNote", methods=["POST"])
 def addNote():
-    """
-    This function adds a note to the user's profile.
-    """
-    postData = request.form
     try:
-        note = addProfileNote(postData["visibility"], postData["bonner"] == "yes", postData["noteTextbox"], postData["username"])
+        noteData = getProfileNoteData(
+            request.form,
+            includeUsername=True,
+        )
+        addProfileNote(**noteData)
         flash("Successfully added profile note", "success")
-        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
-    except Exception as e:
-        print("Error adding note", e)
+    except Exception as error:
+        print("Error adding profile note:", error)
         flash("Failed to add profile note", "danger")
-        return "Failed to add profile note", 500
-
+        return str(error), 500
+    return "success"
+@main_bp.route("/<username>/editNote", methods=["POST"])
+def editProfileNote(username):
+    try:
+        noteData = getProfileNoteData( request.form,  includeId=True, )
+        profileNote = ProfileNote.get_by_id(noteData["profileNoteID"]  )
+        if (profileNote.user.username != username or (profileNote.note.createdBy != g.current_user and not g.current_user.isCeltsAdmin) ):
+            abort(403)
+        updateProfileNote(**noteData)
+        flash("Successfully updated profile note", "success")
+    except Exception as error:
+        print("Error updating profile note:", error)
+        flash("Failed to update profile note", "danger")
+        return str(error), 500
+    return "success"  
 @main_bp.route('/<username>/deleteNote', methods=['POST'])
 def deleteNote(username):
     """
@@ -413,13 +443,13 @@ def ban(program_id, username):
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
-        flash("Successfully banned the volunteer", "success")
-        createActivityLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
-        return "Successfully banned the volunteer."
+        flash("Successfully marked the volunteer as ineligible", "success")
+        createActivityLog(f'Marked {username} as ineligible from {programInfo.programName} until {banEndDate}.')
+        return "Successfully marked the volunteer as ineligible."
     except Exception as e:
         print("Error while updating ban", e)
-        flash("Failed to ban the volunteer", "danger")
-        return "Failed to ban the volunteer", 500
+        flash("Failed to mark the volunteer as ineligible", "danger")
+        return "Failed to mark the volunteer as ineligible", 500
 
 # ===========================Unban===============================================
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
@@ -434,30 +464,33 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createActivityLog(f'Unbanned {username} from {programInfo.programName}.')
-        flash("Successfully unbanned the volunteer", "success")
-        return "Successfully unbanned the volunteer"
+        createActivityLog(f'marked {username} as eligible from {programInfo.programName}.')
+        flash("Successfully marked the volunteer as eligible", "success")
+        return "Successfully marked the volunteer as eligible"
 
     except Exception as e:
         print("Error while updating Unban", e)
-        flash("Failed to unban the volunteer", "danger")
-        return "Failed to unban the volunteer", 500
-
+        flash("Failed to mark the volunteer as eligible", "danger")
+        return "Failed to mark the volunteer as eligible", 500
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
-def addInterest(program_id, username):
+@main_bp.route('/<username>/addInterest/<program_id>/<showFlash>', methods=['POST'])
+def addInterest(program_id, username, showFlash = True):
     """
     This function adds a program to the list of programs a user interested in
     program_id: the primary id of the program the student is adding interest of
     username: unique value of a user to correctly identify them
-    """
+    """    
+    showFlash = False if showFlash == "False" else True
     try:
         success = addUserInterest(program_id, username)
         if success:
-            flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
-            return ""
+            if bool(showFlash):                
+                flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
+            return jsonify(model_to_dict(User.get_or_none(User.username == username)))
         else:
-            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            if bool(showFlash):
+                flash("Was unable to add " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
 
     except Exception as e:
         print(e)
@@ -490,24 +523,18 @@ def volunteerRegister():
     event = Event.get_by_id(request.form['id'])
     program = event.program
     user = g.current_user
-
-    isAdded = checkUserRsvp(user, event)
-    isEligible = isEligibleForProgram(program, user)
-    listOfRequirements = unattendedRequiredEvents(program, user)
+    now = datetime.datetime.now()
+    isEligible = False if isBannedFromEvent(user, event) else True
 
     personAdded = False
     if isEligible:
         personAdded = addPersonToEvent(user, event)
-        if personAdded and listOfRequirements:
-            reqListToString = ', '.join(listOfRequirements)
-            flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
-        elif personAdded:
+        if personAdded:
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")
     else:
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
-
 
     if 'from' in request.form:
         if request.form['from'] == 'ajax':
@@ -543,9 +570,11 @@ def serviceTranscript(username):
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
+    zeroHourEvents = getZeroHourEvents(username)
     startDate = getStartYear(username)
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
+                            zeroHourEvents = zeroHourEvents,
                             slCourses = slCourses.objects(),
                             totalHours = totalHours,
                             startDate = startDate,
@@ -638,3 +667,40 @@ def updateMinorDeclaration(username):
     tab = request.args.get("tab", "interested")
     return redirect(url_for('admin.manageMinor', tab=tab))
 
+@main_bp.route('/extravaganza', methods=['GET'])
+def extravaganza():
+    programs = Program.select().where(Program.isOtherCeltsSponsored == False, 
+                                      Program.programName != "Hunger Initiatives", 
+                                      Program.programName != "Bonner Scholars")
+    interests = Interest.select(Interest, Program).join(Program).where(Interest.user == g.current_user)
+    programsInterested = [interest.program for interest in interests]
+
+    upcomingAllVolunteers = (Event.select()
+                                 .join(Term)
+                                 .where(Event.isAllVolunteerTraining, 
+                                        Term.academicYear == g.current_term.academicYear,
+                                        Event.deletionDate == None, 
+                                        Event.isCanceled == False)
+                             )
+    for training in upcomingAllVolunteers:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
+
+    upcomingTrainings = (Event.select()
+                             .join(Term)
+                             .where(Event.isTraining, 
+                                    Term.academicYear == g.current_term.academicYear,
+                                    Event.deletionDate == None, 
+                                    Event.isCanceled == False)
+                        )
+
+    for training in upcomingTrainings:
+        training.startDate = training.startDate.strftime("%b %d")
+        training.timeStart = training.timeStart.strftime("%I:%M %p")
+
+    return render_template("main/extravanganzaWelcome.html",
+                           programs = programs,
+                           programsInterested = programsInterested,
+                           upcomingTrainings = upcomingTrainings,
+                           upcomingAllVolunteers = upcomingAllVolunteers
+                           )

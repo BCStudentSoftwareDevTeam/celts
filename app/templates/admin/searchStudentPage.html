@@ -3,13 +3,13 @@
 
 {% block scripts %}
   {{super()}}
-<script type="module" src="/static/js/searchStudent.js"></script>
+  <script type="module" src="/static/js/searchStudent.js"></script>
 {% endblock %}
 
 
 
 {% block app_content %}
-<form id= "searchStudent" action="/userProfile" method="post">
+<form id="searchStudent" action="/userProfile" method="post">
   <h1 class="text-center mb-3">Student Search Page</h1><br>
   <div class="col-sm-6 col-sm-offset-3 m-auto">
     <div class="row">

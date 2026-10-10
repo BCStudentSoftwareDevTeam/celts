@@ -2,45 +2,6 @@ import { validateEmail } from "./emailValidation.mjs";
 
 $(document).ready(function() {
   $("#supervisorEmail").on('input', validateEmail);
-  $("#withdrawBtn").on("click", withdrawProposal);
-
-function changeAction(action){
-      let proposalID = action.id;
-      let proposalAction = action.value;
-      // decides what to do based on selection
-    if (proposalAction == "Withdraw"){
-        $('#proposalID').val(proposalID);
-        $('#withdrawModal').modal('show');
-       
-      }
-      resetAllSelections()
-    }
-   
-
- function resetAllSelections() {
-      $('.form-select').val('---');
- }
-
-    
-  function withdrawProposal(){
-      // uses hidden label to withdraw course
-      let proposalID = $("#proposalID").val();
-      let username = $("#username").val()
-      $.ajax({
-        url: `/cceMinor/withdraw/${username}/${proposalID}`,
-        type: "POST",
-        success: function(s){
-          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-        },  
-        error: function(request, status, error) {
-            console.log(status, error);
-        }
-      })
-      resetAllSelections()
-    };
-
-
-  window.changeAction = changeAction;
 
   $('input.phone-input').inputmask('(999)-999-9999')
   $('input.phone-input').on('input', function(){
@@ -55,6 +16,38 @@ function changeAction(action){
           this.reportValidity()        
       }
   })
+
+  handleFileSelection("supervisorAttachment", true)
+  
+  $('.bi-trash').on('click', function () {
+    $('#deleteAttachmentFlag').val('true');
+    $('#supervisorAttachment').val('');
+  });
+
+  $('#supervisorAttachment').on('change', function () {
+    // if a new attachment is uploaded after a previously deleted one, we want to reset the hidden delete input field
+    if ($(this).val()) {
+      $('#deleteAttachmentFlag').val('false');
+    }
+  });
+
+  $('.submit-proposal').on('click', function(e) {
+    const proposal = $('#proposalForm')[0];
+    const experienceType = $('#proposalExperienceType').val()
+
+    let customValidity = experienceType === "Other Engagement"
+      ? true
+      : validateContentAreas();
+    
+    if (!customValidity || !proposal.checkValidity()){
+      e.preventDefault();
+      proposal.reportValidity();
+    }});
+    
+  $('#exitButton').on('click', function() {
+    let username = $("#username").val()
+    window.location.href = `/profile/${username}/cceMinor?tab=manageProposals` 
+  }) 
 
   // ************** SUSTAINED COMMUNITY ENGAGEMENTS ************** //
   $('.engagement-row').on("click", function() {
@@ -72,28 +65,8 @@ function changeAction(action){
 
   // ************** SUMMER EXPERIENCE ************** //
   $('#hoursBelow300Container').hide()
-  $('#otherExperienceDescription').hide()
-
-  $('#summerExperienceForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    let username = $("#username").val()
-    
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) { 
-          window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  });
+  toggleUnder300HoursTextarea()
+  toggleOtherExperienceTextarea()
 
   $("input[name='experienceHoursOver300']").on("change", function() {
     toggleUnder300HoursTextarea();
@@ -132,26 +105,6 @@ function changeAction(action){
   // ************** END SUMMER EXPERIENCE ************** //
 
   // ************** OTHER ENGAGEMENT ************** //
-  $('#otherEngagementForm').on('submit', function(event) {
-    event.preventDefault(); 
-    var formData = new FormData(this); 
-    var actionUrl = $(this).attr('action'); 
-    let username = $("#username").val()
-    $.ajax({
-      url: actionUrl,
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function(response) {
-        window.location.href = `/profile/${username}/cceMinor?tab=manageProposals`
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  }); 
-
   $("input[name='experienceType']").on("change", function() {
     toggleOtherExperienceTextarea();
   });
@@ -219,6 +172,19 @@ function showEngagementInformation(engagementInfoDict) {
   });
 }
 
+function validateContentAreas(){
+  // custom validation for contentAreas checkboxes (summer exp)
+  const contentAreaCheckboxes = $('input[name="contentArea"]')
+  contentAreaCheckboxes[0].setCustomValidity('')
+  const isChecked = (contentAreaCheckboxes.filter(':checked').length) > 0;
+  if (!isChecked){
+    contentAreaCheckboxes[0].setCustomValidity('Select at least one option')
+    contentAreaCheckboxes[0].reportValidity()
+    return false;
+  }
+  return true;
+}
+
 function toggleEngagementCredit(isChecked, engagementData, checkbox){
     engagementData['username'] = $("#username").val();
 
@@ -243,12 +209,15 @@ function toggleEngagementCredit(isChecked, engagementData, checkbox){
 }
 
 function toggleUnder300HoursTextarea() {
-  var yesRadio = $('#yes300hours');
+  var noRadio = $('#no300hours');
   var conditionalTextBox = $('#hoursBelow300Container');
-  if (yesRadio.is(':checked')) {
-    conditionalTextBox.hide()
+  if (noRadio.is(':checked')) {
+    conditionalTextBox.show();
   } else {
-    conditionalTextBox.show() 
+    conditionalTextBox.hide();
+    if ($('#yes300hours').is(':checked')) {
+      $('#totalHours').val(300);
+    }
   }
 }
 

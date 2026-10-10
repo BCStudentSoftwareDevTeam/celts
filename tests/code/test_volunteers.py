@@ -10,6 +10,8 @@ from datetime import datetime
 from peewee import DoesNotExist
 from dateutil import parser
 
+from app.models.term import Term
+
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -111,6 +113,7 @@ def test_backgroundCheck():
     with mainDB.atomic() as transaction:
         with app.app_context():
             g.current_user = "ramsayb2"
+            g.current_term = Term.get_by_id(1)
             # tests the model created in tests_data and the one that is created (multiple entries)
             updatebackground = addUserBackgroundCheck("khatts","CAN","Submitted",parser.parse("2020-07-20"))
             updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts", BackgroundCheck.type == "CAN"))

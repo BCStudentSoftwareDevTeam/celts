@@ -46,6 +46,7 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "dietRestriction": "Diary",
         "major": None,
         "rawClassLevel": None,
@@ -63,6 +64,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
         "minorInterest": 1,
@@ -78,6 +80,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
+        "isCeltsOperationsTeam": False,
         "major": "Psychology",
         "rawClassLevel": "Sophomore",
         "minorInterest": 0,
@@ -94,6 +97,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Computer and Information Science",
         "rawClassLevel": "Junior",
         "minorInterest": None,
@@ -109,6 +113,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Chemistry",
         "rawClassLevel": "Junior",
         "minorInterest": None,
@@ -125,6 +130,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": None,
         "rawClassLevel": None,
         "minorInterest": None,
@@ -164,6 +170,7 @@ users = [
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True,
+        "isCeltsOperationsTeam": False,
         "major": None,
         "rawClassLevel": None,
         "minorInterest": None,
@@ -179,6 +186,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "isStaff": True,
         "major": None,
         "rawClassLevel": None,
@@ -194,6 +202,7 @@ users = [
         "isCeltsAdmin": True,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "isStaff": True,
         "major": None,
         "rawClassLevel": None,
@@ -211,6 +220,7 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": None,
         "rawClassLevel": None,
         "minorInterest": None,
@@ -225,6 +235,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "isStaff": True,
         "minorInterest": None,
     },
@@ -239,8 +250,25 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
+        "minorInterest": None,
+    },
+    {
+        "username" : "glek",
+        "bnumber" : "B00792345",
+        "email": "glek@berea.edu",
+        "phoneNumber": "(555)579-5555",
+        "firstName" : "Kafui",
+        "lastName" : "Gle",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
+        "major": "Computer Science",
+        "rawClassLevel": "Junior",
         "minorInterest": None,
     },
     {
@@ -254,6 +282,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
         "minorInterest": None,
@@ -269,6 +298,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "isCeltsOperationsTeam": False,
         "major": "Computer Science",
         "rawClassLevel": "Senior",
         "minorInterest": None,
@@ -465,6 +495,33 @@ terms = [
         "termOrder": "2022-1"
     },
     {
+        "id": 11,
+        "description": "Summer 2018",
+        "year": 2018,
+        "academicYear": "2017-2018",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2018-2"
+    },
+    {
+        "id": 12,
+        "description": "Summer 2019",
+        "year": 2019,
+        "academicYear": "2018-2019",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2019-2"
+    },
+    {
+        "id": 13,
+        "description": "Summer 2020",
+        "year": 2020,
+        "academicYear": "2019-2020",
+        "isSummer": True,
+        "isCurrentTerm": False,
+        "termOrder": "2020-2"
+    },
+    {
         "id": 9,
         "description": "Spring 2024",
         "year": 2024,
@@ -627,7 +684,7 @@ events = [
         "term": 2,
         "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
@@ -1027,7 +1084,14 @@ individualReqs = [
 ]
 
 IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
+# This ensures every user with an individual requirement has declaredMinor set to True so that when our query runs it can find users with  a "declaredMinor = True"
+req_usernames = {r["username"] for r in individualReqs if r.get("username")}
 
+(User
+ .update({User.declaredMinor: True})
+ .where(User.username.in_(req_usernames))
+ .execute()
+)
 
 courseInstructorRecords = [
     {
@@ -1591,8 +1655,14 @@ celtsLabor = [
     },
     {
         "user": "ayisie",
-        "positionTitle": "AGP Team Memeber",
+        "positionTitle": "AGP Team Member",
         "term": 2,
+        "isAcademicYear": True
+    },
+    {
+        "user": "neillz",
+        "positionTitle": "AGP Team Leader",
+        "term": 3,
         "isAcademicYear": True
     }
 ]

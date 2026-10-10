@@ -124,7 +124,7 @@ def test_courseManagement():
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
         assert importedCourse in getImportedCourses(termId)
-        assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
+        assert sorted([instructorString.strip() for instructorString in unapprovedList[courseindex].instructors.split(",")]) == sorted(["Brian Ramsay", "Zach Neill"])
 
         transaction.rollback()
         

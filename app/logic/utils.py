@@ -36,6 +36,46 @@ def selectSurroundingTerms(currentTerm, prevTerms=2, summerOnly=False):
 
     return surroundingTerms
 
+def selectAllSummerTerms(currentTerm, student):
+    """
+    Selects the summer terms during which a CCE Minor student could be enrolled.
+    """
+
+    # The year when the student was admitted is inferred from their current class level. 
+    classYears = {
+        "Freshman": 1,
+        "Sophomore": 2,
+        "Junior": 3,
+        "Senior": 4,
+        "Graduating": 4 # "Graduating" students are seniors graduating at the end of the current term. 
+    }
+
+    if student.hasGraduated or student.rawClassLevel not in classYears:
+        return []
+
+    classYear = classYears[student.rawClassLevel]
+
+    isSpring = currentTerm.description.startswith("Spring")
+    isGraduating = student.rawClassLevel == "Graduating"
+
+    # First summer the student can request
+    if isSpring or isGraduating:
+        firstSummer = currentTerm.year - classYear + 1
+    else:
+        firstSummer = currentTerm.year - classYear + 2
+
+    # Last summer the student can request
+    if isSpring and isGraduating:
+        lastSummer = currentTerm.year - 1
+    else:
+        lastSummer = currentTerm.year
+
+    return (Term.select()
+                .where(Term.isSummer,
+                       Term.year >= firstSummer,
+                       Term.year <= lastSummer)
+                .order_by(Term.termOrder))
+
 def getStartofCurrentAcademicYear(currentTerm):
     if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()

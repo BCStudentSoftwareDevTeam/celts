@@ -2,10 +2,10 @@ from pprint import isrecursive
 import pytest
 from datetime import datetime, timedelta, time
 from peewee import IntegrityError, DoesNotExist
-from app import app
 from flask import g
+from app import app
 from werkzeug.datastructures import ImmutableMultiDict
-
+from playhouse.shortcuts import model_to_dict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
@@ -13,7 +13,8 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.users import trainedParticipants
 from app.models.eventRsvp import EventRsvp
 
 
@@ -282,77 +283,96 @@ def test_trainedParticipants():
 # tests for unattendedRequiredEvents
 @pytest.mark.integration
 def test_unattendedRequiredEvents():
-
-    # test unattended events
-    program = 1
-    user = 'ramsayb2'
-
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 1
-
-    # test after user has attended an event
     with mainDB.atomic() as transaction:
+
+        # test unattended events
+        program = 1
+        user = 'ramsayb2'
+        
+        # There are no events yet that are registered as trainings for this program
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert len(unattendedEvents) == 0
+
+        # Create a required training for this program
+        Event.create(name = "Hunger Initiatives test event",
+                                                    term = Term.get(1),
+                                                    description= "This Event is created to do whatever.",
+                                                    timeStart= "06:00 PM",
+                                                    timeEnd= "09:00 PM",
+                                                    location = "The Sun",
+                                                    isRsvpRequired = 0,
+                                                    isTraining = 1,
+                                                    isService = 0,
+                                                    startDate= "2021-12-12",
+                                                    recurringId = None,
+                                                    program = Program.get_by_id(program))
+
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert len(unattendedEvents) == 1
+
+        # Have the user attend the event
         event = Event.get(Event.name == unattendedEvents[0])
         EventParticipant.create(user = user, event = event)
-
         unattendedEvents = unattendedRequiredEvents(program, user)
         assert len(unattendedEvents) == 0
 
         transaction.rollback()
 
-    # test where all required events are attended
-    user = 'khatts'
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test where all required events are attended
+        user = 'khatts'
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
-    # test for program with no requirements
-    program = 4
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test for a program with no requirements
+        program = 4
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
 
-    # test for incorrect program
-    program = 500
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test for invalid program
+        program = 500
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
-    #test for incorrect user
-    program = 1
-    user = "asdfasdf56"
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1']
+        #test for invalid user
+        program = 1
+        user = "asdfasdf56"
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
 @pytest.mark.integration
 def test_addBnumberAsParticipant():
     # Tests the Kiosk
-    # user is banned
     with mainDB.atomic() as transaction:
-        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
-        assert userStatus == "banned"
+        with app.app_context():
+            g.current_term = Term.get_by_id(1)
 
+            # Test a banned user
+            signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
+            assert userStatus == "banned"
 
-        # user is already signed in
-        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
-        assert userStatus == "already signed in"
+            # user is already signed in
+            signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
+            assert userStatus == "already signed in"
 
-        # user is eligible but the user is not in EventParticipant and EventRsvp
-        signedInUser = User.get(User.bnumber=="B00759117")
-        with pytest.raises(DoesNotExist):
-            EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
-            EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
+            # user is eligible but the user is not in EventParticipant and EventRsvp
+            signedInUser = User.get(User.bnumber=="B00759117")
+            with pytest.raises(DoesNotExist):
+                EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+                EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
-            assert userStatus == "success"
+                signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
+                assert userStatus == "success"
 
-            participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
-            assert "agliullovak" in participant
+                participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
+                assert "agliullovak" in participant
 
-            userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
-            assert "agliullovak" in userRsvp
+                userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
+                assert "agliullovak" in userRsvp
 
-            EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
-            EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
-        transaction.rollback()
+                EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
+                EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+            transaction.rollback()
 
 @pytest.mark.integration
 def test_getEventParticipants():

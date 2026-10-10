@@ -2,7 +2,7 @@
   <script type="module" src="/static/js/sidebar.js"></script>
 {% endblock %}
 
-<div id="sidebar">
+<div id="sidebar" class="bg-dark">
   <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <img src="{{url_for('static', filename='images/logos/celts_logo_white.png')}}" alt="CELTS-image" width="230">
@@ -29,7 +29,7 @@
         </a>
       </li>
       {% endif %}
-      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager %}
+      {% if g.current_user.isCeltsAdmin or g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event    
@@ -51,16 +51,16 @@
       </li>
       <li>
         {% if g.current_user.isCeltsAdmin %}
-        <nav class="navbar navbar-dark bg-dark">
-          <div class="container-fluid">
-            <button id="admin" class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
+        <nav class="navbar navbar-dark bg-dark py-0">
+          <div class="container-fluid py-0">
+            <button id="admin" class="navbar-toggler text-white w-100 text-start border-0 fs-6 ps-3 dropdown-toggle col-xs-3 sidebar-toggle-btn sidebar_padding shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
               aria-label="Toggle navigation">
               Admin
             </button>
           </div>
         </nav>
         <div class="{{ 'collapse-show' if request.path in ['/activityLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
-          <div class="bg-dark ps-3">
+          <div class="bg-dark ps-3  ">
             <a href="/activityLogs" class="nav-link text-white {{ 'active' if request.path =='/activityLogs' }}">
               Activity Logs
             </a>
@@ -90,7 +90,7 @@
       </li>
 
       {% endif %}
-      {% if g.current_user.isProgramManager %}
+      {% if g.current_user.isProgramManager or g.current_user.isCeltsOperationsTeam %}
         <a href="/admin"
            class="nav-link text-white {{'active' if request.path == '/admin'}}"
            {% if request.path == '/admin' %}aria-current="page"{% endif %}>
@@ -105,7 +105,7 @@
           <select name="newuser" class="form-select" style="margin-bottom: 10px" onchange="this.form.submit()">>
             <option {{"selected" if g.current_user.username == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
             <option {{"selected" if g.current_user.username == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
-            <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Student Staff: neillz</option>
+            <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Program Manager: neillz</option>
             <option {{"selected" if g.current_user.username == "ayisie"}} value="ayisie">Student: ayisie</option>
             <option {{"selected" if g.current_user.username == "heggens"}} value="heggens">Faculty: heggens</option>
           </select>
