@@ -150,17 +150,18 @@ def changeTerm():
     newTerm = changeCurrentTerm(int(request.form.get('id')))
     flash(f"Current term successfully changed to {newTerm.description}", "success")
 
-    with mainDB.atomic(): # ensures that the data is not wiped out without a succesful update
-        Interest.delete().execute()
+    if newTerm.academicYear != g.current_term.academicYear:
+        with mainDB.atomic(): # ensures that the data is not wiped out without a succesful update
+            Interest.delete().execute()
 
-        programs = Program.select()
-        for program in programs: 
-            engagedUsers = getParticipantsForProgramForAY(program, g.current_term.academicYear)
-            engagedUsersList = [i.username for i in engagedUsers]
-            for user in engagedUsersList: 
-                addUserInterest(program, user)
+            programs = Program.select()
+            for program in programs: 
+                engagedUsers = getParticipantsForProgramForAY(program, g.current_term.academicYear)
+                engagedUsersList = [i.username for i in engagedUsers]
+                for user in engagedUsersList: 
+                    addUserInterest(program, user)
 
-        flash(f"The list of interested students was succesfully updated", "success")
+            flash(f"The list of interested students was succesfully updated", "success")
     
 
     return ""
