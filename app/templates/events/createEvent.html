@@ -117,7 +117,7 @@
 <div class="mb-4" id="eventTime">
   <div class="row col-md-12">
     <div class="form-group col-md-6">
-      <label class="form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
+      <label class="required form-label me-2" for="startTime-{{pageLocation}}"><strong>Start Time</strong></label>
       <div class="input-group flatpickr">
         {% if eventData.timeStart %}
           {% set startTime = eventData.timeStart %}
@@ -133,7 +133,7 @@
     </div>
     <!-- Non-Series End Time -->
     <div class='form-group col-md-6'>
-      <label class="form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
+      <label class="required form-label me-2" for="endTime-{{pageLocation}}"><strong>End Time</strong></label>
       <div class="input-group flatpickr">
         {% if eventData.timeEnd %}
           {% set endTime = eventData.timeEnd %}
@@ -167,7 +167,7 @@
           name="name" required>
       </div>
       <div class="form-group mb-4">
-        <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
+        <label class="required form-label" for='inputEventTerm'><strong>Term</strong></label>
         <select class="form-select" name='term' id='inputEventTerm' required>
           {% for term in termList %}
           <option value='{{term}}' {{"selected" if term==eventData.term}}>{{term.description}}</option>
