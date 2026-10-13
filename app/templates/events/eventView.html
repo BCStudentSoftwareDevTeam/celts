@@ -167,18 +167,7 @@
         <div class="col-md-6">
             {% if eventData["requiresAllVolunteerTraining"] or eventData["requiresAllCeltsTraining"] or
             eventData["requiresProgramTraining"]%}
-            {% if (eventData["requiresAllVolunteerTraining"] and not allVolunteerTrainingAttended)
-            or (eventData["requiresAllCeltsTraining"] and not allCeltsTrainingAttended)
-            or (eventData["requiresProgramTraining"] and not programTrainingAttended) %}
 
-            <div class="rsvp-btn text-center">
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    You must complete all required trainings for this event.
-                </div>
-            </div>
-
-            {% endif %}
             <h3>Required Trainings:</h3>
             <table class="table table-striped">
                 <thead>

@@ -307,4 +307,34 @@ def hasGoneToTraining(participant, term):
         return None
     attended = attended[-1] if len(attended) > 1 else attended[0]
     return attended.event
+
+def attendedRequiredTrainings(participant, event, term): 
+    """
+    Checks whether a student has attended all required trainings for an event. 
+    """
     
+    participationStatus = getParticipationStatusForTrainings(event, [participant], term, False)
+    
+    # Converting a participationStatus dictionary into a list turns it into a 3-layered list. 
+    # Since there is only one user, we will remove one of the list's layers.
+    trainingEvents = [event for users in list(participationStatus.values()) for event in users]
+
+    allVolunteerTrainings = [event for event in trainingEvents if event[0].isAllVolunteerTraining]
+    allCeltsTrainings = [event for event in trainingEvents if event[0].isCeltsTraining]
+    programTrainings = [event for event in trainingEvents if event not in allVolunteerTrainings + allCeltsTrainings]
+    # Considering what the getParticipationStatusForTrainings returns, 
+    # program trainings are anything other than all Volunteer or all CELTS trainings.  
+
+    allVolunteerAttendance = any([event[1] for event in allVolunteerTrainings]) 
+    allCeltsAttendance = any([event[1] for event in allCeltsTrainings])
+    programTrainingAttendance = any([event[1] for event in programTrainings])   
+
+    # The conditions below can be false only if the event requires a training, 
+    # but the user have not attended any. 
+    attendedTrainings = all([
+        bool(event.requiresAllVolunteerTraining) <= allVolunteerAttendance,
+        bool(event.requiresAllCeltsTraining) <= allCeltsAttendance,
+        bool(event.requiresProgramTraining) <= programTrainingAttendance
+        ])
+
+    return attendedTrainings
