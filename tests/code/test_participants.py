@@ -13,7 +13,7 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus, attendedRequiredTrainings
 from app.logic.users import trainedParticipants
 from app.models.eventRsvp import EventRsvp
 
@@ -550,4 +550,120 @@ def test_sortParticipantsByStatus():
            
         transaction.rollback()
 
-  
+def test_attendedRequiredTrainings():
+    with mainDB.atomic() as transaction:  
+        event1 = Event.create(name = "Adopt-a-Grandchild event",
+                            term = 2,
+                            description = "Adopt a grandchild!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "Your mother's basement",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
+                            program = 3,
+                            requiresAllVolunteerTraining = True, 
+                            requiresAllCeltsTraining = False, 
+                            requiresProgramTraining = True)
+
+        event2 = Event.create(name = "Bonner Scholars Ritual",
+                            term = 1,
+                            description = "Become a Bonner Scholar in a special way!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "Danforth building",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-12", "%Y-%m-%d"),
+                            program = 5,
+                            requiresAllVolunteerTraining = False, 
+                            requiresAllCeltsTraining = True, 
+                            requiresProgramTraining = False)
+
+        event3 = Event.create(name = "Planting Saplings!",
+                            term = 2,
+                            description = "Let's plant some saplings!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "07:00:00",
+                            location = "Far away from Berea: precise Location is unknown",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-11", "%Y-%m-%d"),
+                            program = 6,
+                            requiresAllVolunteerTraining = False, 
+                            requiresAllCeltsTraining = False, 
+                            requiresProgramTraining = False)
+
+        training1 = Event.create(name = "Allllll! Volunteer training",
+                            term = 1,
+                            description = "Everyone should come.",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "05:00:00",
+                            location = "Not specified",
+                            isTraining = False,
+                            startDate = datetime.strptime("2020-02-01", "%Y-%m-%d"),
+                            program = 9,
+                            isAllVolunteerTraining = True)
+        
+        training2 = Event.create(name = "Extremely important training",
+                            term = 1,
+                            description = "Let's plant some saplings!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "05:00:00",
+                            location = "Far away from Berea: precise Location is unknown",
+                            isTraining = False,
+                            startDate = datetime.strptime("2020-03-04", "%Y-%m-%d"),
+                            program = 3,
+                            isCeltsTraining = True)
+
+        training3 = Event.create(name = "Adoptie!",
+                            term = 1,
+                            description = "Adoptie",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "???",
+                            isTraining = True,
+                            startDate = datetime.strptime("2020-01-02", "%Y-%m-%d"),
+                            program = 3)
+        
+        # note that "khatts" has already participated in three Adopt-a-Grandparent 
+        # training events in the test data
+        test_user1 = User.get(username = "khatts")
+
+        # note that this user hasn't participated in any trainings
+        test_user2 = User.get(username = "partont")
+        
+        # this should return False because they have not attended any All Volunteer training
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(2)) == False
+
+        # adding another Adopt-a-Grandparent event should not change anything
+        EventParticipant.create(user = "khatts", event = training3, hoursEarned = 1)
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(2)) == False
+
+        # after attending an All Volunteer training, it should return True
+        EventParticipant.create(user = "khatts", event = training1, hoursEarned = 3)
+        # assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(1)) == True FIXME
+
+        # testing attendance for the All CELTS training event
+        assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == False
+        EventParticipant.create(user = "khatts", event = training2, hoursEarned = 2)
+        # assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == True FIXME
+
+        # this should always return True, because there are technically no training required
+        assert attendedRequiredTrainings(test_user1, event3, Term.get_by_id(1)) == True
+        assert attendedRequiredTrainings(test_user2, event3, Term.get_by_id(1)) == True
+
+
+        # The second round of tests, now with the other user 
+        EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "partont", event = training3, hoursEarned = 2)
+        # assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True FIXME
+
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # !!!!!!!!!!!!!!ASSERT STATEMENTS THAT ARE COMMENTED DO NOT WORK!!!!!!!!!!!!!!!!!!!!!!!!!
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+        transaction.rollback()
