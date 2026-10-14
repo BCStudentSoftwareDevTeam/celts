@@ -639,12 +639,12 @@ def test_attendedRequiredTrainings():
 
         # after attending an All Volunteer training, it should return True
         EventParticipant.create(user = "khatts", event = training1, hoursEarned = 3)
-        # assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(1)) == True FIXME
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(1)) == True #FIXME
 
         # testing attendance for the All CELTS training event
         assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == False
         EventParticipant.create(user = "khatts", event = training2, hoursEarned = 2)
-        # assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == True FIXME
+        assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == True #FIXME
 
         # this should always return True, because there are technically no training required
         assert attendedRequiredTrainings(test_user1, event3, Term.get_by_id(1)) == True
@@ -659,7 +659,7 @@ def test_attendedRequiredTrainings():
         assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
 
         EventParticipant.create(user = "partont", event = training3, hoursEarned = 2)
-        # assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True FIXME
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True #FIXME
 
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # !!!!!!!!!!!!!!ASSERT STATEMENTS THAT ARE COMMENTED DO NOT WORK!!!!!!!!!!!!!!!!!!!!!!!!!

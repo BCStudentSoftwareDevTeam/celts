@@ -313,28 +313,28 @@ def attendedRequiredTrainings(participant, event, term):
     Checks whether a student has attended all required trainings for an event. 
     """
     
-    participationStatus = getParticipationStatusForTrainings(event, [participant], term, False)
-    
+    participationStatus = getParticipationStatusForTrainings(event.program, [participant], term, False)
+
     # Converting a participationStatus dictionary into a list turns it into a 3-layered list. 
     # Since there is only one user, we will remove one of the list's layers.
-    trainingEvents = [event for users in list(participationStatus.values()) for event in users]
+    trainings = [training for users in list(participationStatus.values()) for training in users]
 
-    allVolunteerTrainings = [event for event in trainingEvents if event[0].isAllVolunteerTraining]
-    allCeltsTrainings = [event for event in trainingEvents if event[0].isCeltsTraining]
-    programTrainings = [event for event in trainingEvents if event not in allVolunteerTrainings + allCeltsTrainings]
-    # Considering what the getParticipationStatusForTrainings returns, 
-    # program trainings are anything other than all Volunteer or all CELTS trainings.  
+    # Separating the trainings list into three categories based on the type of training
+    allVolunteerTrainings = [training for training in trainings if training[0].isAllVolunteerTraining]
+    allCeltsTrainings = [training for training in trainings if training[0].isCeltsTraining]
+    programTrainings = [training for training in trainings if (training[0].isTraining and training[0].program == event.program)]
 
-    allVolunteerAttendance = any([event[1] for event in allVolunteerTrainings]) 
-    allCeltsAttendance = any([event[1] for event in allCeltsTrainings])
-    programTrainingAttendance = any([event[1] for event in programTrainings])   
+    # Checking whether the participant has attended AT LEAST ONE event from each training category
+    allVolunteerAttendance = any([training[1] for training in allVolunteerTrainings]) 
+    allCeltsAttendance = any([training[1] for training in allCeltsTrainings])
+    programTrainingAttendance = any([training[1] for training in programTrainings])
 
     # The conditions below can be false only if the event requires a training, 
     # but the user have not attended any. 
     attendedTrainings = all([
-        bool(event.requiresAllVolunteerTraining) <= allVolunteerAttendance,
-        bool(event.requiresAllCeltsTraining) <= allCeltsAttendance,
-        bool(event.requiresProgramTraining) <= programTrainingAttendance
+        not event.requiresAllVolunteerTraining or allVolunteerAttendance,
+        not event.requiresAllCeltsTraining or allCeltsAttendance,
+        not event.requiresProgramTraining or programTrainingAttendance
         ])
 
     return attendedTrainings
