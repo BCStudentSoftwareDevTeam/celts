@@ -150,8 +150,6 @@ function submitData() {
         },
         success: function(resultID) {
 
-            console.log(resultID.attendedTrainings);
-
             if (resultID.attendedTrainings === false) {
                 msgFlash(`${resultID.user} has not attended some of the required trainings!`, "warning")
             }
