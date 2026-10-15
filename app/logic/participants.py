@@ -330,7 +330,7 @@ def attendedRequiredTrainings(participant, event, term):
     programTrainingAttendance = any([training[1] for training in programTrainings])
 
     # The conditions below can be false only if the event requires a training, 
-    # but the user have not attended any. 
+    # but the user has not attended any. 
     attendedTrainings = all([
         not event.requiresAllVolunteerTraining or allVolunteerAttendance,
         not event.requiresAllCeltsTraining or allCeltsAttendance,
