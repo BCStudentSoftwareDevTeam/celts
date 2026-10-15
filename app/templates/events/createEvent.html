@@ -324,11 +324,11 @@
               </div>
           {% else %}
               <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="requiresAllVolunteerTraining" name="requiresAllVolunteerTraining" {{ "checked" if eventData.isService or eventData["requiresAllVolunteerTraining"] }}>
+                  <input class="form-check-input" type="checkbox" value="{{ eventData.isAllVolunteerTraining }}" id="requiresAllVolunteerTraining" name="requiresAllVolunteerTraining" {{ "checked" if eventData["requiresAllVolunteerTraining"] }}>
                   <label class="form-check-label" for="noTrainingRequired"> All Volunteer Training </label>
               </div>
               <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="{{ eventData['program'] }}" id="requiresProgramTraining" name="requiresProgramTraining" {{ "checked" if eventData.isService or eventData["requiresProgramTraining"] }}>
+                  <input class="form-check-input" type="checkbox" value="{{ eventData['program'] }}" id="requiresProgramTraining" name="requiresProgramTraining" {{ "checked" if eventData["requiresProgramTraining"] }}>
                   <label class="form-check-label" for="noTrainingRequired"> {{eventData['program'].programName}} Training </label>
               </div>
           {% endif %}
