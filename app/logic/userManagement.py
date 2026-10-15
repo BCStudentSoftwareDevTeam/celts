@@ -7,7 +7,7 @@ import xlsxwriter
 from app import app
 from app.logic.participants import getParticipantsForProgramForAY, getTrainingsForInterestedParticipants
 from app.logic.users import getProgramInterest
-from app.logic.volunteerSpreadsheet import makeDataXls
+from app.logic.volunteerSpreadsheet import makeRosterDataXls
 from app.models import user
 from app.models.user import User
 from app.models.term import Term
