@@ -198,9 +198,9 @@ def createSpreadsheetForRosters(academicYear, program):
         raise DoesNotExist
     filepath = f'''{app.config['files']['base_path']}/{program.programName.replace(" ", "_")}_rosters_{academicYear}.xlsx'''
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
-    makeDataXls("Interested Volunteers", generateSheetData(program, academicYear, "Interested Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who have indicated interest in {program.programName}")
-    makeDataXls(f"Engaged Volunteers ({academicYear})", generateSheetData(program, academicYear, "Engaged Volunteers"), workbook, sheetDesc=f"This worksheet shows all students who have participated in a service hours earning event in {program.programName}")
-    makeDataXls(f"Last Year Volunteers", generateSheetData(program, academicYear, "Last Year Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who participated in a service hours earning event in {program.programName} during the previous academic year")
+    makeRosterDataXls("Interested Volunteers", generateSheetData(program, academicYear, "Interested Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who have indicated interest in {program.programName}")
+    makeRosterDataXls(f"Engaged Volunteers ({academicYear})", generateSheetData(program, academicYear, "Engaged Volunteers"), workbook, sheetDesc=f"This worksheet shows all students who have participated in a service hours earning event in {program.programName}")
+    makeRosterDataXls(f"Last Year Volunteers", generateSheetData(program, academicYear, "Last Year Volunteers"), workbook, sheetDesc=f"This worksheet shows all current students who participated in a service hours earning event in {program.programName} during the previous academic year")
  
     workbook.close()
     return filepath

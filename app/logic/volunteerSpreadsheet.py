@@ -305,6 +305,37 @@ def laborAttendanceByTerm(term):
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
+    (columnTitles, dataTuples) = sheetData
+    worksheet = workbook.add_worksheet(sheetName)
+    bold = workbook.add_format({'bold': True})
+
+    worksheet.write_string(0, 0, sheetName, bold)
+    if sheetDesc:
+        worksheet.write_string(1, 0, sheetDesc)
+
+    for column, title in enumerate(columnTitles):
+        worksheet.write(3, column, title, bold)
+
+    for row, rowData in enumerate(dataTuples):
+        for column, value in enumerate(rowData):
+            # dates and times should use their text representation
+            if isinstance(value, (datetime, date, time)):
+                value = str(value)
+
+            worksheet.write(row + 4, column, value)
+
+    # set the width to the size of the text, with a maximum of 50 characters
+    for column, title in enumerate(columnTitles):
+        # put all of the data in each column into a list
+        columnData = [title] + [rowData[column] for rowData in dataTuples]
+
+        # find the largest item in the list (and cut it off at 50)
+        setColumnWidth = min(max(len(str(x)) for x in columnData),50)
+
+        worksheet.set_column(column, column, setColumnWidth + 3)
+
+def makeRosterDataXls(sheetName, sheetData, workbook, sheetDesc=None):
+    # assumes the length of the column titles matches the length of the data
     (columnTitles, dataRows) = sheetData
     worksheet = workbook.add_worksheet(sheetName)
     bold = workbook.add_format({'bold': True})
