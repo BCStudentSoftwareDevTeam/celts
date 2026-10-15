@@ -373,7 +373,7 @@ def eventDisplay(eventId):
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
-        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term, includeFutureEvents = False)
+        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], eventData['term'], includeFutureEvents = False)
         
         allVolunteerTrainingAttended = False
         allCeltsTrainingAttended = False
@@ -390,7 +390,7 @@ def eventDisplay(eventId):
                     allVolunteerTrainingAttended = True
                 elif trainingEvent.isCeltsTraining: 
                     allCeltsTrainingAttended = True
-                elif (trainingEvent.isTraining and trainingEvent.program == eventData['program']):
+                elif (trainingEvent.isTraining and trainingEvent.program == eventData['program'] and trainingEvent.term == eventData['term']):
                     programTrainingAttended = True
 
         return render_template("events/eventView.html",
