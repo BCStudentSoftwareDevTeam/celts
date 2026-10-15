@@ -322,7 +322,7 @@ def attendedRequiredTrainings(participant, event, term):
     # Separating the trainings list into three categories based on the type of training
     allVolunteerTrainings = [training for training in trainings if training[0].isAllVolunteerTraining]
     allCeltsTrainings = [training for training in trainings if training[0].isCeltsTraining]
-    programTrainings = [training for training in trainings if (training[0].isTraining and training[0].program == event.program)]
+    programTrainings = [training for training in trainings if (training[0].isTraining and training[0].program == event.program and training[0].term == term)]
 
     # Checking whether the participant has attended AT LEAST ONE event from each training category
     allVolunteerAttendance = any([training[1] for training in allVolunteerTrainings]) 
