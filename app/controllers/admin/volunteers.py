@@ -114,10 +114,10 @@ def volunteerDetailsPage(eventID):
     
     
     attendedUser = list(set([obj for obj in eventParticipantData if not obj.rsvpWaitlist]))
-    attendedUserIds = {obj.user.id for obj in attendedUser}
-    waitlistUser = [obj for obj in eventRsvpData if obj.rsvpWaitlist and obj.user.id not in attendedUserIds]
-    rsvpUser = [obj for obj in eventRsvpData if not obj.rsvpWaitlist and obj.user.id not in attendedUserIds]
-    
+    attendedUsernames = {obj.user.username for obj in attendedUser}
+    waitlistUser = [obj for obj in eventRsvpData if obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
+    rsvpUser = [obj for obj in eventRsvpData if not obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
+
     return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
                             attendedUser = attendedUser,
