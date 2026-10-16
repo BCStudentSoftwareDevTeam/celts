@@ -285,9 +285,10 @@ def getParticipantsForProgramForAY(program, academicYear):
                                    Term.academicYear == academicYear, 
                                    User.hasGraduated == False, 
                                    EventParticipant.hoursEarned > 0,
+                                   Event.isTraining == False,
                                    # Only include currently enrolled undergraduate students.
                                    # This prevents alumni and past participants from appearing in the older reports.
-                                   User.rawClassLevel.in_(["Freshman", "Sophomore", "Junior", "Senior"]))
+                                   User.rawClassLevel.in_(["Freshman", "Sophomore", "Junior", "Senior", "Graduating"]))
                             .distinct()
                             )
     return participants
