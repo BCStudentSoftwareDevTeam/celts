@@ -112,8 +112,7 @@ def volunteerDetailsPage(eventID):
                                                 .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventParticipant.user))
                                                 .where(EventParticipant.event==event))
     
-    
-    attendedUser = list(set([obj for obj in eventParticipantData if not obj.rsvpWaitlist]))
+    attendedUser = list(set(eventParticipantData))
     attendedUsernames = {obj.user.username for obj in attendedUser}
     waitlistUser = [obj for obj in eventRsvpData if obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
     rsvpUser = [obj for obj in eventRsvpData if not obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
