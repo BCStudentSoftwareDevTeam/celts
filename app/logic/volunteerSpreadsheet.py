@@ -1,6 +1,6 @@
 from os import major
 import xlsxwriter 
-from peewee import ModelSelect, fn, Case, JOIN, SQL, Select
+from peewee import ModelSelect, fn, Case, JOIN, SQL, Select, ModelCompoundSelectQuery
 from playhouse.shortcuts import model_to_dict
 from collections import defaultdict
 from datetime import date, datetime,time
@@ -21,7 +21,6 @@ from app.models.term import Term
 # be the way CELTS uses it.
 #
 ####################################################################################
-
 def getFallTerm(academicYear):
     return Term.get(Term.description % "Fall%", Term.academicYear == academicYear)
 
@@ -268,7 +267,7 @@ def laborAttendanceByTerm(term):
         (Event.isLaborOnly == True) &
         (Event.deletionDate.is_null()) &
         (Event.isCanceled == False))
-
+    print(validEvent, "leepr")
     CLTerm = Term.alias()
     laborMembers = (
         CeltsLabor
@@ -278,6 +277,7 @@ def laborAttendanceByTerm(term):
             (CeltsLabor.term == term) |
             ((CLTerm.academicYear == term.academicYear) & (CeltsLabor.isAcademicYear == True))
         ))
+    print(laborMembers, "leepeer")
 
     laborQuery = (
         CeltsLabor
@@ -289,6 +289,7 @@ def laborAttendanceByTerm(term):
         .where(CeltsLabor.user.in_(laborMembers))
         .group_by(CeltsLabor.user))
 
+    print(laborQuery, "leeprrrrr")
     nonLaborQuery = (
         EventParticipant
         .select(fullName, User.bnumber, email, meetingsAttended)
@@ -298,9 +299,10 @@ def laborAttendanceByTerm(term):
         .where(EventParticipant.user.not_in(laborMembers))
         .group_by(EventParticipant.user))
 
+    print(nonLaborQuery, "kokokoko")
     query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
     columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
-
+    print(query, "linglong")
     return (columns, query.tuples())
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
@@ -316,37 +318,26 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     for column, title in enumerate(columnTitles):
         worksheet.write(3, column, title, bold)
 
-    if type(dataRows) == list:
-        for row, rowData in enumerate(dataRows):
-            col_idx = 0
-            for value in rowData:
-                # dates and times should use their text representation
-                if isinstance(value, (datetime, date, time)):
-                    value = str(value)
+    for row, rowData in enumerate(dataRows):
+        for column, value in enumerate(rowData):
+            # dates and times should use their text representation
+            if isinstance(value, (datetime, date, time)):
+                value = str(value)
+            worksheet.write(row + 4, column, value)
 
-                worksheet.write(row + 4, col_idx, str(value))
-                col_idx += 1
+    for column, title in enumerate(columnTitles):
+        # put all of the data in each column into a list
+        columnData = [title] + [rowData[column] for rowData in dataRows]
+        # find the largest item in the list (and cut it off at 50)
+        setColumnWidth = min(max(len(str(x)) for x in columnData),50)
+        worksheet.set_column(column, column, setColumnWidth + 3)
 
-    elif type(dataRows) == dict:
-        idx = 0
-        # Each participant
-        for row, rowData in dataRows.items():
-            idx2 = 0
-            # All participant data
-            for key, value in dict(rowData).items():
-                if key == "userObj":
-                    # Data inside user object          
-                    for key, userObjVal in model_to_dict(rowData[key], only=(User.username, User.bnumber, User.email, User.phoneNumber, User.firstName, User.lastName, User.cpoNumber, User.major, User.rawClassLevel, User.dietRestriction, User.lastHandbookSignature)).items():
-                        worksheet.write(idx + 4, idx2, userObjVal)
-                        idx2 += 1
-                else:
-                    # participation data outside user object
-                    worksheet.write(idx + 4, idx2, str(value))
-                    idx2 += 1
 
-            idx += 1
 
 def createSpreadsheet(academicYear):
+    print("we are ghere j8uju")
+    count = 0
+
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
@@ -356,19 +347,21 @@ def createSpreadsheet(academicYear):
     makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
     makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
     makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
+    print("losnoche")
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event per term during {academicYear}.")
+    print("losnoche")
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
     makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
 
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
+    print("losnoche")
     makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
     makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    
+    print("losnoche")
     makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
     makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
-
     workbook.close()
 
     return filepath
