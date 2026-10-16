@@ -428,7 +428,7 @@ def getParticipatedEventsForUser(user):
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
-                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None, Event.isCeltsTraining == False)
+                                      Event.isAllVolunteerTraining == False, Event.deletionDate == None)
                                .order_by(Event.startDate, Event.name))
 
     allVolunteer = (Event.select(Event, "", Value("Volunteer").alias("participatedType"), Value(0).alias("hoursEarned"))
