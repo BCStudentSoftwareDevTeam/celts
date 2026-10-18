@@ -629,6 +629,7 @@ def test_attendedRequiredTrainings():
 
         # note that this user hasn't participated in any trainings
         test_user2 = User.get(username = "partont")
+        test_user3 = User.get(username = "glek")
         
         # this should return False because they have not attended any All Volunteer training
         assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(2)) == False
@@ -658,7 +659,7 @@ def test_attendedRequiredTrainings():
         EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
         assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
 
-        EventParticipant.create(user = "partont", event = training3, hoursEarned = 2)
-        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True
+        EventParticipant.create(user = "glek", event = training3, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == True
 
         transaction.rollback()
