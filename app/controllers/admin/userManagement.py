@@ -147,22 +147,39 @@ def userManagement():
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
-    newTerm = changeCurrentTerm(int(request.form.get('id')))
-    flash(f"Current term successfully changed to {newTerm.description}", "success")
 
-    if newTerm.academicYear != g.current_term.academicYear:
-        with mainDB.atomic(): # ensures that the data is not wiped out without a succesful update
+    # Save the old academic year before changing the term
+    oldAcademicYear = g.current_term.academicYear
+
+    # Change to the new term
+    newTerm = changeCurrentTerm(int(request.form.get('id')))
+
+    flash(
+        f"Current term successfully changed to {newTerm.description}",
+        "success"
+    )
+
+    # Only reset interests when the academic year changes
+    if newTerm.academicYear != oldAcademicYear:
+
+        with mainDB.atomic():
+
             Interest.delete().execute()
 
             programs = Program.select()
-            for program in programs: 
-                engagedUsers = getParticipantsForProgramForAY(program, g.current_term.academicYear)
-                engagedUsersList = [i.username for i in engagedUsers]
-                for user in engagedUsersList: 
-                    addUserInterest(program, user)
 
-            flash(f"The list of interested students was succesfully updated", "success")
-    
+            for program in programs:
+
+                engagedUsers = getParticipantsForProgramForAY(
+                    program, oldAcademicYear
+                )
+                for user in engagedUsers:
+                    addUserInterest(program, user.username)
+
+        flash(
+            "The list of interested students was successfully updated",
+            "success"
+        )
 
     return ""
 
