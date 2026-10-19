@@ -32,7 +32,7 @@ def searchUsers(query, category=None):
     elif category == "celtsLinkAdmin":
         userWhere = (User.isFaculty | User.isStaff | User.isCeltsStudentStaff | User.isCeltsOperationsTeam)
     elif category == "currentStudents":
-        userWhere = (User.rawClassLevel.in_(["Freshman", "Sophomore", "Junior", "Senior"]))
+        userWhere = (User.rawClassLevel.in_(["Freshman", "Sophomore", "Junior", "Senior", "Graduating"]))
     elif category == "all":
         userWhere = (True)
     else:
