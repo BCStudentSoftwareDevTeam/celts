@@ -169,12 +169,13 @@
             eventData["requiresProgramTraining"]%}
 
             <h3>Required Trainings:</h3>
+            <small><i>(Check if you have attended all the trainings required for this event)</i></small>
+            <br></br>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <td>Training</td>
                         <td class="text-center">Attended?</td>
-                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,14 +184,9 @@
                         <td>All Volunteer Training</td>
                         <td class="text-center">
                             {% if allVolunteerTrainingAttended %}
-                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i> Yes
                             {% else %}
-                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            {% if not allVolunteerTrainingAttended %}
-                            <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i> No
                             {% endif %}
                         </td>
                     </tr>
@@ -201,14 +197,9 @@
                         <td>All CELTS Training</td>
                         <td class="text-center">
                             {% if allCeltsTrainingAttended %}
-                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i> Yes
                             {% else %}
-                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            {% if not allCeltsTrainingAttended %}
-                            <a href="/eventsList/{{g.current_term}}/celtsLabor">Available Trainings</a>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i> No
                             {% endif %}
                         </td>
                     </tr>
@@ -219,20 +210,24 @@
                         <td>{{ eventData['program'].programName }} Training</td>
                         <td class="text-center">
                             {% if programTrainingAttended %}
-                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i>
+                            <i class="bi bi-calendar2-check text-success fw-bold" aria-label="Attended"></i> Yes
                             {% else %}
-                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            {% if not programTrainingAttended %}
-                            <a href="/eventsList/{{g.current_term}}/trainingEvents">Available Trainings</a>
+                            <i class="bi bi-calendar2-x text-danger fw-bold" aria-label="Not Attended"></i> No
                             {% endif %}
                         </td>
                     </tr>
                     {% endif %}
                 </tbody>
             </table>
+            {% endif %}
+            
+            {% if (eventData["requiresAllVolunteerTraining"] and not allVolunteerTrainingAttended) or (eventData["requiresProgramTraining"] and not programTrainingAttended) %}
+            <p>See all the <a  href="/eventsList/{{g.current_term}}/trainingEvents">Availaible Trainings</a> to fulfill the requirements.</p>
+            {% endif %}
+
+            <!-- Custom message for a Bonner Scholars event that requires an All CELTS training-->
+            {% if eventData["requiresAllCeltsTraining"] and not allCeltsTrainingAttended %}
+            <p>Attend one of <a  href="/eventsList/{{g.current_term}}/celtsLabor">all CELTS trainings</a> to fulfill the requirement.</p>
             {% endif %}
 
 
