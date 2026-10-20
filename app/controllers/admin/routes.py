@@ -373,25 +373,24 @@ def eventDisplay(eventId):
 
         currentEventRsvpAmount = getEventRsvpCount(event.id)
 
-        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], eventData['term'], includeFutureEvents = False)
-        
+        # tracking if at least one event from the following training categories was attended
         allVolunteerTrainingAttended = False
         allCeltsTrainingAttended = False
         programTrainingAttended = False
-        
+
         # checking the attendance of the trainings above
-        for user, trainings in userParticipatedTrainingEvents.items():
+        participationStatus = getParticipationStatusForTrainings(eventData['program'], [g.current_user], eventData['term'], includeFutureEvents = False)
+        userAttendance = participationStatus.get(g.current_user, [])
+        for trainingEvent, attended in userAttendance:
+            if not attended: 
+                continue 
             
-            for trainingEvent, attended in trainings:
-                if not attended: 
-                    continue 
-                
-                if trainingEvent.isAllVolunteerTraining: 
-                    allVolunteerTrainingAttended = True
-                elif trainingEvent.isCeltsTraining: 
-                    allCeltsTrainingAttended = True
-                elif (trainingEvent.isTraining and trainingEvent.program == eventData['program'] and trainingEvent.term == eventData['term']):
-                    programTrainingAttended = True
+            if trainingEvent.isAllVolunteerTraining: 
+                allVolunteerTrainingAttended = True
+            elif trainingEvent.isCeltsTraining: 
+                allCeltsTrainingAttended = True
+            elif (trainingEvent.isTraining and trainingEvent.program == eventData['program'] and trainingEvent.term == eventData['term']):
+                programTrainingAttended = True
 
         return render_template("events/eventView.html",
                                 eventData=eventData,
