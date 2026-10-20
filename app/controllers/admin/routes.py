@@ -53,6 +53,7 @@ def reports():
 @admin_bp.route('/admin/reports/download', methods=['POST'])
 def downloadFile():
     academicYear = request.form.get('academicYear')
+    print("yeeehaww", academicYear)
     filepath = os.path.abspath(createSpreadsheet(academicYear))
     return send_file(filepath, as_attachment=True)
 

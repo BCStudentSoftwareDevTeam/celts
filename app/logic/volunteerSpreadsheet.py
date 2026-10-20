@@ -45,19 +45,29 @@ def getBaseQuery(academicYear):
 
 def getUniqueVolunteers(academicYear):
     base = getBaseQuery(academicYear)
+    fallYear, springYear = academicYear.split("-")
+    columns = ["Full Name", "Email", "B-Number", f"Fall {fallYear} Program Participation", f"Spring {springYear} Program Participation"]
 
-    columns = ["Full Name", "Email", "B-Number", "Term"]
-    subquery = (base.select(fn.DISTINCT(EventParticipant.user_id).alias('user_id'),
+    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Event.name),)))).alias("fallEvents")
+    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Event.name),)))).alias("springEvents")
+    subquery = (base.select(EventParticipant.user_id.alias("user_id"),
                             fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
                             User.bnumber,
-                            Term.description.alias("term"))
-                    .where(Event.isService == True)).alias('subq')
-
+                            fallEvents,
+                            springEvents)
+                    .where(Event.isService == True, Term.description.in_(["Fall" + fallYear, "Spring" + springYear]))
+                    .group_by(
+                        EventParticipant.user_id,
+                        User.firstName,
+                        User.lastName,
+                        User.bnumber
+                    )
+                    .order_by()).alias('subq')
     query = Select().from_(subquery).select(subquery.c.fullname, 
                                             fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
                                             subquery.c.bnumber,
-                                            subquery.c.term)
-
+                                            subquery.c.fallEvents,
+                                            subquery.c.springEvents)
     return (columns, query.tuples().execute(mainDB))
 
 
