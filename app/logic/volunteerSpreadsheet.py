@@ -277,7 +277,6 @@ def laborAttendanceByTerm(term):
         (Event.isLaborOnly == True) &
         (Event.deletionDate.is_null()) &
         (Event.isCanceled == False))
-    print(validEvent, "leepr")
     CLTerm = Term.alias()
     laborMembers = (
         CeltsLabor
@@ -287,7 +286,6 @@ def laborAttendanceByTerm(term):
             (CeltsLabor.term == term) |
             ((CLTerm.academicYear == term.academicYear) & (CeltsLabor.isAcademicYear == True))
         ))
-    print(laborMembers, "leepeer")
 
     laborQuery = (
         CeltsLabor
@@ -299,7 +297,6 @@ def laborAttendanceByTerm(term):
         .where(CeltsLabor.user.in_(laborMembers))
         .group_by(CeltsLabor.user))
 
-    print(laborQuery, "leeprrrrr")
     nonLaborQuery = (
         EventParticipant
         .select(fullName, User.bnumber, email, meetingsAttended)
@@ -309,16 +306,13 @@ def laborAttendanceByTerm(term):
         .where(EventParticipant.user.not_in(laborMembers))
         .group_by(EventParticipant.user))
 
-    print(nonLaborQuery, "kokokoko")
     query = laborQuery.union(nonLaborQuery).order_by(SQL('fullName'))
     columns = ("Full Name", "B-Number", "Email", "Meetings Attended")
-    print(query, "linglong")
     return (columns, query.tuples())
 
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataRows) = sheetData
-    print(columnTitles, "nyanya", dataRows)
     worksheet = workbook.add_worksheet(sheetName)
     bold = workbook.add_format({'bold': True})
 
@@ -330,7 +324,6 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
         worksheet.write(3, column, title, bold)
 
     for row, rowData in enumerate(dataRows):
-        print(rowData, "hahaha")
         for column, value in enumerate(rowData):
             # dates and times should use their text representation
             if isinstance(value, (datetime, date, time)):
@@ -347,33 +340,28 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
 
 
 def createSpreadsheet(academicYear):
-    print("we are ghere j8uju")
     count = 0
 
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    # makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
-    # makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
-    # makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
-    # makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
-    # makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
-    # makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
-    # print("losnoche")
+    makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
+    makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
+    makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
+    makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
+    makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
+    makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event per term during {academicYear}.")
-    print("losnoche")
-    # makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
-    # makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-    # makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
+    makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
+    makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
+    makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
 
-    # fallTerm = getFallTerm(academicYear)
-    # springTerm = getSpringTerm(academicYear)
-    # print("losnoche")
-    # makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    # makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    # print("losnoche")
-    # makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
-    # makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
+    fallTerm = getFallTerm(academicYear)
+    springTerm = getSpringTerm(academicYear)
+    makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
+    makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
     workbook.close()
 
     return filepath
