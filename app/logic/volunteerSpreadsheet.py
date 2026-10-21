@@ -63,11 +63,7 @@ def getUniqueVolunteers(academicYear):
                         User.bnumber
                     )
                     .order_by()).alias('subq')
-    # query = Select().from_(subquery).select(subquery.c.fullname, 
-    #                                         fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
-    #                                         subquery.c.bnumber,
-    #                                         subquery.c.fallEvents,
-    #                                         subquery.c.springEvents) .execute(mainDB)
+
     return (columns, query.tuples())
 
 
