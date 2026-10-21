@@ -48,14 +48,14 @@ def getUniqueVolunteers(academicYear):
     fallYear, springYear = academicYear.split("-")
     columns = ["Full Name", "Email", "B-Number", f"Fall {fallYear} Program Participation", f"Spring {springYear} Program Participation"]
 
-    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Event.name),)))).alias("fallEvents")
-    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Event.name),)))).alias("springEvents")
-    subquery = (base.select(EventParticipant.user_id.alias("user_id"),
-                            fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
-                            User.bnumber,
-                            fallEvents,
-                            springEvents)
-                    .where(Event.isService == True, Term.description.in_(["Fall" + fallYear, "Spring" + springYear]))
+    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),)))).alias("fallEvents")
+    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),)))).alias("springEvents")
+    query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
+                        fn.CONCAT(User.username,'@berea.edu').alias("email"),
+                        User.bnumber,
+                        fallEvents,
+                        springEvents)
+                    .where(Event.isService == True, Term.description.in_(["Fall " + fallYear, "Spring " + springYear]))
                     .group_by(
                         EventParticipant.user_id,
                         User.firstName,
@@ -63,12 +63,12 @@ def getUniqueVolunteers(academicYear):
                         User.bnumber
                     )
                     .order_by()).alias('subq')
-    query = Select().from_(subquery).select(subquery.c.fullname, 
-                                            fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
-                                            subquery.c.bnumber,
-                                            subquery.c.fallEvents,
-                                            subquery.c.springEvents)
-    return (columns, query.tuples().execute(mainDB))
+    # query = Select().from_(subquery).select(subquery.c.fullname, 
+    #                                         fn.CONCAT(subquery.c.user_id,'@berea.edu'), 
+    #                                         subquery.c.bnumber,
+    #                                         subquery.c.fallEvents,
+    #                                         subquery.c.springEvents) .execute(mainDB)
+    return (columns, query.tuples())
 
 
 def volunteerProgramHours(academicYear):
@@ -318,6 +318,7 @@ def laborAttendanceByTerm(term):
 def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
     # assumes the length of the column titles matches the length of the data
     (columnTitles, dataRows) = sheetData
+    print(columnTitles, "nyanya", dataRows)
     worksheet = workbook.add_worksheet(sheetName)
     bold = workbook.add_format({'bold': True})
 
@@ -329,6 +330,7 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
         worksheet.write(3, column, title, bold)
 
     for row, rowData in enumerate(dataRows):
+        print(rowData, "hahaha")
         for column, value in enumerate(rowData):
             # dates and times should use their text representation
             if isinstance(value, (datetime, date, time)):
@@ -351,27 +353,27 @@ def createSpreadsheet(academicYear):
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
-    makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
-    makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
-    makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
-    makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
-    makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
-    print("losnoche")
+    # makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
+    # makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
+    # makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
+    # makeDataXls("Volunteers By Major", volunteerMajorAndClass(academicYear, User.major), workbook, sheetDesc="All volunteers who participated in service events, by major.")
+    # makeDataXls("Volunteers By Class Level", volunteerMajorAndClass(academicYear, User.rawClassLevel, classLevel=True), workbook, sheetDesc="All volunteers who participated in service events, by class level. Our source for this data does not seem to be particularly accurate.")
+    # makeDataXls("Repeat Participants", repeatParticipants(academicYear), workbook, sheetDesc="Students who participated in multiple events, whether earning service hours or not.")
+    # print("losnoche")
     makeDataXls("Unique Volunteers", getUniqueVolunteers(academicYear), workbook, sheetDesc=f"All students who participated in at least one service event per term during {academicYear}.")
     print("losnoche")
-    makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
-    makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
-    makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
+    # makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
+    # makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
+    # makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
 
-    fallTerm = getFallTerm(academicYear)
-    springTerm = getSpringTerm(academicYear)
-    print("losnoche")
-    makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
-    print("losnoche")
-    makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
-    makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
+    # fallTerm = getFallTerm(academicYear)
+    # springTerm = getSpringTerm(academicYear)
+    # print("losnoche")
+    # makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    # makeDataXls(f"Labor Attendance {springTerm.description}", laborAttendanceByTerm(springTerm), workbook, sheetDesc=f"Number of labor-only events attended in {springTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
+    # print("losnoche")
+    # makeDataXls(fallTerm.description, getAllTermData(fallTerm), workbook, sheetDesc= "All event participation for the term, excluding deleted or canceled events.")
+    # makeDataXls(springTerm.description, getAllTermData(springTerm), workbook, sheetDesc="All event participation for the term, excluding deleted or canceled events.")
     workbook.close()
 
     return filepath
