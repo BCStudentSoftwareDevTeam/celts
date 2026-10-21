@@ -336,7 +336,6 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
 
 
 def createSpreadsheet(academicYear):
-    count = 0
 
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
