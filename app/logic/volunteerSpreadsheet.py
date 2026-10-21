@@ -1,6 +1,6 @@
 from os import major
 import xlsxwriter 
-from peewee import ModelSelect, fn, Case, JOIN, SQL, Select, ModelCompoundSelectQuery
+from peewee import fn, Case, JOIN, SQL, Select
 from playhouse.shortcuts import model_to_dict
 from collections import defaultdict
 from datetime import date, datetime,time
