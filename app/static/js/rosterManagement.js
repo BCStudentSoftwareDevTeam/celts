@@ -88,3 +88,17 @@ $("#exportRoster").click(function() {
   })
 })
 
+$("#removeInterestedStudent").click(function () {
+    const username = $(this).data("username");
+    const noteid = $(this).data("noteid");
+
+    $.ajax({method: "POST", url: "/" + username + "/deleteNote", data: {  id: noteid  },
+        success: function () { msgFlash("Successfully removed interested student",  "success", 1300, true );
+            reload();
+        },
+
+        error: function (xhr) { console.error("Unable to remove student:", xhr.responseText  );
+          
+          }
+    });
+});
