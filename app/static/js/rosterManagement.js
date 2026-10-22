@@ -86,10 +86,8 @@ $("#exportRoster").click(function() {
     console.log(status, error);
   }
   })
-})
-
-$("#removeInterestedStudent").click(function () {
-    var username = $(this).data('username');
+  $("#removeInterestedStudent").click(function() {
+    var username = $(this).data('prospectiveVolunteer');
     var programID = $(this).data("programid");
 
     interestUrl = "/" + username + "/" + "removeInterest" + "/" + programID ;
@@ -97,7 +95,7 @@ $("#removeInterestedStudent").click(function () {
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the remove interest button
+          reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
       },
       error: function(request, status, error) {
         console.log(status,error);
@@ -105,3 +103,4 @@ $("#removeInterestedStudent").click(function () {
       }
     });
   });
+})
