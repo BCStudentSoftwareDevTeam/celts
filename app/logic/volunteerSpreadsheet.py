@@ -45,12 +45,13 @@ def getBaseQuery(academicYear):
 
 def getUniqueVolunteers(academicYear):
     base = getBaseQuery(academicYear)
-    fallYear, springYear = academicYear.split("-")
+    fallYear = str(getFallTerm(academicYear).year)
+    springYear = str(getSpringTerm(academicYear).year)
     columns = ["Full Name", "Email", "B-Number", f"Fall {fallYear} Program Participation", f"Spring {springYear} Program Participation"]
 
-    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),)))).alias("fallEvents")
+    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),))))
 
-    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),)))).alias("springEvents")
+    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),))))
     query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
                         fn.CONCAT(User.username,'@berea.edu').alias("email"),
                         User.bnumber,
@@ -195,7 +196,6 @@ def repeatParticipants(academicYear):
 def getRetentionRate(academicYear):
     fallParticipationDict = termParticipation(getFallTerm(academicYear))
     springParticipationDict = termParticipation(getSpringTerm(academicYear))
-    print("jojo", fallParticipationDict, springParticipationDict, academicYear)
     retentionList = []
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retentionRate in retentionRateDict.items():
