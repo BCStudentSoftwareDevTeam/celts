@@ -241,7 +241,7 @@ users = [
     },
     {
         "username" : "makindeo",
-        "bnumber" : "B",
+        "bnumber" : "B00791326",
         "email": "makindeo@berea.edu",
         "phoneNumber": "(555)555-5555",
         "firstName" : "Oluwagbayi",
