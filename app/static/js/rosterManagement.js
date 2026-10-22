@@ -89,16 +89,19 @@ $("#exportRoster").click(function() {
 })
 
 $("#removeInterestedStudent").click(function () {
-    const username = $(this).data("username");
-    const noteid = $(this).data("noteid");
+    var username = $(this).data('username');
+    var programID = $(this).data("programid");
 
-    $.ajax({method: "POST", url: "/" + username + "/deleteNote", data: {  id: noteid  },
-        success: function () { msgFlash("Successfully removed interested student",  "success", 1300, true );
-            reload();
-        },
-
-        error: function (xhr) { console.error("Unable to remove student:", xhr.responseText  );
-          
-          }
+    interestUrl = "/" + username + "/" + "removeInterest" + "/" + programID ;
+    $.ajax({
+      method: "POST",
+      url: interestUrl,
+      success: function(response) {
+          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the remove interest button
+      },
+      error: function(request, status, error) {
+        console.log(status,error);
+        location.reload();
+      }
     });
-});
+  });
