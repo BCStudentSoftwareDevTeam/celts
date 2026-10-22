@@ -49,6 +49,7 @@ def getUniqueVolunteers(academicYear):
     columns = ["Full Name", "Email", "B-Number", f"Fall {fallYear} Program Participation", f"Spring {springYear} Program Participation"]
 
     fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),)))).alias("fallEvents")
+
     springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),)))).alias("springEvents")
     query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
                         fn.CONCAT(User.username,'@berea.edu').alias("email"),
@@ -63,7 +64,6 @@ def getUniqueVolunteers(academicYear):
                         User.bnumber
                     )
                     .order_by()).alias('subq')
-
     return (columns, query.tuples())
 
 
@@ -195,7 +195,7 @@ def repeatParticipants(academicYear):
 def getRetentionRate(academicYear):
     fallParticipationDict = termParticipation(getFallTerm(academicYear))
     springParticipationDict = termParticipation(getSpringTerm(academicYear))
-
+    print("jojo", fallParticipationDict, springParticipationDict, academicYear)
     retentionList = []
     retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retentionRate in retentionRateDict.items():
@@ -338,7 +338,7 @@ def makeDataXls(sheetName, sheetData, workbook, sheetDesc=None):
 def createSpreadsheet(academicYear):
     filepath = f"{app.config['files']['base_path']}/volunteer_data_{academicYear}.xlsx"
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
-
+    
     makeDataXls("Total Hours", totalHours(academicYear), workbook, sheetDesc=f"All participation hours for {academicYear}.")
     makeDataXls("Total Hours By Program", totalHoursByProgram(academicYear), workbook, sheetDesc=f"All participation hours by program for {academicYear}.")
     makeDataXls("Program Volunteers", volunteerProgramHours(academicYear), workbook, sheetDesc="Total program service hours for each volunteer.")
@@ -349,7 +349,7 @@ def createSpreadsheet(academicYear):
     makeDataXls("Only All Volunteer Training", onlyCompletedAllVolunteer(academicYear), workbook, sheetDesc="Students who participated in an All Volunteer Training, but did not participate in any service events.")
     makeDataXls("Retention Rate By Semester", getRetentionRate(academicYear), workbook, sheetDesc="The percentage of students who participated in service events in the fall semester who also participated in a service event in the spring semester. Does not currently account for fall graduations.")
     makeDataXls("Graduating Seniors", graduatingSeniorsVolunteerHours(academicYear), workbook, sheetDesc="Graduating seniors who have earned any number of service hours for at least 4 unique semesters.")
-
+    
     fallTerm = getFallTerm(academicYear)
     springTerm = getSpringTerm(academicYear)
     makeDataXls(f"Labor Attendance {fallTerm.description}", laborAttendanceByTerm(fallTerm), workbook,sheetDesc=f"Number of labor-only events attended in {fallTerm.description} for each labor student and non-labor attendees, including zero attendance (for labor students).")
