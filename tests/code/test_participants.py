@@ -629,6 +629,9 @@ def test_attendedRequiredTrainings():
 
         # note that this user hasn't participated in any trainings
         test_user2 = User.get(username = "partont")
+
+        # note that this user has already participated in one Adopt-a-Grandparent 
+        # training event in the test data
         test_user3 = User.get(username = "glek")
         
         # this should return False because they have not attended any All Volunteer training
@@ -652,14 +655,17 @@ def test_attendedRequiredTrainings():
         assert attendedRequiredTrainings(test_user2, event3, Term.get_by_id(1)) == True
 
 
-        # The second round of tests, now with the other user 
+        # The second round of tests, now with the second user 
         EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
         assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
 
         EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
         assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
 
+
+        # The third round of tests, now with the third user
         EventParticipant.create(user = "glek", event = training3, hoursEarned = 2)
-        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == True
+        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == False
+        # This shows that adding another program training does not fulfill the requirement for All Volunteer trainings
 
         transaction.rollback()
