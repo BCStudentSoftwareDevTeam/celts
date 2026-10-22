@@ -662,10 +662,27 @@ def test_attendedRequiredTrainings():
         EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
         assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
 
+        EventParticipant.create(user = "partont", event = training3, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True
+
 
         # The third round of tests, now with the third user
         EventParticipant.create(user = "glek", event = training3, hoursEarned = 2)
         assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == False
-        # This shows that adding another program training does not fulfill the requirement for All Volunteer trainings
+        # This shows that adding another program training does not automatically fulfill 
+        # the requirement for All Volunteer trainings (the user still must attend 
+        # at least one All Volunteer training). 
+
+        EventParticipant.create(user = "glek", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == True
+        # After attending one All Volunteer training, the line above must be True.
+
+        # Attending all Volunteer or program-specific trainings 
+        # should not count for all CELTS trainings.
+        assert attendedRequiredTrainings(test_user3, event2, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "glek", event = training2, hoursEarned = 1)
+        assert attendedRequiredTrainings(test_user3, event2, Term.get_by_id(1)) == True
+
 
         transaction.rollback()
