@@ -1,6 +1,6 @@
 from os import major
 import xlsxwriter 
-from peewee import fn, Case, JOIN, SQL, Select
+from peewee import fn, Case, JOIN, SQL, Select, NodeList
 from playhouse.shortcuts import model_to_dict
 from collections import defaultdict
 from datetime import date, datetime,time
@@ -49,15 +49,24 @@ def getUniqueVolunteers(academicYear):
     springYear = str(getSpringTerm(academicYear).year)
     columns = ["Full Name", "Email", "B-Number", f"Fall {fallYear} Program Participation", f"Spring {springYear} Program Participation"]
 
-    fallEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),))))
-
-    springEvents = fn.GROUP_CONCAT(fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),))))
+    fallPrograms = fn.GROUP_CONCAT(NodeList([fn.DISTINCT(Case(None,((Term.description == f"Fall {fallYear}", Program.programName),))), SQL(" SEPARATOR ', '")]))
+    springPrograms = fn.GROUP_CONCAT(NodeList([fn.DISTINCT(Case(None,((Term.description == f"Spring {springYear}", Program.programName),))), SQL(" SEPARATOR ', '")]))
     query = (base.select(fn.CONCAT(User.firstName, ' ', User.lastName).alias("fullname"),
                         fn.CONCAT(User.username,'@berea.edu').alias("email"),
                         User.bnumber,
-                        fallEvents,
-                        springEvents)
-                    .where(Event.isService == True, Term.description.in_(["Fall " + fallYear, "Spring " + springYear]))
+                        fallPrograms,
+                        springPrograms)
+                    .where(
+                        (Event.isService == True) &
+                        (Event.isTraining == False) &
+                        (Event.isAllVolunteerTraining == False) &
+                        (Event.isCeltsTraining == False) &
+                        (Event.isLaborOnly == False) &
+                        (Term.description.in_([
+                            f"Fall {fallYear}",
+                            f"Spring {springYear}"
+                        ]))
+                    )
                     .group_by(
                         EventParticipant.user_id,
                         User.firstName,
