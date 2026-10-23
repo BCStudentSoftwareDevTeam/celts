@@ -88,3 +88,18 @@ $("#exportRoster").click(function() {
   })
 })
 
+$(".removeInterestedStudent").click(function() {
+    var username = $(this).data("student");
+    var programID = $(this).data("programId");
+    $.ajax({
+      method: "POST",
+      url: "/" + username + "/" + "removeInterest" + "/" + programID,
+      success: function(response) {
+          reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
+      },
+      error: function(request, status, error) {
+        console.log(status,error);
+        location.reload();
+      }
+    });
+});
