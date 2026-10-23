@@ -91,8 +91,6 @@ $("#exportRoster").click(function() {
 $(".removeInterestedStudent").click(function() {
     var username = $(this).data("student");
     var programID = $(this).data("programId");
-    console.log(username)
-    console.log(programID)
     $.ajax({
       method: "POST",
       url: "/" + username + "/" + "removeInterest" + "/" + programID,
