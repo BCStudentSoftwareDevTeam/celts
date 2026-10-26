@@ -830,12 +830,16 @@
           {% if not handbookAvailable %}
               <p>No {{ "CELTS Labor" if isLaborHandbook else "Volunteer" }} Handbook available for {{ g.current_term.description }} yet.</p>
           {% else %}
-          <p>
-            <a href="{{ url_for( 'static', filename=( 'files/laborHandbook/' + g.current_term.laborHandbook if isLaborHandbook else 'files/volunteerHandbook/' + g.current_term.volunteerHandbook ))}}" target="_blank">
-              {{ "CELTS Labor Handbook" if isLaborHandbook else "CELTS Student Handbook" }}
-            </a>
-          </p>
-          {% endif %}                 
+              {% if isLaborHandbook %}
+                <p>
+                  <a href="{{ url_for('static', filename='files/laborHandbook/' + (g.current_term.laborHandbook|default('', true))) }}" target="_blank">CELTS Labor Handbook</a>
+                </p>
+              {% else %}
+                <p>
+                  <a href="{{ url_for('static', filename='files/volunteerHandbook/' + (g.current_term.volunteerHandbook|default('', true))) }}" target="_blank">CELTS Student Handbook</a>
+                </p>
+              {% endif %}
+          {% endif %}            
         </div>
         
         {% if handbookOverdue and not training%}
