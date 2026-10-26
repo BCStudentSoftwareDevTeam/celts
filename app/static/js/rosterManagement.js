@@ -99,7 +99,7 @@ $(".removeInterestedStudent").click(function() {
       },
       error: function(request, status, error) {
         console.log(status,error);
-        location.reload();
+        reloadWithAccordion("rosterMain")
       }
     });
 });
