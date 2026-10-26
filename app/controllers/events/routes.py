@@ -10,7 +10,7 @@ from app.models.user import User
 from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
-from app.logic.participants import addBnumberAsParticipant
+from app.logic.participants import addBnumberAsParticipant, attendedRequiredTrainings
 
 @events_bp.route('/event/<eventid>/scannerentry', methods=['GET'])
 def loadKiosk(eventid):
@@ -40,10 +40,13 @@ def kioskSignin():
             return "", 500
     try:
         kioskUser, userStatus = addBnumberAsParticipant(bnumber, eventid)
+        event = Event.get_by_id(eventid)
+        attendedTrainings = attendedRequiredTrainings(kioskUser, event, g.current_term)
+
         if kioskUser:
-            return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus}
+            return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus, "attendedTrainings": attendedTrainings}
         else:
-            return {"user": None, "status": userStatus}
+            return {"user": None, "status": userStatus, "attendedTrainings": attendedTrainings}
 
     except Exception as e:
         print("Error in Kiosk Page", e)
