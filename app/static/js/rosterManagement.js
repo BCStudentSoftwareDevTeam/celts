@@ -87,19 +87,33 @@ $("#exportRoster").click(function() {
   }
   })
 })
+document.addEventListener('DOMContentLoaded', function() {
+  
+})
 
-$(".removeInterestedStudent").click(function() {
-    var username = $(this).data("student");
-    var programID = $(this).data("programId");
-    $.ajax({
-      method: "POST",
-      url: "/" + username + "/" + "removeInterest" + "/" + programID,
-      success: function(response) {
-          reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
-      },
-      error: function(request, status, error) {
-        console.log(status,error);
-        reloadWithAccordion("rosterMain")
-      }
-    });
+$(".removeInterestModal").click(function() {
+  const removeInterestWarning = document.getElementById('removeInterestWarning');
+  removeInterestWarning.dataset.username = $(this).data('student');
+  removeInterestWarning.dataset.programID = $(this).data('programId');
+
+  $('#removeInterestWarning').modal("toggle");
+});
+
+$("#removeInterestedStudent").click(function() {
+  const removeInterestWarning = document.getElementById('removeInterestWarning');
+  const username = removeInterestWarning.dataset.username;
+  const programID = removeInterestWarning.dataset.programID;
+  $.ajax({
+    method: "POST",
+    url: "/" + username + "/" + "removeInterest" + "/" + programID,
+    success: function(response) {
+        reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
+    },
+    error: function(request, status, error) {
+      console.log(status,error);
+      reloadWithAccordion("rosterMain")
+    }
+  });
+  // delete actionButton.dataset.name;
+  // delete actionButton.dataset.type;
 });
