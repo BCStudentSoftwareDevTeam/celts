@@ -87,9 +87,6 @@ $("#exportRoster").click(function() {
   }
   })
 })
-document.addEventListener('DOMContentLoaded', function() {
-  
-})
 
 $(".removeInterestModal").click(function() {
   const removeInterestWarning = document.getElementById('removeInterestWarning');
@@ -114,6 +111,6 @@ $("#removeInterestedStudent").click(function() {
       reloadWithAccordion("rosterMain")
     }
   });
-  // delete actionButton.dataset.name;
-  // delete actionButton.dataset.type;
+  delete actionButton.dataset.name;
+  delete actionButton.dataset.type;
 });
