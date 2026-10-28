@@ -150,18 +150,14 @@ def changeTerm():
 
     oldAcademicYear = g.current_term.academicYear
 
-    # Change to the new term
     newTerm = changeCurrentTerm(int(request.form.get('id')))
 
     flash(f"Current term successfully changed to {newTerm.description}", "success")
 
     # Only reset interests when the academic year changes
     if newTerm.academicYear != oldAcademicYear:
-
         with mainDB.atomic():
-
             Interest.delete().execute()
-
             programs = Program.select()
             for program in programs:
                 engagedUsers = getParticipantsForProgramForAY(program, oldAcademicYear)
