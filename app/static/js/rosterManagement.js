@@ -111,6 +111,9 @@ $("#removeInterestedStudent").click(function() {
       reloadWithAccordion("rosterMain")
     }
   });
-  delete actionButton.dataset.name;
-  delete actionButton.dataset.type;
+});
+
+$('#removeInterestWarning').on('hidden.bs.modal', function() {
+  delete this.dataset.username;
+  delete this.dataset.programID;
 });
