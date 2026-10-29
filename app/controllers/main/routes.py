@@ -512,6 +512,7 @@ def removeInterest(program_id, username):
             return ""
         else:
             flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            return ""
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500

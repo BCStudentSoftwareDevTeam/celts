@@ -88,3 +88,35 @@ $("#exportRoster").click(function() {
   })
 })
 
+$(".removeInterestModal").click(function() {
+  const removeInterestWarning = document.getElementById('removeInterestWarning');
+  removeInterestWarning.dataset.username = $(this).data('student');
+  removeInterestWarning.dataset.programID = $(this).data('programId');
+  removeInterestWarning.dataset.studentName = $(this).data('studentName');
+  $('#removeInterestStudentName').text(removeInterestWarning.dataset.studentName);
+  $('#removeInterestWarning').modal("toggle");
+});
+
+$("#removeInterestedStudent").click(function() {
+  const removeInterestWarning = document.getElementById('removeInterestWarning');
+  const username = removeInterestWarning.dataset.username;
+  const programID = removeInterestWarning.dataset.programID;
+  $.ajax({
+    method: "POST",
+    url: "/" + username + "/" + "removeInterest" + "/" + programID,
+    success: function(response) {
+        reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
+    },
+    error: function(request, status, error) {
+      console.log(status,error);
+      reloadWithAccordion("rosterMain")
+    }
+  });
+});
+
+$('#removeInterestWarning').on('hidden.bs.modal', function() {
+  $('#removeInterestStudentName').text('');
+  delete this.dataset.username;
+  delete this.dataset.programID;
+  delete this.dataset.studentName;
+});
