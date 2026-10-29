@@ -92,7 +92,8 @@ $(".removeInterestModal").click(function() {
   const removeInterestWarning = document.getElementById('removeInterestWarning');
   removeInterestWarning.dataset.username = $(this).data('student');
   removeInterestWarning.dataset.programID = $(this).data('programId');
-
+  removeInterestWarning.dataset.studentName = $(this).data('studentName');
+  $('#removeInterestStudentName').text(removeInterestWarning.dataset.studentName);
   $('#removeInterestWarning').modal("toggle");
 });
 
@@ -114,6 +115,8 @@ $("#removeInterestedStudent").click(function() {
 });
 
 $('#removeInterestWarning').on('hidden.bs.modal', function() {
+  $('#removeInterestStudentName').text('');
   delete this.dataset.username;
   delete this.dataset.programID;
+  delete this.dataset.studentName;
 });
