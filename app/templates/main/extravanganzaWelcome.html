@@ -8,9 +8,33 @@
 
 {% block styles %}
   {{super()}}
+  <style>
+    #extravaganzaFlashContainer {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 1080;
+      pointer-events: none;
+    }
+    .extravaganza-flash {
+      pointer-events: auto;
+      font-size: 1rem;
+      padding: .9rem 1rem;
+    }
+    @media (min-width: 576px) {
+      #extravaganzaFlashContainer {
+        left: 50%;
+        right: auto;
+        width: 480px;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
 {% endblock %}
 
 {% block app_content %}
+<div id="extravaganzaFlashContainer" aria-live="polite"></div>
 <h1>Welcome to the {{g.current_term.academicYear}} CELTS Volunteer Extravaganza <br />{{g.current_user.fullName}}!</h1>
 <p><strong>Step 1:</strong> Indicate your interest in a CELTS programs below. Your interest helps us get you involved!</p>
 <p><strong>Step 2:</strong> Attend one of the All Volunteers Trainings listed below. Click to RSVP!</p>

@@ -499,19 +499,23 @@ def addInterest(program_id, username, showFlash = True):
         return "Error Updating Interest", 500
 
 @main_bp.route('/<username>/removeInterest/<program_id>', methods=['POST'])
-def removeInterest(program_id, username):
+@main_bp.route('/<username>/removeInterest/<program_id>/<showFlash>', methods=['POST'])
+def removeInterest(program_id, username, showFlash = True):
     """
     This function removes a program to the list of programs a user interested in
     program_id: the primary id of the program the student is adding interest of
     username: unique value of a user to correctly identify them
     """
+    showFlash = False if showFlash == "False" else True
     try:
         removed = removeUserInterest(program_id, username)
         if removed:
-            flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
+            if showFlash:
+                flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
             return ""
         else:
-            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            if showFlash:
+                flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
