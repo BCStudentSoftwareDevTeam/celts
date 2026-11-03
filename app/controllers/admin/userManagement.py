@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 
 
 from app import app
+from app.models import mainDB
 from app.logic.term import changeCurrentTerm
 from app.controllers.admin import admin_bp
 from app.logic.fileHandler import FileHandler
@@ -17,7 +18,7 @@ from app.logic.userManagement import changeProgramInfo
 from app.logic.participants import getTrainingsForInterestedParticipants, getParticipantsForProgramForAY
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
-from app.logic.users import getProgramInterest
+from app.logic.users import getProgramInterest, addUserInterest
 from app.logic.volunteers import setProgramManager
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.programManager import ProgramManager
@@ -25,7 +26,9 @@ from app.models.programBan import ProgramBan
 from app.models.user import User
 from app.models.term import Term
 from app.models.user import User
+from app.models.interest import Interest
 from app.models.program import Program
+
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
@@ -144,8 +147,24 @@ def userManagement():
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
+
+    oldAcademicYear = g.current_term.academicYear
+
     newTerm = changeCurrentTerm(int(request.form.get('id')))
+
     flash(f"Current term successfully changed to {newTerm.description}", "success")
+
+    # Only reset interests when the academic year changes
+    if newTerm.academicYear != oldAcademicYear:
+        with mainDB.atomic():
+            Interest.delete().execute()
+            programs = Program.select()
+            for program in programs:
+                engagedUsers = getParticipantsForProgramForAY(program, oldAcademicYear)
+                for user in engagedUsers:
+                    addUserInterest(program, user.username)
+
+        flash("The list of interested students was successfully updated", "success")
 
     return ""
 
