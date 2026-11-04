@@ -476,23 +476,19 @@ def unban(program_id, username):
         return "Failed to mark the volunteer as eligible", 500
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
-@main_bp.route('/<username>/addInterest/<program_id>/<showFlash>', methods=['POST'])
-def addInterest(program_id, username, showFlash = True):
-    """
-    This function adds a program to the list of programs a user interested in
-    program_id: the primary id of the program the student is adding interest of
-    username: unique value of a user to correctly identify them
-    """    
-    showFlash = False if showFlash == "False" else True
+def addInterest(program_id, username):
+
+    showFlash = request.form.get("showFlash", "true").lower() != "false"
     try:
         success = addUserInterest(program_id, username)
         if success:
-            if bool(showFlash):                
+            if showFlash:
                 flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
             return jsonify(model_to_dict(User.get_or_none(User.username == username)))
         else:
-            if bool(showFlash):
+            if showFlash:
                 flash("Was unable to add " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            return "Unable to add interest", 500
 
     except Exception as e:
         print(e)
@@ -504,14 +500,19 @@ def removeInterest(program_id, username):
     This function removes a program to the list of programs a user interested in
     program_id: the primary id of the program the student is adding interest of
     username: unique value of a user to correctly identify them
+    showFlash (optional form field): send "false" to suppress the flash message
     """
+    showFlash = request.form.get("showFlash", "true").lower() != "false"
     try:
         removed = removeUserInterest(program_id, username)
         if removed:
-            flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
+            if showFlash:
+                flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
             return ""
         else:
-            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            if showFlash:
+                flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
+            return "Unable to remove interest", 500
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500

@@ -19,7 +19,7 @@ $(document).ready(function(){
 
 function callback(selected) {
   var form = $("#searchStudentForm");
-  form.attr("action", "/" + selected["username"] + "/addInterest/" + form.data("program") + "/False");    
+  form.attr("action", "/" + selected["username"] + "/addInterest/" + form.data("program"));    
   $("#searchStudentForm").submit();  
 }
 
@@ -30,6 +30,7 @@ $('#searchStudentForm').on('submit', function(e) {
   $.ajax({
     url: $(this).attr('action'),
     type: $(this).attr('method') || 'POST',
+    data: { showFlash: false },
     success: function(response) {
         var targetDiv = $("#addedNameDivTarget");
         var targetP = $("#addedNameToClone").clone();

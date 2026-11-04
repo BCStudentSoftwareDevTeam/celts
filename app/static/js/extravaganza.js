@@ -1,22 +1,33 @@
-$(document).ready(function(){    
+$(document).ready(function(){
 
     $(".interestedInput").click(function updateInterest(){
-        var programID = $(this).data("programid");
-        var username = $(this).data('username');
+        var checkbox = $(this);
+        var programID = checkbox.data("programid");
+        var username = checkbox.data('username');
+        var programName = checkbox.closest("tr").find("#programNameTable").text().trim();
 
-        var interest = $(this).is(':checked');
+        var interest = checkbox.is(':checked');
         var routeUrl = interest ? "addInterest" : "removeInterest";
-        var interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
+        var interestUrl = "/" + username + "/" + routeUrl + "/" + programID;
+        checkbox.prop("disabled", true);
         $.ajax({
             method: "POST",
             url: interestUrl,
+            data: { showFlash: false },
             success: function(response) {
-                window.location.reload();
+                var message = interest ? "Your interest in " + programName + " was saved!"
+                                       : programName + " was removed from your interests.";
+                msgFlash(message, "success");
             },
             error: function(request, status, error) {
                 console.log(status,error);
-                location.reload();
+                checkbox.prop("checked", !interest);
+                msgFlash("Something went wrong updating " + programName + ". Please try again.", "danger");
+            },
+            complete: function() {
+                checkbox.prop("disabled", false);
             }
         });
     });
 });
+
