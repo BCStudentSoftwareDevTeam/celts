@@ -8,11 +8,12 @@ $(document).ready(function(){
 
         var interest = checkbox.is(':checked');
         var routeUrl = interest ? "addInterest" : "removeInterest";
-        var interestUrl = "/" + username + "/" + routeUrl + "/" + programID + "/False";
+        var interestUrl = "/" + username + "/" + routeUrl + "/" + programID;
         checkbox.prop("disabled", true);
         $.ajax({
             method: "POST",
             url: interestUrl,
+            data: { showFlash: false },
             success: function(response) {
                 var message = interest ? "Your interest in " + programName + " was saved!"
                                        : programName + " was removed from your interests.";
