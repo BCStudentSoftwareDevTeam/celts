@@ -34,7 +34,7 @@ jobs:
       with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-    - run: sudo /etc/init.d/mysql start
+    - run: sudo systemctl start mysql.service
     - name: Install dependencies
       run: source setup.sh
     - name: Activate environment and reset database
