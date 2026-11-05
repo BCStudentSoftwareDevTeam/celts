@@ -104,6 +104,7 @@ $("#removeInterestedStudent").click(function() {
   $.ajax({
     method: "POST",
     url: "/" + username + "/" + "removeInterest" + "/" + programID,
+    data:  {isFromRoster: 1},
     success: function(response) {
         reloadWithAccordion("rosterMain")  //  Reloading page after user clicks on the remove interest button
     },

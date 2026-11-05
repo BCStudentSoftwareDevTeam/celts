@@ -504,11 +504,16 @@ def removeInterest(program_id, username):
     This function removes a program to the list of programs a user interested in
     program_id: the primary id of the program the student is adding interest of
     username: unique value of a user to correctly identify them
+    isFromRoster: instantiated below, identifies what the flash should say
     """
+    isFromRoster = request.form.get('isFromRoster')
     try:
         removed = removeUserInterest(program_id, username)
-        if removed:
+        if removed and not isFromRoster:
             flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
+            return ""
+        elif removed and isFromRoster:
+            flash("Successfully removed interest for " + User.get_by_id(username).fullName + " from " + Program.get_by_id(program_id).programName, "success")
             return ""
         else:
             flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
