@@ -16,10 +16,10 @@ def fixture_info():
         user2 = User.create(username="doej2", firstName="Jane", lastName="Doe", bnumber="B888828", major="Biology", rawClassLevel="Junior")
         user3 = User.create(username="builderb", firstName="Bob", lastName="Builder", bnumber="B00700932", major="Construction", rawClassLevel="Senior")
 
-        term1 = Term.create(description='Fall 2023', academicYear='2023-2024-test')
-        term2 = Term.create(description='Fall 2024', academicYear='2024-2025-test')
-        term3 = Term.create(description='Spring 2024', academicYear='2023-2024-test')
-        term4 = Term.create(description='Spring 2025', academicYear='2024-2025-test')
+        term1 = Term.create(description='Fall 2023', academicYear='2023-2024-test', year='2023')
+        term2 = Term.create(description='Fall 2024', academicYear='2024-2025-test', year='2024')
+        term3 = Term.create(description='Spring 2024', academicYear='2023-2024-test', year='2024')
+        term4 = Term.create(description='Spring 2025', academicYear='2024-2025-test', year='2025')
 
         program1 = Program.create(programName='Program1')
         program2 = Program.create(programName='Program2')
@@ -642,15 +642,15 @@ def test_getAllTermData(fixture_info):
 @pytest.mark.integration
 def test_getUniqueVolunteers(fixture_info):
     columns, rows = getUniqueVolunteers("2023-2024-test")
-    assert columns == ["Full Name", "Email", "B-Number", "Term"]
+    assert columns == ["Full Name", "Email", "B-Number", "Fall 2023 Program Participation", "Spring 2024 Program Participation"]
     assert sorted(list(rows)) == sorted([
-        ("John Doe", "doej@berea.edu", "B774377", "Fall 2023"),
-        ("Jane Doe", "doej2@berea.edu", "B888828", "Fall 2023"),
+        ("John Doe", "doej@berea.edu", "B774377", "Program1", None),
+        ("Jane Doe", "doej2@berea.edu", "B888828", "Program1", None),
     ])
 
     columns, rows = getUniqueVolunteers("2024-2025-test")
     assert list(rows) == [
-        ("Bob Builder", "builderb@berea.edu", "B00700932", "Fall 2024")
+        ("Bob Builder", "builderb@berea.edu", "B00700932", "Program4", None)
     ]
 
     # Add Bob to a 2023-2024 service event so he becomes a unique volunteer for that year too
@@ -662,9 +662,9 @@ def test_getUniqueVolunteers(fixture_info):
 
     columns, rows = getUniqueVolunteers("2023-2024-test")
     assert sorted(list(rows)) == sorted([
-        ("Bob Builder", "builderb@berea.edu", "B00700932", "Fall 2023"),
-        ("John Doe", "doej@berea.edu", "B774377", "Fall 2023"),
-        ("Jane Doe", "doej2@berea.edu", "B888828", "Fall 2023"),
+        ("Bob Builder", "builderb@berea.edu", "B00700932", "Program1", None),
+        ("John Doe", "doej@berea.edu", "B774377", "Program1", None),
+        ("Jane Doe", "doej2@berea.edu", "B888828", "Program1", None),
     ])
 
     # Add a new user + a service participation in term1
@@ -672,9 +672,9 @@ def test_getUniqueVolunteers(fixture_info):
 
     testEvent = Event.create(
         name="Test Event",
-        term=fixture_info["term1"],
+        term=fixture_info["term3"],
         program=fixture_info["program1"],
-        startDate=date(2023, 12, 1),
+        startDate=date(2024, 1, 1),
         isCanceled=False,
         deletionDate=None,
         isService=True
@@ -688,10 +688,10 @@ def test_getUniqueVolunteers(fixture_info):
 
     columns, rows = getUniqueVolunteers("2023-2024-test")
     assert sorted(list(rows)) == sorted([
-        ("Bob Builder", "builderb@berea.edu", "B00700932", "Fall 2023"),
-        ("John Doe", "doej@berea.edu", "B774377", "Fall 2023"),
-        ("Jane Doe", "doej2@berea.edu", "B888828", "Fall 2023"),
-        ("Test Tester", "testt@berea.edu", "B55555", "Fall 2023"),
+        ("Bob Builder", "builderb@berea.edu", "B00700932", "Program1", None),
+        ("John Doe", "doej@berea.edu", "B774377", "Program1", None),
+        ("Jane Doe", "doej2@berea.edu", "B888828", "Program1", None),
+        ("Test Tester", "testt@berea.edu", "B55555", None, "Program1"),
     ])
 
 @pytest.mark.integration
