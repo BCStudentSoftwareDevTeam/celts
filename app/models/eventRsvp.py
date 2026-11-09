@@ -9,6 +9,5 @@ class EventRsvp(baseModel):
     rsvpTime = DateTimeField(default=datetime.now)
     rsvpWaitlist = BooleanField(default=False)
 
-
     class Meta:
         indexes = ( (('user', 'event'), True), )
