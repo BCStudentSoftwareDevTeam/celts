@@ -37,7 +37,7 @@ def manageMinor():
     declaredStudentsList = getDeclaredMinorStudents()
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])   
     adminUsername = g.current_user.username 
-    cceMinorStudents = declaredStudentsDict
+    cceMinorStudents = declaredStudentsList
 
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
