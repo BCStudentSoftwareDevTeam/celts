@@ -77,13 +77,8 @@ def load_user():
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
-    # An exception handles both current_term not being set and a mismatch between models
-    try:
-        g.current_term = dict_to_model(Term, session['current_term'])
-    except Exception as e:
-        term = getCurrentTerm()
-        session['current_term'] = model_to_dict(term)
-        g.current_term = term
+    # Query the current term from the database on each request to avoid stale session data
+    g.current_term = getCurrentTerm()
 
 import datetime
 @app.before_request

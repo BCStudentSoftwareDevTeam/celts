@@ -17,7 +17,8 @@
 {% endblock %}
 
 {% block app_content %}
-   <form id='otherEngagementForm' enctype="multipart/form-data" role='form' action="/cceMinor/{{user.username}}/otherEngagement" method="POST">
+   {% set viewing = (not editable) and proposal %}
+   <form id='proposalForm' enctype="multipart/form-data" role='form' action="{{postRoute}}" method="POST">
       <div class='row'>
         <div class="container">
           <div class="container text-center">
@@ -27,16 +28,32 @@
                     Please fill out this form to submit a proposal for another community engaged experience that pertains to at least one of the four following key content areas: power and inequality, community and identity, civic literacy, or civic skills.
                 </p>
                   <input type="hidden" value="{{ user.username }}" id="username"/>
-                  <input type="hidden" id="otherEngagementID" name="experienceID" value="{{ other_experience.id if other_experience else '' }}">
+                  <input type="hidden" value="Other Engagement" id="proposalExperienceType"/>
+                  <input type="hidden" value="{{viewing if viewing else ''}}" id="isViewing"/>
+                  <input type="hidden" name="deleteAttachment" value="false" id="deleteAttachmentFlag"/>
               </div>
           </div>
   
           <div class="form-group">
               <label class="required form-label" for="term"><strong>Term</strong></label>
-              <select class="form-select" name="term" id="term" required {% if other_experience %}disabled{% endif %}>
-                <option value="" disabled selected>Select Year</option> 
+              <select class="form-select" name="term" id="term" required 
+                {% if viewing %}
+                  disabled                  
+                {% endif %}>
+                <option value="" disabled
+                  {% if not proposal %} selected {% endif %}>
+                  Select Year
+                </option> 
+                {% if viewing %}
+                  <option value="" selected disabled>
+                    {{selectedTerm.description}}
+                  </option>  
+                {% endif %}
                 {% for term in selectableTerms %}
-                   <option value="{{ term }}">{{ term.description }}</option>
+                  <option value="{{ term }}" 
+                    {% if proposal and proposal.term == term %} selected {% endif %}>
+                    {{ term.description }}
+                  </option>
                 {% endfor %}
               </select>
           </div>
@@ -45,7 +62,9 @@
   
           <div class="form-group">
               <label class="required form-label" for="experienceName"><strong>Experience Title</strong></label>
-              <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required value="{{ other_experience.activity if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="experienceName" placeholder="Enter a name for your experience" name="experienceName" required 
+                value="{{ proposal.experienceName if proposal else '' }}"
+                {% if viewing %} disabled {% endif %}/>
           </div>
   
           {% include "minor/companyOrganizationInformation.html" %}
@@ -55,8 +74,9 @@
           {% include "minor/supervisorInformation.html" %} 
   
           <div class="form-group">
-              <label class="mb-2 required" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
-              <input class="form-control" id="supervisorAttachment" name="attachmentObject" type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" {% if other_experience %}disabled{% endif %}/>
+              <label class="mb-2" for="supervisorAttachment"><strong>Upload Confirmation of Participation</strong> (From Supervisor)</label>
+              <input class="form-control" id="supervisorAttachment" name="attachmentObject" data-file-name="{{attachmentFileName}}" data-file-path='{{attachmentFilePath}}' type="file" multiple accept=".png, .jpg, .pdf, .jpeg, .docx, .xlsx" 
+                {% if viewing %} disabled {% endif %}/>
           </div>
   
           <div class="form-group">
@@ -67,27 +87,42 @@
   
           <div class="form-group">
               <label class="required form-label" for="totalHours"><strong>Total Hours</strong></label>
-              <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" required type="number" name="totalHours" value="{{ other_experience.hours if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalHours" placeholder="Enter the total hours worked" required type="number" name="totalHours" 
+                value="{{ proposal.totalHours if proposal else '' }}"
+                {% if viewing %} disabled {% endif %}/>
           </div>
           
           <br>
 
           <div class="form-group">
               <label class="required form-label" for="totalWeeks"><strong>Weeks Worked</strong></label>
-              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="totalWeeks" value="{{ other_experience.weeks if other_experience else '' }}" {% if other_experience %}disabled{% endif %}/>
+              <input class="form-control" id="totalWeeks" placeholder="Enter total number of weeks worked" required type="number" name="totalWeeks"
+                value="{{ proposal.totalWeeks if proposal else '' }}"
+                {% if viewing %} disabled {% endif %}/>
           </div>
 
           <br>
 
           <div class="form-group">
               <label class="required form-label" for="experienceDescription"><strong>Experience Description</strong></label>
-              <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription" {% if other_experience %}disabled{% endif %}>{{ other_experience.service if other_experience else '' }}</textarea>
+              <textarea class="form-control" rows="5" cols="72" id="experienceDescription" placeholder="Please describe your experience" name="experienceDescription"
+              required value="{{ proposal.experienceDescription if proposal else '' }}"
+                {% if viewing %} disabled {% endif %}>{{ proposal.experienceDescription if proposal else '' }}</textarea>
           </div>
           
           <br><br>
 
-          <div class="text-center">
-            <input class="btn btn-primary" type="submit" value="Send Request for Approval" {% if other_experience %}style="display: none;"{% endif %}/> 
+          <div class="row align-items-end pt-5 pb-5">
+            <div class="col col-xl col-12 d-flex justify-content-xl-start justify-content-center">
+              <input class="btn btn-secondary justify-start" id="exitButton" type="button" value="Back"/> 
+            </div>
+            <div class="col-2 col-xl-1 col-12 text-sm-center">
+            </div>
+            <div class="col col-xl col-12 d-flex flex-nowrap gap-2 justify-content-xl-end justify-content-center">
+              <button class="btn btn-primary submit-proposal" type="submit" name="status" value="Draft" id="saveAsDraftButton" {% if viewing %} style="display: none;" {% endif %}> Save as Draft </button>
+              <button class="btn btn-success submit-proposal" type="submit" name="status" value="Submitted" id="submitButton" {% if viewing %} style="display: none;" {% endif %}> Submit </button>                 
+            </div>
+              
           </div>
       </div>
   </form>

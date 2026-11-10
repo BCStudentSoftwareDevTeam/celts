@@ -18,8 +18,7 @@ $(document).ready(function() {
         return true;
     });
 
-    $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
-    $('.graduated-checkbox').change(checkboxClickHandler);
+    $(document).on('change', '.graduated-checkbox', checkboxClickHandler);
 
     initializePage()
 
@@ -43,22 +42,27 @@ $(document).ready(function() {
 
     })
 
+    function getRowStatus(row) {
+        return $(row).data('status');
+    }
+    
     function filterTable(dataField, expectedValue) {
         gradStudentsTable.rows().every(function() {
-            var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
-            if (!showGraduatedStudents() && hasGraduated) {
-                $(this.node()).addClass('hidden')
-                return 
+            const row = this.node();
+            const status = getRowStatus(row);
+            if (!showGraduatedStudents() && status === 'alumni') {
+                $(row).addClass('hidden');
+                return;
             }
-            var data = $(this.node()).data(dataField); 
+            const data = $(row).data(dataField);
 
             if (data === expectedValue) {
-                $(this.node()).removeClass('hidden')
+                $(row).removeClass('hidden');
             } else {
-                $(this.node()).addClass('hidden')
+                $(row).addClass('hidden');
             }
         });
-        redrawTable()
+        redrawTable();
     }
 
     function handleBonnerFilterChange(cohortYear, buttonText) {
@@ -94,10 +98,10 @@ $(document).ready(function() {
 
             gradStudentsTable.search('').draw();
             gradStudentsTable.rows().every(function() {
-                var hasGraduated = $(this.node()).find('input[type="checkbox"]').is(':checked');
-                if (!showGraduatedStudents() && hasGraduated) {
-                    $(this.node()).addClass('hidden')
-                    return 
+                const status = getRowStatus(this.node());
+                if (!showGraduatedStudents() && status === 'alumni') {
+                    $(this.node()).addClass('hidden');
+                    return;
                 }
                 $(this.node()).removeClass('hidden');
             });
@@ -118,9 +122,7 @@ $(document).ready(function() {
     }
     
     function redrawTable() {
-        gradStudentsTable.draw(); 
-        $('.graduated-checkbox').not('.hasHandler').change(checkboxClickHandler);
-        $('.graduated-checkbox').not('.hasHandler').addClass("hasHandler") 
+        gradStudentsTable.draw();
     }
 
     function checkboxClickHandler() {
@@ -132,9 +134,20 @@ $(document).ready(function() {
             data: {status: hasGraduated ? 1 : 0},
             url: `/${username}/setGraduationStatus`,
             success: function(response) {
-                initializePage()
                 msgFlash(`Saved graduation status for ${username}.`, "success", 1000)
-                $(`#${username}ClassLevel`).html(hasGraduated ? "Graduated" : "Senior")
+                const row = $(`tr[data-username="${username}"]`);
+                if (hasGraduated) {
+                    row.data('status', 'alumni');
+                    $(`#${username}ClassLevel`).text("Alumni");
+                    if (!showGraduatedStudents()) {
+                        row.addClass('hidden');
+                    }
+                } else {
+                    row.data('status', 'enrolled');
+                    $(`#${username}ClassLevel`).text("Senior");
+                    row.removeClass('hidden');
+                }
+                gradStudentsTable.draw(false);
             },
             error: function(status, error) {
                 console.error("Error updating graduation status:", error);

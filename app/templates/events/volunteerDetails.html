@@ -57,17 +57,28 @@
 {% endmacro %}
 
 {% macro printParticipants(type, attended, rsvp, waitlist) %}
+    {% set seen = [] %}
     {% set combinedParticipants = attended + rsvp + waitlist %}
-    {% for p in combinedParticipants | unique %}
-      {% if p in rsvp %}
-          {{createTable(p, 'rsvp') if type == 'table' else createCard(p, 'rsvp') }}
-      {% endif %}
-      {% if p in attended%}
-          {{createTable(p, 'attended') if type == 'table' else createCard(p, 'attended') }}
-      {% endif %}
-      {% if p in waitlist %}
-          {{createTable(p, 'waitlist') if type == 'table' else createCard(p, 'waitlist') }}
-      {% endif %}
+    {% for p in combinedParticipants %}
+        {% set username = p.user.username %}
+        {% if username not in seen %}
+            {% set _ = seen.append(username) %}
+            {% set status = none %}
+            {% if p in attended %}
+                {% set status = 'attended'%}
+            {% elif p in rsvp %}
+                {% set status = 'rsvp'%}
+            {% elif p in waitlist %}
+                {% set status = 'waitlist'%}
+            {% endif %}
+            {% if status %}
+                {% if type == 'card' %}
+                    {{ createCard(p, status) }}
+                {% elif type == 'table' %}
+                    {{ createTable(p, status) }}
+                {% endif %}
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endmacro %}
 
@@ -106,18 +117,18 @@
         </div>
         <div class="col">
           <label><b>Included Information:</b></label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
+          <label for="phoneSelect">Phone Number</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
+          <label for="emailSelect">Email</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="statusSelect" checked>
+          <label for="statusSelect">Volunteer Status</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
           <label for="dietRestrictionSelect">Dietary Restrictions</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencyContactSelect" checked>
           <label for="emergencyContactSelect">Emergency Contact</label><br>
-          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
-          <label for="phoneSelect">Phone Number</label><br>
-          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="statusSelect" checked>
-          <label for="statusSelect">Volunteer Status</label><br>
-          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
-          <label for="emailSelect">Email</label><br>
-          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="insuranceSelect" checked>
-          <label for="InsuranceSelect">Insurance Information</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="insuranceSelect">
+          <label for="insuranceSelect">Insurance Information</label><br>
           <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
           <label class="bNumberSelect" for="barcodeSelect">B-Number Barcode</label><br>
         </div>
@@ -151,23 +162,24 @@
         {{ printParticipants('card', attendedUser, rsvpUser, waitlistUser) }}
       </div>
     </div>
-
-    <table class="table d-print-table" id="volunteerInformationTableToPrint">
-      <thead>
-        <tr>
-          <th class="text-center">Name</th>
-          <th class="phoneSelect">Phone Number</th>
-          <th class="emailSelect">Email</th>
-          <th class="statusSelect">Volunteer Status</th>
-          <th class="dietRestrictionSelect">Dietary Restrictions</th>
-          <th class="emergencyContactSelect">Emergency Contact</th>
-          <th class="insuranceSelect">Insurance Information</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table d-print-table w-100" id="volunteerInformationTableToPrint">
+        <thead>
+          <tr>
+            <th class="text-center">Name</th>
+            <th class="phoneSelect">Phone Number</th>
+            <th class="emailSelect">Email</th>
+            <th class="statusSelect">Volunteer Status</th>
+            <th class="dietRestrictionSelect">Dietary Restrictions</th>
+            <th class="emergencyContactSelect">Emergency Contact</th>
+            <th class="insuranceSelect">Insurance Information</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ printParticipants('table', attendedUser, rsvpUser, waitlistUser) }}
+        </tbody>
+      </table>
+    </div>
 {% else %}
     <h3>No volunteer information available for this event.</h3>
 {% endif %}

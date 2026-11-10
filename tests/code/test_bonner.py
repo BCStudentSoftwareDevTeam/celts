@@ -113,7 +113,7 @@ def test_addBonnerCohortToRsvpLog():
             BonnerCohort.create(user="neillz", year=currentYear)
             BonnerCohort.create(user="khatts", year=currentYear)
                
-            testDate = datetime.strptime("2025-01-19 05:00","%Y-%m-%d %H:%M")
+            testDate = datetime.strptime("01/19/2025 05:00","%m/%d/%Y %H:%M")
             
             # Create a test event associated with a Bonner Scholars program
             programEvent = Program.create(id = 15,

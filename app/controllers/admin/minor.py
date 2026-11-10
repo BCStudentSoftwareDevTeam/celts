@@ -4,7 +4,7 @@ from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet, getDeclaredMinorStudents
+from app.logic.minor import getDeclaredMinorStudents, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
 
 @admin_bp.route('/profile/<username>/cceMinorChart', methods=['GET'])
 def cceMinorChart(username):
@@ -31,18 +31,17 @@ def manageMinor():
                  
         return redirect(url_for("admin.manageMinor"))
 
-
-
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
     sustainedEngagement = getMinorProgress()
     declaredStudentsList = getDeclaredMinorStudents()
     declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])   
     adminUsername = g.current_user.username 
+    cceMinorStudents = declaredStudentsDict
 
     return render_template('/admin/cceMinor.html',
+                            cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,
-                            declaredStudentsList = declaredStudentsList,
                             interestedStudentEmailString = interestedStudentEmailString,
                             declaredStudentEmailString = declaredStudentEmailString,
                             sustainedEngagement = sustainedEngagement,

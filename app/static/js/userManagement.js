@@ -26,7 +26,21 @@ function callbackProgramManager(selected, action = 'add') {
   }
 }
 
+function operationsTeamCheckboxHandler() {
+    let isCeltsOperationsTeam = $(this).is(':checked');
+    let username = $(this).data('username');
+
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    if (isCeltsOperationsTeam) {
+        submitRequest("addCeltsOperationsTeam", username);
+    } else {
+        submitRequest("removeCeltsOperationsTeam", username);
+    }
+}
+
 $(document).ready(function(){
+
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
       searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "celtsLinkAdmin")
@@ -46,6 +60,9 @@ $(document).ready(function(){
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
+
+  $(".operations-team-checkbox").on("change", operationsTeamCheckboxHandler);
+
   $("#programManagersTable").on("click", ".removeProgramManager", function(){
     let row = $(this).closest("tr");
     let fullName = row.find("td").eq(0).text().trim();
@@ -152,6 +169,13 @@ $(document).ready(function(){
   })
   });
 
+$('.viewRoster').on('click', function() {
+    // Openning the modal after the data was received
+    $('#programPlaceholder').data('programid', $(this).data('programid'))
+    let modal = new bootstrap.Modal($('#viewRosterModal'));
+      modal.show();
+});
+
 function submitRequest(method, username){
   let data = {
       method: method,
@@ -244,12 +268,12 @@ function submitTerm(){
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
-    success: function(s){
-      msgFlash("Current term successfully changed to " + selectedTerm.html(), "success")
+    success: function(response){
+      reloadWithAccordion("term")
     },
     error: function(error, status){
-        msgFlash("Current term was not changed. Please try again.", "warning")
-        console.log(error, status)
+      msgFlash("Current term was not changed. Please reload the page and try again.", "warning")
+      console.log(error, status)
     }
   })
 }
@@ -262,7 +286,8 @@ function addNewTerm(){
       reloadWithAccordion("term")
     },
     error: function(error, status){
-        console.log(error, status)
+      msgFlash("Failure adding new term. Please reload the page and try again.", "warning")
+      console.log(error, status)
     }
   })
 }

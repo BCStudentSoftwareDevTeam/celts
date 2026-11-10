@@ -2,10 +2,10 @@ from pprint import isrecursive
 import pytest
 from datetime import datetime, timedelta, time
 from peewee import IntegrityError, DoesNotExist
-from app import app
 from flask import g
+from app import app
 from werkzeug.datastructures import ImmutableMultiDict
-
+from playhouse.shortcuts import model_to_dict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
@@ -13,7 +13,8 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus, attendedRequiredTrainings
+from app.logic.users import trainedParticipants
 from app.models.eventRsvp import EventRsvp
 
 
@@ -282,77 +283,96 @@ def test_trainedParticipants():
 # tests for unattendedRequiredEvents
 @pytest.mark.integration
 def test_unattendedRequiredEvents():
-
-    # test unattended events
-    program = 1
-    user = 'ramsayb2'
-
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 1
-
-    # test after user has attended an event
     with mainDB.atomic() as transaction:
+
+        # test unattended events
+        program = 1
+        user = 'ramsayb2'
+        
+        # There are no events yet that are registered as trainings for this program
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert len(unattendedEvents) == 0
+
+        # Create a required training for this program
+        Event.create(name = "Hunger Initiatives test event",
+                                                    term = Term.get(1),
+                                                    description= "This Event is created to do whatever.",
+                                                    timeStart= "06:00 PM",
+                                                    timeEnd= "09:00 PM",
+                                                    location = "The Sun",
+                                                    isRsvpRequired = 0,
+                                                    isTraining = 1,
+                                                    isService = 0,
+                                                    startDate= "2021-12-12",
+                                                    recurringId = None,
+                                                    program = Program.get_by_id(program))
+
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert len(unattendedEvents) == 1
+
+        # Have the user attend the event
         event = Event.get(Event.name == unattendedEvents[0])
         EventParticipant.create(user = user, event = event)
-
         unattendedEvents = unattendedRequiredEvents(program, user)
         assert len(unattendedEvents) == 0
 
         transaction.rollback()
 
-    # test where all required events are attended
-    user = 'khatts'
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test where all required events are attended
+        user = 'khatts'
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
-    # test for program with no requirements
-    program = 4
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test for a program with no requirements
+        program = 4
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
 
-    # test for incorrect program
-    program = 500
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == []
+        # test for invalid program
+        program = 500
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
-    #test for incorrect user
-    program = 1
-    user = "asdfasdf56"
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1']
+        #test for invalid user
+        program = 1
+        user = "asdfasdf56"
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert unattendedEvents == []
 
 @pytest.mark.integration
 def test_addBnumberAsParticipant():
     # Tests the Kiosk
-    # user is banned
     with mainDB.atomic() as transaction:
-        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
-        assert userStatus == "banned"
+        with app.app_context():
+            g.current_term = Term.get_by_id(1)
 
+            # Test a banned user
+            signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
+            assert userStatus == "banned"
 
-        # user is already signed in
-        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
-        assert userStatus == "already signed in"
+            # user is already signed in
+            signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
+            assert userStatus == "already signed in"
 
-        # user is eligible but the user is not in EventParticipant and EventRsvp
-        signedInUser = User.get(User.bnumber=="B00759117")
-        with pytest.raises(DoesNotExist):
-            EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
-            EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
+            # user is eligible but the user is not in EventParticipant and EventRsvp
+            signedInUser = User.get(User.bnumber=="B00759117")
+            with pytest.raises(DoesNotExist):
+                EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+                EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
-            assert userStatus == "success"
+                signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
+                assert userStatus == "success"
 
-            participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
-            assert "agliullovak" in participant
+                participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
+                assert "agliullovak" in participant
 
-            userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
-            assert "agliullovak" in userRsvp
+                userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
+                assert "agliullovak" in userRsvp
 
-            EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
-            EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
-        transaction.rollback()
+                EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
+                EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+            transaction.rollback()
 
 @pytest.mark.integration
 def test_getEventParticipants():
@@ -530,4 +550,139 @@ def test_sortParticipantsByStatus():
            
         transaction.rollback()
 
-  
+def test_attendedRequiredTrainings():
+    with mainDB.atomic() as transaction:  
+        event1 = Event.create(name = "Adopt-a-Grandchild event",
+                            term = 2,
+                            description = "Adopt a grandchild!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "Your mother's basement",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
+                            program = 3,
+                            requiresAllVolunteerTraining = True, 
+                            requiresAllCeltsTraining = False, 
+                            requiresProgramTraining = True)
+
+        event2 = Event.create(name = "Bonner Scholars Ritual",
+                            term = 1,
+                            description = "Become a Bonner Scholar in a special way!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "Danforth building",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-12", "%Y-%m-%d"),
+                            program = 5,
+                            requiresAllVolunteerTraining = False, 
+                            requiresAllCeltsTraining = True, 
+                            requiresProgramTraining = False)
+
+        event3 = Event.create(name = "Planting Saplings!",
+                            term = 2,
+                            description = "Let's plant some saplings!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "07:00:00",
+                            location = "Far away from Berea: precise Location is unknown",
+                            isTraining = False,
+                            startDate = datetime.strptime("2021-08-11", "%Y-%m-%d"),
+                            program = 6,
+                            requiresAllVolunteerTraining = False, 
+                            requiresAllCeltsTraining = False, 
+                            requiresProgramTraining = False)
+
+        training1 = Event.create(name = "Allllll! Volunteer training",
+                            term = 1,
+                            description = "Everyone should come.",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "05:00:00",
+                            location = "Not specified",
+                            isTraining = False,
+                            startDate = datetime.strptime("2020-02-01", "%Y-%m-%d"),
+                            program = 9,
+                            isAllVolunteerTraining = True)
+        
+        training2 = Event.create(name = "Extremely important training",
+                            term = 1,
+                            description = "Let's plant some saplings!",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "05:00:00",
+                            location = "Far away from Berea: precise Location is unknown",
+                            isTraining = False,
+                            startDate = datetime.strptime("2020-03-04", "%Y-%m-%d"),
+                            program = 3,
+                            isCeltsTraining = True)
+
+        training3 = Event.create(name = "Adoptie!",
+                            term = 1,
+                            description = "Adoptie",
+                            timeStart = time(2, 2, 2),
+                            timeEnd = "06:00:00",
+                            location = "???",
+                            isTraining = True,
+                            startDate = datetime.strptime("2020-01-02", "%Y-%m-%d"),
+                            program = 3)
+        
+        # note that "khatts" has already participated in three Adopt-a-Grandparent 
+        # training events in the test data
+        test_user1 = User.get(username = "khatts")
+
+        # note that this user hasn't participated in any trainings
+        test_user2 = User.get(username = "partont")
+
+        # note that this user has already participated in one Adopt-a-Grandparent 
+        # training event in the test data
+        test_user3 = User.get(username = "glek")
+        
+        # this should return False because they have not attended any All Volunteer training
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(2)) == False
+
+        # adding another Adopt-a-Grandparent event should not change anything
+        EventParticipant.create(user = "khatts", event = training3, hoursEarned = 1)
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(2)) == False
+
+        # after attending an All Volunteer training, it should return True
+        EventParticipant.create(user = "khatts", event = training1, hoursEarned = 3)
+        assert attendedRequiredTrainings(test_user1, event1, Term.get_by_id(1)) == True
+
+        # testing attendance for the All CELTS training event
+        assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == False
+        EventParticipant.create(user = "khatts", event = training2, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user1, event2, Term.get_by_id(1)) == True
+
+        # this should always return True, because there are technically no training required
+        assert attendedRequiredTrainings(test_user1, event3, Term.get_by_id(1)) == True
+        assert attendedRequiredTrainings(test_user2, event3, Term.get_by_id(1)) == True
+
+
+        # The second round of tests, now with the second user 
+        EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "partont", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "partont", event = training3, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user2, event1, Term.get_by_id(1)) == True
+
+
+        # The third round of tests, now with the third user
+        EventParticipant.create(user = "glek", event = training3, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == False
+        # This shows that adding another program training does not automatically fulfill 
+        # the requirement for All Volunteer trainings (the user still must attend 
+        # at least one All Volunteer training). 
+
+        EventParticipant.create(user = "glek", event = training1, hoursEarned = 2)
+        assert attendedRequiredTrainings(test_user3, event1, Term.get_by_id(1)) == True
+        # After attending one All Volunteer training, the line above must be True.
+
+        # Attending all Volunteer or program-specific trainings 
+        # should not count for all CELTS trainings.
+        assert attendedRequiredTrainings(test_user3, event2, Term.get_by_id(1)) == False
+
+        EventParticipant.create(user = "glek", event = training2, hoursEarned = 1)
+        assert attendedRequiredTrainings(test_user3, event2, Term.get_by_id(1)) == True
+
+
+        transaction.rollback()

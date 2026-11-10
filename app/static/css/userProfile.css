@@ -29,6 +29,15 @@ div.profile-links a:not(:first-child) {
     padding: 5px; 
     padding-top:0px; 
 }
+.note-badges {
+    margin-top: 4px;
+}
+.note-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 0.2rem 0.45rem;
+
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
@@ -39,3 +48,38 @@ div.profile-links a:not(:first-child) {
     position: relative; left: 12px; width: 95%;
 }
 
+.inline-wrapper {
+  white-space: nowrap;
+}
+
+/* Container holds both elements */
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 4px; /* Adds a small gap after the text */
+}
+
+/* Hidden by default and positioned to the right */
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  top: 50%;            /* Aligns top edge to the middle of the icon */
+  left: 115%;          /* Pushes the text box completely to the right of the icon */
+  transform: translateY(-50%); /* Perfectly centers the text box vertically */
+  background-color: #333;
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show the text on hover */
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

@@ -62,16 +62,16 @@ def test_makingdirectory():
 def test_saveFiles():
     with mainDB.atomic() as transaction:
         # test event
-        handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFile.saveFiles(parentEvent = Event.get_by_id(15))
         
         assert AttachmentUpload.select().where(AttachmentUpload.fileName == '15/eventfile.pdf').exists()
         
         # test saving 2nd event in a hypothetical recurring series
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFileRecurring.saveFiles(parentEvent = Event.get_by_id(15))
         assert AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').exists()
         assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
         
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFileRecurring.saveFiles(parentEvent = Event.get_by_id(15))
         assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
 
         # test course
@@ -122,10 +122,10 @@ def test_retrievePath():
 def test_deleteFile():
     with mainDB.atomic() as transaction:
         # creates file in event file directory for deletion
-        handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFile.saveFiles(parentEvent = Event.get_by_id(15))
 
         # creates a second file to simulate recurring events
-        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        handledEventFileRecurring.saveFiles(parentEvent = Event.get_by_id(15))
         
         # creates a course file for deletion
         handledCourseFile.saveFiles()

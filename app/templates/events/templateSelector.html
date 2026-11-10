@@ -1,5 +1,11 @@
 {% set title = "Template Selector" %}
 {% extends "base.html"%}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/templateSelector.css')}}"/>
+{% endblock %}
+
 {% block app_content %}
 <h1 class="text-center mb-4">Create an Event</h1>
 {% if templates %}
@@ -11,6 +17,18 @@
                 {% for template in templates %}
                     <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
                 {% endfor %}
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                    onclick="window.location='/extravaganza'"
+                    style="cursor: pointer;">
+                    Volunteer Extravaganza
+                    <a href="{{ url_for('static', filename='images/extravaganza_qr.png') }}" 
+                    download="extravaganza_qr.png"
+                    class="ms-2 flex-shrink-0"
+                    id="extravaganzaURL"
+                    onclick="event.stopPropagation()">
+                        <img src="{{ url_for('static', filename='images/extravaganza_qr.png') }}" alt="QR Code" id="extravaganzaQR">
+                    </a>
+                </div>
             </div>
         </div>
     </div>

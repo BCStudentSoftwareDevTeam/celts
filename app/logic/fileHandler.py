@@ -24,11 +24,14 @@ class FileHandler:
         elif programId:
             self.path = os.path.join(self.path, app.config['files']['program_attachment_path']) 
         elif proposalId:
-            self.path = os.path.join(self.path, app.config['files']['proposal_attachment_path']) 
+            self.path = os.path.join(self.path, app.config['files']['proposal_attachment_path'], str(proposalId)) 
         
     def makeDirectory(self):
         try:
-            extraDir = str(self.eventId) if self.eventId else ""
+            extraDir = ""
+            if self.eventId:
+                extraDir = str(self.eventId)
+
             os.makedirs(os.path.join(self.path, extraDir))
         except OSError as e:
             if e.errno != 17:
@@ -46,57 +49,53 @@ class FileHandler:
            
         return filePath
 
-    def saveFiles(self, saveOriginalFile=None):
-        try:          
-            for file in self.files:
-                saveFileToFilesystem = None
+    def saveFiles(self, parentEvent=None):
+        """
+        Saves attachments for different types and creates DB record for stored attachment
+        """
+        for file in self.files:
+            saveFileToFilesystem = None
 
-                if self.eventId:
-                    attachmentName = str(saveOriginalFile.id) + "/" + file.filename
-                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
-                                                                    AttachmentUpload.fileName == attachmentName).exists()
-                    if not isFileInEvent:
-                        AttachmentUpload.create(event=self.eventId, fileName=attachmentName)
-                        if saveOriginalFile and saveOriginalFile.id == self.eventId:
-                            saveFileToFilesystem = attachmentName
-                elif self.courseId:
-                    isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
-                    if not isFileInCourse:
-                        AttachmentUpload.create(course=self.courseId, fileName=file.filename)
-                        saveFileToFilesystem = file.filename
-                elif self.programId:
+            if self.eventId:
+                attachmentName = str(parentEvent.id) + "/" + file.filename
+                fileObject, created = AttachmentUpload.get_or_create(
+                    event_id = self.eventId,
+                    fileName = attachmentName
+                )
 
-                    # remove the existing file
-                    deleteFileObject = AttachmentUpload.get_or_none(program=self.programId)
-                    if deleteFileObject:
-                        self.deleteFile(deleteFileObject.id)
+                if created and parentEvent and parentEvent.id == self.eventId:
+                    saveFileToFilesystem = attachmentName
 
-                    # add the new file
-                    fileType = file.filename.split('.')[-1]
-                    fileName = f"{self.programId}.{fileType}"
-                    AttachmentUpload.create(program=self.programId, fileName=fileName)
-                    currentProgramID = fileName
-                    saveFileToFilesystem = currentProgramID
-                    
-                elif self.proposalId:
-                    fileType = file.filename.split('.')[-1]
-                    fileName = f"{self.proposalId}.{fileType}"
-                    isFileInProposal = AttachmentUpload.select().where(AttachmentUpload.proposal == self.proposalId,
-                                                                    AttachmentUpload.fileName == fileName).exists()
-                    if not isFileInProposal:
-                        # add the new file
-                        AttachmentUpload.create(proposal=self.proposalId, fileName=fileName)
-                        saveFileToFilesystem = fileName
+            elif self.courseId or self.proposalId:
+                recordId = self.courseId if self.courseId else self.proposalId
+                fieldName = 'course' if self.courseId else 'proposal'
+                fileData = {
+                    fieldName: recordId,
+                    "fileName": file.filename
+                }
+                fileObject, created = AttachmentUpload.get_or_create(**fileData)
+                saveFileToFilesystem = file.filename if created else None
 
-                else:
-                    saveFileToFilesystem = file.filename
+            elif self.programId:
 
-                if saveFileToFilesystem:
-                    self.makeDirectory()
-                    file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
+                # remove the existing file
+                deleteFileObject = AttachmentUpload.get_or_none(program=self.programId)
+                if deleteFileObject:
+                    self.deleteFile(deleteFileObject.id)
 
-        except AttributeError as e:
-            print(e)
+                # add the new file
+                fileType = file.filename.split('.')[-1]
+                fileName = f"{self.programId}.{fileType}"
+                AttachmentUpload.create(program=self.programId, fileName=fileName)
+                currentProgramID = fileName
+                saveFileToFilesystem = currentProgramID
+
+            else:
+                saveFileToFilesystem = file.filename
+
+            if saveFileToFilesystem:
+                self.makeDirectory()
+                file.save(self.getFileFullPath(newfilename=saveFileToFilesystem))
 
     def retrievePath(self, files):
         pathDict = {}

@@ -4,6 +4,8 @@ from app.logic.graduationManagement import setGraduatedStatus, getGraduationMana
 
 from app.models import mainDB
 from app.models.eventRsvp import EventRsvp
+from app.models.eventRsvpLog import EventRsvpLog
+from app.models.eventViews import EventView
 from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.models.celtsLabor import CeltsLabor
@@ -25,27 +27,34 @@ from app.models.activityLog import ActivityLog
 @pytest.mark.integration
 def test_setGraduationStatus():
     with mainDB.atomic() as transaction:
-        # Create a user to run the tests with
-        testUser = User.create(username = 'usrtst',
-                           firstName = 'Test',
-                           lastName = 'User',
-                           bnumber = '03522492',
-                           email = 'usert@berea.deu',
-                           hasGraduated = False)
-        
-        # make sure users have the default values of false and not interested, respectively
-        assert testUser.hasGraduated == False
-        setGraduatedStatus(testUser.username, 1)
-        
-        testUser = User.get_by_id(testUser.username)
-        # make sure setGraduatedStatus works correctly
-        assert testUser.hasGraduated == True
-        
-        # verify unchecking box will restore defaults
-        setGraduatedStatus(testUser.username, 0)
-        
-        testUser = User.get_by_id(testUser.username)
-        assert testUser.hasGraduated == False
+        # Create a senior student
+        user = User.create(
+            username="gradtoggle",
+            firstName="Grad",
+            lastName="Toggle",
+            bnumber="B00888888",
+            email="gradtoggle@berea.edu",
+            isStudent=True,
+            rawClassLevel="Junior",
+            hasGraduated=False
+        )
+
+        # Mark as graduated
+        setGraduatedStatus("gradtoggle", 1)
+        user = User.get_by_id("gradtoggle")
+
+        assert user.hasGraduated is True
+        assert user.rawClassLevel == "Junior"
+        assert user.processedClassLevel == "Alumni"
+
+        # Unmark as graduated
+        setGraduatedStatus("gradtoggle", 0)
+        user = User.get_by_id("gradtoggle")
+
+        assert user.hasGraduated is False
+        assert user.rawClassLevel == "Junior"
+        assert user.processedClassLevel == "Junior"
+
         transaction.rollback()
 
 @pytest.mark.integration
@@ -69,6 +78,8 @@ def test_getGraduationManagementUsers():
         ProfileNote.delete().execute()
         Note.delete().execute()
         ActivityLog.delete().execute()
+        EventRsvpLog.delete().execute()
+        EventView.delete().execute()
         User.delete().execute()
 
         testUser1 = User.create(username = 'usrtst1',
@@ -126,6 +137,8 @@ def test_getGraduationManagementUsers():
         
         IndividualRequirement.create(**sustainedEngagement)
 
+        testUser3.declaredMinor = True
+        testUser3.save()
         actualResult = getGraduationManagementUsers()
 
         # testUser4 is not a senior, graduating so they should not be shown.

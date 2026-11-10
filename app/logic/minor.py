@@ -5,7 +5,7 @@ from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist, SQL
 import xlsxwriter
 
-from app import app
+from app.models import app
 from app.models.user import User
 from app.models.term import Term
 from app.models.event import Event
@@ -18,9 +18,8 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.cceMinorProposal import CCEMinorProposal
-from app.logic.createLogs import createActivityLog
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCourses import deleteCourseObject
+from app.logic.utils import getFilesFromRequest
 from app.models.attachmentUpload import AttachmentUpload
 
 
@@ -29,37 +28,31 @@ def createSummerExperience(username, formData):
         Given the username of the student and the formData which includes all of
         the SummerExperience information, create a new SummerExperience object.
     """
-    try:
-        user = User.get(User.username == username)
-        contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
-        CCEMinorProposal.create(
-            student=user,
-            proposalType = 'Summer Experience',
-            contentAreas = contentAreas,
-            status="Pending",
-            createdBy = g.current_user,
-            **formData,
-        )
-    except Exception as e:
-        print(f"Error saving summer experience: {e}")
-        raise e
+    user = User.get(User.username == username)
+    contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+    formData = dict(formData)
+    formData.pop("contentArea")
+    return CCEMinorProposal.create(
+        student=user,
+        proposalType = 'Summer Experience',
+        contentAreas = contentAreas,
+        createdBy = g.current_user,
+        **formData,
+    )
+
+def updateSummerExperience(proposalID, formData):
+    """
+        Given the username of the student and the formData which includes all of
+        the SummerExperience information, create a new SummerExperience object.
+    """
+    contentAreas = ', '.join(formData.getlist('contentArea')) # Combine multiple content areas
+    formData = dict(formData)
+    formData.pop("contentArea")
+    formData.pop("experienceHoursOver300")
+    CCEMinorProposal.update(contentAreas=contentAreas, **formData).where(CCEMinorProposal.id == proposalID).execute()
 
 def getCCEMinorProposals(username):
-    proposalList = []
-
-    cceMinorProposals = list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
-
-    for experience in cceMinorProposals:
-        proposalList.append({
-            "id": experience.id,
-            "type": experience.proposalType,
-            "createdBy": experience.createdBy, 
-            "supervisor": experience.supervisorName,
-            "term": experience.term,
-            "status": experience.status,
-        })
-
-    return proposalList 
+    return list(CCEMinorProposal.select().where(CCEMinorProposal.student==username))
 
 def getEngagementTotal(engagementData):
     """ 
@@ -103,7 +96,10 @@ def getMinorProgress():
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .join(Term, on=(IndividualRequirement.term_id == Term.id))
             .switch(User).join(CCEMinorProposal, JOIN.LEFT_OUTER, on= (User.username == CCEMinorProposal.student_id))
-            .where(CertificationRequirement.certification_id == Certification.CCE)
+            .where(
+                (CertificationRequirement.certification_id == Certification.CCE) &
+                (User.declaredMinor == True)
+            )
             .group_by(User.username, IndividualRequirement.term_id, Term.id)
             .order_by(SQL("engagementCount").desc())
     )
@@ -191,13 +187,71 @@ def declareMinorInterest(username):
     
 def getDeclaredMinorStudents():
     """
-    Get a list of the students who have declared minor
+    This function retrieves a list of students who have declared the CCE minor along with their engagement progress.
+    It returns a list of dictionaries containing student information and their engagement details and adds students who have no requirements but have declared the minor with 0 engagements.
     """
-    declaredStudents = User.select().where(User.isStudent & User.declaredMinor)
+    summerEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CCEMinorProposal.proposalType == "Summer Experience", CCEMinorProposal.id)],
+                None
+            )
+        )
+    ).alias("summerEngagementCount")
 
-    interestedStudentList = [model_to_dict(student) for student in declaredStudents]
+    # this returns the count of distinct engagements that have a certification requirement id.
+    # this is important because our join clause specifically joins individualrequirements with the certifications that match to CCE
+    # while leaving the rest as null
+    cceEngagementCount = fn.COUNT(
+        fn.DISTINCT(
+            Case(
+                None,
+                [(CertificationRequirement.id.is_null(False), IndividualRequirement.id)],
+                None
+            )
+        )
+    ).alias("allEngagementCount")
 
-    return interestedStudentList
+    q = (
+        User
+        .select(
+            User,
+            cceEngagementCount,
+            summerEngagementCount,
+            fn.IF(fn.COUNT(fn.DISTINCT(CCEMinorProposal.id)) > 0, True, False).alias("hasCCEMinorProposal"),
+        )
+        .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
+        .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(
+            (IndividualRequirement.requirement_id == CertificationRequirement.id) &
+            (CertificationRequirement.certification_id == Certification.CCE)    # only cce minor certs are populated with non-null
+            ))
+        .switch(User)
+        .join(CCEMinorProposal, JOIN.LEFT_OUTER, on=(User.username == CCEMinorProposal.student))
+        .where(
+            (User.declaredMinor == True) & 
+            (User.isStudent == True)
+            )
+        .group_by(User.username)
+        .order_by(SQL("allEngagementCount").desc())
+    )
+
+    result = []
+    for s in q:
+        engagementCount = int(s.allEngagementCount or 0)
+        result.append({
+            "firstName": s.firstName,
+            "lastName": s.lastName,
+            "username": s.username,
+            "B-Number": s.bnumber,
+            "email": s.email,
+            "hasGraduated": s.hasGraduated,
+            "engagementCount": engagementCount,
+            "hasCCEMinorProposal": bool(s.hasCCEMinorProposal),
+            "hasSummer": "Completed" if (s.summerEngagementCount and int(s.summerEngagementCount) > 0) else "Incomplete",
+        })
+
+    return result
     
 def getCourseInformation(id):
     """
@@ -276,6 +330,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                            "requirement": requirement.get(),
                                            "addedBy": currentUser,
                                         })
+        
         # Thrown if there are no available engagement requirements left. Handled elsewhere.
         except DoesNotExist as e:
             raise e 
@@ -286,6 +341,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                 IndividualRequirement.username == engagementData['username'],
                 IndividualRequirement.term == engagementData['term']
             ).execute()
+
     else:
         raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
@@ -337,21 +393,45 @@ def getCommunityEngagementByTerm(username):
     # sorting the communityEngagementByTermDict by the term id
     return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
-def createOtherEngagementRequest(username, formData):
+def createOtherEngagement(username, request):
     """
-        Create a CCEMinorProposal entry based off of the form data
+    Create a CCEMinorProposal entry based off of the form data
     """
     user = User.get(User.username == username)
 
-    cceObject = CCEMinorProposal.create(proposalType = 'Other Engagement',
-                            createdBy = g.current_user,
-                            status = 'Pending',
-                            student = user,
-                            **formData
+    createdProposal = CCEMinorProposal.create(proposalType = 'Other Engagement',
+                                              createdBy = g.current_user,
+                                              student = user,
+                                              **request.form
                             )
+    attachment = request.files.get("attachmentObject")
+    if attachment:
+        addFile = FileHandler(getFilesFromRequest(request), proposalId=createdProposal.id)
+        addFile.saveFiles()
 
-    return cceObject
+def updateOtherEngagementRequest(proposalID, request):
+    """
+    Update an existing CCEMinorProposal entry based off of the form data
+    """
+    newAttachment = request.files.get("attachmentObject")
+    previousAttachment = AttachmentUpload.get_or_none(proposal=proposalID)
+    proposalObject = CCEMinorProposal.get_by_id(proposalID)
+    deleteAttachment = request.form.get("deleteAttachment") == "true"
     
+    if deleteAttachment:
+        if not previousAttachment:
+            raise AssertionError("deleteAttachment flag is set but no attachment exists in the database.")
+        FileHandler(proposalId=proposalID).deleteFile(previousAttachment.id)
+    elif newAttachment and newAttachment.filename:
+        if previousAttachment:
+            FileHandler(proposalId=proposalID).deleteFile(previousAttachment.id)
+        addFile = FileHandler(getFilesFromRequest(request), proposalId=proposalID)
+        addFile.saveFiles(parentEvent=proposalObject)
+
+    formData = request.form.copy()
+    formData.pop("deleteAttachment", None)
+    CCEMinorProposal.update(**formData).where(CCEMinorProposal.id == proposalID).execute()
+                
 def saveSummerExperience(username, summerExperience, currentUser):
     """
         :param username: username of the student that the summer experience is for
@@ -381,6 +461,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
                                     "requirement": requirement.get(),
                                     "addedBy": currentUser,
                                 })
+ 
     return ""
 
 def getSummerExperience(username):
@@ -418,3 +499,9 @@ def removeProposal(proposalID) -> None:
         proposalFileHandler.deleteFile(proposalAttachment.id)
 
     CCEMinorProposal.delete().where(CCEMinorProposal.id == proposalID).execute()
+
+def changeProposalStatus(proposalID, newStatus) -> None:
+    """
+    Changes the status of a proposal.
+    """
+    CCEMinorProposal.update(status=newStatus).where(CCEMinorProposal.id == int(proposalID)).execute()
