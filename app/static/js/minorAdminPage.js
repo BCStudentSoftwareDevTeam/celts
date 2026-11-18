@@ -1,5 +1,4 @@
-import searchUser from './searchUser.js'
-
+import searchUser from './searchUser.js';
 
 $(document).ready(function() {
   // Load flash message from sessionStorage, if any
@@ -61,9 +60,204 @@ $('.remove_minor_candidate').on('click', function() {
   if (activeTab) {
       $('#studentTabs button[data-bs-target="#' + activeTab + '"]').tab('show');
   }
+  let barChart = null;
+  let lineChart = null;
+  $("#cceMinor").on("click", function(){
+    let username = $(this).data("username");
+    $.ajax({
+      type: 'GET',
+      url: '/profile/' + username + '/cceMinorChart',
+      success: function (responses) {
+        const $barChart = $("#cceChartByEngagement");
+        const $lineChart = $("#cceChartByTerm");
+        const barCanvas = document.getElementById("cceChartByEngagement");
+        const lineCanvas = document.getElementById("cceChartByTerm");
+        const SEASONS = ["Spring", "Summer", "Fall"];
+        const termToIndex = (term) => {
+          const [season, yearStr] = term.split(" ");
+          return Number(yearStr) * 3 + SEASONS.indexOf(season);
+        };
+        const indexToTerm = (idx) => {
+          const year = Math.floor(idx / 3);
+          const season = SEASONS[idx % 3];
+          return `${season} ${year}`;
+        };
+      
+        // Build: term { engagement, students[], studentCounts{} }
+        const byTerm = {};
+      
+        for (const r of responses) {
+          const term = r.termDescription;
+          const name = r.name;
+          const count = Number(r.engagementCount) || 0;
+      
+          if (!byTerm[term]) {
+            byTerm[term] = { engagement: 0, students: [], studentCounts: {} };
+          }
+      
+          byTerm[term].engagement += count;
+          byTerm[term].students.push(name);
+          byTerm[term].studentCounts[name] = (byTerm[term].studentCounts[name] || 0) + count;
+        }
+        const existingTerms = Object.keys(byTerm);
+      
+        if (!existingTerms.length) {
+          if (barChart) barChart.destroy();
+          if (lineChart) lineChart.destroy();
+          $barChart.hide();
+          $lineChart.hide();
+          return;
+        }
+        const indices = existingTerms.map(termToIndex);
+        const minIdx = Math.min(...indices);
+        const maxIdx = Math.max(...indices); 
+        const labels = [];
+        for (let i = minIdx; i <= maxIdx; i++) labels.push(indexToTerm(i));
+      
+        for (const term of labels) {
+          if (!byTerm[term]) byTerm[term] = { engagement: 0, students: [], studentCounts: {} };
+        }
+        const termEngagements = labels.map((t) => byTerm[t].engagement);
+        const maxEngagement = Math.max(...termEngagements) + 2;
+      
+        const isSummer = (term) => term.startsWith("Summer ");
+        const barColorsByTerm = labels.map((t) => (isSummer(t) ? "blue" : "green"));
+      
+        const formatStudentCounts = (term) => {
+          const counts = byTerm[term]?.studentCounts || {};
+          const entries = Object.entries(counts);
+          if (!entries.length) return "None";
+          return entries.map(([name, cnt]) => `${name} (${cnt})`).join(", ");
+        };
+      
+        const baseScales = {
+          y: {
+            beginAtZero: true,
+            max: maxEngagement,
+            ticks: { stepSize: 1 },
+            title: { display: true, text: "Engagement Count" }
+          },
+          x: { title: { display: true, text: "Terms" } }
+        };
+      
+        // Bar chart
+        if (barChart) barChart.destroy();
+      
+        barChart = new Chart(barCanvas, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Engagement by Term",
+                data: termEngagements,
+                backgroundColor: barColorsByTerm
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: baseScales,
+            plugins: {
+              title: {
+                display: true,
+                text: "CCE Engagements of Each Term",
+                font: { size: 18 }
+              },
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  generateLabels: () => [
+                    { text: "Summer Term", fillStyle: "blue", strokeStyle: "blue", lineWidth: 1 },
+                    { text: "Non-Summer Term", fillStyle: "green", strokeStyle: "green", lineWidth: 1 }
+                  ]
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const term = labels[context.dataIndex];
+                    return [
+                      `Engagements: ${context.raw}`,
+                      `Students: ${formatStudentCounts(term)}`
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        });
+      
+        // Line chart
+        if (lineChart) lineChart.destroy();
+      
+        lineChart = new Chart(lineCanvas, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Engagement by Term",
+                data: termEngagements,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: baseScales,
+            plugins: {
+              title: {
+                display: true,
+                text: "CCE Engagements Trends over the Terms",
+                font: { size: 18 }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const term = labels[context.dataIndex];
+                    return [
+                      `Engagements: ${context.raw}`,
+                      `Students: ${formatStudentCounts(term)}`
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        });
 
+        // Toggle handlers
+        const showBarChart = () => {
+          $barChart.show();
+          $lineChart.hide();
+          setTimeout(() => barChart?.resize(), 0);
+        };
+        const showLineChart = () => {
+          $barChart.hide();
+          $lineChart.show();
+          setTimeout(() => lineChart?.resize(), 0);
+        };
+      
+        $("#chartButton").off("click").on("click", showBarChart);
+        $("#lineButton").off("click").on("click", showLineChart);
+        showBarChart();
+      }      
+    });
+  });
+  $("#cceDownload").on("click", function(selected, fileName = "cceMinorChart.png"){
+    const element = $(".ccePrint")[0]; 
+    html2canvas(element).then(canvas => {
+      const downloadLink = document.createElement('a');
+      downloadLink.href = canvas.toDataURL(); 
+      downloadLink.download = fileName; 
+      downloadLink.click();
+    })
+  })
 })
-
 
 function emailMinorCandidates(studentEmails){
   // If there are any students interested or declared, open the mailto link
@@ -87,7 +281,6 @@ function emailAll(){
   
   emailMinorCandidates(allMinorCandidateEmails);
 }
-
 
 function getInterestedStudents() {
   // get all the checkboxes and return a list of users who's

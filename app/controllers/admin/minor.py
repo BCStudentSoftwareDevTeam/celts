@@ -1,11 +1,22 @@
-from flask import render_template, g, abort, request, redirect, url_for, send_file
-
+from flask import render_template, g, abort, request, redirect, url_for, send_file, jsonify
+from app.logic.minor import getMinorProgress
 from app.models.user import User
 
 from app.controllers.admin import admin_bp
 
 from app.logic.minor import getDeclaredMinorStudents, getMinorInterest, getMinorProgress, toggleMinorInterest, getMinorSpreadsheet
 
+@admin_bp.route('/profile/<username>/cceMinorChart', methods=['GET'])
+def cceMinorChart(username):
+    if not g.current_user.isAdmin:
+        abort(403)
+    else:
+        progressList = getMinorProgress()
+        turnToChart = []
+        for progress in progressList:
+            turnToChart.append({'name':progress["firstName"] + " " + progress["lastName"], "engagementCount" : progress['engagementCount'], "completeSummer": "Yes" if progress['hasSummer'] == "Completed" else "No", "termDescription": progress['engagementTerm']})
+        return jsonify(turnToChart)
+    
 @admin_bp.route('/admin/cceMinor', methods=['GET','POST'])
 def manageMinor():
     if not g.current_user.isAdmin:
@@ -22,17 +33,19 @@ def manageMinor():
 
     interestedStudentsList = getMinorInterest()
     interestedStudentEmailString = ';'.join([student['email'] for student in interestedStudentsList])
-    declaredStudentsDict = getDeclaredMinorStudents()
-    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsDict])  
-          
-    cceMinorStudents = declaredStudentsDict
-
+    sustainedEngagement = getMinorProgress()
+    declaredStudentsList = getDeclaredMinorStudents()
+    declaredStudentEmailString = ';'.join([student['email'] for student in declaredStudentsList])   
+    adminUsername = g.current_user.username 
+    cceMinorStudents = declaredStudentsList
 
     return render_template('/admin/cceMinor.html',
                             cceMinorStudents = cceMinorStudents,
                             interestedStudentsList = interestedStudentsList,
                             interestedStudentEmailString = interestedStudentEmailString,
                             declaredStudentEmailString = declaredStudentEmailString,
+                            sustainedEngagement = sustainedEngagement,
+                            adminUsername = adminUsername,
                             )
 
 @admin_bp.route("/admin/cceMinor/download")
