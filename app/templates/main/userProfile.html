@@ -850,9 +850,9 @@
           {% endif %}
 
         {% elif handbookOverdue %}
-          <h5 id="signatureHeader">Sign the handbook</h5>    
-          {% if handbookAvailable %}
+          {% if handbookAvailable %}    
             {% if isOwnProfile %}
+              <h5 id="signatureHeader">Sign the handbook</h5>
               <div class="row mb-3">
                 <canvas id="handbook-signature-pad" class="signature-pad" data-student = {{volunteer.username}} style="border: 1px solid #ced4da"></canvas>
               </div>
@@ -870,13 +870,14 @@
                   <h3>Handbook signed for AY {{g.current_term.academicYear}}!</h3>
                 </div>              
               </div>
-              {% else %}
+            {% else %}
               <p>{{ volunteer.fullName }} has attended the training but they still need to sign the CELTS handbook for {{ g.current_term.academicYear }}. </p>
             {% endif %}
           {% endif %}
         {% else %}
           <p>
-            {% if isOwnProfile %} Your handbook signature is good for AY {% else %} {{ volunteer.fullName }}'s handbook signature is good for AY {% endif %} {{ volunteer.signatureTerm.academicYear }}.
+            {% if isOwnProfile %}
+            Your handbook signature is good for AY {% else %} {{ volunteer.fullName }}'s handbook signature is good for AY {% endif %} {{ volunteer.signatureTerm.academicYear }}.
           </p>
         {% endif %}
       </div>
