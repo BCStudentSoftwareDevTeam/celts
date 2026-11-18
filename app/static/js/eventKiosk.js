@@ -149,6 +149,11 @@ function submitData() {
             "bNumber": $("#submitScannerData").val()
         },
         success: function(resultID) {
+
+            if (resultID.attendedTrainings === false) {
+                msgFlash(`${resultID.user} has not attended some of the required trainings!`, "warning")
+            }
+
             if (resultID.status == "already signed in") {
                 msgFlash(`${resultID.user} already signed in!`, "warning");
             } else if (resultID.status === "banned") {
@@ -158,6 +163,7 @@ function submitData() {
             } else {
                 msgFlash(`${resultID.user} successfully signed in!`, "success");
             }
+
             $("#submitScannerData").val("").focus();
         },
         error: function(request, status, error) {

@@ -890,4 +890,17 @@ $(document).ready(function () {
   });
 
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+
+  // ticking Required Trainings checkboxes whenever the event has service hours
+  $("#checkServiceHours").on("click", function() {
+    if ($(this).is(':checked')) {
+        $("#requiresAllVolunteerTraining").prop('checked', true);
+        $("#requiresProgramTraining").prop('checked', true);
+      }
+    else {
+        $("#requiresAllVolunteerTraining").prop('checked', false);
+        $("#requiresProgramTraining").prop('checked', false);
+      }
+  });
+
 });

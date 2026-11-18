@@ -128,6 +128,7 @@ def getAllowedTemplates(currentUser):
     
 def generateSheetData(program, academicYear, rosterType):
     columns = []
+    userFields = (User.username, User.bnumber, User.email, User.phoneNumber, User.firstName, User.lastName, User.cpoNumber, User.major, User.rawClassLevel, User.dietRestriction, User.lastHandbookSignature)
     if rosterType == "Interested Volunteers":
         columns = ["Username",
                    "B-number",
@@ -147,7 +148,14 @@ def generateSheetData(program, academicYear, rosterType):
                    ]
         query = getTrainingsForInterestedParticipants(program, getProgramInterest(program))
         query = cleanInterestedParticipantsData(query)
-        return (columns, query)
+        rows = []
+        for student in query.values():
+            extraFields = ("allVolunteer", "programSpecific", "bgCheck", "eligible")
+        for student in query.values():
+            studentTuple = tuple(getattr(student["userObj"], field.name) for field in userFields)
+            queryTuple = tuple(student.get(field) for field in extraFields)
+            rows.append(studentTuple + queryTuple)
+        return (columns, rows)
     elif rosterType == "Engaged Volunteers" or rosterType == "Last Year Volunteers":
         columns = ["Username",
                    "B-number",
@@ -164,9 +172,10 @@ def generateSheetData(program, academicYear, rosterType):
         if rosterType == "Last Year Volunteers":
             academicYear = Term.select().where(Term.academicYear == academicYear).get().previousAcademicYear
         query = getParticipantsForProgramForAY(program, academicYear)
-        query = [model_to_dict(user, only=(User.username, User.bnumber, User.email, User.phoneNumber, User.firstName, User.lastName, User.cpoNumber, User.major, User.rawClassLevel, User.dietRestriction, User.lastHandbookSignature)) for user in query]
+        query = [model_to_dict(user, only=(userFields)) for user in query]
         query = cleanInterestedParticipantsData(query)
-        return (columns, query)
+        rows = [tuple(student.get(field.name) for field in userFields) for student in query]
+        return (columns, rows)
 
 def cleanInterestedParticipantsData(query):
     if type(query) == dict:    

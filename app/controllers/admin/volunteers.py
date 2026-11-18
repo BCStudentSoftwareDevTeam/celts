@@ -112,13 +112,15 @@ def volunteerDetailsPage(eventID):
                                                 .join(InsuranceInfo, JOIN.LEFT_OUTER, on=(InsuranceInfo.user==EventParticipant.user))
                                                 .where(EventParticipant.event==event))
     
-    
-    waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
-    rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
+    attendedUser = list(set(eventParticipantData))
+    attendedUsernames = {obj.user.username for obj in attendedUser}
+    waitlistUser = [obj for obj in eventRsvpData if obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
+    rsvpUser = [obj for obj in eventRsvpData if not obj.rsvpWaitlist and obj.user.username not in attendedUsernames]
+
     return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
-                            attendedUser= eventParticipantData,
-                            rsvpUser= rsvpUser,
+                            attendedUser = attendedUser,
+                            rsvpUser = rsvpUser,
                             event = event)
 
 
