@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    
+    $("#maincontent").addClass("extravaganza-layout");
 
     $(".interestedInput").click(function updateInterest(){
         var checkbox = $(this);

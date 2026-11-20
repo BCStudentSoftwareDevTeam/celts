@@ -143,14 +143,19 @@ form {
   top: -4px;
 }
 
-#maincontent:has(.extravaganza-page) > .flash_container {
+#maincontent.extravaganza-layout {
+    container-type: inline-size;
+}
+
+#maincontent.extravaganza-layout > .flash_container {
     position: fixed !important;
     top: 1rem !important;
-    left: 50% !important;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem) !important;
-    max-width: 600px;
+    left: auto !important;
+    right: auto !important;
+    width: 100cqw;
+    max-width: none;
+    box-sizing: border-box;
     margin: 0 !important;
-    z-index: 1060 !important;
-    opacity: 1 !important;
+    transform: none;
+    z-index: 10 !important;
 }
