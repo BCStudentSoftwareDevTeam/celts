@@ -477,6 +477,11 @@ def unban(program_id, username):
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
 def addInterest(program_id, username):
+      """
+    This function adds a program to the list of programs a user interested in
+    program_id: the primary id of the program the student is adding interest of
+    username: unique value of a user to correctly identify them
+    """  
 
     showFlash = request.form.get("showFlash", "true").lower() != "false"
     try:
